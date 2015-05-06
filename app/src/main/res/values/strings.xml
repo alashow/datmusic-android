@@ -1,3 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2015  Alashov Berkeli
+  ~ It is licensed under GNU GPL v. 2 or later. For full terms see the file LICENSE.
+  -->
 <resources>
+
+    <!--General-->
     <string name="app_name">Music</string>
+    <string name="exception">Programmada ýalňyşlyk boldy!</string>
+    <string name="retry">Täzele</string>
+    <string name="error">Ýalňyşlyk</string>
+    <string name="success">Üstünlik</string>
+    <string name="cancel">Bes et</string>
+    <string name="send">Iber</string>
+    <string name="empty">Dolduryň!</string>
+    <string name="loading">Ýüklenýär..</string>
+    <string name="yes">Hawa</string>
+    <string name="no">Ýok</string>
+    <string name="save">Ýatda sakla</string>
+    <string name="add">Goş</string>
+    <string name="network_error">Aragatnaşyk ýalňyşlygy</string>
+    <string name="http_error">HTTP ýalňyşlyk : </string>
+    <string name="unknown_error">Tanalmaýan ýalňyşlyk</string>
+    <string name="edit">Üýtget</string>
+    <string name="search">Gözle</string>
+    <string name="search_hint">Gözleg sözüni ýazyň</string>
+    <string name="logout">Çykyş</string>
+    <string name="confirm">Tassyklaň</string>
+    <string name="manat">manat</string>
+    <string name="powered_by"><![CDATA[Powered by <a href=\'http://alashov.com\'>Alashov</a>]]></string>
+
+    <!-- Activity titles -->
+    <string name="title_activity_settings">Sazlamalar</string>
 </resources>

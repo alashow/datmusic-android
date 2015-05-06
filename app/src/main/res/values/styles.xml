@@ -1,8 +1,36 @@
+<!--
+  ~ Copyright (c) 2015 Alashov Berkeli
+  ~ It is licensed under GNU GPL v. 2 or later. For full terms see the file LICENSE.
+  -->
+
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <style name="EditText" parent="Widget.AppCompat.EditText">
+        <item name="android:background">@drawable/edit_text</item>
+        <item name="android:minHeight">40dp</item>
+    </style>
+
+    <style name="PaddedActivity">
+        <item name="android:paddingBottom">@dimen/activity_vertical_margin</item>
+        <item name="android:paddingLeft">@dimen/activity_horizontal_margin</item>
+        <item name="android:paddingRight">@dimen/activity_horizontal_margin</item>
+        <item name="android:paddingTop">@dimen/activity_vertical_margin</item>
+    </style>
+
+    <style name="MenuTitle">
+        <item name="android:textAppearance">?android:attr/textAppearance</item>
+        <item name="android:textColor">@color/nav_drawer_list_item_color</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
+        <item name="android:drawablePadding">16dp</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="WhiteSearchViewStyle" parent="Widget.AppCompat.SearchView">
+        <item name="queryBackground">@drawable/search_dark</item>
     </style>
 
 </resources>

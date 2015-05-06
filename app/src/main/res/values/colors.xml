@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2015 Alashov Berkeli
+  ~ It is licensed under GNU GPL v. 2 or later. For full terms see the file LICENSE.
+  -->
+
+<resources>
+    <color name="text_color">#212121</color>
+    <color name="secondary_text_color">#727272</color>
+    <color name="primary">#34495e</color>
+    <color name="primary_dark">#2c3e50</color>
+    <color name="translucent_statusbar_background">#cc34495e</color>
+    <color name="translucent_statusbar_background2">#5934495e</color>
+    <color name="transparent_turquoise">#2034495e</color>
+    <color name="transparent_primary_30">#3034495e</color>
+    <color name="transparent_primary_80">#8034495e</color>
+    <color name="nav_drawer_list_item_color">#676767</color>
+    <color name="nav_drawer_list_item_normal">@android:color/transparent</color>
+    <color name="nav_drawer_list_item_pressed">#eeeeee</color>
+    <color name="nav_drawer_list_item_pressed_transparent">#86eeeeee</color>
+    <color name="circle_image_border">#e1e1e1</color>
+    <color name="divider">#ffe5e5e5</color>
+    <color name="white_selector">#b7b7b7</color>
+    <color name="image_placeholder">#ffc0c0c0</color>
+</resources>

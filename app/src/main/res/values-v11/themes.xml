@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2015  Alashov Berkeli
+  ~ It is licensed under GNU GPL v. 2 or later. For full terms see the file LICENSE.
+  -->
+
+<resources>
+
+    <style name="Theme.Music" parent="@style/Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorControlActivated">@color/primary</item>
+        <item name="windowActionModeOverlay">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:editTextStyle">@style/EditText</item>
+        <item name="android:textColorHighlight">@color/transparent_primary_30</item>
+        <item name="searchViewStyle">@style/WhiteSearchViewStyle</item>
+    </style>
+
+    <style name="Theme.Music.ActionBar" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorControlActivated">@color/primary</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:editTextStyle">@style/EditText</item>
+        <item name="searchViewStyle">@style/WhiteSearchViewStyle</item>
+    </style>
+
+    <style name="Theme.Music.Search" parent="Theme.Music">
+        <item name="windowActionModeOverlay">false</item>
+    </style>
+
+    <style name="Transparent">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+</resources>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2015 Alashov Berkeli
+  ~ It is licensed under GNU GPL v. 2 or later. For full terms see the file LICENSE.
+  -->
+
+<LinearLayout
+    android:id="@+id/content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="304dp"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    android:background="@color/white"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingTop="10dp">
+
+        <ListView
+            android:id="@+id/navigation_drawer_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="#f9f9f9"
+            android:dividerHeight="1dp"
+            android:listSelector="@drawable/white_selector"/>
+
+        <TextView
+            android:id="@+id/powered_by"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="15dp"
+            android:gravity="center"
+            android:textSize="@dimen/text_medium"
+            android:textColor="@color/text_color"
+            android:textColorLink="@color/text_color"/>
+    </RelativeLayout>
+
+</LinearLayout>

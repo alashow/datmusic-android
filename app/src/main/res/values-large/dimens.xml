@@ -1,0 +1,14 @@
+<!--
+  ~ Copyright (c) 2015 Alashov Berkeli
+  ~ It is licensed under GNU GPL v. 2 or later. For full terms see the file LICENSE.
+  -->
+
+<resources>
+    <dimen name="activity_horizontal_margin">64dp</dimen>
+    <dimen name="view_margin">5dp</dimen>
+    <dimen name="text_xxlarge">35sp</dimen>
+    <dimen name="text_xlarge">25sp</dimen>
+    <dimen name="text_large">19sp</dimen>
+    <dimen name="text_medium">17sp</dimen>
+    <dimen name="text_small">14sp</dimen>
+</resources>

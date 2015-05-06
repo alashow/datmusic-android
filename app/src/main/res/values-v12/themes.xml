@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2015  Alashov Berkeli
+  ~ It is licensed under GNU GPL v. 2 or later. For full terms see the file LICENSE.
+  -->
+
+<resources>
+
+    <style name="Theme.Music.Search" parent="Theme.Music">
+        <item name="windowActionModeOverlay">false</item>
+        <item name="android:textCursorDrawable">@drawable/white_cursor</item>
+    </style>
+</resources>
