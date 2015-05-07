@@ -21,4 +21,10 @@ public class Config {
     //Activity Extras
     public static final String EXTRA_NAME = "tm.veriloft.music.NAME";
 
+    //VK Search Api Config
+    public static String VK_CONFIG_ACCESS_TOKEN = "4d45c6ebef3b05a910071c948bb1374015c9e47ad953fba2f631d8bc1fca425a0a0bffcb4955d3af90c07";
+    public static String VK_CONFIG_SORT = "2";
+    public static String VK_CONFIG_AUTOCOMPLETE = "1";
+    public static String VK_CONFIG_COUNT = "1000";
+
 }

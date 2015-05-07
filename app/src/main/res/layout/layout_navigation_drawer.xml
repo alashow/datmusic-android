@@ -23,7 +23,9 @@
         <ListView
             android:id="@+id/navigation_drawer_list_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dip"
+            android:layout_alignParentTop="true"
+            android:layout_above="@+id/powered_by"
             android:divider="#f9f9f9"
             android:dividerHeight="1dp"
             android:listSelector="@drawable/white_selector"/>

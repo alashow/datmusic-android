@@ -7,7 +7,7 @@
     <!--General-->
     <string name="app_name">Music</string>
     <string name="exception">Programmada ýalňyşlyk boldy!</string>
-    <string name="retry">Täzele</string>
+    <string name="retry">Täzeden</string>
     <string name="error">Ýalňyşlyk</string>
     <string name="success">Üstünlik</string>
     <string name="cancel">Bes et</string>
@@ -31,4 +31,8 @@
 
     <!-- Activity titles -->
     <string name="title_activity_settings">Sazlamalar</string>
+
+    <!--MainActivity-->
+    <string name="error_token">Token ýalňyşlygy. Täzeden synanşyň</string>
+    <string name="error_not_found">Beýle aýdym tapylmady</string>
 </resources>

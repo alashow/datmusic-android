@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2015  Alashov Berkeli
+  ~ It is licensed under GNU GPL v. 2 or later. For full terms see the file LICENSE.
+  -->
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="17dp">
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_toLeftOf="@+id/badges"
+        android:layout_toStartOf="@+id/badges"
+        android:textColor="@color/text_color"
+        tools:text="Martin Garrix - Animals"/>
+    <LinearLayout
+        android:id="@+id/badges"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true">
+
+        <ImageView
+            android:id="@+id/play"
+            android:layout_width="35dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_play"
+            android:background="@drawable/badge_background"/>
+
+        <Button
+            android:id="@+id/duration"
+            android:layout_width="35dp"
+            android:layout_height="20dp"
+            android:background="@drawable/badge_background"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_small"
+            tools:text="3:05"/>
+
+    </LinearLayout>
+
+
+</RelativeLayout>

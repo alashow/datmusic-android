@@ -33,4 +33,13 @@
         <item name="queryBackground">@drawable/search_dark</item>
     </style>
 
+    <style name="Button">
+        <item name="android:background">@drawable/button_background_default</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="ButtonRed" parent="Button">
+        <item name="android:background">@drawable/button_background_danger</item>
+    </style>
 </resources>

@@ -36,7 +36,6 @@ public class PushNotificationsService extends GCMBaseIntentService {
     @Override
     protected void onRegistered( final Context context, String registrationId ) {
         RequestParams params = new RequestParams();
-        params.put("token", SettingsManager.getInstance(this).getToken());
         params.put("reg_id", registrationId);
         MusicApiClient.get(Config.ENDPOINT_API + "reg_id.php", params, new JsonHttpResponseHandler() {
             @Override
