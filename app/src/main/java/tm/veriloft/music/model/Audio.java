@@ -13,11 +13,13 @@ import org.json.JSONObject;
  */
 public class Audio {
     private long id;
-    private int duration;
     private long ownerId;
+    private int duration;
     private String src;
     private String artist;
     private String title;
+
+    private long bytes = -1;
 
     public Audio( JSONObject audioObject ) {
         try {
@@ -25,8 +27,8 @@ public class Audio {
             setDuration(audioObject.getInt("duration"));
             setOwnerId(audioObject.getLong("owner_id"));
             setSrc(audioObject.getString("url"));
-            setArtist(audioObject.getString("artist"));
-            setTitle(audioObject.getString("title"));
+            setArtist(audioObject.getString("artist").replace("&amp;", "&"));
+            setTitle(audioObject.getString("title").replace("&amp;", "&"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -83,6 +85,15 @@ public class Audio {
 
     public Audio setTitle( String title ) {
         this.title = title;
+        return this;
+    }
+
+    public long getBytes() {
+        return bytes;
+    }
+
+    public Audio setBytes( long bytes ) {
+        this.bytes = bytes;
         return this;
     }
 }

@@ -48,7 +48,7 @@ public class AudioWife {
      * Playback progress update time in milliseconds
      * **
      */
-    private static final int AUDIO_PROGRESS_UPDATE_TIME = 200;
+    private static final int AUDIO_PROGRESS_UPDATE_TIME = 100;
 
     // TODO: externalize the error messages.
     private static final String ERROR_PLAYVIEW_NULL = "Play view cannot be null";
@@ -153,7 +153,7 @@ public class AudioWife {
         // if play button itself is null, the whole purpose of AudioWife is
         // defeated.
         if (mPlayButton == null) {
-             throw new IllegalStateException(ERROR_PLAYVIEW_NULL);
+            throw new IllegalStateException(ERROR_PLAYVIEW_NULL);
         }
 
         if (mUri == null) {
@@ -392,6 +392,7 @@ public class AudioWife {
      */
 
     public AudioWife setPlayView( View play ) {
+
         if (play == null) {
             throw new NullPointerException("PlayView cannot be null");
         }
@@ -720,6 +721,7 @@ public class AudioWife {
         View playerUi = inflater.inflate(R.layout.layout_audio, playerContainer);
 
         // init play view
+
         View playView = playerUi.findViewById(R.id.play);
         setPlayView(playView);
 

@@ -16,6 +16,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,6 +25,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.cocosw.bottomsheet.BottomSheet;
 import com.google.android.gcm.GCMRegistrar;
@@ -36,6 +38,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 
 import butterknife.ButterKnife;
@@ -80,21 +84,26 @@ public class MainActivity extends BaseActivity {
             }
         });
 
+        search("");//empty query will show popular music
+
         //GCM Registration
-        GCMRegistrar.checkDevice(this);
-        GCMRegistrar.checkManifest(this);
-        final String regId = GCMRegistrar.getRegistrationId(this);
-        if (regId.equals("")) {
-            GCMRegistrar.register(this, Config.GCM_SENDER_ID);
-        } else {
-            RequestParams params = new RequestParams();
-            params.put("reg_id", regId);
-            MusicApiClient.get(Config.ENDPOINT_API + "reg_id.php", params, new JsonHttpResponseHandler() {
-                @Override
-                public void onSuccess( int statusCode, Header[] headers, JSONObject response ) {
-                    U.l(response.toString());
-                }
-            });
+        try {
+            GCMRegistrar.checkDevice(this);
+            GCMRegistrar.checkManifest(this);
+            final String regId = GCMRegistrar.getRegistrationId(this);
+            if (regId.equals("")) {
+                GCMRegistrar.register(this, Config.GCM_SENDER_ID);
+            } else {
+                RequestParams params = new RequestParams();
+                params.put("reg_id", regId);
+                MusicApiClient.get(Config.ENDPOINT_API + "reg_id.php", params, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess( int statusCode, Header[] headers, JSONObject response ) {
+                        U.l(response.toString());
+                    }
+                });
+            }
+        } catch (Exception e) {
         }
         updateToken();
     }
@@ -106,9 +115,6 @@ public class MainActivity extends BaseActivity {
         mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         if (mSearchView != null) {
             mSearchView.setQueryHint(getString(R.string.search_hint));
-            mSearchView.setFocusable(true);
-            mSearchView.setIconified(false);
-            mSearchView.requestFocusFromTouch();
             mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit( String query ) {
@@ -171,40 +177,73 @@ public class MainActivity extends BaseActivity {
                             @Override
                             public void onItemClick( AdapterView<?> parent, View view, int position, long id ) {
                                 final Audio audio = audioList.get(position);
-                                new BottomSheet.Builder(MainActivity.this).title(audio.getArtist()).sheet(R.menu.audio_actions).listener(new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick( DialogInterface dialog, int which ) {
-                                        switch (which) {
-                                            case R.id.download:
-                                                DownloadManager mgr = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-                                                Uri downloadUri = Uri.parse(audio.getSrc());
-                                                DownloadManager.Request request = new DownloadManager.Request(downloadUri);
+                                final BottomSheet bottomSheet = new BottomSheet.Builder(MainActivity.this)
+                                    .title(audio.getArtist() + " - " + audio.getTitle())
+                                    .sheet(R.menu.audio_actions)
+                                    .listener(new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick( DialogInterface dialog, int which ) {
+                                            switch (which) {
+                                                case R.id.download:
+                                                    DownloadManager mgr = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+                                                    Uri downloadUri = Uri.parse(audio.getSrc());
+                                                    DownloadManager.Request request = new DownloadManager.Request(downloadUri);
 
-                                                if (U.isAboveOfVersion(11))
-                                                    request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                                                    if (U.isAboveOfVersion(11))
+                                                        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 
-                                                request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE)
-                                                    .setDestinationInExternalPublicDir("/AlashovMusic",
-                                                        encodeFilename(audio.getArtist() + " - " + audio.getTitle()) + ".mp3");
-                                                mgr.enqueue(request);
-                                                break;
-                                            case R.id.play:
-                                                playAudio(Uri.parse(audio.getSrc()));
-                                                break;
-                                            case R.id.copy:
-                                                if (! U.isAboveOfVersion(11)) {
-                                                    android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                                                    clipboard.setText(audio.getSrc());
-                                                } else {
-                                                    android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                                                    android.content.ClipData clip = android.content.ClipData.newPlainText("Link", audio.getSrc());
-                                                    clipboard.setPrimaryClip(clip);
-                                                    U.showCenteredToast(MainActivity.this, R.string.audio_copied);
-                                                }
-                                                break;
+                                                    request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE)
+                                                        .setDestinationInExternalPublicDir("/AlashovMusic",
+                                                            encodeFilename(audio.getArtist() + " - " + audio.getTitle()) + ".mp3");
+                                                    mgr.enqueue(request);
+                                                    break;
+                                                case R.id.play:
+                                                    playAudio(audio);
+                                                    break;
+                                                case R.id.copy:
+                                                    if (! U.isAboveOfVersion(11)) {
+                                                        android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                                                        clipboard.setText(audio.getSrc());
+                                                    } else {
+                                                        android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                                                        android.content.ClipData clip = android.content.ClipData.newPlainText("Link", audio.getSrc());
+                                                        clipboard.setPrimaryClip(clip);
+                                                        U.showCenteredToast(MainActivity.this, R.string.audio_copied);
+                                                    }
+                                                    break;
+                                            }
                                         }
+                                    }).show();
+
+
+                                //If file size already set, show it
+                                if (audio.getBytes() > 1) {
+                                    setSizeAndBitrate(bottomSheet, audio);
+                                } else {
+                                    try {
+                                        new Thread(new Runnable() {
+                                            @Override public void run() {
+                                                try {
+                                                    URLConnection ucon;
+                                                    final URL uri = new URL(audio.getSrc());
+                                                    ucon = uri.openConnection();
+                                                    ucon.connect();
+                                                    final long bytes = Long.parseLong(ucon.getHeaderField("content-length"));
+                                                    runOnUiThread(new Runnable() {
+                                                        @Override public void run() {
+                                                            audio.setBytes(bytes);
+                                                            setSizeAndBitrate(bottomSheet, audio);
+                                                        }
+                                                    });
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        }).start();
+                                    } catch (final Exception e) {
+                                        e.printStackTrace();
                                     }
-                                }).show();
+                                }
                             }
                         });
 
@@ -254,6 +293,28 @@ public class MainActivity extends BaseActivity {
         return string;
     }
 
+
+    /**
+     * Set file size and audio bitrate to download menu
+     *
+     * @param bottomSheet menu where located download button
+     * @param audio       file for get info
+     */
+    private void setSizeAndBitrate( BottomSheet bottomSheet, Audio audio ) {
+        MenuItem menuItem = bottomSheet.getMenu().findItem(R.id.download);
+        long bitrate = audio.getBytes() / audio.getDuration() / 120;
+        menuItem.setTitle(menuItem.getTitle() + " (" + humanReadableByteCount(audio.getBytes(), false) + " ~ " + bitrate + " kbps)");
+        bottomSheet.invalidate();
+    }
+
+    public static String humanReadableByteCount( long bytes, boolean si ) {
+        int unit = si ? 1000 : 1024;
+        if (bytes < unit) return bytes + " B";
+        int exp = (int) (Math.log(bytes) / Math.log(unit));
+        String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + "";
+        return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
+    }
+
     /**
      * Shows error by given error type
      *
@@ -300,9 +361,10 @@ public class MainActivity extends BaseActivity {
     }
 
 
-    public void playAudio( Uri uri ) {
-        LinearLayout rootView = new LinearLayout(this);
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+    public void playAudio( final Audio audio ) {
+        final LinearLayout rootView = new LinearLayout(this);
+        ContextThemeWrapper contextThemeWrapper = new ContextThemeWrapper(this, R.style.Base_Theme_AppCompat_Light_Dialog);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(contextThemeWrapper);
         alertDialogBuilder.setView(rootView);
         final AlertDialog alertDialog = alertDialogBuilder.create();
 
@@ -317,12 +379,15 @@ public class MainActivity extends BaseActivity {
             @Override public void onPrepared( MediaPlayer mediaPlayer ) {
                 mMediaPlayer = mediaPlayer;
                 alertDialog.show();
+                TextView nameView = (TextView) rootView.findViewById(R.id.name);
+                if (nameView != null)
+                    nameView.setText(audio.getArtist() + " - " + audio.getTitle());
             }
 
             @Override public void onError( Exception e ) {
                 U.showCenteredToast(MainActivity.this, R.string.exception);
             }
-        }).execute(uri);
+        }).execute(Uri.parse(audio.getSrc()));
     }
 
     /**

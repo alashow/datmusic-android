@@ -23,19 +23,24 @@
         android:layout_toStartOf="@+id/badges"
         android:textColor="@color/text_color"
         tools:text="Martin Garrix - Animals"/>
+
     <LinearLayout
         android:id="@+id/badges"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="4dp"
+        android:layout_marginStart="4dp"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true">
+
         <ImageView
             android:id="@+id/play"
             android:layout_width="35dp"
             android:layout_height="20dp"
             android:src="@drawable/ic_play"
             android:background="@drawable/badge_background"/>
+
         <Button
             android:id="@+id/duration"
             android:layout_width="35dp"

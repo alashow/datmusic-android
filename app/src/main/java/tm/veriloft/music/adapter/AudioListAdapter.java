@@ -6,7 +6,6 @@
 package tm.veriloft.music.adapter;
 
 import android.content.Context;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,7 +77,7 @@ public class AudioListAdapter extends BaseAdapter {
 
         viewHolder.playButton.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick( View v ) {
-                ((MainActivity)context).playAudio(Uri.parse(audio.getSrc()));
+                ((MainActivity) context).playAudio(audio);
             }
         });
 
