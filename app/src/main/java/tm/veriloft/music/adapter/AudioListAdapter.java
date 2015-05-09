@@ -6,6 +6,7 @@
 package tm.veriloft.music.adapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 
 import tm.veriloft.music.R;
 import tm.veriloft.music.model.Audio;
+import tm.veriloft.music.ui.MainActivity;
 
 
 /**
@@ -29,7 +31,7 @@ public class AudioListAdapter extends BaseAdapter {
     private LayoutInflater inflater;
 
     /**
-     * @param _pikirImagesList list of array
+     * @param audioList list of array
      */
     public AudioListAdapter( Context _context, ArrayList<Audio> audioList ) {
         this.audioList = audioList;
@@ -61,7 +63,7 @@ public class AudioListAdapter extends BaseAdapter {
     @Override
     public View getView( final int position, View convertView, ViewGroup parent ) {
         ViewHolder viewHolder;
-        Audio audio = audioList.get(position);
+        final Audio audio = audioList.get(position);
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.row_audio, null);
             viewHolder = new ViewHolder();
@@ -74,6 +76,12 @@ public class AudioListAdapter extends BaseAdapter {
         viewHolder.name.setText(audio.getArtist() + " - " + audio.getTitle());
         viewHolder.duration.setText(secondsToString(audio.getDuration()));
 
+        viewHolder.playButton.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick( View v ) {
+                ((MainActivity)context).playAudio(Uri.parse(audio.getSrc()));
+            }
+        });
+
         return convertView;
     }
 
@@ -83,7 +91,12 @@ public class AudioListAdapter extends BaseAdapter {
         View playButton;
     }
 
-    private String secondsToString( int pTime ) {
-        return String.format("%02d:%02d", pTime / 60, pTime % 60);
+    /**
+     *
+     * @param seconds seconds to format
+     * @return converted to mm:ss duration
+     */
+    private String secondsToString( int seconds ) {
+        return String.format("%02d:%02d", seconds / 60, seconds % 60);
     }
 }

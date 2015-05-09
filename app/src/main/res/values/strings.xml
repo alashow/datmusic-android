@@ -35,4 +35,10 @@
     <!--MainActivity-->
     <string name="error_token">Token ýalňyşlygy. Täzeden synanşyň</string>
     <string name="error_not_found">Beýle aýdym tapylmady</string>
+
+    <!--AudioActions-->
+    <string name="audio_download">Indir</string>
+    <string name="audio_play">Diňle</string>
+    <string name="audio_copy">Linki nusgala</string>
+    <string name="audio_copied">Link nusgalandy</string>
 </resources>

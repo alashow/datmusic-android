@@ -48,6 +48,4 @@
         </receiver>
         <service android:name=".gcm.PushNotificationsService"/>
     </application>
-
-
 </manifest>

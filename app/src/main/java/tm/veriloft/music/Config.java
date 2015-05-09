@@ -22,9 +22,14 @@ public class Config {
     public static final String EXTRA_NAME = "tm.veriloft.music.NAME";
 
     //VK Search Api Config
-    public static String VK_CONFIG_ACCESS_TOKEN = "4d45c6ebef3b05a910071c948bb1374015c9e47ad953fba2f631d8bc1fca425a0a0bffcb4955d3af90c07";
+    public static String VK_CONFIG_ACCESS_TOKEN = "3d66c01979d977874ab8fe42166c8963fe496b52774b07d4edd7d35a2c29565424b3a0a381bd8c791715b";
     public static String VK_CONFIG_SORT = "2";
     public static String VK_CONFIG_AUTOCOMPLETE = "1";
-    public static String VK_CONFIG_COUNT = "1000";
+    public static String VK_CONFIG_COUNT = "300";
+    public static String VK_CONFIG_VERSION= "5.31";
+
+    //LastFm Artist Search Api Config
+    public static String LASTFM_CONFIG_ACCESS_TOKEN = "8b7af513f19366e766af02c85879b0ac";
+
 
 }

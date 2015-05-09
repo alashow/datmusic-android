@@ -9,6 +9,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants"
     android:padding="17dp">
 
     <TextView
@@ -29,14 +30,12 @@
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true">
-
         <ImageView
             android:id="@+id/play"
             android:layout_width="35dp"
             android:layout_height="20dp"
             android:src="@drawable/ic_play"
             android:background="@drawable/badge_background"/>
-
         <Button
             android:id="@+id/duration"
             android:layout_width="35dp"
@@ -47,8 +46,5 @@
             android:textColor="@color/white"
             android:textSize="@dimen/text_small"
             tools:text="3:05"/>
-
     </LinearLayout>
-
-
 </RelativeLayout>

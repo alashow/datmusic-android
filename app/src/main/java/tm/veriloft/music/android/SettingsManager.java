@@ -8,6 +8,8 @@ package tm.veriloft.music.android;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import tm.veriloft.music.Config;
+
 /**
  * Created by alashov on 20/12/14.
  */
@@ -47,7 +49,7 @@ public class SettingsManager {
 
 
     public String getVkToken() {
-        return getPreferences().getString(KEY_VK_TOKEN, "");
+        return getPreferences().getString(KEY_VK_TOKEN, Config.VK_CONFIG_ACCESS_TOKEN);
     }
 
     public void setVkToken( String token ) {
@@ -55,11 +57,11 @@ public class SettingsManager {
     }
 
     public String getLastFmToken() {
-        return getPreferences().getString(KEY_VK_TOKEN, "");
+        return getPreferences().getString(KEY_LASTFM_TOKEN, Config.LASTFM_CONFIG_ACCESS_TOKEN);
     }
 
     public void setLastFmToken( String token ) {
-        getPreferences().edit().putString(KEY_VK_TOKEN, token).commit();
+        getPreferences().edit().putString(KEY_LASTFM_TOKEN, token).commit();
     }
 
     /**
