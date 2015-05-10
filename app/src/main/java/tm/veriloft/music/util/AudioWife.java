@@ -149,13 +149,6 @@ public class AudioWife {
      * **
      */
     public void play() {
-
-        // if play button itself is null, the whole purpose of AudioWife is
-        // defeated.
-        if (mPlayButton == null) {
-            throw new IllegalStateException(ERROR_PLAYVIEW_NULL);
-        }
-
         if (mUri == null) {
             throw new IllegalStateException("Uri cannot be null. Call init() before calling this method");
         }
