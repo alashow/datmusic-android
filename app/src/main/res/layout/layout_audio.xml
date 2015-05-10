@@ -28,7 +28,6 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical">
 
-
         <ImageView
             android:id="@+id/play"
             android:layout_width="match_parent"

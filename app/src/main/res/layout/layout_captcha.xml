@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ Copyright (c) 2015  Alashov Berkeli
+  ~ It is licensed under GNU GPL v. 2 or later. For full terms see the file LICENSE.
+  -->
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="20dp">
+
+    <ImageView
+        android:id="@+id/captcha"
+        android:layout_width="115dp"
+        android:layout_height="44dp"
+        android:layout_centerHorizontal="true"
+        tools:src="@drawable/badge_background"/>
+
+    <EditText
+        android:id="@+id/key"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/captcha_hint"
+        android:layout_below="@+id/captcha"
+        android:layout_marginTop="20dp"
+        android:maxLines="1"
+        style="@style/EditText"/>
+
+</RelativeLayout>

@@ -35,10 +35,17 @@
     <!--MainActivity-->
     <string name="error_token">Token ýalňyşlygy. Täzeden synanşyň</string>
     <string name="error_not_found">Beýle aýdym tapylmady</string>
+    <string name="error_captcha">Captcha gerek</string>
 
     <!--AudioActions-->
     <string name="audio_download">Indir</string>
     <string name="audio_play">Diňle</string>
     <string name="audio_copy">Linki nusgala</string>
     <string name="audio_copied">Link nusgalandy</string>
+
+    <!--Captcha-->
+    <string name="captcha_submit">Iber</string>
+    <string name="captcha_reload">Täzele</string>
+    <string name="captcha_hint">Suratdaky harplary ýazyň</string>
+    <string name="captcha_empty">Birzatlar ýazyň</string>
 </resources>

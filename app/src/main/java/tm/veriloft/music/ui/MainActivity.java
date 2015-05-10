@@ -16,6 +16,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
+import android.text.TextUtils;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,6 +24,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -32,6 +36,7 @@ import com.google.android.gcm.GCMRegistrar;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.pnikosis.materialishprogress.ProgressWheel;
+import com.squareup.picasso.Picasso;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
@@ -133,6 +138,10 @@ public class MainActivity extends BaseActivity {
     }
 
     private void search( String query ) {
+        search(query, - 1, null);
+    }
+
+    private void search( String query, long captchaSid, String captchaKey ) {
         clearList();//clearing old data
         oldQuery = query;
         RequestParams params = new RequestParams();
@@ -142,6 +151,11 @@ public class MainActivity extends BaseActivity {
         params.put("autocomplete", Config.VK_CONFIG_AUTOCOMPLETE);
         params.put("sort", Config.VK_CONFIG_SORT);
         params.put("count", Config.VK_CONFIG_COUNT);
+
+        if (captchaSid > 1) {
+            params.put("captcha_sid", captchaSid);
+            params.put("captcha_key", captchaKey);
+        }
 
         MusicApiClient.get(Config.VK_AUDIO_SEARCH, params, new JsonHttpResponseHandler() {
             @Override public void onStart() {
@@ -158,10 +172,20 @@ public class MainActivity extends BaseActivity {
                         JSONObject errorObject = response.getJSONObject("error");
                         int errorCode = errorObject.getInt("error_code");
                         //showing error
-                        if (errorCode == 5) {
-                            showError("token");
-                        } else {
-                            showError(errorObject.getString("error_msg"));
+                        switch (errorCode) {
+                            case 5:
+                                showError("token");
+                                break;
+                            case 6: // "Too many requests per second" error, retry
+                                search(oldQuery);
+                                break;
+                            case 14:
+                                showCaptcha(errorObject.getString("captcha_img"), errorObject.getLong("captcha_sid"));
+                                showError("captcha");
+                                break;
+                            default:
+                                showError(errorObject.getString("error_msg"));
+                                break;
                         }
                         return;
                     }
@@ -322,15 +346,23 @@ public class MainActivity extends BaseActivity {
      */
     private void showError( String error ) {
         U.showView(errorView);
-        if (error.equals("network")) {
-            errorView.setSubtitle(R.string.network_error);
-        } else if (error.equals("token")) {
-            updateToken();//updating tokens quickly
-            errorView.setSubtitle(R.string.error_token);
-        } else if (error.equals("notFound")) {
-            errorView.setSubtitle(R.string.error_not_found);
-        } else {
-            errorView.setSubtitle(getString(R.string.error) + ": " + error);
+        switch (error) {
+            case "network":
+                errorView.setSubtitle(R.string.network_error);
+                break;
+            case "token":
+                updateToken();//updating tokens quickly
+                errorView.setSubtitle(R.string.error_token);
+                break;
+            case "notFound":
+                errorView.setSubtitle(R.string.error_not_found);
+                break;
+            case "captcha":
+                errorView.setSubtitle(R.string.error_captcha);
+                break;
+            default:
+                errorView.setSubtitle(getString(R.string.error) + ": " + error);
+                break;
         }
     }
 
@@ -358,6 +390,64 @@ public class MainActivity extends BaseActivity {
         mListView.setAdapter(null);
         audioList.clear();
         mListView.setFastScrollEnabled(false);
+    }
+
+    /**
+     * stop playing audio
+     */
+    private void resetPlayer() {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.stop();
+            mMediaPlayer.reset();
+            mMediaPlayer.release();
+            mMediaPlayer = null;
+        }
+    }
+
+    private void showCaptcha( final String captchaImage, final long captchaSid ) {
+        View rootView = layoutInflater.inflate(R.layout.layout_captcha, null);
+        final ImageView captchaImageView = (ImageView) rootView.findViewById(R.id.captcha);
+        final EditText captchaKeyView = (EditText) rootView.findViewById(R.id.key);
+
+        Picasso.with(this)
+            .load(captchaImage + "&v=" + System.currentTimeMillis())
+            .placeholder(U.imagePlaceholder())
+            .into(captchaImageView);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(rootView);
+        builder.setPositiveButton(R.string.captcha_submit, null);
+        builder.setNegativeButton(R.string.captcha_reload, null);
+
+        final AlertDialog alertDialog = builder.create();
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override public void onShow( DialogInterface dialog ) {
+                Button submitButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                Button reloadButton = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+
+                submitButton.setOnClickListener(new View.OnClickListener() {
+                    @Override public void onClick( View v ) {
+                        String captchaKey = captchaKeyView.getText().toString();
+                        if (TextUtils.getTrimmedLength(captchaKey) >= 1) {
+                            search(oldQuery, captchaSid, captchaKey);
+                            alertDialog.dismiss();
+                        } else {
+                            U.showCenteredToast(MainActivity.this, R.string.captcha_empty);
+                        }
+                    }
+                });
+
+                reloadButton.setOnClickListener(new View.OnClickListener() {
+                    @Override public void onClick( View v ) {
+                        Picasso.with(MainActivity.this)
+                            .load(captchaImage + "&v=" + System.currentTimeMillis())
+                            .placeholder(U.imagePlaceholder())
+                            .into(captchaImageView);
+                    }
+                });
+            }
+        });
+        alertDialog.show();
     }
 
 
@@ -388,18 +478,6 @@ public class MainActivity extends BaseActivity {
                 U.showCenteredToast(MainActivity.this, R.string.exception);
             }
         }).execute(Uri.parse(audio.getSrc()));
-    }
-
-    /**
-     * stop playing audio
-     */
-    public void resetPlayer() {
-        if (mMediaPlayer != null) {
-            mMediaPlayer.stop();
-            mMediaPlayer.reset();
-            mMediaPlayer.release();
-            mMediaPlayer = null;
-        }
     }
 
     /**
