@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.view.ContextThemeWrapper;
@@ -71,6 +72,7 @@ public class MainActivity extends BaseActivity {
     private SearchView mSearchView;
     private String oldQuery = "";
 
+    @InjectView(R.id.refreshLayout) SwipeRefreshLayout swipeRefreshLayout;
     @InjectView(R.id.listView) ListView mListView;
     @InjectView(R.id.progress) ProgressWheel progressBar;
     @InjectView(R.id.errorView) ErrorView errorView;
@@ -82,6 +84,12 @@ public class MainActivity extends BaseActivity {
         ButterKnife.inject(this);
         layoutInflater = LayoutInflater.from(this);
 
+        U.setColorScheme(swipeRefreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override public void onRefresh() {
+                search(oldQuery, true);
+            }
+        });
         errorView.setOnRetryListener(new ErrorView.RetryListener() {
             @Override public void onRetry() {
                 U.hideView(errorView);
@@ -89,7 +97,7 @@ public class MainActivity extends BaseActivity {
             }
         });
 
-        search("");//empty query will show popular music
+        search("");//empty query will return popular music
 
         //GCM Registration
         try {
@@ -137,12 +145,20 @@ public class MainActivity extends BaseActivity {
         return true;
     }
 
+
     private void search( String query ) {
-        search(query, - 1, null);
+        search(query, false, - 1, null);
+    }
+
+    private void search( String query, boolean refresh ) {
+        search(query, refresh, - 1, null);
     }
 
     private void search( String query, long captchaSid, String captchaKey ) {
-        clearList();//clearing old data
+        search(query, false, captchaSid, captchaKey);
+    }
+
+    private void search( String query, final boolean refresh, long captchaSid, String captchaKey ) {
         oldQuery = query;
         RequestParams params = new RequestParams();
 
@@ -157,16 +173,23 @@ public class MainActivity extends BaseActivity {
             params.put("captcha_key", captchaKey);
         }
 
-        MusicApiClient.get(Config.VK_AUDIO_SEARCH, params, new JsonHttpResponseHandler() {
+        //change search method to getPopular, if query empty. get popular music.
+        String url = (TextUtils.getTrimmedLength(query) < 1) ? Config.VK_AUDIO_SEARCH.replaceAll("search", "getPopular") : Config.VK_AUDIO_SEARCH;
+
+        MusicApiClient.get(url, params, new JsonHttpResponseHandler() {
             @Override public void onStart() {
-                U.hideView(mListView);
                 U.hideView(errorView);
-                U.showView(progressBar);
+                if (refresh) swipeRefreshLayout.setRefreshing(true);
+                else {
+                    U.showView(progressBar);
+                    U.hideView(mListView);
+                }
             }
 
             @Override
             public void onSuccess( int statusCode, Header[] headers, JSONObject response ) {
                 try {
+                    clearList();//clearing old data
                     if (response.has("error")) { //if we have error
                         //Parsing errors
                         JSONObject errorObject = response.getJSONObject("error");
@@ -295,7 +318,8 @@ public class MainActivity extends BaseActivity {
 
             @Override public void onFinish() {
                 U.showView(mListView);
-                U.hideView(progressBar);
+                if (refresh) swipeRefreshLayout.setRefreshing(false);
+                else U.hideView(progressBar);
             }
 
             @Override public void onProgress( int bytesWritten, int totalSize ) {
@@ -420,6 +444,7 @@ public class MainActivity extends BaseActivity {
         builder.setNegativeButton(R.string.captcha_reload, null);
 
         final AlertDialog alertDialog = builder.create();
+        alertDialog.getWindow().getAttributes().windowAnimations = R.style.CaptchaDialogAnimation;
         alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override public void onShow( DialogInterface dialog ) {
                 Button submitButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);

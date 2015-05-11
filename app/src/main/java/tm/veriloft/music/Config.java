@@ -16,7 +16,7 @@ public class Config {
     //Activity Tags
     public static String ACTIVITY_TAG_MAIN = "main";
     public static String ACTIVITY_TAG_LOGOUT = "logout";
-    public static String ACTIVITY_TAG_SETTINGS = "settings";
+    public static String ACTIVITY_TAG_PREFERENCES = "preferences";
 
     //Activity Extras
     public static final String EXTRA_NAME = "tm.veriloft.music.NAME";

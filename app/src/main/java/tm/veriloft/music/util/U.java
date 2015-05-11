@@ -279,7 +279,7 @@ public class U {
      * @param _s swprl
      */
     public static void setColorScheme( SwipeRefreshLayout _s ) {
-        _s.setColorSchemeResources(R.color.green, R.color.blue, R.color.red, R.color.primary);
+        _s.setColorSchemeResources(R.color.primary, R.color.sea_green, R.color.yellow, R.color.red);
     }
 
 

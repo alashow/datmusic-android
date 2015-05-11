@@ -24,4 +24,10 @@ public class MenuActivity {
         mIconResource = _icon;
         mActivityTag = _activityTag;
     }
+
+    public MenuActivity( String _title, String _activityTag ) {
+        mTitle = _title;
+        mIconResource = -1;
+        mActivityTag = _activityTag;
+    }
 }

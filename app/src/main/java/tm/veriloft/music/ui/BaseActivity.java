@@ -100,7 +100,8 @@ public abstract class BaseActivity extends ActionBarActivity {
         //Adding items menu
         final List<Object> menuItems = new ArrayList<>();
         menuItems.add(new MenuActivity(getString(R.string.app_name), R.mipmap.ic_launcher, Config.ACTIVITY_TAG_MAIN));
-        menuItems.add(new MenuActivity(getString(R.string.logout), R.mipmap.ic_launcher, Config.ACTIVITY_TAG_LOGOUT));
+        menuItems.add(new MenuActivity(getString(R.string.preferences_title), R.mipmap.ic_launcher, Config.ACTIVITY_TAG_PREFERENCES));
+        menuItems.add(new MenuActivity(getString(R.string.web_version), R.mipmap.ic_launcher, "web"));
 
         final MenuAdapter menuAdapter = new MenuAdapter(this, menuItems);
         mDrawerList.setAdapter(menuAdapter);

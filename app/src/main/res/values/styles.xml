@@ -42,4 +42,9 @@
     <style name="ButtonRed" parent="Button">
         <item name="android:background">@drawable/button_background_danger</item>
     </style>
+
+    <style name="CaptchaDialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_out_top</item>
+        <item name="android:windowExitAnimation">@anim/slide_in_top</item>
+    </style>
 </resources>

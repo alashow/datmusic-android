@@ -84,10 +84,13 @@ public class MenuAdapter extends BaseAdapter {
             itemTitle.setText(((MenuActivity) menuItem).mTitle);
 
             //Setting icon menu item
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                itemTitle.setCompoundDrawablesRelativeWithIntrinsicBounds(((MenuActivity) menuItem).mIconResource, 0, 0, 0);
-            } else {
-                itemTitle.setCompoundDrawablesWithIntrinsicBounds(((MenuActivity) menuItem).mIconResource, 0, 0, 0);
+            int iconResource = ((MenuActivity) menuItem).mIconResource;
+            if (iconResource > 0) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                    itemTitle.setCompoundDrawablesRelativeWithIntrinsicBounds(iconResource, 0, 0, 0);
+                } else {
+                    itemTitle.setCompoundDrawablesWithIntrinsicBounds(iconResource, 0, 0, 0);
+                }
             }
         }
         return view;

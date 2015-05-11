@@ -27,10 +27,8 @@
     <string name="logout">Çykyş</string>
     <string name="confirm">Tassyklaň</string>
     <string name="manat">manat</string>
+    <string name="web_version">Web wersiýasy</string>
     <string name="powered_by"><![CDATA[Powered by <a href=\'http://alashov.com\'>Alashov</a>]]></string>
-
-    <!-- Activity titles -->
-    <string name="title_activity_settings">Sazlamalar</string>
 
     <!--MainActivity-->
     <string name="error_token">Token ýalňyşlygy. Täzeden synanşyň</string>
@@ -48,4 +46,7 @@
     <string name="captcha_reload">Täzele</string>
     <string name="captcha_hint">Suratdaky harplary ýazyň</string>
     <string name="captcha_empty">Birzatlar ýazyň</string>
+
+    <!--Preferences-->
+    <string name="preferences_title">Sazlamalar</string>
 </resources>
