@@ -14,6 +14,10 @@
         android:title="@string/audio_play"
         android:icon="@drawable/ic_play_gray"/>
     <item
+        android:id="@+id/share"
+        android:title="@string/audio_share"
+        android:icon="@drawable/ic_share"/>
+    <item
         android:id="@+id/copy"
         android:title="@string/audio_copy"
         android:icon="@drawable/ic_copy"/>

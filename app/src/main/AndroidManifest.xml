@@ -36,6 +36,10 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/search"/>
         </activity>
+
+        <activity
+            android:name=".ui.PreferencesActivity"
+            android:label="@string/preferences_title"/>
         <receiver
             android:name=".gcm.GCMReceiver"
             android:permission="com.google.android.c2dm.permission.SEND">

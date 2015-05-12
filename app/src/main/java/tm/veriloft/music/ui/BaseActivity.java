@@ -5,7 +5,9 @@
 
 package tm.veriloft.music.ui;
 
+import android.content.Intent;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.LayoutRes;
@@ -35,6 +37,7 @@ import tm.veriloft.music.adapter.MenuAdapter;
 import tm.veriloft.music.android.IntentManager;
 import tm.veriloft.music.android.SettingsManager;
 import tm.veriloft.music.model.MenuActivity;
+import tm.veriloft.music.util.U;
 
 
 public abstract class BaseActivity extends ActionBarActivity {
@@ -64,6 +67,7 @@ public abstract class BaseActivity extends ActionBarActivity {
 
         poweredBy.setText(Html.fromHtml(getString(R.string.powered_by)));
         poweredBy.setMovementMethod(LinkMovementMethod.getInstance());
+        U.stripUnderlines(poweredBy);
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.app_name, R.string.app_name) {
             @Override
@@ -100,8 +104,8 @@ public abstract class BaseActivity extends ActionBarActivity {
         //Adding items menu
         final List<Object> menuItems = new ArrayList<>();
         menuItems.add(new MenuActivity(getString(R.string.app_name), R.mipmap.ic_launcher, Config.ACTIVITY_TAG_MAIN));
-        menuItems.add(new MenuActivity(getString(R.string.preferences_title), R.mipmap.ic_launcher, Config.ACTIVITY_TAG_PREFERENCES));
-        menuItems.add(new MenuActivity(getString(R.string.web_version), R.mipmap.ic_launcher, "web"));
+        menuItems.add(new MenuActivity(getString(R.string.preferences_title), R.mipmap.ic_settings, Config.ACTIVITY_TAG_PREFERENCES));
+        menuItems.add(new MenuActivity(getString(R.string.web_version), R.mipmap.ic_web, "web"));
 
         final MenuAdapter menuAdapter = new MenuAdapter(this, menuItems);
         mDrawerList.setAdapter(menuAdapter);
@@ -161,10 +165,13 @@ public abstract class BaseActivity extends ActionBarActivity {
      */
     private void changeActivity( String _activityTag ) {
         if (! getActivityTag().equals(_activityTag)) {
-            if (_activityTag.equals(Config.ACTIVITY_TAG_MAIN))
-                IntentManager.with(this).openMain();
-            else if (_activityTag.equals(Config.ACTIVITY_TAG_LOGOUT)) {
-                //TODO : close app
+            if (_activityTag.equals(Config.ACTIVITY_TAG_MAIN)){
+                IntentManager.with(this).main();
+            } else if (_activityTag.equals(Config.ACTIVITY_TAG_PREFERENCES)) {
+                IntentManager.with(this).preferences();
+            } else if (_activityTag.equals("web")) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://alashov.com/music"));
+                startActivity(intent);
             }
         }
     }

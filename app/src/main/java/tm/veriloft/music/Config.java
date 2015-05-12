@@ -23,9 +23,9 @@ public class Config {
 
     //VK Search Api Config
     public static String VK_CONFIG_ACCESS_TOKEN = "3d66c01979d977874ab8fe42166c8963fe496b52774b07d4edd7d35a2c29565424b3a0a381bd8c791715b";
-    public static String VK_CONFIG_SORT = "2";
     public static String VK_CONFIG_AUTOCOMPLETE = "1";
     public static String VK_CONFIG_COUNT = "300";
+    public static String VK_CONFIG_SORT = "2";
     public static String VK_CONFIG_VERSION= "5.31";
 
     //LastFm Artist Search Api Config

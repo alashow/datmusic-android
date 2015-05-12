@@ -10,10 +10,14 @@ import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.SearchView;
@@ -72,6 +76,12 @@ public class MainActivity extends BaseActivity {
     private SearchView mSearchView;
     private String oldQuery = "";
 
+    //Preferences
+    private boolean CONFIG_POPULAR_START;
+    private String CONFIG_SORT;
+    private String CONFIG_COUNT;
+    private String CONFIG_PERFORMER_ONLY;
+
     @InjectView(R.id.refreshLayout) SwipeRefreshLayout swipeRefreshLayout;
     @InjectView(R.id.listView) ListView mListView;
     @InjectView(R.id.progress) ProgressWheel progressBar;
@@ -97,7 +107,10 @@ public class MainActivity extends BaseActivity {
             }
         });
 
-        search("");//empty query will return popular music
+        getConfig();
+
+        if (CONFIG_POPULAR_START)
+            search("");//empty query will return popular music
 
         //GCM Registration
         try {
@@ -122,12 +135,25 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
+    protected void onResume() {
+        getConfig();
+        super.onResume();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu( Menu menu ) {
         getMenuInflater().inflate(R.menu.main, menu);
         MenuItem searchItem = menu.findItem(R.id.search);
         mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         if (mSearchView != null) {
             mSearchView.setQueryHint(getString(R.string.search_hint));
+
+            if (!CONFIG_POPULAR_START){
+                mSearchView.setFocusable(true);
+                mSearchView.setIconified(false);
+                mSearchView.requestFocusFromTouch();
+            }
+
             mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit( String query ) {
@@ -165,8 +191,9 @@ public class MainActivity extends BaseActivity {
         params.put("q", query);
         params.put("access_token", settingsManager.getVkToken());
         params.put("autocomplete", Config.VK_CONFIG_AUTOCOMPLETE);
-        params.put("sort", Config.VK_CONFIG_SORT);
-        params.put("count", Config.VK_CONFIG_COUNT);
+        params.put("sort", CONFIG_SORT);
+        params.put("count", CONFIG_COUNT);
+        params.put("performer_only", CONFIG_PERFORMER_ONLY);
 
         if (captchaSid > 1) {
             params.put("captcha_sid", captchaSid);
@@ -248,16 +275,24 @@ public class MainActivity extends BaseActivity {
                                                     playAudio(audio);
                                                     break;
                                                 case R.id.copy:
+                                                    String link = "http://alashov.com/music/download.php?audio_id=" + audio.getOwnerId() + "_" + audio.getId();
                                                     if (! U.isAboveOfVersion(11)) {
                                                         android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                                                        clipboard.setText(audio.getSrc());
+                                                        clipboard.setText(link);
                                                     } else {
                                                         android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                                                        android.content.ClipData clip = android.content.ClipData.newPlainText("Link", audio.getSrc());
+                                                        android.content.ClipData clip = android.content.ClipData.newPlainText("Link", link);
                                                         clipboard.setPrimaryClip(clip);
                                                         U.showCenteredToast(MainActivity.this, R.string.audio_copied);
                                                     }
                                                     break;
+                                                case R.id.share:
+                                                    String shareText = "Heý! Şu aýdymy diňlemegi maslahat berýärin! \n http://alashov.com/music/download.php?audio_id=" + audio.getOwnerId() + "_" + audio.getId();
+                                                    Intent sendIntent = new Intent();
+                                                    sendIntent.setAction(Intent.ACTION_SEND);
+                                                    sendIntent.putExtra(Intent.EXTRA_TEXT, shareText);
+                                                    sendIntent.setType("text/plain");
+                                                    startActivity(sendIntent);
                                             }
                                         }
                                     }).show();
@@ -294,6 +329,8 @@ public class MainActivity extends BaseActivity {
                             }
                         });
 
+                        if (refresh) swipeRefreshLayout.setRefreshing(false);
+                        else U.hideView(progressBar);
                     } else showError("notFound");
                 } catch (Exception e) {
                     U.showCenteredToast(MainActivity.this, R.string.exception);
@@ -475,6 +512,18 @@ public class MainActivity extends BaseActivity {
         alertDialog.show();
     }
 
+    private void getConfig(){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        CONFIG_POPULAR_START = sharedPreferences.getBoolean("popularStart", true);
+        CONFIG_COUNT = sharedPreferences.getString("searchCount", Config.VK_CONFIG_COUNT);
+        CONFIG_SORT = sharedPreferences.getString("searchSort", Config.VK_CONFIG_SORT);
+        CONFIG_PERFORMER_ONLY = sharedPreferences.getString("searchSort", "0");
+    }
+
+    @Override public void onConfigurationChanged( Configuration newConfig ) {
+        getConfig();
+        super.onConfigurationChanged(newConfig);
+    }
 
     public void playAudio( final Audio audio ) {
         final LinearLayout rootView = new LinearLayout(this);

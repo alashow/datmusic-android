@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.support.v4.content.IntentCompat;
 
 import tm.veriloft.music.ui.MainActivity;
+import tm.veriloft.music.ui.PreferencesActivity;
 
 /**
  * Intent Manager for starting activities
@@ -63,8 +64,12 @@ public class IntentManager {
     /**
      * Open main activity of app
      */
-    public void openMain() {
+    public void main() {
         openIntentWithClear(new Intent(mContext, MainActivity.class));
+    }
+
+    public void preferences() {
+        open(new Intent(mContext, PreferencesActivity.class));
     }
 
 

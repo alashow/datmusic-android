@@ -9,13 +9,21 @@ android {
         minSdkVersion 9
         targetSdkVersion 22
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
     }
     buildTypes {
         release {
             minifyEnabled false
         }
     }
+}
+
+repositories {
+    mavenLocal()
+    repositories {
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    }
+    mavenCentral()
 }
 
 dependencies {
@@ -27,6 +35,8 @@ dependencies {
     compile 'com.pnikosis:materialish-progress:1.5'
     compile 'com.cocosw:bottomsheet:1.+@aar'
     compile 'com.jakewharton:butterknife:6.1.0'
+
     compile 'com.android.support:support-v4:22.0.0'
     compile 'com.android.support:appcompat-v7:22.0.0'
+    compile 'com.android.support:support-v4-preferencefragment:1.0.0'
 }

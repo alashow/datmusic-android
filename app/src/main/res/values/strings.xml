@@ -38,6 +38,7 @@
     <!--AudioActions-->
     <string name="audio_download">Indir</string>
     <string name="audio_play">Diňle</string>
+    <string name="audio_share">Paýlaş</string>
     <string name="audio_copy">Linki nusgala</string>
     <string name="audio_copied">Link nusgalandy</string>
 
@@ -49,4 +50,46 @@
 
     <!--Preferences-->
     <string name="preferences_title">Sazlamalar</string>
+    <string name="preference_search">Gözleg</string>
+    <string name="preference_search_sort">Sortirowka</string>
+    <string name="preference_search_count">Sany</string>
+    <string name="preference_search_count_description">Her gözlegde iň kän jogap berilmeli aýdymlaryň sany</string>
+    <string name="preference_search_performer_only">Diňe aýdymçynyň ady</string>
+    <string name="preference_search_performer_only_description">Gözlegde diňe aýdymçynyň ady boýunça gözle</string>
+
+    <string name="preferences_other">Başga</string>
+    <string name="preferences_popular_start">Meşhur aýdymlar</string>
+    <string name="preferences_popular_start_description">Programma açylanda meşhur aýdymlary görkez</string>
+
+    <string-array name="searchSort">
+        <!--by date added-->
+        <item>Goşulan wagty boýunça</item>
+        <!--by duration-->
+        <item>Uzynlygy boýunça</item>
+        <!--by popularity-->
+        <item>Meşhurlygy boýunça</item>
+    </string-array>
+
+    <string-array name="searchSortValues">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <string-array name="searchCount"> <!--count = sany-->
+        <item>30 sany</item>
+        <item>50 sany</item>
+        <item>100 sany</item>
+        <item>200 sany</item>
+        <item>300 sany</item>
+    </string-array>
+
+    <string-array name="searchCountValues">
+        <item>30</item>
+        <item>50</item>
+        <item>100</item>
+        <item>200</item>
+        <item>300</item>
+    </string-array>
+
 </resources>
