@@ -530,8 +530,17 @@ public class MainActivity extends BaseActivity {
         ContextThemeWrapper contextThemeWrapper = new ContextThemeWrapper(this, R.style.Base_Theme_AppCompat_Light_Dialog);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(contextThemeWrapper);
         alertDialogBuilder.setView(rootView);
-        final AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialogBuilder.setNegativeButton("Ýap", null);
 
+        final AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.setCanceledOnTouchOutside(false);
+
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override public void onShow( DialogInterface dialog ) {
+                //change flat button color
+                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.primary));
+            }
+        });
         //destroy mediaPlayer when dialog dismissed
         alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override public void onDismiss( DialogInterface dialog ) {
