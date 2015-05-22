@@ -3,12 +3,16 @@ package tm.veriloft.music;/*
  * It is licensed under GNU GPL v. 2 or later. For full terms see the file LICENSE.
  */
 
+import tm.veriloft.music.model.Audio;
+
 public class Config {
     public static final String SERVER = "http://alashov.com/";
     public static final String ENDPOINT_API = SERVER + "music/app/";
     public static final String VK_SERVER = "https://api.vk.com/";
     public static final String VK_AUDIO_SEARCH = VK_SERVER + "method/audio.search";
-    
+
+    public static final String DOWNLOAD_FOLDER = "/AlashovMusic";
+
     public static String GCM_SENDER_ID = "635425098901";
     public static final boolean DEBUG = true;
 
@@ -32,4 +36,7 @@ public class Config {
     public static String LASTFM_CONFIG_ACCESS_TOKEN = "8b7af513f19366e766af02c85879b0ac";
 
 
+    public static String getDownloadAudioLink(Audio audio){
+        return "http://alashov.com/music/download.php?audio_id=" + audio.getOwnerId() + "_" + audio.getId();
+    }
 }

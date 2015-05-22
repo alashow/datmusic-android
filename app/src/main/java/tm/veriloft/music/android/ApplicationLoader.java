@@ -11,13 +11,18 @@ package tm.veriloft.music.android;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Handler;
+import android.preference.PreferenceManager;
+
+import java.util.Locale;
 
 public class ApplicationLoader extends Application {
     public static volatile Context applicationContext = null;
     public static volatile Handler applicationHandler = null;
     private static volatile boolean applicationInited = false;
+    private Locale locale = null;
 
     public static void postInitApplication() {
         if (applicationInited) {
@@ -33,6 +38,18 @@ public class ApplicationLoader extends Application {
         postInitApplication();
         applicationContext = getApplicationContext();
         applicationHandler = new Handler(applicationContext.getMainLooper());
+
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        Configuration config = getBaseContext().getResources().getConfiguration();
+
+        String lang = settings.getString("language", "tk");
+
+        if (! lang.equals("") && ! config.locale.getLanguage().equals(lang)) {
+            locale = new Locale(lang);
+            Locale.setDefault(locale);
+            config.locale = locale;
+            getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
+        }
     }
 
     @Override

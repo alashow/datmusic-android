@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2015  Alashov Berkeli
+  ~ It is licensed under GNU GPL v. 2 or later. For full terms see the file LICENSE.
+  -->
+
+<resources>
+
+    <!--General-->
+    <string name="app_name">Music</string>
+    <string name="exception">Ошибка в программе!</string>
+    <string name="retry">Обновить</string>
+    <string name="error">Ошибка</string>
+    <string name="cancel">Oтменить</string>
+    <string name="loading">Загрузка..</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="network_error">Ошибка сети</string>
+    <string name="unknown_error">Неизвестная ошибка</string>
+    <string name="search">Поиск</string>
+    <string name="search_hint">Поиск</string>
+    <string name="web_version">Веб версия</string>
+    <string name="powered_by"><![CDATA[Powered by <a href=\'http://alashov.com\'>Alashov</a>]]></string>
+
+    <!--MainActivity-->
+    <string name="share_text">Хей! Послушай эту песню! \n</string>
+    <string name="error_token">Ошибка в токене. Попробуйте заново</string>
+    <string name="error_not_found">Не найдено</string>
+    <string name="error_captcha">Требуется ввод кода с картинки</string>
+
+    <!--AudioActions-->
+    <string name="audio_download">Скачать</string>
+    <string name="audio_play">Воспроизвести</string>
+    <string name="audio_share">Поделиться</string>
+    <string name="audio_copy">Скопировать ссылку</string>
+    <string name="audio_copied">Ссылка скопирована</string>
+    <string name="audio_player_close">Закрыть</string>
+
+    <!--Captcha-->
+    <string name="captcha_submit">Отправить</string>
+    <string name="captcha_reload">Обновить</string>
+    <string name="captcha_hint">Напишите буквы</string>
+    <string name="captcha_empty">Капча не может быть пустым</string>
+
+    <!--Preferences-->
+    <string name="preferences_title">Настройки</string>
+    <string name="preferences_language">Язык</string>
+    <string name="preference_search">Поиск</string>
+    <string name="preference_search_sort">Вид сортировки</string>
+    <string name="preference_search_count">Количество</string>
+    <string name="preference_search_count_description">Количество аудиозаписей, информацию о которых необходимо вернуть</string>
+    <string name="preference_search_performer_only">По названию исполнителя</string>
+    <string name="preference_search_performer_only_description">Поиск будет осуществляться только по названию исполнителя</string>
+
+    <string name="preferences_general">Общие</string>
+    <string name="preferences_popular_start">Популярное</string>
+    <string name="preferences_popular_start_description">Показать популярных песен после запуска</string>
+
+    <string-array name="searchSort">
+        <item>По популярности</item>
+        <item>По длительности аудиозаписи</item>
+        <item>По дате добавления</item>
+    </string-array>
+
+    <string-array name="searchSortValues">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <string-array name="searchCount">
+        <item>30 песен</item>
+        <item>50 песен</item>
+        <item>100 песен</item>
+        <item>200 песен</item>
+        <item>300 песен</item>
+    </string-array>
+
+    <string-array name="searchCountValues">
+        <item>30</item>
+        <item>50</item>
+        <item>100</item>
+        <item>200</item>
+        <item>300</item>
+    </string-array>
+
+    <string-array name="languageArray">
+        <item>Türkmen</item>
+        <item>English</item>
+        <item>Русский</item>
+    </string-array>
+
+    <string-array name="languageValues">
+        <item>tk</item>
+        <item>en</item>
+        <item>ru</item>
+    </string-array>
+
+</resources>

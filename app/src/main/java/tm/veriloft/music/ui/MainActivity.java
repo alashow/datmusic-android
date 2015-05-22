@@ -16,7 +16,6 @@ import android.content.res.Configuration;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.view.MenuItemCompat;
@@ -268,7 +267,7 @@ public class MainActivity extends BaseActivity {
                                                         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 
                                                     request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE)
-                                                        .setDestinationInExternalPublicDir("/AlashovMusic",
+                                                        .setDestinationInExternalPublicDir(Config.DOWNLOAD_FOLDER,
                                                             encodeFilename(audio.getArtist() + " - " + audio.getTitle()) + ".mp3");
                                                     mgr.enqueue(request);
                                                     break;
@@ -276,7 +275,7 @@ public class MainActivity extends BaseActivity {
                                                     playAudio(audio);
                                                     break;
                                                 case R.id.copy:
-                                                    String link = "http://alashov.com/music/download.php?audio_id=" + audio.getOwnerId() + "_" + audio.getId();
+                                                    String link = Config.getDownloadAudioLink(audio);
                                                     if (! U.isAboveOfVersion(11)) {
                                                         android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                                                         clipboard.setText(link);
@@ -288,7 +287,7 @@ public class MainActivity extends BaseActivity {
                                                     }
                                                     break;
                                                 case R.id.share:
-                                                    String shareText = "Heý! Şu aýdymy diňlemegi maslahat berýärin! \n http://alashov.com/music/download.php?audio_id=" + audio.getOwnerId() + "_" + audio.getId();
+                                                    String shareText = getString(R.string.share_text) + Config.getDownloadAudioLink(audio);;
                                                     Intent sendIntent = new Intent();
                                                     sendIntent.setAction(Intent.ACTION_SEND);
                                                     sendIntent.putExtra(Intent.EXTRA_TEXT, shareText);
@@ -531,7 +530,7 @@ public class MainActivity extends BaseActivity {
         ContextThemeWrapper contextThemeWrapper = new ContextThemeWrapper(this, R.style.Base_Theme_AppCompat_Light_Dialog);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(contextThemeWrapper);
         alertDialogBuilder.setView(rootView);
-        alertDialogBuilder.setNegativeButton("Ýap", null);
+        alertDialogBuilder.setNegativeButton(R.string.audio_player_close, null);
 
         final AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.setCanceledOnTouchOutside(false);
@@ -579,7 +578,7 @@ public class MainActivity extends BaseActivity {
             this.rootView = rootView;
             this.onPreparedListener = onPreparedListener;
             progressDialog = U.createActionLoading(MainActivity.this);
-            progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Ýap", new DialogInterface.OnClickListener() {
+            progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.audio_player_close), new DialogInterface.OnClickListener() {
                 @Override public void onClick( DialogInterface dialog, int which ) {
                     cancelled = true;
                     progressDialog.dismiss();
