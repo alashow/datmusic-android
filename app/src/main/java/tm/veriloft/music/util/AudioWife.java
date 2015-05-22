@@ -127,7 +127,7 @@ public class AudioWife {
             try {
                 if (mProgressUpdateHandler != null && mMediaPlayer.isPlaying()) {
                     if (! mSeekBar.isPressed())
-                        mSeekBar.setProgress((int) mMediaPlayer.getCurrentPosition());
+                        mSeekBar.setProgress(mMediaPlayer.getCurrentPosition());
                     int currentTime = mMediaPlayer.getCurrentPosition();
                     updatePlaytime(currentTime);
                     updateRuntime(currentTime);
@@ -279,8 +279,6 @@ public class AudioWife {
         playbackStr.append(String.format("%02d:%02d", TimeUnit.MILLISECONDS.toMinutes((long) currentTime), TimeUnit.MILLISECONDS.toSeconds((long) currentTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) currentTime))));
 
         mRunTime.setText(playbackStr);
-
-        // DebugLog.i(currentTime + " / " + totalDuration);
     }
 
     private void setTotalTime() {
@@ -603,8 +601,7 @@ public class AudioWife {
         mMediaPlayer = new MediaPlayer();
         mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override public void onPrepared( MediaPlayer mp ) {
-                mPreparedListener.onPrepared(mMediaPlayer);
-                play();
+                mPreparedListener.onPrepared(mMediaPlayer, AudioWife.this);
             }
         });
         try {

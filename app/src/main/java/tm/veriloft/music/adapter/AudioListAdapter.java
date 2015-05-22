@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -68,7 +67,7 @@ public class AudioListAdapter extends BaseAdapter {
             viewHolder = new ViewHolder();
             viewHolder.name = (TextView) convertView.findViewById(R.id.name);
             viewHolder.playButton = convertView.findViewById(R.id.play);
-            viewHolder.duration = (Button) convertView.findViewById(R.id.duration);
+            viewHolder.duration = (TextView) convertView.findViewById(R.id.duration);
             convertView.setTag(viewHolder);
         } else viewHolder = (ViewHolder) convertView.getTag();
 
@@ -86,7 +85,7 @@ public class AudioListAdapter extends BaseAdapter {
 
     public class ViewHolder {
         TextView name;
-        Button duration;
+        TextView duration;
         View playButton;
     }
 

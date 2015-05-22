@@ -16,6 +16,7 @@ import android.content.res.Configuration;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.view.MenuItemCompat;
@@ -148,7 +149,7 @@ public class MainActivity extends BaseActivity {
         if (mSearchView != null) {
             mSearchView.setQueryHint(getString(R.string.search_hint));
 
-            if (!CONFIG_POPULAR_START){
+            if (! CONFIG_POPULAR_START) {
                 mSearchView.setFocusable(true);
                 mSearchView.setIconified(false);
                 mSearchView.requestFocusFromTouch();
@@ -512,7 +513,7 @@ public class MainActivity extends BaseActivity {
         alertDialog.show();
     }
 
-    private void getConfig(){
+    private void getConfig() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         CONFIG_POPULAR_START = sharedPreferences.getBoolean("popularStart", true);
         CONFIG_COUNT = sharedPreferences.getString("searchCount", Config.VK_CONFIG_COUNT);
@@ -549,12 +550,13 @@ public class MainActivity extends BaseActivity {
         });
 
         new PrepareAudioTask(rootView, new OnPreparedListener() {
-            @Override public void onPrepared( MediaPlayer mediaPlayer ) {
+            @Override public void onPrepared( MediaPlayer mediaPlayer, AudioWife audioWife ) {
                 mMediaPlayer = mediaPlayer;
                 alertDialog.show();
                 TextView nameView = (TextView) rootView.findViewById(R.id.name);
                 if (nameView != null)
                     nameView.setText(audio.getArtist() + " - " + audio.getTitle());
+                audioWife.play();
             }
 
             @Override public void onError( Exception e ) {
@@ -567,14 +569,23 @@ public class MainActivity extends BaseActivity {
      * Shows progress dialog while preparing mediaPlayer
      */
     public class PrepareAudioTask extends AsyncTask<Uri, Void, Void> {
+        private AudioWife audioWife;
         private ViewGroup rootView;
         private OnPreparedListener onPreparedListener;
         private ProgressDialog progressDialog;
+        private boolean cancelled = false;
 
         public PrepareAudioTask( ViewGroup rootView, OnPreparedListener onPreparedListener ) {
             this.rootView = rootView;
             this.onPreparedListener = onPreparedListener;
             progressDialog = U.createActionLoading(MainActivity.this);
+            progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Ýap", new DialogInterface.OnClickListener() {
+                @Override public void onClick( DialogInterface dialog, int which ) {
+                    cancelled = true;
+                    progressDialog.dismiss();
+                    if (audioWife != null) audioWife.release();
+                }
+            });
         }
 
         @Override protected void onPreExecute() {
@@ -584,16 +595,20 @@ public class MainActivity extends BaseActivity {
         @Override
         protected Void doInBackground( Uri... params ) {
             try {
-                AudioWife.getInstance()
+                audioWife = AudioWife.getInstance()
                     .init(MainActivity.this, params[0], new OnPreparedListener() {
-                        @Override public void onPrepared( MediaPlayer mediaPlayer ) {
-                            progressDialog.dismiss();
-                            onPreparedListener.onPrepared(mediaPlayer);
+                        @Override public void onPrepared( MediaPlayer mediaPlayer, AudioWife audioWife ) {
+                            if (! cancelled) {
+                                progressDialog.dismiss();
+                                onPreparedListener.onPrepared(mediaPlayer, audioWife);
+                            }
                         }
 
                         @Override public void onError( Exception e ) {
-                            onPreparedListener.onError(e);
-                            progressDialog.dismiss();
+                            if (! cancelled) {
+                                onPreparedListener.onError(e);
+                                progressDialog.dismiss();
+                            }
                         }
                     }).useDefaultUi(rootView, layoutInflater);
             } catch (Exception e) {
@@ -610,8 +625,9 @@ public class MainActivity extends BaseActivity {
          * called when audio prepared
          *
          * @param mediaPlayer mediaPlayer
+         * @param audioWife   instance
          */
-        void onPrepared( MediaPlayer mediaPlayer );
+        void onPrepared( MediaPlayer mediaPlayer, AudioWife audioWife );
 
         /**
          * called when catch exception

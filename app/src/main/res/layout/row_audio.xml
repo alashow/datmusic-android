@@ -41,7 +41,7 @@
             android:src="@drawable/ic_play"
             android:background="@drawable/badge_background"/>
 
-        <Button
+        <TextView
             android:id="@+id/duration"
             android:layout_width="35dp"
             android:layout_height="20dp"
@@ -50,6 +50,7 @@
             android:layout_marginStart="5dp"
             android:textColor="@color/white"
             android:textSize="@dimen/text_small"
+            android:gravity="center"
             tools:text="3:05"/>
     </LinearLayout>
 </RelativeLayout>
