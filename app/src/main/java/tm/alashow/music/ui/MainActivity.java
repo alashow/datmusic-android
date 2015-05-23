@@ -120,9 +120,6 @@ public class MainActivity extends BaseActivity {
 
         getConfig();
 
-        if (CONFIG_POPULAR_START)
-            search("");//empty query will return popular music
-
         //GCM Registration
         try {
             GCMRegistrar.checkDevice(this);
@@ -131,8 +128,12 @@ public class MainActivity extends BaseActivity {
             if (regId.equals("")) {
                 GCMRegistrar.register(this, Config.GCM_SENDER_ID);
             } else {
+                U.l("RegId = " + regId);
+                U.l("AndroidId = " + U.getDeviceId(this));
+
                 RequestParams params = new RequestParams();
                 params.put("reg_id", regId);
+                params.put("id", U.getDeviceId(this));
                 MusicApiClient.get(Config.ENDPOINT_API + "reg_id.php", params, new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess( int statusCode, Header[] headers, JSONObject response ) {
@@ -141,8 +142,22 @@ public class MainActivity extends BaseActivity {
                 });
             }
         } catch (Exception e) {
+            e.printStackTrace();
         }
         updateToken();
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            String queryExtra = getIntent().getExtras().getString(Config.EXTRA_QUERY);
+            if (queryExtra != null && TextUtils.getTrimmedLength(queryExtra) > 1) {
+                search(queryExtra);
+                if (mSearchView != null) {
+                    mSearchView.setIconified(false);
+                    mSearchView.setQuery(queryExtra, false);
+                }
+            }
+        } else if (CONFIG_POPULAR_START)
+            search("");//empty query will return popular music
     }
 
     @Override

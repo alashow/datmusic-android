@@ -26,6 +26,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.annotation.ColorRes;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
@@ -481,5 +482,9 @@ public class U {
             s.setSpan(span, start, end, 0);
         }
         textView.setText(s);
+    }
+
+    public static String getDeviceId(Context context){
+        return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 }

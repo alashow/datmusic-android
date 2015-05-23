@@ -39,7 +39,7 @@ public class Config {
     public static String ACTIVITY_TAG_PREFERENCES = "preferences";
 
     //Activity Extras
-    public static final String EXTRA_NAME = "tm.veriloft.music.NAME";
+    public static final String EXTRA_QUERY = "tm.veriloft.music.QUERY";
 
     //VK Search Api Config
     public static String VK_CONFIG_ACCESS_TOKEN = "3d66c01979d977874ab8fe42166c8963fe496b52774b07d4edd7d35a2c29565424b3a0a381bd8c791715b";
