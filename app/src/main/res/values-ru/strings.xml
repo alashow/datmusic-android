@@ -53,18 +53,12 @@
 
     <string name="preferences_general">Общие</string>
     <string name="preferences_popular_start">Популярное</string>
-    <string name="preferences_popular_start_description">Показать популярных песен после запуска</string>
+    <string name="preferences_popular_start_description">Показать популярные песни после запуска приложение</string>
 
     <string-array name="searchSort">
         <item>По популярности</item>
         <item>По длительности аудиозаписи</item>
         <item>По дате добавления</item>
-    </string-array>
-
-    <string-array name="searchSortValues">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
     </string-array>
 
     <string-array name="searchCount">
@@ -73,26 +67,6 @@
         <item>100 песен</item>
         <item>200 песен</item>
         <item>300 песен</item>
-    </string-array>
-
-    <string-array name="searchCountValues">
-        <item>30</item>
-        <item>50</item>
-        <item>100</item>
-        <item>200</item>
-        <item>300</item>
-    </string-array>
-
-    <string-array name="languageArray">
-        <item>Türkmen</item>
-        <item>English</item>
-        <item>Русский</item>
-    </string-array>
-
-    <string-array name="languageValues">
-        <item>tk</item>
-        <item>en</item>
-        <item>ru</item>
     </string-array>
 
 </resources>
