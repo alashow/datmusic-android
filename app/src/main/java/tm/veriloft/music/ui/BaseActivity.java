@@ -1,6 +1,17 @@
 /*
- * Copyright (c) 2015  Alashov Berkeli
- * It is licensed under GNU GPL v. 2 or later. For full terms see the file LICENSE.
+ * Copyright 2015. Alashov Berkeli
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
  */
 
 package tm.veriloft.music.ui;
@@ -42,9 +53,11 @@ import tm.veriloft.music.util.U;
 
 public abstract class BaseActivity extends ActionBarActivity {
 
+    private boolean shouldGoInvisible;
+    private MenuAdapter menuAdapter;
+    private final List<Object> menuItems = new ArrayList<>();
     protected SettingsManager settingsManager;
     protected Toolbar mToolbar;
-    private boolean shouldGoInvisible;
     private ActionBarDrawerToggle mDrawerToggle;
     private String mOldTitle;
     private String mOldSubtitle;
@@ -102,13 +115,7 @@ public abstract class BaseActivity extends ActionBarActivity {
 
 
         //Adding items menu
-        final List<Object> menuItems = new ArrayList<>();
-        menuItems.add(new MenuActivity(getString(R.string.app_name), R.mipmap.ic_launcher, Config.ACTIVITY_TAG_MAIN));
-        menuItems.add(new MenuActivity(getString(R.string.preferences_title), R.mipmap.ic_settings, Config.ACTIVITY_TAG_PREFERENCES));
-        menuItems.add(new MenuActivity(getString(R.string.web_version), R.mipmap.ic_web, "web"));
-
-        final MenuAdapter menuAdapter = new MenuAdapter(this, menuItems);
-        mDrawerList.setAdapter(menuAdapter);
+        populateMenu();
 
         //Showing back button on action bar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -176,6 +183,15 @@ public abstract class BaseActivity extends ActionBarActivity {
         }
     }
 
+    private void populateMenu(){
+        menuItems.clear();
+        menuItems.add(new MenuActivity(getString(R.string.app_name), R.mipmap.ic_launcher, Config.ACTIVITY_TAG_MAIN));
+        menuItems.add(new MenuActivity(getString(R.string.preferences_title), R.mipmap.ic_settings, Config.ACTIVITY_TAG_PREFERENCES));
+        menuItems.add(new MenuActivity(getString(R.string.web_version), R.mipmap.ic_web, "web"));
+        menuAdapter = new MenuAdapter(this, menuItems);
+        mDrawerList.setAdapter(menuAdapter);
+    }
+
     @Override
     protected void onPostCreate( Bundle savedInstanceState ) {
         super.onPostCreate(savedInstanceState);
@@ -185,6 +201,7 @@ public abstract class BaseActivity extends ActionBarActivity {
     @Override
     public void onConfigurationChanged( Configuration newConfig ) {
         super.onConfigurationChanged(newConfig);
+        populateMenu();
         if (mDrawerToggle != null) mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
