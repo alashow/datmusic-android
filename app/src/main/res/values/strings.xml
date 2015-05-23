@@ -75,38 +75,12 @@
         <item>Meşhurlygy boýunça</item>
     </string-array>
 
-    <string-array name="searchSortValues">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-    </string-array>
-
     <string-array name="searchCount"> <!--count = sany-->
         <item>30 sany</item>
         <item>50 sany</item>
         <item>100 sany</item>
         <item>200 sany</item>
         <item>300 sany</item>
-    </string-array>
-
-    <string-array name="searchCountValues">
-        <item>30</item>
-        <item>50</item>
-        <item>100</item>
-        <item>200</item>
-        <item>300</item>
-    </string-array>
-
-    <string-array name="languageArray">
-        <item>Türkmen</item>
-        <item>English</item>
-        <item>Русский</item>
-    </string-array>
-
-    <string-array name="languageValues">
-        <item>tk</item>
-        <item>en</item>
-        <item>ru</item>
     </string-array>
 
 </resources>
