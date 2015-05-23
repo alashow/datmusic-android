@@ -20,7 +20,7 @@ android {
     buildToolsVersion "22.0.1"
 
     defaultConfig {
-        applicationId "tm.veriloft.music"
+        applicationId "tm.alashow.music"
         minSdkVersion 9
         targetSdkVersion 22
         versionCode 1
