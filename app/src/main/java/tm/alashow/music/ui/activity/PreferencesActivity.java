@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package tm.alashow.music.ui;
+package tm.alashow.music.ui.activity;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -22,6 +22,7 @@ import android.support.v4.app.Fragment;
 
 import tm.alashow.music.Config;
 import tm.alashow.music.R;
+import tm.alashow.music.ui.fragment.PreferencesFragment;
 import tm.alashow.music.util.U;
 
 
@@ -31,7 +32,7 @@ import tm.alashow.music.util.U;
 public class PreferencesActivity extends BaseActivity {
 
     @Override
-    protected void onCreate( Bundle savedInstanceState ) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Fragment preferencesFragment = new PreferencesFragment();
         U.attachFragment(this, preferencesFragment);
@@ -52,7 +53,8 @@ public class PreferencesActivity extends BaseActivity {
         return Config.ACTIVITY_TAG_PREFERENCES;
     }
 
-    @Override public void onConfigurationChanged( Configuration newConfig ) {
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         Fragment preferencesFragment = new PreferencesFragment();
         U.attachFragment(this, preferencesFragment);

@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package tm.alashow.music.gcm;
+package tm.alashow.music.android.gcm;
 
 import android.content.Context;
 
@@ -25,7 +25,7 @@ import com.google.android.gcm.GCMBroadcastReceiver;
  */
 public class GCMReceiver extends GCMBroadcastReceiver {
     @Override
-    protected String getGCMIntentServiceClassName( Context context ) {
+    protected String getGCMIntentServiceClassName(Context context) {
         return PushNotificationsService.class.getName();
     }
 }

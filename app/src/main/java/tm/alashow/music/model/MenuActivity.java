@@ -30,15 +30,15 @@ public class MenuActivity {
      * @param _icon        IconResource drawable
      * @param _activityTag Fragment tag
      */
-    public MenuActivity( String _title, int _icon, String _activityTag ) {
+    public MenuActivity(String _title, int _icon, String _activityTag) {
         mTitle = _title;
         mIconResource = _icon;
         mActivityTag = _activityTag;
     }
 
-    public MenuActivity( String _title, String _activityTag ) {
+    public MenuActivity(String _title, String _activityTag) {
         mTitle = _title;
-        mIconResource = -1;
+        mIconResource = - 1;
         mActivityTag = _activityTag;
     }
 }

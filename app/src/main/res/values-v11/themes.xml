@@ -16,7 +16,7 @@
 
 <resources>
 
-    <style name="Theme.Music" parent="@style/Theme.AppCompat.Light.NoActionBar">
+    <style name="Theme.App" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorControlActivated">@color/primary</item>
@@ -26,6 +26,7 @@
         <item name="android:textColorHighlight">@color/transparent_primary_30</item>
         <item name="searchViewStyle">@style/WhiteSearchViewStyle</item>
         <item name="android:fastScrollThumbDrawable">@drawable/music_fastscroll_thumb_holo</item>
+        <item name="actionBarStyle">@style/Theme.App.Toolbar</item>
     </style>
 
 </resources>

@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package tm.alashow.music.ui;
+package tm.alashow.music.ui.activity;
 
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -44,10 +44,10 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import tm.alashow.music.Config;
 import tm.alashow.music.R;
-import tm.alashow.music.adapter.MenuAdapter;
 import tm.alashow.music.android.IntentManager;
 import tm.alashow.music.android.SettingsManager;
 import tm.alashow.music.model.MenuActivity;
+import tm.alashow.music.ui.adapter.MenuAdapter;
 import tm.alashow.music.util.U;
 
 
@@ -68,7 +68,7 @@ public abstract class BaseActivity extends ActionBarActivity {
     @InjectView(R.id.powered_by) TextView poweredBy;
 
     @Override
-    protected void onCreate( Bundle savedInstanceState ) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         settingsManager = SettingsManager.getInstance(this);
         setContentView(getLayoutResourceId());
@@ -84,15 +84,19 @@ public abstract class BaseActivity extends ActionBarActivity {
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.app_name, R.string.app_name) {
             @Override
-            public void onDrawerClosed( View arg0 ) {
+            public void onDrawerClosed(View arg0) {
                 shouldGoInvisible = false;
-                if (mOldTitle != null) mToolbar.setTitle(mOldTitle);
-                if (mOldSubtitle != null) mToolbar.setSubtitle(mOldSubtitle);
+                if (mOldTitle != null) {
+                    mToolbar.setTitle(mOldTitle);
+                }
+                if (mOldSubtitle != null) {
+                    mToolbar.setSubtitle(mOldSubtitle);
+                }
                 invalidateOptionsMenu();
             }
 
             @Override
-            public void onDrawerOpened( View arg0 ) {
+            public void onDrawerOpened(View arg0) {
                 shouldGoInvisible = true;
                 mOldTitle = mToolbar.getTitle().toString();
                 mOldSubtitle = (mToolbar.getSubtitle() != null) ? mToolbar.getSubtitle().toString() : null;
@@ -104,10 +108,12 @@ public abstract class BaseActivity extends ActionBarActivity {
         mDrawerToggle.setDrawerIndicatorEnabled(! isChildActivity());
         mDrawerToggle.setToolbarNavigationClickListener(new View.OnClickListener() {
             @Override
-            public void onClick( View v ) {
-                if (mDrawerLayout.isDrawerOpen(GravityCompat.START))
+            public void onClick(View v) {
+                if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
                     mDrawerLayout.closeDrawers();
-                else onBackPressed();
+                } else {
+                    onBackPressed();
+                }
             }
         });
         mDrawerLayout.setDrawerListener(mDrawerToggle);
@@ -123,7 +129,7 @@ public abstract class BaseActivity extends ActionBarActivity {
         //Menu listItem click callback
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick( AdapterView<?> adapterView, View view, final int position, long l ) {
+            public void onItemClick(AdapterView<?> adapterView, View view, final int position, long l) {
                 mDrawerLayout.closeDrawers();
                 mHandler.postDelayed(new Runnable() {
                     @Override
@@ -133,24 +139,25 @@ public abstract class BaseActivity extends ActionBarActivity {
                 }, 100);
             }
         });
-
-
     }
 
     @Override
-    public boolean onPrepareOptionsMenu( Menu menu ) {
+    public boolean onPrepareOptionsMenu(Menu menu) {
         for(int i = 0; i < menu.size(); i++)
             menu.getItem(i).setVisible(! shouldGoInvisible);
         return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
-    public boolean onOptionsItemSelected( MenuItem item ) {
-        if (mDrawerToggle.onOptionsItemSelected(item)) return true;
-        else switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        } else {
+            switch (item.getItemId()) {
+                case android.R.id.home:
+                    finish();
+                    return true;
+            }
         }
         return false;
     }
@@ -170,9 +177,9 @@ public abstract class BaseActivity extends ActionBarActivity {
      *
      * @param _activityTag activityTag field of mainactivity object
      */
-    private void changeActivity( String _activityTag ) {
+    private void changeActivity(String _activityTag) {
         if (! getActivityTag().equals(_activityTag)) {
-            if (_activityTag.equals(Config.ACTIVITY_TAG_MAIN)){
+            if (_activityTag.equals(Config.ACTIVITY_TAG_MAIN)) {
                 IntentManager.with(this).main();
             } else if (_activityTag.equals(Config.ACTIVITY_TAG_PREFERENCES)) {
                 IntentManager.with(this).preferences();
@@ -183,7 +190,7 @@ public abstract class BaseActivity extends ActionBarActivity {
         }
     }
 
-    private void populateMenu(){
+    private void populateMenu() {
         menuItems.clear();
         menuItems.add(new MenuActivity(getString(R.string.app_name), R.mipmap.ic_launcher, Config.ACTIVITY_TAG_MAIN));
         menuItems.add(new MenuActivity(getString(R.string.preferences_title), R.mipmap.ic_settings, Config.ACTIVITY_TAG_PREFERENCES));
@@ -193,16 +200,20 @@ public abstract class BaseActivity extends ActionBarActivity {
     }
 
     @Override
-    protected void onPostCreate( Bundle savedInstanceState ) {
+    protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        if (mDrawerToggle != null) mDrawerToggle.syncState();
+        if (mDrawerToggle != null) {
+            mDrawerToggle.syncState();
+        }
     }
 
     @Override
-    public void onConfigurationChanged( Configuration newConfig ) {
+    public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         populateMenu();
-        if (mDrawerToggle != null) mDrawerToggle.onConfigurationChanged(newConfig);
+        if (mDrawerToggle != null) {
+            mDrawerToggle.onConfigurationChanged(newConfig);
+        }
     }
 
     /**
@@ -227,7 +238,8 @@ public abstract class BaseActivity extends ActionBarActivity {
      * @return int, layout resource
      */
     protected abstract
-    @LayoutRes int getLayoutResourceId();
+    @LayoutRes
+    int getLayoutResourceId();
 
     /**
      * If true sets action bar title click callback finish activity,
@@ -244,5 +256,4 @@ public abstract class BaseActivity extends ActionBarActivity {
      * @return String activity tag
      */
     protected abstract String getActivityTag();
-
 }

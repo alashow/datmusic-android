@@ -23,11 +23,12 @@ import android.text.style.URLSpan;
  * Created by alashov on 12/05/15.
  */
 public class URLSpanNoUnderline extends URLSpan {
-    public URLSpanNoUnderline( String url ) {
+    public URLSpanNoUnderline(String url) {
         super(url);
     }
 
-    @Override public void updateDrawState( TextPaint ds ) {
+    @Override
+    public void updateDrawState(TextPaint ds) {
         super.updateDrawState(ds);
         ds.setUnderlineText(false);
     }

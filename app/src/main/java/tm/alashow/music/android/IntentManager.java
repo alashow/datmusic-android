@@ -22,8 +22,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.IntentCompat;
 
-import tm.alashow.music.ui.MainActivity;
-import tm.alashow.music.ui.PreferencesActivity;
+import tm.alashow.music.ui.activity.MainActivity;
+import tm.alashow.music.ui.activity.PreferencesActivity;
 
 /**
  * Intent Manager for starting activities
@@ -31,11 +31,11 @@ import tm.alashow.music.ui.PreferencesActivity;
 public class IntentManager {
     private Context mContext;
 
-    private IntentManager( Context context ) {
+    private IntentManager(Context context) {
         this.mContext = context;
     }
 
-    public static IntentManager with( Context _context ) {
+    public static IntentManager with(Context _context) {
         return new Builder(_context).build();
     }
 
@@ -45,7 +45,7 @@ public class IntentManager {
         /**
          * Building a new {@link IntentManager} instance.
          */
-        public Builder( Context context ) {
+        public Builder(Context context) {
             if (context == null) {
                 throw new IllegalArgumentException("Context must not be null.");
             }
@@ -61,7 +61,7 @@ public class IntentManager {
         }
     }
 
-    public void openIntentWithClear( Intent intent ) {
+    public void openIntentWithClear(Intent intent) {
         ComponentName cn = intent.getComponent();
         Intent mainIntent = IntentCompat.makeRestartActivityTask(cn);
         mContext.startActivity(mainIntent);
@@ -89,7 +89,7 @@ public class IntentManager {
      *
      * @param _intent which we want open
      */
-    private void open( Intent _intent ) {
+    private void open(Intent _intent) {
         mContext.startActivity(_intent);
     }
 }

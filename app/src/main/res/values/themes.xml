@@ -16,7 +16,7 @@
 
 <resources>
 
-    <style name="Theme.Music" parent="@style/Theme.AppCompat.Light.NoActionBar">
+    <style name="Theme.App" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorControlActivated">@color/primary</item>
@@ -24,10 +24,10 @@
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:editTextStyle">@style/EditText</item>
         <item name="android:textColorHighlight">@color/transparent_primary_30</item>
-        <item name="searchViewStyle">@style/WhiteSearchViewStyle</item>
+        <item name="actionBarStyle">@style/Theme.App.Toolbar</item>
     </style>
 
-    <style name="Theme.Music.ActionBar" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+    <style name="Theme.App.ActionBar" parent="@style/Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorControlActivated">@color/primary</item>
@@ -35,10 +35,17 @@
         <item name="android:editTextStyle">@style/EditText</item>
         <item name="searchViewStyle">@style/WhiteSearchViewStyle</item>
     </style>
+
     <style name="Transparent">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+    <style name="Theme.App.Toolbar" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="searchViewStyle">@style/WhiteSearchViewStyle</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="elevation">0dp</item>
     </style>
 
 </resources>

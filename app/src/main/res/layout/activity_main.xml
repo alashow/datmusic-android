@@ -38,11 +38,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-            <ListView
-                android:id="@+id/listView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:listSelector="@drawable/white_selector"/>
+                <ListView
+                    android:id="@+id/listView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:listSelector="@drawable/white_selector"/>
             </android.support.v4.widget.SwipeRefreshLayout>
 
             <com.pnikosis.materialishprogress.ProgressWheel

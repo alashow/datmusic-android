@@ -64,7 +64,7 @@ public class ApplicationLoader extends Application {
     }
 
     @Override
-    public void onConfigurationChanged( Configuration newConfig ) {
+    public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
     }
 }

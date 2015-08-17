@@ -30,9 +30,9 @@ public class Audio {
     private String artist;
     private String title;
 
-    private long bytes = -1;
+    private long bytes = - 1;
 
-    public Audio( JSONObject audioObject ) {
+    public Audio(JSONObject audioObject) {
         try {
             setId(audioObject.getLong("aid"));
             setDuration(audioObject.getInt("duration"));
@@ -49,7 +49,7 @@ public class Audio {
         return id;
     }
 
-    public Audio setId( long id ) {
+    public Audio setId(long id) {
         this.id = id;
         return this;
     }
@@ -58,7 +58,7 @@ public class Audio {
         return duration;
     }
 
-    public Audio setDuration( int duration ) {
+    public Audio setDuration(int duration) {
         this.duration = duration;
         return this;
     }
@@ -67,7 +67,7 @@ public class Audio {
         return ownerId;
     }
 
-    public Audio setOwnerId( long ownerId ) {
+    public Audio setOwnerId(long ownerId) {
         this.ownerId = ownerId;
         return this;
     }
@@ -76,7 +76,7 @@ public class Audio {
         return src;
     }
 
-    public Audio setSrc( String src ) {
+    public Audio setSrc(String src) {
         this.src = src;
         return this;
     }
@@ -85,7 +85,7 @@ public class Audio {
         return artist;
     }
 
-    public Audio setArtist( String artist ) {
+    public Audio setArtist(String artist) {
         this.artist = artist;
         return this;
     }
@@ -94,7 +94,7 @@ public class Audio {
         return title;
     }
 
-    public Audio setTitle( String title ) {
+    public Audio setTitle(String title) {
         this.title = title;
         return this;
     }
@@ -103,7 +103,7 @@ public class Audio {
         return bytes;
     }
 
-    public Audio setBytes( long bytes ) {
+    public Audio setBytes(long bytes) {
         this.bytes = bytes;
         return this;
     }

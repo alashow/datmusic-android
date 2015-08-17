@@ -17,7 +17,7 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <tm.alashow.music.ui.widget.ColoredPreferencesCategory
+    <tm.alashow.music.ui.widget.PreferencesCategory
         android:title="@string/preferences_general">
         <ListPreference
             android:key="language"
@@ -25,13 +25,8 @@
             android:entries="@array/languageArray"
             android:entryValues="@array/languageValues"
             android:title="@string/preferences_language"/>
-        <CheckBoxPreference
-            android:key="popularStart"
-            android:title="@string/preferences_popular_start"
-            android:summary="@string/preferences_popular_start_description"
-            android:defaultValue="true"/>
-    </tm.alashow.music.ui.widget.ColoredPreferencesCategory>
-    <tm.alashow.music.ui.widget.ColoredPreferencesCategory
+    </tm.alashow.music.ui.widget.PreferencesCategory>
+    <tm.alashow.music.ui.widget.PreferencesCategory
         android:title="@string/preference_search">
         <ListPreference
             android:key="searchSort"
@@ -51,7 +46,7 @@
             android:title="@string/preference_search_performer_only"
             android:summary="@string/preference_search_performer_only_description"
             android:defaultValue="false"/>
-    </tm.alashow.music.ui.widget.ColoredPreferencesCategory>
+    </tm.alashow.music.ui.widget.PreferencesCategory>
     <Preference
         android:key="about"/>
 </PreferenceScreen>

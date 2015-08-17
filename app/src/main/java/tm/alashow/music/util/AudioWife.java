@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import tm.alashow.music.R;
-import tm.alashow.music.ui.MainActivity;
+import tm.alashow.music.ui.activity.MainActivity;
 
 /**
  * A simple audio player wrapper for Android
@@ -105,7 +105,6 @@ public class AudioWife {
      */
     private ArrayList<OnCompletionListener> mCompletionListeners = new ArrayList<OnCompletionListener>();
 
-
     private ArrayList<View.OnClickListener> mPlayListeners = new ArrayList<View.OnClickListener>();
 
     private ArrayList<View.OnClickListener> mPauseListeners = new ArrayList<View.OnClickListener>();
@@ -137,8 +136,9 @@ public class AudioWife {
 
             try {
                 if (mProgressUpdateHandler != null && mMediaPlayer.isPlaying()) {
-                    if (! mSeekBar.isPressed())
+                    if (! mSeekBar.isPressed()) {
                         mSeekBar.setProgress(mMediaPlayer.getCurrentPosition());
+                    }
                     int currentTime = mMediaPlayer.getCurrentPosition();
                     updatePlaytime(currentTime);
                     updateRuntime(currentTime);
@@ -229,7 +229,7 @@ public class AudioWife {
     }
 
     @Deprecated
-    private void updatePlaytime( int currentTime ) {
+    private void updatePlaytime(int currentTime) {
 
         if (mPlaybackTime == null) {
             return;
@@ -270,7 +270,7 @@ public class AudioWife {
         // DebugLog.i(currentTime + " / " + totalDuration);
     }
 
-    private void updateRuntime( int currentTime ) {
+    private void updateRuntime(int currentTime) {
 
         if (mRunTime == null) {
             // this view can be null if the user
@@ -363,7 +363,7 @@ public class AudioWife {
      * @param uri Uri of the audio to be played.
      *            **
      */
-    public AudioWife init( Context ctx, Uri uri, MainActivity.OnPreparedListener onPreparedListener ) {
+    public AudioWife init(Context ctx, Uri uri, MainActivity.OnPreparedListener onPreparedListener) {
 
         if (uri == null) {
             throw new IllegalArgumentException("Uri cannot be null");
@@ -374,7 +374,8 @@ public class AudioWife {
 
         mUri = uri;
         ((Activity) ctx).runOnUiThread(new Runnable() {
-            @Override public void run() {
+            @Override
+            public void run() {
                 mProgressUpdateHandler = new Handler();
             }
         });
@@ -393,7 +394,7 @@ public class AudioWife {
      * **
      */
 
-    public AudioWife setPlayView( View play ) {
+    public AudioWife setPlayView(View play) {
 
         if (play == null) {
             throw new NullPointerException("PlayView cannot be null");
@@ -420,7 +421,7 @@ public class AudioWife {
         mPlayListeners.add(0, new View.OnClickListener() {
 
             @Override
-            public void onClick( View v ) {
+            public void onClick(View v) {
                 play();
             }
         });
@@ -430,7 +431,7 @@ public class AudioWife {
         mPlayButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
-            public void onClick( View v ) {
+            public void onClick(View v) {
                 for(View.OnClickListener listener : mPlayListeners) {
                     listener.onClick(v);
                 }
@@ -446,7 +447,7 @@ public class AudioWife {
      * @see tm.alashow.music.util.AudioWife#addOnPauseClickListener(android.view.View.OnClickListener)
      * **
      */
-    public AudioWife setPauseView( View pause ) {
+    public AudioWife setPauseView(View pause) {
 
         if (pause == null) {
             throw new NullPointerException("PauseView cannot be null");
@@ -473,7 +474,7 @@ public class AudioWife {
         mPauseListeners.add(0, new View.OnClickListener() {
 
             @Override
-            public void onClick( View v ) {
+            public void onClick(View v) {
                 pause();
             }
         });
@@ -483,7 +484,7 @@ public class AudioWife {
         mPauseButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
-            public void onClick( View v ) {
+            public void onClick(View v) {
                 for(View.OnClickListener listener : mPauseListeners) {
                     listener.onClick(v);
                 }
@@ -498,7 +499,7 @@ public class AudioWife {
      * counter in the UI.
      * **
      */
-    public AudioWife setPlaytime( TextView playTime ) {
+    public AudioWife setPlaytime(TextView playTime) {
 
         if (mHasDefaultUi) {
             Log.w(TAG, "Already using default UI. Setting play time will have no effect");
@@ -518,7 +519,7 @@ public class AudioWife {
      * @see tm.alashow.music.util.AudioWife#setTotalTimeView(android.widget.TextView)
      * **
      */
-    public AudioWife setRuntimeView( TextView currentTime ) {
+    public AudioWife setRuntimeView(TextView currentTime) {
 
         if (mHasDefaultUi) {
             Log.w(TAG, "Already using default UI. Setting play time will have no effect");
@@ -538,7 +539,7 @@ public class AudioWife {
      * @see tm.alashow.music.util.AudioWife#setRuntimeView(android.widget.TextView)
      * **
      */
-    public AudioWife setTotalTimeView( TextView totalTime ) {
+    public AudioWife setTotalTimeView(TextView totalTime) {
 
         if (mHasDefaultUi) {
             Log.w(TAG, "Already using default UI. Setting play time will have no effect");
@@ -551,7 +552,7 @@ public class AudioWife {
         return this;
     }
 
-    public AudioWife setSeekBar( SeekBar seekbar ) {
+    public AudioWife setSeekBar(SeekBar seekbar) {
 
         if (mHasDefaultUi) {
             Log.w(TAG, "Already using default UI. Setting seek bar will have no effect");
@@ -568,7 +569,7 @@ public class AudioWife {
      * Add custom playback completion listener. Adding multiple listeners will queue up all the
      * listeners and fire them on media playback completes.
      */
-    public AudioWife addOnCompletionListener( OnCompletionListener listener ) {
+    public AudioWife addOnCompletionListener(OnCompletionListener listener) {
 
         // add default click listener to the top
         // so that it is the one that gets fired first
@@ -583,7 +584,7 @@ public class AudioWife {
      * listeners and fire them all together when the event occurs.
      * *
      */
-    public AudioWife addOnPlayClickListener( View.OnClickListener listener ) {
+    public AudioWife addOnPlayClickListener(View.OnClickListener listener) {
 
         mPlayListeners.add(listener);
 
@@ -595,7 +596,7 @@ public class AudioWife {
      * the listeners and fire them all together when the event occurs.
      * *
      */
-    public AudioWife addOnPauseClickListener( View.OnClickListener listener ) {
+    public AudioWife addOnPauseClickListener(View.OnClickListener listener) {
 
         mPauseListeners.add(listener);
 
@@ -607,11 +608,12 @@ public class AudioWife {
      * Initialize and prepare the audio player
      * **
      */
-    private void initPlayer( Context ctx ) {
+    private void initPlayer(Context ctx) {
 
         mMediaPlayer = new MediaPlayer();
         mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override public void onPrepared( MediaPlayer mp ) {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
                 mPreparedListener.onPrepared(mMediaPlayer, AudioWife.this);
             }
         });
@@ -629,7 +631,7 @@ public class AudioWife {
     private OnCompletionListener mOnCompletion = new OnCompletionListener() {
 
         @Override
-        public void onCompletion( MediaPlayer mp ) {
+        public void onCompletion(MediaPlayer mp) {
             // set UI when audio finished playing
             int currentPlayTime = 0;
             mSeekBar.setProgress(currentPlayTime);
@@ -659,7 +661,7 @@ public class AudioWife {
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             @Override
-            public void onStopTrackingTouch( SeekBar seekBar ) {
+            public void onStopTrackingTouch(SeekBar seekBar) {
                 mMediaPlayer.seekTo(seekBar.getProgress());
 
                 // if the audio is paused and seekbar is moved,
@@ -668,18 +670,18 @@ public class AudioWife {
             }
 
             @Override
-            public void onStartTrackingTouch( SeekBar seekBar ) {
+            public void onStartTrackingTouch(SeekBar seekBar) {
 
             }
 
             @Override
-            public void onProgressChanged( SeekBar seekBar, int progress, boolean fromUser ) {
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
             }
         });
     }
 
-    private void fireCustomCompletionListeners( MediaPlayer mp ) {
+    private void fireCustomCompletionListeners(MediaPlayer mp) {
         for(OnCompletionListener listener : mCompletionListeners) {
             listener.onCompletion(mp);
         }
@@ -710,7 +712,7 @@ public class AudioWife {
      * @param playerContainer View to integrate default player UI into.
      *                        **
      */
-    public AudioWife useDefaultUi( ViewGroup playerContainer, LayoutInflater inflater ) {
+    public AudioWife useDefaultUi(ViewGroup playerContainer, LayoutInflater inflater) {
         if (playerContainer == null) {
             throw new NullPointerException("Player container cannot be null");
         }

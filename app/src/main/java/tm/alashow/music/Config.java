@@ -32,7 +32,6 @@ public class Config {
     public static String GCM_SENDER_ID = "635425098901";
     public static final boolean DEBUG = true;
 
-
     //Activity Tags
     public static String ACTIVITY_TAG_MAIN = "main";
     public static String ACTIVITY_TAG_LOGOUT = "logout";
@@ -42,17 +41,13 @@ public class Config {
     public static final String EXTRA_QUERY = "tm.veriloft.music.QUERY";
 
     //VK Search Api Config
-    public static String VK_CONFIG_ACCESS_TOKEN = "3d66c01979d977874ab8fe42166c8963fe496b52774b07d4edd7d35a2c29565424b3a0a381bd8c791715b";
+    public static String VK_CONFIG_ACCESS_TOKEN = "e9dbafe947e48136f15bbaf1184095282f53bb146441910421e180b46fa6cf6cf8c37f7de3f525d2c121d";
     public static String VK_CONFIG_AUTOCOMPLETE = "1";
     public static String VK_CONFIG_COUNT = "300";
     public static String VK_CONFIG_SORT = "2";
-    public static String VK_CONFIG_VERSION= "5.31";
+    public static String VK_CONFIG_VERSION = "5.31";
 
-    //LastFm Artist Search Api Config
-    public static String LASTFM_CONFIG_ACCESS_TOKEN = "8b7af513f19366e766af02c85879b0ac";
-
-
-    public static String getDownloadAudioLink(Audio audio){
+    public static String getDownloadAudioLink(Audio audio) {
         return "http://alashov.com/music/download.php?audio_id=" + audio.getOwnerId() + "_" + audio.getId();
     }
 }

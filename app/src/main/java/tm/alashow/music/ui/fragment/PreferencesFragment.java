@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package tm.alashow.music.ui;
+package tm.alashow.music.ui.fragment;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -25,32 +25,35 @@ import java.util.Locale;
 
 import tm.alashow.music.BuildConfig;
 import tm.alashow.music.R;
+import tm.alashow.music.ui.widget.preferencefragment.PreferenceFragment;
 
 
 /**
  * Created by alashov on 18/01/15.
  */
-public class PreferencesFragment extends android.support.v4.preference.PreferenceFragment {
+public class PreferencesFragment extends PreferenceFragment {
 
     private Locale locale = null;
 
     @Override
-    public void onCreate( final Bundle savedInstanceState ) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
     }
 
-    @Override public void onViewCreated( View view, Bundle savedInstanceState ) {
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
 
         Preference preference = findPreference("about");
-        if (preference != null)
+        if (preference != null) {
             preference.setTitle("music-android v" + BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ")");
+        }
 
         Preference language = findPreference("language");
         if (language != null) {
             language.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
-                public boolean onPreferenceChange( Preference preference, Object newValue ) {
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
                     Configuration config = getActivity().getBaseContext().getResources().getConfiguration();
                     String lang = (String) newValue;
 

@@ -25,7 +25,7 @@ public class MenuCategory {
     /**
      * @param _title Title of Category
      */
-    public MenuCategory( String _title ) {
+    public MenuCategory(String _title) {
         mTitle = _title;
     }
 }

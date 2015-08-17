@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package tm.alashow.music.adapter;
+package tm.alashow.music.ui.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -27,7 +27,7 @@ import java.util.ArrayList;
 
 import tm.alashow.music.R;
 import tm.alashow.music.model.Audio;
-import tm.alashow.music.ui.MainActivity;
+import tm.alashow.music.ui.activity.MainActivity;
 
 
 /**
@@ -42,7 +42,7 @@ public class AudioListAdapter extends BaseAdapter {
     /**
      * @param audioList list of array
      */
-    public AudioListAdapter( Context _context, ArrayList<Audio> audioList ) {
+    public AudioListAdapter(Context _context, ArrayList<Audio> audioList) {
         this.audioList = audioList;
         if (_context != null) {
             this.context = _context;
@@ -60,17 +60,17 @@ public class AudioListAdapter extends BaseAdapter {
     }
 
     @Override
-    public Audio getItem( int position ) {
+    public Audio getItem(int position) {
         return audioList.get(position);
     }
 
     @Override
-    public long getItemId( int position ) {
+    public long getItemId(int position) {
         return position;
     }
 
     @Override
-    public View getView( final int position, View convertView, ViewGroup parent ) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder;
         final Audio audio = audioList.get(position);
         if (convertView == null) {
@@ -80,13 +80,16 @@ public class AudioListAdapter extends BaseAdapter {
             viewHolder.playButton = convertView.findViewById(R.id.play);
             viewHolder.duration = (TextView) convertView.findViewById(R.id.duration);
             convertView.setTag(viewHolder);
-        } else viewHolder = (ViewHolder) convertView.getTag();
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
+        }
 
         viewHolder.name.setText(audio.getArtist() + " - " + audio.getTitle());
         viewHolder.duration.setText(secondsToString(audio.getDuration()));
 
         viewHolder.playButton.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick( View v ) {
+            @Override
+            public void onClick(View v) {
                 ((MainActivity) context).playAudio(audio);
             }
         });
@@ -101,11 +104,10 @@ public class AudioListAdapter extends BaseAdapter {
     }
 
     /**
-     *
      * @param seconds seconds to format
      * @return converted to mm:ss duration
      */
-    private String secondsToString( int seconds ) {
+    private String secondsToString(int seconds) {
         return String.format("%02d:%02d", seconds / 60, seconds % 60);
     }
 }

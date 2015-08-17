@@ -33,4 +33,37 @@
     <color name="divider">#ffe5e5e5</color>
     <color name="white_selector">#b7b7b7</color>
     <color name="image_placeholder">#ffdedede</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="whiter">#ecf0f1</color>
+    <color name="silver">#ffced4d8</color>
+    <color name="dark_silver">#95a5a6</color>
+    <color name="dark_silver_40">#400c223e</color>
+    <color name="black">#ff000000</color>
+    <color name="input_border">#ccc</color>
+    <color name="input_disabled">#ffe0e0e0</color>
+    <color name="blue">#3498db</color>
+    <color name="dark_blue">#2980b9</color>
+    <color name="darker_blue">#0061b9</color>
+    <color name="asphalt">#2c3e50</color>
+    <color name="dark_asphalt">#ff202e3f</color>
+    <color name="darker_asphalt">#ff16212d</color>
+    <color name="red">#e74c3c</color>
+    <color name="dark_red">#c0392b</color>
+    <color name="darker_red">#a80409</color>
+    <color name="green">#2ecc71</color>
+    <color name="dark_green">#27ae60</color>
+    <color name="darker_green">#ff269448</color>
+    <color name="sea_green">#1abc9c</color>
+    <color name="dark_sea_green">#16a085</color>
+    <color name="darker_sea_green">#ff16856d</color>
+    <color name="yellow">#f1c40f</color>
+    <color name="dark_yellow">#fff3aa12</color>
+    <color name="darker_yellow">#ffe08912</color>
+    <color name="orange">#e67e22</color>
+    <color name="dark_orange">#d35400</color>
+
+    <color name="disabled">#D1D5D8</color>
+    <color name="disabled_edge">#F7F9F9</color>
+    <color name="disabled_border">#E1E6E6</color>
 </resources>

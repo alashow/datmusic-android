@@ -22,17 +22,17 @@ import com.loopj.android.http.RequestParams;
 
 import tm.alashow.music.android.ApplicationLoader;
 
-public class MusicApiClient {
+public class ApiClient {
     private static AsyncHttpClient client = new AsyncHttpClient();
 
 
-    public static void get( String url, RequestParams params, AsyncHttpResponseHandler responseHandler ) {
+    public static void get(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
         client.setTimeout(400 * 1000);
         U.l("MusicApiClient", "Http request to : " + url);
         client.get(ApplicationLoader.applicationContext, url, params, responseHandler);
     }
 
-    public static void post( String url, RequestParams params, AsyncHttpResponseHandler responseHandler ) {
+    public static void post(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
         client.setTimeout(40 * 1000);
         U.l("MusicApiClient", "Http request to : " + url);
         client.post(ApplicationLoader.applicationContext, url, params, responseHandler);
