@@ -156,6 +156,8 @@ public class MainActivity extends BaseActivity {
                     mSearchView.setIconified(false);
                     mSearchView.setQuery(queryExtra, false);
                 }
+            } else {
+                search("");
             }
         } else {
             search("");//empty query will return popular music

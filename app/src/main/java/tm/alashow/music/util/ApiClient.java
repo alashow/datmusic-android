@@ -20,7 +20,7 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
-import tm.alashow.music.android.ApplicationLoader;
+import tm.alashow.music.App;
 
 public class ApiClient {
     private static AsyncHttpClient client = new AsyncHttpClient();
@@ -29,16 +29,16 @@ public class ApiClient {
     public static void get(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
         client.setTimeout(400 * 1000);
         U.l("MusicApiClient", "Http request to : " + url);
-        client.get(ApplicationLoader.applicationContext, url, params, responseHandler);
+        client.get(App.applicationContext, url, params, responseHandler);
     }
 
     public static void post(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
         client.setTimeout(40 * 1000);
         U.l("MusicApiClient", "Http request to : " + url);
-        client.post(ApplicationLoader.applicationContext, url, params, responseHandler);
+        client.post(App.applicationContext, url, params, responseHandler);
     }
 
     public static void cancelRequests() {
-        client.cancelRequests(ApplicationLoader.applicationContext, true);
+        client.cancelRequests(App.applicationContext, true);
     }
 }

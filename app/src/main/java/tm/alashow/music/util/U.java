@@ -43,7 +43,7 @@ import java.util.regex.Pattern;
 
 import tm.alashow.music.Config;
 import tm.alashow.music.R;
-import tm.alashow.music.android.ApplicationLoader;
+import tm.alashow.music.App;
 import tm.alashow.music.ui.activity.BaseActivity;
 
 public class U {
@@ -203,7 +203,7 @@ public class U {
      * @return #f2f2f2 colored drawable
      */
     public static Drawable imagePlaceholder() {
-        return new ColorDrawable(ApplicationLoader.applicationContext.getResources().getColor(R.color.image_placeholder));
+        return new ColorDrawable(App.applicationContext.getResources().getColor(R.color.image_placeholder));
     }
 
     /**

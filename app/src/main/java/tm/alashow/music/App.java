@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package tm.alashow.music.android;
+package tm.alashow.music;
 
 /**
  * Created by alashov on 16/01/15.
@@ -29,7 +29,7 @@ import android.preference.PreferenceManager;
 
 import java.util.Locale;
 
-public class ApplicationLoader extends Application {
+public class App extends Application {
     public static volatile Context applicationContext = null;
     public static volatile Handler applicationHandler = null;
     private static volatile boolean applicationInited = false;
@@ -40,7 +40,7 @@ public class ApplicationLoader extends Application {
             return;
         }
         applicationInited = true;
-        ApplicationLoader app = (ApplicationLoader) ApplicationLoader.applicationContext;
+        App app = (App) App.applicationContext;
     }
 
     @Override

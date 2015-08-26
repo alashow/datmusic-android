@@ -19,6 +19,7 @@ package tm.alashow.music.android;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import tm.alashow.music.App;
 import tm.alashow.music.Config;
 
 /**
@@ -56,7 +57,7 @@ public class SettingsManager {
     }
 
     public static SettingsManager getInstance() {
-        return getInstance(ApplicationLoader.applicationContext);
+        return getInstance(App.applicationContext);
     }
 
 
