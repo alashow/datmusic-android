@@ -62,6 +62,7 @@ import org.json.JSONObject;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Random;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -157,10 +158,10 @@ public class MainActivity extends BaseActivity {
                     mSearchView.setQuery(queryExtra, false);
                 }
             } else {
-                search("");
+                searchWithRandomArtist();
             }
         } else {
-            search("");//empty query will return popular music
+            searchWithRandomArtist();
         }
     }
 
@@ -195,19 +196,38 @@ public class MainActivity extends BaseActivity {
         return true;
     }
 
+    private void searchWithRandomArtist() {
+        String[] artists = {"Kygo", "Ed Sheeran", "Toe",
+            "Coldplay", "The xx", "MS MR", "Macklemore",
+            "Lorde", "Birdy", "Seinabo Sey", "Sia", "M83",
+            "Hans Zimmer", "Keaton Henson", "Yiruma", "Martin Garrix",
+            "Calvin Harris", "Zinovia", "Avicii", "Of Monsters and Men",
+            "Josef Salvat", "Sam Smith", "deadmau5", "Yann Tiersen",
+            "Jessie J", " Maroon 5", "X ambassadors", "Fink",
+            "Young Summer", "Lana Del Rey", "Arctic Monkeys",
+            "Ludovico Einaudi", "Lera Lynn", "Bastille",
+            "Nils Frahm", "Ben Howard", "Andrew Belle",
+            "Mumford & Sons", "Ryan Keen", "Zes", "Greg Haines",
+            "Max Richter"};
+
+        String artist = artists[new Random().nextInt(artists.length)];
+
+        search(artist);
+    }
+
     private void search(String query) {
-        search(query, false, - 1, null);
+        search(query, false, - 1, null, false);
     }
 
     private void search(String query, boolean refresh) {
-        search(query, refresh, - 1, null);
+        search(query, refresh, - 1, null, false);
     }
 
     private void search(String query, long captchaSid, String captchaKey) {
-        search(query, false, captchaSid, captchaKey);
+        search(query, false, captchaSid, captchaKey, false);
     }
 
-    private void search(String query, final boolean refresh, long captchaSid, String captchaKey) {
+    private void search(String query, final boolean refresh, long captchaSid, String captchaKey, boolean performerOnly) {
         oldQuery = query;
         RequestParams params = new RequestParams();
 
@@ -217,7 +237,8 @@ public class MainActivity extends BaseActivity {
         params.put("autocomplete", Config.VK_CONFIG_AUTOCOMPLETE);
         params.put("sort", CONFIG_SORT);
         params.put("count", CONFIG_COUNT);
-        params.put("performer_only", CONFIG_PERFORMER_ONLY);
+
+        params.put("performer_only", (performerOnly) ? 1 : CONFIG_PERFORMER_ONLY);
 
         if (captchaSid > 1) {
             params.put("captcha_sid", captchaSid);

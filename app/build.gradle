@@ -16,17 +16,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    useLibrary 'org.apache.http.legacy'
-
-    compileSdkVersion 23
-    buildToolsVersion "23.0.0"
+    compileSdkVersion 22
+    buildToolsVersion "22.0.1"
 
     defaultConfig {
         applicationId "tm.alashow.music"
         minSdkVersion 9
-        targetSdkVersion 23
-        versionCode 3
-        versionName "1.0.3"
+        targetSdkVersion 22
+        versionCode 5
+        versionName "1.0.4"
     }
 
     buildTypes {
@@ -57,12 +55,11 @@ dependencies {
 
     compile 'com.loopj.android:android-async-http:1.4.6'
     compile 'com.github.xiprox.errorview:library:2.0.0'
-    compile 'org.apache.httpcomponents:httpcore:4.4.1'
     compile 'com.pnikosis:materialish-progress:1.5'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.jakewharton:butterknife:6.1.0'
     compile 'com.cocosw:bottomsheet:1.+@aar'
 
-    compile 'com.android.support:appcompat-v7:23.0.0'
-    compile 'com.android.support:support-v4:23.0.0'
+    compile 'com.android.support:appcompat-v7:22.2.1'
+    compile 'com.android.support:support-v4:22.2.1'
 }
