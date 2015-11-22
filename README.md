@@ -5,14 +5,10 @@ With app you can search, download, play free music from large db of vk.com.
 Available in three languages Turkmen, English, Russian
 
 #App Screenshots
-![](http://alashov.com/images/w2545x.png)
-![](http://alashov.com/images/Hn84gK.png)
-![](http://alashov.com/images/5zKwte.png)
-![](http://alashov.com/images/tyURHW.png)
-![](http://alashov.com/images/XAH2qb.png)
+[![image](http://dotjpg.co/sY6.png)](http://dotjpg.co/i/sY6)
 
 #Apk Download
-From [Releases](https://github.com/alashow/music-android/releases)
+From [here](https://bit.ly/M-APK)
 
 #License
     Copyright 2015 Alashov Berkeli
