@@ -198,17 +198,22 @@ public class MainActivity extends BaseActivity {
 
     private void searchWithRandomArtist() {
         String[] artists = {"Kygo", "Ed Sheeran", "Toe",
-            "Coldplay", "The xx", "MS MR", "Macklemore",
-            "Lorde", "Birdy", "Seinabo Sey", "Sia", "M83",
-            "Hans Zimmer", "Keaton Henson", "Yiruma", "Martin Garrix",
-            "Calvin Harris", "Zinovia", "Avicii", "Of Monsters and Men",
-            "Josef Salvat", "Sam Smith", "deadmau5", "Yann Tiersen",
-            "Jessie J", " Maroon 5", "X ambassadors", "Fink",
-            "Young Summer", "Lana Del Rey", "Arctic Monkeys",
-            "Ludovico Einaudi", "Lera Lynn", "Bastille",
-            "Nils Frahm", "Ben Howard", "Andrew Belle",
-            "Mumford & Sons", "Ryan Keen", "Zes", "Greg Haines",
-            "Max Richter"};
+            "Agnes Obel", "Aloe Black", "Andrew Belle", "Angus Stone", "Arctic Monkeys",
+            "Avicii", "Balmorhea", "Barcelona", "Bastille", "Bastille", "Ben Howard",
+            "Benj Heard", "Birdy", "Broods", "Calvin Harris", "Charlotte OC", "City of The Sun",
+            "Clint Mansell", "Coldplay", "Daft Punk", "Damien Rice", "Daniela Andrade",
+            "Daughter", "David O'Dowda", "Dawn Golden", "Dirk Maassen", "Ed Sheeran",
+            "Fabrizio Paterlini", "Fink", "Fleurie", "Gem club", "Greg Haines", "Greg Maroney",
+            "Groen Land", "Hans Zimmer", "Hozier", "Jamie XX", "Jaymes Young", "Jessie J",
+            "Josef Salvat", "Julia Kent", "Kai Engel", "Keaton Henson", "Kina Grannis", "Kodaline",
+            "Kygo", "Kyle Landry", "Lana Del Rey", "Lera Lynn", "Lights & Motion", "Linus Young",
+            "Lo-Fang", "Lo-Fang", "Lorde", "Ludovico Einaudi", "M83", "MONO", "MS MR", "Macklemore",
+            "Mammals", "Maroon 5", "Martin Garrix", "Mattia Cupelli", "Max Richter", "Message To Bears",
+            "Mogwai", "Mumford & Sons", "Nils Frahm", "ODESZA", "Of Monsters and Men", "Oh Wonder",
+            "Philip Glass", "Phoebe Ryan", "Ryan Keen", "Sam Smith", "Seinabo Sey", "Sia",
+            "Takahiro Kido", "The xx", "Tom Odell", "VLNY", "Wye Oak", "X ambassadors",
+            "Yann Tiersen", "Yiruma", "Young Summer", "Zack Hemsey", "Zinovia", "deadmau5",
+            "pg.lost", "Ólafur Arnalds", "Нервы"};
 
         String artist = artists[new Random().nextInt(artists.length)];
 
