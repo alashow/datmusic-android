@@ -30,7 +30,7 @@
     <string name="search">Gözle</string>
     <string name="search_hint">Gözleg sözüni ýazyň</string>
     <string name="web_version">Web wersiýasy</string>
-    <string name="powered_by"><![CDATA[Powered by <a href=\'http://alashov.com\'>Alashov</a>]]></string>
+    <string name="powered_by"><![CDATA[With ♥ by <a href=\'https://alashov.com\'>Alashov</a>]]></string>
 
     <!--MainActivity-->
     <string name="share_text">Heý! Şu aýdymy diňlemegi maslahat berýärin! \n</string>

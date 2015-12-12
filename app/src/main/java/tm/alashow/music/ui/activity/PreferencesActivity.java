@@ -36,6 +36,8 @@ public class PreferencesActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         Fragment preferencesFragment = new PreferencesFragment();
         U.attachFragment(this, preferencesFragment);
+
+        setTitle(R.string.preferences_title);
     }
 
     @Override
@@ -56,6 +58,7 @@ public class PreferencesActivity extends BaseActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        setTitle(R.string.preferences_title);
         Fragment preferencesFragment = new PreferencesFragment();
         U.attachFragment(this, preferencesFragment);
     }

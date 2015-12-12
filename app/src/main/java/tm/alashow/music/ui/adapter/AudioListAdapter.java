@@ -29,7 +29,6 @@ import tm.alashow.music.R;
 import tm.alashow.music.model.Audio;
 import tm.alashow.music.ui.activity.MainActivity;
 
-
 /**
  * Created by alashov on 08/12/14.
  */
@@ -84,7 +83,7 @@ public class AudioListAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.name.setText(audio.getArtist() + " - " + audio.getTitle());
+        viewHolder.name.setText(String.format("%s - %s", audio.getArtist(), audio.getTitle()));
         viewHolder.duration.setText(secondsToString(audio.getDuration()));
 
         viewHolder.playButton.setOnClickListener(new View.OnClickListener() {

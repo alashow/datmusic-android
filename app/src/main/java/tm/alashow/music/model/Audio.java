@@ -19,6 +19,9 @@ package tm.alashow.music.model;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import tm.alashow.music.Config;
+import tm.alashow.music.util.U;
+
 /**
  * Created by alashov on 07/05/15.
  */
@@ -26,20 +29,32 @@ public class Audio {
     private long id;
     private long ownerId;
     private int duration;
-    private String src;
     private String artist;
     private String title;
+
+    private String audioId = "";
+    private String downloadUrl;
+    private String streamUrl;
 
     private long bytes = - 1;
 
     public Audio(JSONObject audioObject) {
         try {
-            setId(audioObject.getLong("aid"));
-            setDuration(audioObject.getInt("duration"));
-            setOwnerId(audioObject.getLong("owner_id"));
-            setSrc(audioObject.getString("url"));
-            setArtist(audioObject.getString("artist").replace("&amp;", "&"));
-            setTitle(audioObject.getString("title").replace("&amp;", "&"));
+            this.id = audioObject.getLong("aid");
+            this.duration = audioObject.getInt("duration");
+            this.ownerId = audioObject.getLong("owner_id");
+            this.artist = audioObject.getString("artist").replace("&amp;", "&");
+            this.title = audioObject.getString("title").replace("&amp;", "&");
+            //this.src = audioObject.getString("url");
+
+            if (ownerId < 0) {
+                ownerId *= 1;
+                this.audioId += "-";
+            }
+            this.audioId += U.encode((int) ownerId) + ":" + U.encode((int) id);
+
+            this.downloadUrl = Config.SERVER + audioId;
+            this.streamUrl = Config.SERVER + "stream/" + audioId;
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -54,15 +69,6 @@ public class Audio {
         return this;
     }
 
-    public int getDuration() {
-        return duration;
-    }
-
-    public Audio setDuration(int duration) {
-        this.duration = duration;
-        return this;
-    }
-
     public long getOwnerId() {
         return ownerId;
     }
@@ -72,12 +78,12 @@ public class Audio {
         return this;
     }
 
-    public String getSrc() {
-        return src;
+    public int getDuration() {
+        return duration;
     }
 
-    public Audio setSrc(String src) {
-        this.src = src;
+    public Audio setDuration(int duration) {
+        this.duration = duration;
         return this;
     }
 
@@ -96,6 +102,33 @@ public class Audio {
 
     public Audio setTitle(String title) {
         this.title = title;
+        return this;
+    }
+
+    public String getAudioId() {
+        return audioId;
+    }
+
+    public Audio setAudioId(String audioId) {
+        this.audioId = audioId;
+        return this;
+    }
+
+    public String getDownloadUrl() {
+        return downloadUrl;
+    }
+
+    public Audio setDownloadUrl(String downloadUrl) {
+        this.downloadUrl = downloadUrl;
+        return this;
+    }
+
+    public String getStreamUrl() {
+        return streamUrl;
+    }
+
+    public Audio setStreamUrl(String streamUrl) {
+        this.streamUrl = streamUrl;
         return this;
     }
 

@@ -19,15 +19,12 @@ package tm.alashow.music;/*
  * It is licensed under GNU GPL v. 2 or later. For full terms see the file LICENSE.
  */
 
-import tm.alashow.music.model.Audio;
-
 public class Config {
-    public static final String SERVER = "http://alashov.com/";
-    public static final String ENDPOINT_API = SERVER + "music/app/";
-    public static final String VK_SERVER = "https://api.vk.com/";
-    public static final String VK_AUDIO_SEARCH = VK_SERVER + "method/audio.search";
+    public static final String SERVER = "https://datmusic.xyz/";
+    public static final String SEARCH = SERVER + "search/";
+    public static final String ENDPOINT_API = SERVER + "app/";
 
-    public static final String DOWNLOAD_FOLDER = "/AlashovMusic";
+    public static final String DOWNLOAD_FOLDER = "/datmusic";
 
     public static String GCM_SENDER_ID = "635425098901";
     public static final boolean DEBUG = true;
@@ -45,9 +42,4 @@ public class Config {
     public static String VK_CONFIG_AUTOCOMPLETE = "1";
     public static String VK_CONFIG_COUNT = "300";
     public static String VK_CONFIG_SORT = "2";
-    public static String VK_CONFIG_VERSION = "5.31";
-
-    public static String getDownloadAudioLink(Audio audio) {
-        return "http://alashov.com/music/download.php?audio_id=" + audio.getOwnerId() + "_" + audio.getId();
-    }
 }

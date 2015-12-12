@@ -34,10 +34,10 @@ public class SettingsManager {
     private Context mContext;
 
     /**
-     * @param _context App Context
+     * @param context App Context
      */
-    protected SettingsManager(Context _context) {
-        mContext = _context;
+    protected SettingsManager(Context context) {
+        mContext = context;
     }
 
     // Lazy Initialization (If required then only)

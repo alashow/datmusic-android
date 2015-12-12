@@ -41,9 +41,9 @@ import android.widget.Toast;
 
 import java.util.regex.Pattern;
 
+import tm.alashow.music.App;
 import tm.alashow.music.Config;
 import tm.alashow.music.R;
-import tm.alashow.music.App;
 import tm.alashow.music.ui.activity.BaseActivity;
 
 public class U {
@@ -275,4 +275,55 @@ public class U {
         String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + "";
         return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
     }
+
+
+    //from gist https://gist.github.com/alashow/07d9ef9c02ee697ab47d
+    public static Character[] characters = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K',
+        'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',
+        'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g',
+        'h', 'j', 'k', 'm', 'n', 'p', 'q', 'r', 's', 't',
+        'u', 'v', 'x', 'y', 'z', '1', '2', '3'};
+
+    public static String encode(int input) {
+        int length = characters.length;
+        String encoded = "";
+
+        if (input == 0) {
+            return String.valueOf(characters[0]);
+        }
+
+        while (input > 0) {
+            int val = input % length;
+            input = input / length;
+            encoded += characters[val];
+        }
+
+        return encoded;
+    }
+
+    public static int decode(String encoded) {
+        int length = characters.length;
+
+        int decoded = 0;
+
+        for(int i = encoded.length() - 1; i >= 0; i--) {
+            char ch = encoded.charAt(i);
+            int val = indexOf(ch, characters);
+            decoded = (decoded * length) + val;
+        }
+
+        return decoded;
+    }
+
+    public static <T> int indexOf(T needle, T[] haystack) {
+        for(int i = 0; i < haystack.length; i++) {
+            if (haystack[i] != null && haystack[i].equals(needle)
+                || needle == null && haystack[i] == null) {
+                return i;
+            }
+        }
+
+        return - 1;
+    }
+    //end from gist
 }

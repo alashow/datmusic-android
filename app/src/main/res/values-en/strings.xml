@@ -30,7 +30,7 @@
     <string name="search">Search</string>
     <string name="search_hint">Type search query</string>
     <string name="web_version">Web version</string>
-    <string name="powered_by"><![CDATA[Powered by <a href=\'http://alashov.com\'>Alashov</a>]]></string>
+    <string name="powered_by"><![CDATA[With ♥ by <a href=\'https://alashov.com\'>Alashov</a>]]></string>
 
     <!--MainActivity-->
     <string name="share_text">Hey! You should check up this music! \n</string>

@@ -32,7 +32,6 @@ import android.text.method.LinkMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -40,8 +39,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 import tm.alashow.music.Config;
 import tm.alashow.music.R;
 import tm.alashow.music.android.IntentManager;
@@ -63,16 +62,16 @@ public abstract class BaseActivity extends ActionBarActivity {
     private String mOldSubtitle;
     private Handler mHandler;
 
-    @InjectView(R.id.drawer) DrawerLayout mDrawerLayout;
-    @InjectView(R.id.navigation_drawer_list_view) ListView mDrawerList;
-    @InjectView(R.id.powered_by) TextView poweredBy;
+    @Bind(R.id.drawer) DrawerLayout mDrawerLayout;
+    @Bind(R.id.navigation_drawer_list_view) ListView mDrawerList;
+    @Bind(R.id.powered_by) TextView poweredBy;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         settingsManager = SettingsManager.getInstance(this);
         setContentView(getLayoutResourceId());
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mHandler = new Handler();
@@ -119,12 +118,13 @@ public abstract class BaseActivity extends ActionBarActivity {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primary_dark_material_dark));
 
-
         //Adding items menu
         populateMenu();
 
         //Showing back button on action bar
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         //Menu listItem click callback
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -175,16 +175,16 @@ public abstract class BaseActivity extends ActionBarActivity {
     /**
      * Starts activity if activity tag handled, else close menu
      *
-     * @param _activityTag activityTag field of mainactivity object
+     * @param activityTag activityTag field of mainactivity object
      */
-    private void changeActivity(String _activityTag) {
-        if (! getActivityTag().equals(_activityTag)) {
-            if (_activityTag.equals(Config.ACTIVITY_TAG_MAIN)) {
+    private void changeActivity(String activityTag) {
+        if (! getActivityTag().equals(activityTag)) {
+            if (activityTag.equals(Config.ACTIVITY_TAG_MAIN)) {
                 IntentManager.with(this).main();
-            } else if (_activityTag.equals(Config.ACTIVITY_TAG_PREFERENCES)) {
+            } else if (activityTag.equals(Config.ACTIVITY_TAG_PREFERENCES)) {
                 IntentManager.with(this).preferences();
-            } else if (_activityTag.equals("web")) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://alashov.com/music"));
+            } else if (activityTag.equals("web")) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(Config.SERVER));
                 startActivity(intent);
             }
         }
@@ -214,22 +214,6 @@ public abstract class BaseActivity extends ActionBarActivity {
         if (mDrawerToggle != null) {
             mDrawerToggle.onConfigurationChanged(newConfig);
         }
-    }
-
-    /**
-     * For Crouton
-     *
-     * @return main viewgroup
-     */
-    protected ViewGroup getContentView() {
-        return (ViewGroup) findViewById(R.id.content);
-    }
-
-    /**
-     * Call when activity childness changed
-     */
-    protected void onActivityStatusChanged() {
-        mDrawerToggle.setDrawerIndicatorEnabled(! isChildActivity());
     }
 
     /**

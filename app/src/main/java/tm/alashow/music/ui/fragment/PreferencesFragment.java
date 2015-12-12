@@ -19,6 +19,7 @@ package tm.alashow.music.ui.fragment;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.view.View;
 
 import java.util.Locale;
@@ -63,6 +64,7 @@ public class PreferencesFragment extends PreferenceFragment {
                         config.locale = locale;
                         getActivity().getBaseContext().getResources().updateConfiguration(config, getActivity().getBaseContext().getResources().getDisplayMetrics());
                         getActivity().onConfigurationChanged(config);
+                        PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putBoolean("languageChanged", true).apply();
                     }
                     return true;
                 }

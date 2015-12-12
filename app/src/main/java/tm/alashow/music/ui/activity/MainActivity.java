@@ -64,10 +64,10 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Random;
 
-import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import tm.alashow.music.Config;
 import tm.alashow.music.R;
+import tm.alashow.music.android.IntentManager;
 import tm.alashow.music.model.Audio;
 import tm.alashow.music.ui.adapter.AudioListAdapter;
 import tm.alashow.music.util.ApiClient;
@@ -93,17 +93,17 @@ public class MainActivity extends BaseActivity {
     private String CONFIG_COUNT;
     private int CONFIG_PERFORMER_ONLY;
 
-    @InjectView(R.id.refreshLayout) SwipeRefreshLayout swipeRefreshLayout;
-    @InjectView(R.id.listView) ListView mListView;
-    @InjectView(R.id.progress) ProgressWheel progressBar;
-    @InjectView(R.id.errorView) ErrorView errorView;
+    @Bind(R.id.refreshLayout) SwipeRefreshLayout swipeRefreshLayout;
+    @Bind(R.id.listView) ListView mListView;
+    @Bind(R.id.progress) ProgressWheel progressBar;
+    @Bind(R.id.errorView) ErrorView errorView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        ButterKnife.inject(this);
         layoutInflater = LayoutInflater.from(this);
+
+        setTitle(R.string.app_name);
 
         U.setColorScheme(swipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -246,9 +246,8 @@ public class MainActivity extends BaseActivity {
         }
 
         //change search method to getPopular, if query empty. get popular music.
-        String url = (TextUtils.getTrimmedLength(query) < 1) ? Config.VK_AUDIO_SEARCH.replaceAll("search", "getPopular") : Config.VK_AUDIO_SEARCH;
 
-        ApiClient.get(url, params, new JsonHttpResponseHandler() {
+        ApiClient.get(Config.SEARCH, params, new JsonHttpResponseHandler() {
             @Override
             public void onStart() {
                 U.hideView(errorView);
@@ -307,7 +306,7 @@ public class MainActivity extends BaseActivity {
                                             switch (which) {
                                                 case R.id.download:
                                                     DownloadManager mgr = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
-                                                    Uri downloadUri = Uri.parse(audio.getSrc());
+                                                    Uri downloadUri = Uri.parse(audio.getDownloadUrl());
                                                     DownloadManager.Request request = new DownloadManager.Request(downloadUri);
 
                                                     if (U.isAboveOfVersion(11)) {
@@ -323,19 +322,18 @@ public class MainActivity extends BaseActivity {
                                                     playAudio(audio);
                                                     break;
                                                 case R.id.copy:
-                                                    String link = Config.getDownloadAudioLink(audio);
                                                     if (! U.isAboveOfVersion(11)) {
                                                         android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                                                        clipboard.setText(link);
+                                                        clipboard.setText(audio.getDownloadUrl());
                                                     } else {
                                                         android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                                                        android.content.ClipData clip = android.content.ClipData.newPlainText("Link", link);
+                                                        android.content.ClipData clip = android.content.ClipData.newPlainText("Link", audio.getDownloadUrl());
                                                         clipboard.setPrimaryClip(clip);
                                                         U.showCenteredToast(MainActivity.this, R.string.audio_copied);
                                                     }
                                                     break;
                                                 case R.id.share:
-                                                    String shareText = getString(R.string.share_text) + Config.getDownloadAudioLink(audio);
+                                                    String shareText = getString(R.string.share_text) + audio.getDownloadUrl();
                                                     ;
                                                     Intent sendIntent = new Intent();
                                                     sendIntent.setAction(Intent.ACTION_SEND);
@@ -356,7 +354,7 @@ public class MainActivity extends BaseActivity {
                                             public void run() {
                                                 try {
                                                     URLConnection ucon;
-                                                    final URL uri = new URL(audio.getSrc());
+                                                    final URL uri = new URL(audio.getDownloadUrl());
                                                     ucon = uri.openConnection();
                                                     ucon.connect();
                                                     final long bytes = Long.parseLong(ucon.getHeaderField("content-length"));
@@ -566,6 +564,11 @@ public class MainActivity extends BaseActivity {
 
     private void getConfig() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if (sharedPreferences.getBoolean("languageChanged", false)) {
+            PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean("languageChanged", false).apply();
+            IntentManager.with(this).main();
+            finish();
+        }
         CONFIG_COUNT = sharedPreferences.getString("searchCount", Config.VK_CONFIG_COUNT);
         CONFIG_SORT = sharedPreferences.getString("searchSort", Config.VK_CONFIG_SORT);
         CONFIG_PERFORMER_ONLY = (sharedPreferences.getBoolean("performerOnly", false)) ? 1 : 0;
@@ -618,7 +621,7 @@ public class MainActivity extends BaseActivity {
             public void onError(Exception e) {
                 U.showCenteredToast(MainActivity.this, R.string.exception);
             }
-        }).execute(Uri.parse(audio.getSrc()));
+        }).execute(Uri.parse(audio.getStreamUrl()));
     }
 
     /**
