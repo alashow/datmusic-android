@@ -108,7 +108,7 @@ public class PushNotificationsService extends GCMBaseIntentService {
                     setContentTitle(title).
                     setContentText(message).
                     setStyle(new NotificationCompat.BigTextStyle().bigText(message)).
-                    setSmallIcon(R.mipmap.ic_launcher).
+                    setSmallIcon(R.drawable.ic_notification).
                     setColor(context.getResources().getColor(R.color.primary)).
                     setContentIntent(pendingIntent).setAutoCancel(true);
                 mBuilder.setDefaults(NotificationCompat.DEFAULT_VIBRATE | NotificationCompat.DEFAULT_LIGHTS | NotificationCompat.DEFAULT_SOUND);
