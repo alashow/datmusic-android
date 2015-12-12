@@ -17,7 +17,7 @@
 <resources>
 
     <!--General-->
-    <string name="app_name">Music</string>
+    <string name="app_name">datmusic</string>
     <string name="exception">Ошибка в программе!</string>
     <string name="retry">Обновить</string>
     <string name="error">Ошибка</string>

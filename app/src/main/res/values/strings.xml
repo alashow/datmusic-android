@@ -17,7 +17,7 @@
 <resources>
 
     <!--General-->
-    <string name="app_name">Music</string>
+    <string name="app_name">datmusic</string>
     <string name="exception">Programmada ýalňyşlyk boldy!</string>
     <string name="retry">Täzeden</string>
     <string name="error">Ýalňyşlyk</string>

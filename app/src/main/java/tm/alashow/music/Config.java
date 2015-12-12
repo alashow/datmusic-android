@@ -14,14 +14,15 @@
  *    limitations under the License.
  */
 
-package tm.alashow.music;/*
+package tm.alashow.music;
+/*
  * Copyright (c) 2015  Alashov Berkeli
  * It is licensed under GNU GPL v. 2 or later. For full terms see the file LICENSE.
  */
 
 public class Config {
-    public static final String SERVER = "https://datmusic.xyz/";
-    public static final String SEARCH = SERVER + "search/";
+    public static final String SERVER = "http://datmusic.xyz/";
+    public static final String SEARCH = SERVER + "search.php";
     public static final String ENDPOINT_API = SERVER + "app/";
 
     public static final String DOWNLOAD_FOLDER = "/datmusic";

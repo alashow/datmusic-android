@@ -23,7 +23,7 @@ import com.loopj.android.http.RequestParams;
 import tm.alashow.music.App;
 
 public class ApiClient {
-    private static AsyncHttpClient client = new AsyncHttpClient();
+    private static AsyncHttpClient client = new AsyncHttpClient(true, 80, 443);
 
 
     public static void get(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
