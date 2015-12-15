@@ -22,6 +22,7 @@ package tm.alashow.music;
 
 public class Config {
     public static final String SERVER = "http://datmusic.xyz/";
+    public static final String SECURE_SERVER = "https://datmusic.xyz/";
     public static final String SEARCH = SERVER + "search.php";
     public static final String ENDPOINT_API = SERVER + "app/";
 

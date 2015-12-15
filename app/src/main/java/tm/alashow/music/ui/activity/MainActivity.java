@@ -329,17 +329,16 @@ public class MainActivity extends BaseActivity {
                                                 case R.id.copy:
                                                     if (! U.isAboveOfVersion(11)) {
                                                         android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                                                        clipboard.setText(audio.getDownloadUrl());
+                                                        clipboard.setText(audio.getSecureDownloadUrl());
                                                     } else {
                                                         android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                                                        android.content.ClipData clip = android.content.ClipData.newPlainText("Link", audio.getDownloadUrl());
+                                                        android.content.ClipData clip = android.content.ClipData.newPlainText("Link", audio.getSecureDownloadUrl());
                                                         clipboard.setPrimaryClip(clip);
                                                         U.showCenteredToast(MainActivity.this, R.string.audio_copied);
                                                     }
                                                     break;
                                                 case R.id.share:
-                                                    String shareText = getString(R.string.share_text) + audio.getDownloadUrl();
-                                                    ;
+                                                    String shareText = getString(R.string.share_text) + audio.getSecureDownloadUrl();
                                                     Intent sendIntent = new Intent();
                                                     sendIntent.setAction(Intent.ACTION_SEND);
                                                     sendIntent.putExtra(Intent.EXTRA_TEXT, shareText);
@@ -624,7 +623,12 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onError(Exception e) {
-                U.showCenteredToast(MainActivity.this, R.string.exception);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        U.showCenteredToast(MainActivity.this, R.string.exception);
+                    }
+                });
             }
         }).execute(Uri.parse(audio.getStreamUrl()));
     }

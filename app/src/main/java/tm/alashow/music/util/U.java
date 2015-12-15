@@ -21,11 +21,8 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.database.Cursor;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
@@ -39,17 +36,12 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.regex.Pattern;
-
 import tm.alashow.music.App;
 import tm.alashow.music.Config;
 import tm.alashow.music.R;
 import tm.alashow.music.ui.activity.BaseActivity;
 
 public class U {
-
-    private static final Pattern PATTERN = Pattern.compile("[^A-Za-z0-9_]");
-    private static final int MAX_FILENAME_LENGTH = 127;
 
     /**
      * Hide Given view, by setting visibility View.GONE
@@ -177,24 +169,6 @@ public class U {
 
     public static void l(Object object, int message) {
         l(object, "Integer = " + message);
-    }
-
-    public static void e(String message) {
-        Log.e("Error", message);
-    }
-
-    public static String getRealPathFromURI(Activity context, Uri contentUri) {
-        String result;
-        Cursor cursor = context.getContentResolver().query(contentUri, null, null, null, null);
-        if (cursor == null) { // Source is Dropbox or other similar local file path
-            result = contentUri.getPath();
-        } else {
-            cursor.moveToFirst();
-            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
-            result = cursor.getString(idx);
-            cursor.close();
-        }
-        return result;
     }
 
     /**

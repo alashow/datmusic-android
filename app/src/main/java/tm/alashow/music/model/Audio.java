@@ -34,6 +34,7 @@ public class Audio {
 
     private String audioId = "";
     private String downloadUrl;
+    private String secureDownloadUrl;
     private String streamUrl;
 
     private long bytes = - 1;
@@ -48,13 +49,14 @@ public class Audio {
             //this.src = audioObject.getString("url");
 
             if (ownerId < 0) {
-                ownerId *= 1;
+                ownerId *= - 1;
                 this.audioId += "-";
             }
             this.audioId += U.encode((int) ownerId) + ":" + U.encode((int) id);
 
-            this.downloadUrl = Config.SERVER + audioId;
-            this.streamUrl = Config.SERVER + "stream/" + audioId;
+            this.downloadUrl = Config.ENDPOINT_API + audioId;
+            this.secureDownloadUrl = Config.SECURE_SERVER + audioId;
+            this.streamUrl = Config.ENDPOINT_API + "stream/" + audioId;
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -120,6 +122,15 @@ public class Audio {
 
     public Audio setDownloadUrl(String downloadUrl) {
         this.downloadUrl = downloadUrl;
+        return this;
+    }
+
+    public String getSecureDownloadUrl() {
+        return secureDownloadUrl;
+    }
+
+    public Audio setSecureDownloadUrl(String secureDownloadUrl) {
+        this.secureDownloadUrl = secureDownloadUrl;
         return this;
     }
 
