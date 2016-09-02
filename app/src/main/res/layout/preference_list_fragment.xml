@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 /*
 ** Copyright 2010, The Android Open Source Project
 **
@@ -18,10 +17,10 @@
 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_height="fill_parent"
-              android:layout_width="fill_parent"
-              android:background="@android:color/transparent">
+    android:orientation="vertical"
+    android:layout_height="fill_parent"
+    android:layout_width="fill_parent"
+    android:background="@android:color/transparent">
 
     <ListView
         android:id="@android:id/list"
@@ -36,7 +35,7 @@
         android:clipToPadding="false"
         android:drawSelectorOnTop="false"
         android:cacheColorHint="@android:color/transparent"
-        android:scrollbarAlwaysDrawVerticalTrack="true"/>
+        android:scrollbarAlwaysDrawVerticalTrack="true" />
 
     <TextView
         android:id="@android:id/empty"
@@ -44,7 +43,7 @@
         android:layout_height="fill_parent"
         android:padding="@dimen/preference_fragment_padding_side"
         android:gravity="center"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
     <RelativeLayout
         android:id="@+id/button_bar"
@@ -59,8 +58,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dip"
             android:layout_alignParentLeft="true"
-            android:text="@string/back_button_label"
-            />
+            android:text="@string/back_button_label" />
 
         <LinearLayout
             android:orientation="horizontal"
@@ -74,16 +72,14 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dip"
                 android:text="@string/skip_button_label"
-                android:visibility="gone"
-                />
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/next_button"
                 android:layout_width="150dip"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dip"
-                android:text="@string/next_button_label"
-                />
+                android:text="@string/next_button_label" />
         </LinearLayout>
     </RelativeLayout>
 </LinearLayout>

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2015. Alashov Berkeli
   ~
   ~    Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +15,12 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:wheel="http://schemas.android.com/apk/res-auto"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <include layout="@layout/toolbar"/>
+    <include layout="@layout/toolbar" />
 
     <android.support.v4.widget.DrawerLayout
         android:id="@+id/drawer"
@@ -42,36 +41,35 @@
                     android:id="@+id/listView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:listSelector="@drawable/white_selector"/>
+                    android:listSelector="@drawable/white_selector" />
             </android.support.v4.widget.SwipeRefreshLayout>
 
             <com.pnikosis.materialishprogress.ProgressWheel
                 android:id="@+id/progress"
-                android:visibility="gone"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
-                wheel:matProg_barColor="@color/primary"
-                wheel:matProg_progressIndeterminate="true"/>
-
-            <tr.xip.errorview.ErrorView
-                android:id="@+id/errorView"
                 android:visibility="gone"
-                xmlns:errorview="http://schemas.android.com/apk/res-auto"
+                app:matProg_barColor="@color/primary"
+                app:matProg_progressIndeterminate="true" />
+
+            <tr.xip.errorview.ErrorView xmlns:errorview="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/errorView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                errorview:ev_title="@string/error"
-                errorview:ev_titleColor="@color/text_color"
-                errorview:ev_subtitleColor="@color/secondary_text_color"
-                errorview:ev_showTitle="true"
-                errorview:ev_showSubtitle="true"
-                errorview:ev_showRetryButton="true"
+                android:visibility="gone"
                 errorview:ev_retryButtonText="@string/retry"
-                errorview:ev_retryButtonTextColor="@color/primary"/>
+                errorview:ev_retryButtonTextColor="@color/primary"
+                errorview:ev_showRetryButton="true"
+                errorview:ev_showSubtitle="true"
+                errorview:ev_showTitle="true"
+                errorview:ev_subtitleColor="@color/secondary_text_color"
+                errorview:ev_title="@string/error"
+                errorview:ev_titleColor="@color/text_color" />
         </RelativeLayout>
 
-        <include layout="@layout/layout_navigation_drawer"/>
+        <include layout="@layout/layout_navigation_drawer" />
     </android.support.v4.widget.DrawerLayout>
 </LinearLayout>

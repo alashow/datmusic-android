@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2015. Alashov Berkeli
   ~
   ~    Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +15,9 @@
   -->
 
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
-        android:color="@color/white_selector">
+    android:color="@color/white_selector">
     <item
         android:id="@android:id/mask"
-        android:drawable="@color/white_selector"/>
-    <item android:drawable="@android:color/transparent"/>
+        android:drawable="@color/white_selector" />
+    <item android:drawable="@android:color/transparent" />
 </ripple>

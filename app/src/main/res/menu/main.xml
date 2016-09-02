@@ -15,10 +15,10 @@
   -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:ertir="http://schemas.android.com/apk/res-auto">
+    xmlns:ertir="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/search"
         android:title="@string/search"
         ertir:showAsAction="always"
-        ertir:actionViewClass="android.support.v7.widget.SearchView"/>
+        ertir:actionViewClass="android.support.v7.widget.SearchView" />
 </menu>

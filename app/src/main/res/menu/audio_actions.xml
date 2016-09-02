@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2015. Alashov Berkeli
   ~
   ~    Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,17 +18,17 @@
     <item
         android:id="@+id/download"
         android:title="@string/audio_download"
-        android:icon="@drawable/ic_download"/>
+        android:icon="@drawable/ic_download" />
     <item
         android:id="@+id/play"
         android:title="@string/audio_play"
-        android:icon="@drawable/ic_play_gray"/>
+        android:icon="@drawable/ic_play_gray" />
     <item
         android:id="@+id/share"
         android:title="@string/audio_share"
-        android:icon="@drawable/ic_share"/>
+        android:icon="@drawable/ic_share" />
     <item
         android:id="@+id/copy"
         android:title="@string/audio_copy"
-        android:icon="@drawable/ic_copy"/>
+        android:icon="@drawable/ic_copy" />
 </menu>

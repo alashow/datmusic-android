@@ -16,8 +16,7 @@
   ~    limitations under the License.
   -->
 
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -28,7 +27,7 @@
         android:layout_width="115dp"
         android:layout_height="44dp"
         android:layout_centerHorizontal="true"
-        tools:src="@drawable/badge_background"/>
+        tools:src="@drawable/badge_background" />
 
     <EditText
         android:id="@+id/key"
@@ -38,6 +37,6 @@
         android:layout_below="@+id/captcha"
         android:layout_marginTop="20dp"
         android:maxLines="1"
-        style="@style/EditText"/>
+        style="@style/EditText" />
 
 </RelativeLayout>

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2015. Alashov Berkeli
   ~
   ~    Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +14,7 @@
   ~    limitations under the License.
   -->
 
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -33,7 +31,7 @@
         android:layout_toLeftOf="@+id/badges"
         android:layout_toStartOf="@+id/badges"
         android:textColor="@color/text_color"
-        tools:text="Martin Garrix - Animals"/>
+        tools:text="Martin Garrix - Animals" />
 
     <LinearLayout
         android:id="@+id/badges"
@@ -50,7 +48,7 @@
             android:layout_width="35dp"
             android:layout_height="20dp"
             android:src="@drawable/ic_play"
-            android:background="@drawable/badge_background"/>
+            android:background="@drawable/badge_background" />
 
         <TextView
             android:id="@+id/duration"
@@ -62,6 +60,6 @@
             android:textColor="@color/white"
             android:textSize="@dimen/text_small"
             android:gravity="center"
-            tools:text="3:05"/>
+            tools:text="3:05" />
     </LinearLayout>
 </RelativeLayout>
