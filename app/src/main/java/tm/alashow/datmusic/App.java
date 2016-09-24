@@ -27,6 +27,8 @@ import android.content.res.Configuration;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 
+import com.tumblr.remember.Remember;
+
 import java.util.Locale;
 
 public class App extends Application {
@@ -49,12 +51,14 @@ public class App extends Application {
         applicationContext = getApplicationContext();
         applicationHandler = new Handler(applicationContext.getMainLooper());
 
+        Remember.init(getApplicationContext(), getPackageName() + "_preferences");
+
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         Configuration config = getBaseContext().getResources().getConfiguration();
 
-        String lang = settings.getString("language", "tk");
+        String lang = settings.getString("language", "en");
 
-        if (!lang.equals("") && !config.locale.getLanguage().equals(lang)) {
+        if (! lang.equals("") && ! config.locale.getLanguage().equals(lang)) {
             Locale locale = new Locale(lang);
             Locale.setDefault(locale);
             config.locale = locale;

@@ -16,8 +16,10 @@
 
 package tm.alashow.datmusic.model;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.Locale;
 
 import tm.alashow.datmusic.Config;
 import tm.alashow.datmusic.util.U;
@@ -25,40 +27,39 @@ import tm.alashow.datmusic.util.U;
 /**
  * Created by alashov on 07/05/15.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Audio {
-    private long id;
-    private long ownerId;
-    private int duration;
-    private String artist;
-    private String title;
 
-    private String audioId = "";
-    private String downloadUrl;
-    private String secureDownloadUrl;
-    private String streamUrl;
+    @JsonProperty("aid")
+    private long id;
+
+    @JsonProperty("duration")
+    private int duration;
+
+    @JsonProperty("owner_id")
+    private long ownerId;
+
+    @JsonProperty("artist")
+    private String artist;
+
+    @JsonProperty("title")
+    private String title;
 
     private long bytes = -1;
 
-    public Audio(JSONObject audioObject) {
-        try {
-            this.id = audioObject.getLong("aid");
-            this.duration = audioObject.getInt("duration");
-            this.ownerId = audioObject.getLong("owner_id");
-            this.artist = audioObject.getString("artist").replace("&amp;", "&");
-            this.title = audioObject.getString("title").replace("&amp;", "&");
+    public Audio() {
+    }
 
-            if (ownerId < 0) {
-                ownerId *= -1;
-                this.audioId += "-";
-            }
-            this.audioId += U.encode((int) ownerId) + ":" + U.encode((int) id);
+    public String getEncodedAudioId() {
+        return String.format(Locale.ROOT, "%s:%s", U.encode(ownerId), U.encode(id));
+    }
 
-            this.downloadUrl = Config.ENDPOINT_API + audioId;
-            this.secureDownloadUrl = Config.SECURE_SERVER + audioId;
-            this.streamUrl = Config.ENDPOINT_API + "stream/" + audioId;
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+    public String getStreamUrl() {
+        return String.format(Locale.ROOT, "%sstream/%s", Config.MAIN_SERVER, getEncodedAudioId());
+    }
+
+    public String getDownloadUrl() {
+        return String.format(Locale.ROOT, "%s%s", Config.MAIN_SERVER, getEncodedAudioId());
     }
 
     public long getId() {
@@ -67,15 +68,6 @@ public class Audio {
 
     public Audio setId(long id) {
         this.id = id;
-        return this;
-    }
-
-    public long getOwnerId() {
-        return ownerId;
-    }
-
-    public Audio setOwnerId(long ownerId) {
-        this.ownerId = ownerId;
         return this;
     }
 
@@ -88,8 +80,17 @@ public class Audio {
         return this;
     }
 
+    public long getOwnerId() {
+        return ownerId;
+    }
+
+    public Audio setOwnerId(long ownerId) {
+        this.ownerId = ownerId;
+        return this;
+    }
+
     public String getArtist() {
-        return artist;
+        return artist.replace("&amp;", "&");
     }
 
     public Audio setArtist(String artist) {
@@ -98,47 +99,11 @@ public class Audio {
     }
 
     public String getTitle() {
-        return title;
+        return title.replace("&amp;", "&");
     }
 
     public Audio setTitle(String title) {
         this.title = title;
-        return this;
-    }
-
-    public String getAudioId() {
-        return audioId;
-    }
-
-    public Audio setAudioId(String audioId) {
-        this.audioId = audioId;
-        return this;
-    }
-
-    public String getDownloadUrl() {
-        return downloadUrl;
-    }
-
-    public Audio setDownloadUrl(String downloadUrl) {
-        this.downloadUrl = downloadUrl;
-        return this;
-    }
-
-    public String getSecureDownloadUrl() {
-        return secureDownloadUrl;
-    }
-
-    public Audio setSecureDownloadUrl(String secureDownloadUrl) {
-        this.secureDownloadUrl = secureDownloadUrl;
-        return this;
-    }
-
-    public String getStreamUrl() {
-        return streamUrl;
-    }
-
-    public Audio setStreamUrl(String streamUrl) {
-        this.streamUrl = streamUrl;
         return this;
     }
 

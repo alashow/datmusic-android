@@ -21,12 +21,9 @@ package tm.alashow.datmusic;
  */
 
 public class Config {
-    public static final String SERVER = "http://datmusic.xyz/";
-    public static final String SECURE_SERVER = "https://datmusic.xyz/";
-    public static final String SEARCH = SERVER + "search.php";
-    public static final String ENDPOINT_API = SERVER + "app/";
+    public static final String MAIN_SERVER = "https://datmusic.xyz/";
 
-    public static final String DOWNLOAD_FOLDER = "/datmusic";
+    public static final String DOWNLOAD_FOLDER_NAME = "datmusic";
 
     public static String GCM_SENDER_ID = "635425098901";
 
@@ -37,8 +34,6 @@ public class Config {
     //Activity Extras
     public static final String EXTRA_QUERY = "tm.alashow.datmusic.QUERY";
 
-    //VK Search Api Config
-    public static String VK_CONFIG_AUTOCOMPLETE = "1";
-    public static String VK_CONFIG_COUNT = "300";
-    public static String VK_CONFIG_SORT = "2";
+    public static String DEFAULT_COUNT = "300";
+    public static String DEFAULT_SORT = "2";
 }

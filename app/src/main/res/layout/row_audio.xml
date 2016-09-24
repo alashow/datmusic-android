@@ -14,12 +14,17 @@
   ~    limitations under the License.
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:descendantFocusability="blocksDescendants"
-    android:padding="17dp">
+    android:background="@drawable/white_selector"
+    android:paddingTop="20dp"
+    android:paddingBottom="20dp"
+    android:paddingRight="16dp"
+    android:paddingLeft="16dp">
 
     <TextView
         android:id="@+id/name"
@@ -31,7 +36,7 @@
         android:layout_toLeftOf="@+id/badges"
         android:layout_toStartOf="@+id/badges"
         android:textColor="@color/text_color"
-        tools:text="Martin Garrix - Animals" />
+        tools:text="Martin Garrix - Animals"/>
 
     <LinearLayout
         android:id="@+id/badges"
@@ -48,7 +53,8 @@
             android:layout_width="35dp"
             android:layout_height="20dp"
             android:src="@drawable/ic_play"
-            android:background="@drawable/badge_background" />
+            android:background="@drawable/badge_background"
+            android:contentDescription="@string/audio_play"/>
 
         <TextView
             android:id="@+id/duration"
@@ -58,8 +64,8 @@
             android:layout_marginLeft="5dp"
             android:layout_marginStart="5dp"
             android:textColor="@color/white"
-            android:textSize="@dimen/text_small"
+            android:textSize="@dimen/text_xsmall"
             android:gravity="center"
-            tools:text="3:05" />
+            tools:text="3:05"/>
     </LinearLayout>
 </RelativeLayout>

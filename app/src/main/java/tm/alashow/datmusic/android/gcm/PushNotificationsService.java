@@ -24,16 +24,13 @@ import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 
 import com.google.android.gcm.GCMBaseIntentService;
-import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 
-import org.json.JSONObject;
-
-import cz.msebera.android.httpclient.Header;
 import tm.alashow.datmusic.Config;
 import tm.alashow.datmusic.R;
+import tm.alashow.datmusic.model.Result;
+import tm.alashow.datmusic.rest.ApiService;
+import tm.alashow.datmusic.rest.Summon;
 import tm.alashow.datmusic.ui.activity.MainActivity;
-import tm.alashow.datmusic.util.ApiClient;
 import tm.alashow.datmusic.util.U;
 
 
@@ -44,15 +41,10 @@ public class PushNotificationsService extends GCMBaseIntentService {
 
     @Override
     protected void onRegistered(final Context context, String registrationId) {
-        RequestParams params = new RequestParams();
-        params.put("reg_id", registrationId);
-        params.put("id", U.getDeviceId(this));
-        ApiClient.get(Config.ENDPOINT_API + "reg_id.php", params, new JsonHttpResponseHandler() {
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                U.showCenteredToast(getBaseContext(), R.string.network_error);
-            }
-        });
+        ApiService.getClientJackson().register(
+            registrationId,
+            U.getDeviceId(this)
+        ).enqueue(new Summon<Result>());
     }
 
     @Override
@@ -88,12 +80,12 @@ public class PushNotificationsService extends GCMBaseIntentService {
 
                 PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
                 NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this).
-                        setContentTitle(title).
-                        setContentText(message).
-                        setStyle(new NotificationCompat.BigTextStyle().bigText(message)).
-                        setSmallIcon(R.drawable.ic_notification).
-                        setColor(context.getResources().getColor(R.color.primary)).
-                        setContentIntent(pendingIntent).setAutoCancel(true);
+                    setContentTitle(title).
+                    setContentText(message).
+                    setStyle(new NotificationCompat.BigTextStyle().bigText(message)).
+                    setSmallIcon(R.drawable.ic_notification).
+                    setColor(context.getResources().getColor(R.color.primary)).
+                    setContentIntent(pendingIntent).setAutoCancel(true);
                 mBuilder.setDefaults(NotificationCompat.DEFAULT_VIBRATE | NotificationCompat.DEFAULT_LIGHTS | NotificationCompat.DEFAULT_SOUND);
                 notificationManager.notify(type.hashCode(), mBuilder.build());
             }

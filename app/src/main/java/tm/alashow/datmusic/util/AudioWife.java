@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import tm.alashow.datmusic.R;
-import tm.alashow.datmusic.ui.activity.MainActivity;
+import tm.alashow.datmusic.interfaces.OnPreparedListener;
 
 /**
  * A simple audio player wrapper for Android
@@ -109,7 +109,7 @@ public class AudioWife {
 
     private ArrayList<View.OnClickListener> mPauseListeners = new ArrayList<View.OnClickListener>();
 
-    private MainActivity.OnPreparedListener mPreparedListener;
+    private OnPreparedListener mPreparedListener;
 
     /**
      * Audio URI
@@ -363,7 +363,7 @@ public class AudioWife {
      * @param uri Uri of the audio to be played.
      *            **
      */
-    public AudioWife init(Context ctx, Uri uri, MainActivity.OnPreparedListener onPreparedListener) {
+    public AudioWife init(Context ctx, Uri uri, OnPreparedListener onPreparedListener) {
 
         if (uri == null) {
             throw new IllegalArgumentException("Uri cannot be null");

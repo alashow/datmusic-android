@@ -1,5 +1,6 @@
 /*
- * Copyright 2015. Alashov Berkeli
+ * Copyright 2014. Alashov Berkeli
+ *
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -14,22 +15,20 @@
  *    limitations under the License.
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+package tm.alashow.datmusic.interfaces;
 
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.0-rc1'
+import android.view.View;
 
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-    }
-}
+/**
+ * Created by alashov on 23/09/2016.
+ */
 
-allprojects {
-    repositories {
-        jcenter()
-    }
+public interface OnItemClickListener {
+    /**
+     * On item click.
+     *
+     * @param view     the view
+     * @param position the position
+     */
+    void onItemClick(View view, int position);
 }

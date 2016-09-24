@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright 2015. Alashov Berkeli
+  ~ Copyright 2014. Alashov Berkeli
+  ~
   ~
   ~    Licensed under the Apache License, Version 2.0 (the "License");
   ~    you may not use this file except in compliance with the License.
@@ -14,20 +15,19 @@
   ~    limitations under the License.
   -->
 
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp">
 
-    <item android:state_pressed="true">
-        <shape>
-            <solid android:color="@color/primary_dark" />
-            <corners android:radius="15dp" />
-        </shape>
-    </item>
-
-    <item>
-        <shape>
-            <solid android:color="@color/primary" />
-            <corners android:radius="15dp" />
-        </shape>
-    </item>
-
-</selector>
+    <com.pnikosis.materialishprogress.ProgressWheel
+        android:id="@+id/progress"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center_horizontal"
+        android:visibility="visible"
+        app:matProg_barColor="@color/primary"
+        app:matProg_progressIndeterminate="true"/>
+</FrameLayout>

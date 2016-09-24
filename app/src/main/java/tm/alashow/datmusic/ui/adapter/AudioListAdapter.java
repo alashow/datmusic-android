@@ -17,90 +17,88 @@
 package tm.alashow.datmusic.ui.adapter;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import tm.alashow.datmusic.R;
+import tm.alashow.datmusic.interfaces.OnItemClickListener;
 import tm.alashow.datmusic.model.Audio;
 import tm.alashow.datmusic.ui.activity.MainActivity;
 
 /**
  * Created by alashov on 08/12/14.
  */
-public class AudioListAdapter extends BaseAdapter {
+public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.ViewHolder> {
 
     private ArrayList<Audio> audioList;
+    private OnItemClickListener onItemClickListener;
     private Context context;
-    private LayoutInflater inflater;
 
     /**
      * @param audioList list of array
      */
-    public AudioListAdapter(Context _context, ArrayList<Audio> audioList) {
-        this.audioList = audioList;
-        if (_context != null) {
-            this.context = _context;
-            try {
-                this.inflater = LayoutInflater.from(context);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+    public AudioListAdapter(Context context, OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+        if (context != null) {
+            this.context = context;
         }
     }
 
+    public void setList(ArrayList<Audio> audioList){
+        this.audioList = audioList;
+        notifyDataSetChanged();
+    }
+
     @Override
-    public int getCount() {
+    public int getItemCount() {
         return audioList.size();
     }
 
     @Override
-    public Audio getItem(int position) {
-        return audioList.get(position);
+    public AudioListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_audio, parent, false);
+        final ViewHolder mViewHolder = new ViewHolder(view);
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onItemClickListener.onItemClick(v, mViewHolder.getAdapterPosition());
+            }
+        });
+        return mViewHolder;
     }
 
     @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        ViewHolder viewHolder;
+    public void onBindViewHolder(ViewHolder holder, int position) {
         final Audio audio = audioList.get(position);
-        if (convertView == null) {
-            convertView = inflater.inflate(R.layout.row_audio, null);
-            viewHolder = new ViewHolder();
-            viewHolder.name = (TextView) convertView.findViewById(R.id.name);
-            viewHolder.playButton = convertView.findViewById(R.id.play);
-            viewHolder.duration = (TextView) convertView.findViewById(R.id.duration);
-            convertView.setTag(viewHolder);
-        } else {
-            viewHolder = (ViewHolder) convertView.getTag();
-        }
 
-        viewHolder.name.setText(String.format("%s - %s", audio.getArtist(), audio.getTitle()));
-        viewHolder.duration.setText(secondsToString(audio.getDuration()));
+        holder.name.setText(String.format("%s - %s", audio.getArtist(), audio.getTitle()));
+        holder.duration.setText(secondsToString(audio.getDuration()));
 
-        viewHolder.playButton.setOnClickListener(new View.OnClickListener() {
+        holder.playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ((MainActivity) context).playAudio(audio);
             }
         });
-
-        return convertView;
     }
 
-    public class ViewHolder {
-        TextView name;
-        TextView duration;
-        View playButton;
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        @Bind(R.id.name) TextView name;
+        @Bind(R.id.play) View playButton;
+        @Bind(R.id.duration) TextView duration;
+
+        public ViewHolder(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+        }
     }
 
     /**

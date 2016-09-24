@@ -18,74 +18,67 @@
 
     <!--General-->
     <string name="app_name">datmusic</string>
-    <string name="exception">Programmada ýalňyşlyk boldy!</string>
-    <string name="retry">Täzeden</string>
-    <string name="error">Ýalňyşlyk</string>
-    <string name="cancel">Bes et</string>
-    <string name="loading">Ýüklenýär..</string>
-    <string name="yes">Hawa</string>
-    <string name="no">Ýok</string>
-    <string name="network_error">Aragatnaşyk ýalňyşlygy</string>
-    <string name="unknown_error">Tanalmaýan ýalňyşlyk</string>
-    <string name="search">Gözle</string>
-    <string name="search_hint">Gözleg sözüni ýazyň</string>
-    <string name="web_version">Web wersiýasy</string>
+    <string name="exception">Application error!</string>
+    <string name="retry">Try again</string>
+    <string name="error">Error</string>
+    <string name="cancel">Cancel</string>
+    <string name="loading">Loading..</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="network_error">Network error</string>
+    <string name="unknown_error">Unknown error</string>
+    <string name="search">Search</string>
+    <string name="search_hint">Type search query</string>
+    <string name="web_version">Web version</string>
     <string name="powered_by"><![CDATA[With ♥ by <a href=\'https://alashov.com\'>Alashov</a>]]></string>
+    <string name="share">Share</string>
 
     <!--MainActivity-->
-    <string name="share_text">Heý! Şu aýdymy diňlemegi maslahat berýärin! \n</string>
-    <string name="error_token">Token ýalňyşlygy. Täzeden synanşyň</string>
-    <string name="error_not_found">Beýle aýdym tapylmady</string>
-    <string name="error_captcha">Captcha gerek</string>
+    <string name="share_text">Hey! You should check up this music! \n</string>
+    <string name="error_token">Token error. Retry</string>
+    <string name="error_not_found">Not found</string>
+    <string name="error_captcha">Captcha needed</string>
 
     <!--AudioActions-->
-    <string name="audio_download">Indir</string>
-    <string name="audio_play">Diňle</string>
-    <string name="audio_share">Paýlaş</string>
-    <string name="audio_copy">Linki nusgala</string>
-    <string name="audio_copied">Link nusgalandy</string>
-    <string name="audio_player_close">Ýap</string>
+    <string name="audio_download">Download</string>
+    <string name="audio_play">Play</string>
+    <string name="audio_share">Share</string>
+    <string name="audio_copy">Copy link</string>
+    <string name="audio_copied">Link copied</string>
+    <string name="audio_player_close">Close</string>
 
     <!--Captcha-->
-    <string name="captcha_submit">Iber</string>
-    <string name="captcha_reload">Täzele</string>
-    <string name="captcha_hint">Suratdaky harplary ýazyň</string>
-    <string name="captcha_empty">Birzatlar ýazyň</string>
+    <string name="captcha_submit">Send</string>
+    <string name="captcha_reload">Reload</string>
+    <string name="captcha_hint">Type letters above</string>
+    <string name="captcha_empty">Captcha cannot be empty</string>
 
     <!--Preferences-->
-    <string name="preferences_title">Sazlamalar</string>
-    <string name="preferences_language">Dil</string>
-    <string name="preference_search">Gözleg</string>
-    <string name="preference_search_sort">Sortirowka</string>
-    <string name="preference_search_count">Sany</string>
-    <string name="preference_search_count_description">Her gözlegde iň kän jogap berilmeli aýdymlaryň sany</string>
-    <string name="preference_search_performer_only">Diňe aýdymçynyň ady</string>
-    <string name="preference_search_performer_only_description">Gözlegde diňe aýdymçynyň ady boýunça gözle</string>
+    <string name="preferences_title">Settings</string>
+    <string name="preferences_language">Language</string>
+    <string name="preference_search">Search</string>
+    <string name="preference_search_sort">Sort</string>
+    <string name="preference_search_count">Count</string>
+    <string name="preference_search_count_description">Number of audio tracks to return</string>
+    <string name="preference_search_performer_only">Performer only</string>
+    <string name="preference_search_performer_only_description">To search only by artist name</string>
 
-    <string name="preferences_general">Umumy</string>
-    <string name="preferences_popular_start">Meşhur aýdymlar</string>
-    <string name="preferences_popular_start_description">Programma açylanda meşhur aýdymlary görkez</string>
+    <string name="preferences_general">General</string>
+    <string name="preferences_popular_start">Popular music</string>
+    <string name="preferences_popular_start_description">Show popular music on app start</string>
 
     <string-array name="searchSort">
-        <!--by date added-->
-        <item>Goşulan wagty boýunça</item>
-        <!--by duration-->
-        <item>Uzynlygy boýunça</item>
-        <!--by popularity-->
-        <item>Meşhurlygy boýunça</item>
+        <item>By date added</item>
+        <item>By duration</item>
+        <item>By popularity</item>
     </string-array>
 
-    <string-array name="searchCount"> <!--count = sany-->
-        <item>30 sany</item>
-        <item>50 sany</item>
-        <item>100 sany</item>
-        <item>200 sany</item>
-        <item>300 sany</item>
+    <string-array name="searchCount">
+        <item>30 tracks</item>
+        <item>50 tracks</item>
+        <item>100 tracks</item>
+        <item>200 tracks</item>
+        <item>300 tracks</item>
     </string-array>
-
-    <!--PreferencesFragment-->
-    <string name="back_button_label">Back</string>
-    <string name="next_button_label">Next</string>
-    <string name="skip_button_label">Skip</string>
 
 </resources>

@@ -24,8 +24,8 @@ import android.os.Handler;
 import android.support.annotation.LayoutRes;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -44,35 +44,33 @@ import butterknife.ButterKnife;
 import tm.alashow.datmusic.Config;
 import tm.alashow.datmusic.R;
 import tm.alashow.datmusic.android.IntentManager;
-import tm.alashow.datmusic.android.SettingsManager;
 import tm.alashow.datmusic.model.MenuActivity;
 import tm.alashow.datmusic.ui.adapter.MenuAdapter;
 import tm.alashow.datmusic.util.U;
 
 
-public abstract class BaseActivity extends ActionBarActivity {
+public abstract class BaseActivity extends AppCompatActivity {
+
+    public static final int TYPE_NEW = 0;
+    public static final int TYPE_REFRESH = 1;
+    public static final int TYPE_PAGINATION = 2;
 
     private boolean shouldGoInvisible;
     private MenuAdapter menuAdapter;
     private final List<Object> menuItems = new ArrayList<>();
-    protected SettingsManager settingsManager;
     protected Toolbar mToolbar;
     private ActionBarDrawerToggle mDrawerToggle;
     private String mOldTitle;
     private String mOldSubtitle;
     private Handler mHandler;
 
-    @Bind(R.id.drawer)
-    DrawerLayout mDrawerLayout;
-    @Bind(R.id.navigation_drawer_list_view)
-    ListView mDrawerList;
-    @Bind(R.id.powered_by)
-    TextView poweredBy;
+    @Bind(R.id.drawer) DrawerLayout mDrawerLayout;
+    @Bind(R.id.navigation_drawer_list_view) ListView mDrawerList;
+    @Bind(R.id.powered_by) TextView poweredBy;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        settingsManager = SettingsManager.getInstance(this);
         setContentView(getLayoutResourceId());
         ButterKnife.bind(this);
 
@@ -187,7 +185,7 @@ public abstract class BaseActivity extends ActionBarActivity {
             } else if (activityTag.equals(Config.ACTIVITY_TAG_PREFERENCES)) {
                 IntentManager.with(this).preferences();
             } else if (activityTag.equals("web")) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(Config.SERVER));
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(Config.MAIN_SERVER));
                 startActivity(intent);
             }
         }

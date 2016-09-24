@@ -19,19 +19,17 @@
     <color name="secondary_text_color">#727272</color>
     <color name="primary">#34495e</color>
     <color name="primary_dark">#2c3e50</color>
-    <color name="translucent_statusbar_background">#cc34495e</color>
-    <color name="translucent_statusbar_background2">#5934495e</color>
     <color name="transparent_turquoise">#2034495e</color>
     <color name="transparent_primary_30">#3034495e</color>
     <color name="transparent_primary_80">#8034495e</color>
     <color name="nav_drawer_list_item_color">#676767</color>
-    <color name="nav_drawer_list_item_normal">@android:color/transparent</color>
-    <color name="nav_drawer_list_item_pressed">#eeeeee</color>
-    <color name="nav_drawer_list_item_pressed_transparent">#86eeeeee</color>
     <color name="circle_image_border">#e1e1e1</color>
     <color name="divider">#ffe5e5e5</color>
-    <color name="white_selector">#b7b7b7</color>
     <color name="image_placeholder">#ffdedede</color>
+
+    <color name="selector.white">#c5c5c5</color>
+    <color name="selector.white.30">#30c5c5c5</color>
+    <color name="selector.white.70">#70c5c5c5</color>
 
     <color name="white">#FFFFFF</color>
     <color name="whiter">#ecf0f1</color>
@@ -61,8 +59,4 @@
     <color name="darker_yellow">#ffe08912</color>
     <color name="orange">#e67e22</color>
     <color name="dark_orange">#d35400</color>
-
-    <color name="disabled">#D1D5D8</color>
-    <color name="disabled_edge">#F7F9F9</color>
-    <color name="disabled_border">#E1E6E6</color>
 </resources>

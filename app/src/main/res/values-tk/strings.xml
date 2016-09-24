@@ -31,6 +31,7 @@
     <string name="search_hint">Gözleg sözüni ýazyň</string>
     <string name="web_version">Web wersiýasy</string>
     <string name="powered_by"><![CDATA[With ♥ by <a href=\'https://alashov.com\'>Alashov</a>]]></string>
+    <string name="share">Paýlaş</string>
 
     <!--MainActivity-->
     <string name="share_text">Heý! Şu aýdymy diňlemegi maslahat berýärin! \n</string>
@@ -67,17 +68,25 @@
     <string name="preferences_popular_start_description">Programma açylanda meşhur aýdymlary görkez</string>
 
     <string-array name="searchSort">
+        <!--by date added-->
         <item>Goşulan wagty boýunça</item>
+        <!--by duration-->
         <item>Uzynlygy boýunça</item>
+        <!--by popularity-->
         <item>Meşhurlygy boýunça</item>
     </string-array>
 
-    <string-array name="searchCount">
+    <string-array name="searchCount"> <!--count = sany-->
         <item>30 sany</item>
         <item>50 sany</item>
         <item>100 sany</item>
         <item>200 sany</item>
         <item>300 sany</item>
     </string-array>
+
+    <!--PreferencesFragment-->
+    <string name="back_button_label">Back</string>
+    <string name="next_button_label">Next</string>
+    <string name="skip_button_label">Skip</string>
 
 </resources>

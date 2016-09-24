@@ -16,8 +16,12 @@
 
 package tm.alashow.datmusic.util;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.provider.Settings;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
@@ -28,6 +32,8 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.Locale;
 
 import tm.alashow.datmusic.R;
 import tm.alashow.datmusic.ui.activity.BaseActivity;
@@ -120,6 +126,38 @@ public class U {
         return android.os.Build.VERSION.SDK_INT >= version;
     }
 
+    /**
+     * Copy given text to clipboard
+     *
+     * @param context context for access system services
+     * @param string  text to copy
+     */
+    public static void copyToClipboard(Context context, String string) {
+        try {
+            ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("Link", string);
+            clipboard.setPrimaryClip(clip);
+            U.showCenteredToast(context, R.string.audio_copied);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Share given text with intent
+     *
+     * @param activity activity
+     * @param text     text to share
+     */
+    public static void shareTextIntent(Activity activity, String text) {
+        String shareTitle = activity.getResources().getString(R.string.share);
+        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+        sharingIntent.setType("text/plain");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, shareTitle);
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, text);
+        activity.startActivity(Intent.createChooser(sharingIntent, shareTitle));
+    }
+
     public static void showCenteredToast(Context context, String string) {
         if (context == null) {
             return;
@@ -160,7 +198,7 @@ public class U {
         }
         int exp = (int) (Math.log(bytes) / Math.log(unit));
         String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + "";
-        return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
+        return String.format(Locale.ENGLISH, "%.1f %sB", bytes / Math.pow(unit, exp), pre);
     }
 
     //from gist https://gist.github.com/alashow/07d9ef9c02ee697ab47d
@@ -170,31 +208,34 @@ public class U {
             'h', 'j', 'k', 'm', 'n', 'p', 'q', 'r', 's', 't',
             'u', 'v', 'x', 'y', 'z', '1', '2', '3'};
 
-    public static String encode(int input) {
+    public static String encode(long input) {
         int length = characters.length;
         String encoded = "";
 
         if (input == 0) {
             return String.valueOf(characters[0]);
+        } else if (input < 0) {
+            input *= -1;
+            encoded += "-";
         }
 
         while (input > 0) {
-            int val = input % length;
+            long val = input % length;
             input = input / length;
-            encoded += characters[val];
+            encoded += characters[(int) val];
         }
 
         return encoded;
     }
 
-    public static int decode(String encoded) {
+    public static long decode(String encoded) {
         int length = characters.length;
 
-        int decoded = 0;
+        long decoded = 0;
 
         for (int i = encoded.length() - 1; i >= 0; i--) {
             char ch = encoded.charAt(i);
-            int val = indexOf(ch, characters);
+            long val = indexOf(ch, characters);
             decoded = (decoded * length) + val;
         }
 

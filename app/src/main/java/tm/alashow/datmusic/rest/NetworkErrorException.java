@@ -1,5 +1,6 @@
 /*
- * Copyright 2015. Alashov Berkeli
+ * Copyright 2014. Alashov Berkeli
+ *
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -14,22 +15,13 @@
  *    limitations under the License.
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+package tm.alashow.datmusic.rest;
 
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.0-rc1'
-
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-    }
-}
-
-allprojects {
-    repositories {
-        jcenter()
+/**
+ * Created by alashov on 17/03/16.
+ */
+public class NetworkErrorException extends IllegalStateException {
+    public NetworkErrorException() {
+        super("Response is not success or null");
     }
 }

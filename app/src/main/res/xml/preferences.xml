@@ -19,7 +19,7 @@
     <tm.alashow.datmusic.ui.widget.PreferencesCategory android:title="@string/preferences_general">
         <ListPreference
             android:key="language"
-            android:defaultValue="tk"
+            android:defaultValue="en"
             android:entries="@array/languageArray"
             android:entryValues="@array/languageValues"
             android:title="@string/preferences_language" />

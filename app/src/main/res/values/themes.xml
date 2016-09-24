@@ -25,6 +25,7 @@
         <item name="android:editTextStyle">@style/EditText</item>
         <item name="android:textColorHighlight">@color/transparent_primary_30</item>
         <item name="actionBarStyle">@style/Theme.App.Toolbar</item>
+        <item name="searchViewStyle">@style/WhiteSearchViewStyle</item>
     </style>
 
     <style name="Theme.App.ActionBar" parent="@style/Theme.AppCompat.Light.DarkActionBar">
@@ -34,12 +35,6 @@
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:editTextStyle">@style/EditText</item>
         <item name="searchViewStyle">@style/WhiteSearchViewStyle</item>
-    </style>
-
-    <style name="Transparent">
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 
     <style name="Theme.App.Toolbar" parent="ThemeOverlay.AppCompat.Dark.ActionBar">

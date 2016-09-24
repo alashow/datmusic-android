@@ -31,6 +31,7 @@
     <string name="search_hint">Поиск</string>
     <string name="web_version">Веб версия</string>
     <string name="powered_by"><![CDATA[With ♥ by <a href=\'https://alashov.com\'>Alashov</a>]]></string>
+    <string name="share">Поделиться</string>
 
     <!--MainActivity-->
     <string name="share_text">Хей! Послушай эту песню! \n</string>
