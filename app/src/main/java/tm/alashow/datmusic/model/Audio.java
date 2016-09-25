@@ -70,11 +70,11 @@ public class Audio {
     }
 
     public float getBitrate() {
-        return getBytes() * 8 / getDuration() / 1024;
+        return getBytes() * 8 / getDuration() / 1000;
     }
 
     public long getBytesForBitrate(int bitrate) {
-        return bitrate / 8 * getDuration() * 1024;
+        return bitrate / 8 * getDuration() * 1000;
     }
 
     public String getFileSize(){
