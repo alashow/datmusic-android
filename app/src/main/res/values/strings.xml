@@ -33,6 +33,8 @@
     <string name="powered_by"><![CDATA[With ♥ by <a href=\'https://alashov.com\'>Alashov</a>]]></string>
     <string name="share">Share</string>
 
+    <string name="error.permissionNotGranted">Storage permissions not granted. Enable "Storage permissions" from phone settings manually.</string>
+
     <!--MainActivity-->
     <string name="share_text">Hey! You should check up this music! \n</string>
     <string name="error_token">Token error. Retry</string>
@@ -45,6 +47,7 @@
     <string name="audio_share">Share</string>
     <string name="audio_copy">Copy link</string>
     <string name="audio_copied">Link copied</string>
+    <string name="audio_bitrate">Choose bitrate and download</string>
     <string name="audio_player_close">Close</string>
 
     <!--Captcha-->

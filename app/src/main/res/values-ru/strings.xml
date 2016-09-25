@@ -45,6 +45,7 @@
     <string name="audio_share">Поделиться</string>
     <string name="audio_copy">Скопировать ссылку</string>
     <string name="audio_copied">Ссылка скопирована</string>
+    <string name="audio_bitrate">Выбрать битрейт и скачать</string>
     <string name="audio_player_close">Закрыть</string>
 
     <!--Captcha-->

@@ -16,6 +16,7 @@
 
 package tm.alashow.datmusic.ui.activity;
 
+import android.Manifest;
 import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -47,6 +48,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.cocosw.bottomsheet.BottomSheet;
+import com.github.jksiezni.permissive.PermissionsGrantedListener;
+import com.github.jksiezni.permissive.PermissionsRefusedListener;
+import com.github.jksiezni.permissive.Permissive;
 import com.google.android.gcm.GCMRegistrar;
 import com.pluscubed.recyclerfastscroll.RecyclerFastScroller;
 import com.pnikosis.materialishprogress.ProgressWheel;
@@ -54,6 +58,7 @@ import com.squareup.picasso.Picasso;
 import com.tumblr.remember.Remember;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Random;
 
@@ -345,23 +350,17 @@ public class MainActivity extends BaseActivity implements EndlessRecyclerView.Pa
     public void onItemClick(View view, int position) {
         final Audio audio = audioArrayList.get(position);
         final BottomSheet bottomSheet = new BottomSheet.Builder(MainActivity.this)
-            .title(audio.getArtist() + " - " + audio.getTitle())
+            .title(audio.getFullName())
             .sheet(R.menu.audio_actions)
             .listener(new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     switch (which) {
                         case R.id.download:
-                            DownloadManager mgr = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
-                            Uri downloadUri = Uri.parse(audio.getDownloadUrl());
-                            DownloadManager.Request request = new DownloadManager.Request(downloadUri);
-
-                            if (U.isAboveOfVersion(11)) {
-                                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-                            }
-
-                            request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
-                            mgr.enqueue(request);
+                            downloadAudio(audio);
+                            break;
+                        case R.id.bitrate:
+                            showBitrateChooser(audio);
                             break;
                         case R.id.play:
                             playAudio(audio);
@@ -401,8 +400,7 @@ public class MainActivity extends BaseActivity implements EndlessRecyclerView.Pa
      */
     private void setSizeAndBitrate(BottomSheet bottomSheet, Audio audio) {
         MenuItem menuItem = bottomSheet.getMenu().findItem(R.id.download);
-        long bitrate = audio.getBytes() / audio.getDuration() / 120;
-        menuItem.setTitle(String.format(Locale.US, "%s (%s ~ %d kbps)", menuItem.getTitle(), U.humanReadableByteCount(audio.getBytes(), false), bitrate));
+        menuItem.setTitle(String.format(Locale.US, "%s (%s, ~%.0f kbps)", menuItem.getTitle(), audio.getFileSize(), audio.getBitrate()));
         bottomSheet.invalidate();
     }
 
@@ -620,6 +618,95 @@ public class MainActivity extends BaseActivity implements EndlessRecyclerView.Pa
         public int getType() {
             return type;
         }
+    }
+
+    /**
+     * Shows dialog with bitrate list (with calculated file size for each bitrate if bytes available)
+     *
+     * @param audio audio
+     */
+    private void showBitrateChooser(final Audio audio) {
+        final ArrayList<String> bitrateList = new ArrayList<>();
+        final ArrayList<Integer> allowedBitrates = new ArrayList<>();
+
+        //if bytes available. allow only bitrates that only lower than original bitrate.
+        if (audio.getBytes() > 0) {
+            for(int bitrate : Config.allowedBitrates) {
+                if (audio.getBitrate() > bitrate) {
+                    allowedBitrates.add(bitrate);
+                }
+            }
+        } else { //otherwise, allow all allowed bitrates
+            allowedBitrates.addAll(Arrays.asList(Config.allowedBitrates));
+        }
+
+        for(int bitrate : allowedBitrates) {
+            //if we have bytes, we can "predict" or calculate bytes/size for each bitrate
+            if (audio.getBytes() > 0) {
+                bitrateList.add(getString(R.string.audio_kbpsAndSize, bitrate, audio.getFileSizeForBitrate(bitrate)));
+            } else { //we can't predict, just show bitrate
+                bitrateList.add(getString(R.string.audio_kbps, bitrate));
+            }
+        }
+
+        //add original mp3 bitrate & size if bytes available
+        if (audio.getBytes() > 0) {
+            bitrateList.add(getString(R.string.audio_kbpsAndSize_original, audio.getFileSize(), audio.getBitrate()));
+        }
+
+        new AlertDialog.Builder(this)
+            .setTitle(R.string.audio_bitrate)
+            .setItems(bitrateList.toArray(new String[0]), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int item) {
+                    //if downloading original
+                    if (audio.getBytes() > 0 && (bitrateList.size()) - 1 == item) {
+                        downloadAudio(audio);
+                    } else { //or converted one
+                        downloadAudio(audio, allowedBitrates.get(item));
+                    }
+                }
+            })
+            .show();
+    }
+
+    private void downloadAudio(Audio audio) {
+        downloadAudio(audio, - 1);
+    }
+
+    /**
+     * Downloads safe file name audio to folder
+     *
+     * @param audio   audio object
+     * @param bitrate bitrate, give < 0 if no need for convert
+     */
+    private void downloadAudio(final Audio audio, final int bitrate) {
+        new Permissive.Request(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
+            .whenPermissionsGranted(new PermissionsGrantedListener() {
+                @Override
+                public void onPermissionsGranted(String[] permissions) throws SecurityException {
+                    String safeFilename = audio.getSafeFileName(bitrate);
+                    Uri downloadUri = Uri.parse(audio.getDownloadUrl(bitrate));
+
+                    DownloadManager downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+                    DownloadManager.Request request = new DownloadManager.Request(downloadUri);
+
+                    if (U.isAboveOfVersion(11)) {
+                        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                    }
+
+                    request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
+                    request.setDestinationInExternalPublicDir(Config.DOWNLOAD_FOLDER_NAME, safeFilename);
+
+                    downloadManager.enqueue(request);
+                }
+            })
+            .whenPermissionsRefused(new PermissionsRefusedListener() {
+                @Override
+                public void onPermissionsRefused(String[] permissions) {
+                    U.showCenteredToast(MainActivity.this, R.string.error_permissionNotGranted);
+                }
+            })
+            .execute(this);
     }
 
     /**

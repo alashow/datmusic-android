@@ -45,6 +45,7 @@
     <string name="audio_share">Paýlaş</string>
     <string name="audio_copy">Linki nusgala</string>
     <string name="audio_copied">Link nusgalandy</string>
+    <string name="audio_bitrate">Bitrate saýla we indir</string>
     <string name="audio_player_close">Ýap</string>
 
     <!--Captcha-->

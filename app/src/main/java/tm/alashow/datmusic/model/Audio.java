@@ -45,7 +45,7 @@ public class Audio {
     @JsonProperty("title")
     private String title;
 
-    private long bytes = -1;
+    private long bytes = - 1;
 
     public Audio() {
     }
@@ -60,6 +60,47 @@ public class Audio {
 
     public String getDownloadUrl() {
         return String.format(Locale.ROOT, "%s%s", Config.MAIN_SERVER, getEncodedAudioId());
+    }
+
+    public String getDownloadUrl(int bitrate) {
+        if (! Config.isBitrateAllowed(bitrate)) {
+            return getDownloadUrl();
+        }
+        return String.format(Locale.ROOT, "%s/%d", getDownloadUrl(), bitrate);
+    }
+
+    public float getBitrate() {
+        return getBytes() * 8 / getDuration() / 1024;
+    }
+
+    public long getBytesForBitrate(int bitrate) {
+        return bitrate / 8 * getDuration() * 1024;
+    }
+
+    public String getFileSize(){
+        return U.humanReadableByteCount(getBytes(), false);
+    }
+
+    public String getFileSizeForBitrate(int bitrate){
+        return U.humanReadableByteCount(getBytesForBitrate(bitrate), false);
+    }
+
+    public String getSafeFileName(int bitrate) {
+        String audioName = getFullName();
+        if (audioName.length() > 100) {
+            audioName = audioName.substring(0, 100);
+        }
+
+        if (bitrate > 0) {
+            audioName += String.format(Locale.ROOT, " (%d)", bitrate);
+        }
+        audioName += ".mp3";
+
+        return U.sanitizeFilename(audioName);
+    }
+
+    public String getFullName() {
+        return String.format(Locale.ROOT, "%s - %s", getArtist(), getTitle());
     }
 
     public long getId() {

@@ -93,7 +93,6 @@ public class U {
      *
      * @param baseActivity BaseActivity activity of caller
      * @param newFragment  new Fragment
-     * @param container    placeholder for fragment
      */
     public static void attachFragment(BaseActivity baseActivity, Fragment newFragment) {
         baseActivity.getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, newFragment).commit();
@@ -177,7 +176,7 @@ public class U {
     public static void stripUnderlines(TextView textView) {
         Spannable s = (Spannable) textView.getText();
         URLSpan[] spans = s.getSpans(0, s.length(), URLSpan.class);
-        for (URLSpan span : spans) {
+        for(URLSpan span : spans) {
             int start = s.getSpanStart(span);
             int end = s.getSpanEnd(span);
             s.removeSpan(span);
@@ -201,12 +200,25 @@ public class U {
         return String.format(Locale.ENGLISH, "%.1f %sB", bytes / Math.pow(unit, exp), pre);
     }
 
+    /**
+     * Replace illegal filename characters for android ? : " * | / \ < >
+     *
+     * @param string string to replace
+     * @return replaced string
+     */
+    public static String sanitizeFilename(String string) {
+        String[] illegalCharacters = {"\\x3F", "\\x3A", "\\x22", "\\x2A", "\\x7C", "\\x2F", "\\x5C", "\\x3C", "\\x3E", "\\~", "\\`", "\\!", "\\@", "\\#", "\\$", "\\%", "\\^", "\\|", "\\;", "\\:", "&#8216;", "&#8217;", "&#8220;", "&#8221;", "&#8211;", "&#8212;", "\\—", "\\–",};
+        for(String s : illegalCharacters)
+            string = string.replaceAll(s, " ");
+        return string;
+    }
+
     //from gist https://gist.github.com/alashow/07d9ef9c02ee697ab47d
     public static Character[] characters = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K',
-            'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',
-            'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g',
-            'h', 'j', 'k', 'm', 'n', 'p', 'q', 'r', 's', 't',
-            'u', 'v', 'x', 'y', 'z', '1', '2', '3'};
+        'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',
+        'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g',
+        'h', 'j', 'k', 'm', 'n', 'p', 'q', 'r', 's', 't',
+        'u', 'v', 'x', 'y', 'z', '1', '2', '3'};
 
     public static String encode(long input) {
         int length = characters.length;
@@ -215,7 +227,7 @@ public class U {
         if (input == 0) {
             return String.valueOf(characters[0]);
         } else if (input < 0) {
-            input *= -1;
+            input *= - 1;
             encoded += "-";
         }
 
@@ -233,7 +245,7 @@ public class U {
 
         long decoded = 0;
 
-        for (int i = encoded.length() - 1; i >= 0; i--) {
+        for(int i = encoded.length() - 1; i >= 0; i--) {
             char ch = encoded.charAt(i);
             long val = indexOf(ch, characters);
             decoded = (decoded * length) + val;
@@ -243,14 +255,14 @@ public class U {
     }
 
     public static <T> int indexOf(T needle, T[] haystack) {
-        for (int i = 0; i < haystack.length; i++) {
+        for(int i = 0; i < haystack.length; i++) {
             if (haystack[i] != null && haystack[i].equals(needle)
-                    || needle == null && haystack[i] == null) {
+                || needle == null && haystack[i] == null) {
                 return i;
             }
         }
 
-        return -1;
+        return - 1;
     }
     //end from gist
 }

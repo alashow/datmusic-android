@@ -20,6 +20,8 @@ package tm.alashow.datmusic;
  * It is licensed under GNU GPL v. 2 or later. For full terms see the file LICENSE.
  */
 
+import tm.alashow.datmusic.util.ArrayUtils;
+
 public class Config {
     public static final String MAIN_SERVER = "https://datmusic.xyz/";
 
@@ -36,4 +38,10 @@ public class Config {
 
     public static String DEFAULT_COUNT = "300";
     public static String DEFAULT_SORT = "2";
+
+    public static Integer[] allowedBitrates = {64, 128, 192, 320};
+
+    public static boolean isBitrateAllowed(int bitrate) {
+        return ArrayUtils.contains(allowedBitrates, bitrate);
+    }
 }

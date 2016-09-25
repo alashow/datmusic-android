@@ -20,6 +20,10 @@
         android:title="@string/audio_download"
         android:icon="@drawable/ic_download" />
     <item
+        android:id="@+id/bitrate"
+        android:title="@string/audio_bitrate"
+        android:icon="@drawable/ic_download" />
+    <item
         android:id="@+id/play"
         android:title="@string/audio_play"
         android:icon="@drawable/ic_play_gray" />
