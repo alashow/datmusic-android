@@ -1,11 +1,16 @@
 # music-android
-Android version of vk music downloader
+Android client of [datmusic](https://github.com/alashow/music).
+
+[![image](https://dotjpg.co/kTSm7wG.png)](https://play.google.com/store/apps/details?id=tm.alashow.datmusic)
+
 
 With app you can search, download, play free music from large db of vk.com.
-Available in three languages Turkmen, English, Russian
+Available in three languages Turkmen, English, Russian.
+
+It uses [datmusic.xyz](https://datmusic.xyz) as backend.
 
 #App Screenshots
-[![image](http://dotjpg.co/sY6.png)](http://dotjpg.co/i/sY6)
+[![image](https://dotjpg.co/hYoG.png)](https://dotjpg.co/hYoG.png)
 
 #Apk Download
 From [here](https://bit.ly/M-APK)
