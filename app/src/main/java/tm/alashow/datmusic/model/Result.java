@@ -28,45 +28,29 @@ import java.util.ArrayList;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Result {
 
-    @JsonProperty("error")
-    private Error error;
+    @JsonProperty("status")
+    private String status;
 
-    @JsonProperty("response")
+    @JsonProperty("data")
     private ArrayList<Audio> audios;
 
     public Result() {
     }
 
     public boolean isOkay() {
-        return isErrorNull() && !isNoResultError();
-    }
-
-    public boolean isErrorNull() {
-        return getError() == null;
-    }
-
-    public boolean isTokenError() {
-        return !isErrorNull() && (getError().getCode() == 5);
-    }
-
-    public boolean isTooManyRequestsError() {
-        return !isErrorNull() && (getError().getCode() == 6);
-    }
-
-    public boolean isCaptchaError() {
-        return !isErrorNull() && (getError().getCode() == 14);
+        return getStatus().equals("ok") && ! isNoResultError();
     }
 
     public boolean isNoResultError() {
-        return isErrorNull() && getAudios().isEmpty();
+        return getAudios() != null && getAudios().isEmpty();
     }
 
-    public Error getError() {
-        return error;
+    public String getStatus() {
+        return status;
     }
 
-    public Result setError(Error error) {
-        this.error = error;
+    public Result setStatus(String status) {
+        this.status = status;
         return this;
     }
 
@@ -77,60 +61,5 @@ public class Result {
     public Result setAudios(ArrayList<Audio> audios) {
         this.audios = audios;
         return this;
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public class Error {
-
-        @JsonProperty("error_code")
-        private int code;
-
-        @JsonProperty("error_msg")
-        private String message;
-
-        @JsonProperty("captcha_img")
-        private String captchaImage;
-
-        @JsonProperty("captcha_sid")
-        private long captchaSid;
-
-        public Error() {
-        }
-
-        public int getCode() {
-            return code;
-        }
-
-        public Error setCode(int code) {
-            this.code = code;
-            return this;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public Error setMessage(String message) {
-            this.message = message;
-            return this;
-        }
-
-        public String getCaptchaImage() {
-            return captchaImage;
-        }
-
-        public Error setCaptchaImage(String captchaImage) {
-            this.captchaImage = captchaImage;
-            return this;
-        }
-
-        public long getCaptchaSid() {
-            return captchaSid;
-        }
-
-        public Error setCaptchaSid(long captchaSid) {
-            this.captchaSid = captchaSid;
-            return this;
-        }
     }
 }

@@ -24,25 +24,18 @@
             android:entryValues="@array/languageValues"
             android:title="@string/preferences_language" />
     </tm.alashow.datmusic.ui.widget.PreferencesCategory>
-    <tm.alashow.datmusic.ui.widget.PreferencesCategory android:title="@string/preference_search">
-        <ListPreference
-            android:key="searchSort"
-            android:title="@string/preference_search_sort"
-            android:defaultValue="2"
-            android:entries="@array/searchSort"
-            android:entryValues="@array/searchSortValues" />
-        <ListPreference
-            android:key="searchCount"
-            android:title="@string/preference_search_count"
-            android:summary="@string/preference_search_count_description"
-            android:defaultValue="300"
-            android:entries="@array/searchCount"
-            android:entryValues="@array/searchCountValues" />
-        <CheckBoxPreference
-            android:key="performerOnly"
-            android:title="@string/preference_search_performer_only"
-            android:summary="@string/preference_search_performer_only_description"
-            android:defaultValue="false" />
-    </tm.alashow.datmusic.ui.widget.PreferencesCategory>
+    <!--<tm.alashow.datmusic.ui.widget.PreferencesCategory android:title="@string/preference_search">-->
+        <!--<ListPreference-->
+            <!--android:key="searchSort"-->
+            <!--android:title="@string/preference_search_sort"-->
+            <!--android:defaultValue="2"-->
+            <!--android:entries="@array/searchSort"-->
+            <!--android:entryValues="@array/searchSortValues" />-->
+        <!--<CheckBoxPreference-->
+            <!--android:key="performerOnly"-->
+            <!--android:title="@string/preference_search_performer_only"-->
+            <!--android:summary="@string/preference_search_performer_only_description"-->
+            <!--android:defaultValue="false" />-->
+    <!--</tm.alashow.datmusic.ui.widget.PreferencesCategory>-->
     <Preference android:key="about" />
 </PreferenceScreen>

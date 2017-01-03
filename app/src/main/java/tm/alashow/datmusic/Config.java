@@ -23,6 +23,7 @@ package tm.alashow.datmusic;
 import tm.alashow.datmusic.util.ArrayUtils;
 
 public class Config {
+    public static final String API_ENDPOINT = "https://api.datmusic.xyz/";
     public static final String MAIN_SERVER = "https://datmusic.xyz/";
 
     public static final String DOWNLOAD_FOLDER_NAME = "datmusic";
@@ -36,8 +37,7 @@ public class Config {
     //Activity Extras
     public static final String EXTRA_QUERY = "tm.alashow.datmusic.QUERY";
 
-    public static String DEFAULT_COUNT = "300";
-    public static String DEFAULT_SORT = "2";
+    // public static String DEFAULT_SORT = "2";
 
     public static Integer[] allowedBitrates = {64, 128, 192, 320};
 

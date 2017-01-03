@@ -33,7 +33,7 @@ import tm.alashow.datmusic.Config;
 public abstract class ApiService {
 
     //base url path
-    public static String API_BASE_URL = Config.MAIN_SERVER;
+    public static String API_BASE_URL = Config.API_ENDPOINT;
 
     //okHttp goes here
     private static OkHttpClient.Builder httpClient = new OkHttpClient.Builder()

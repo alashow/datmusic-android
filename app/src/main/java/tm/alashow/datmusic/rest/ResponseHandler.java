@@ -52,13 +52,7 @@ public class ResponseHandler {
             if (result.isOkay()) {
                 onSuccess(result);
             } else {
-                if (result.isTokenError()) {
-                    onTokenError(result);
-                } else if (result.isTooManyRequestsError()) {
-                    onTooManyRequestsError(result);
-                } else if (result.isCaptchaError()) {
-                    onCaptchaError(result);
-                } else if (result.isNoResultError()) {
+                if (result.isNoResultError()) {
                     onNoResultError(result);
                 } else {
                     onUnknownError(result);
@@ -70,18 +64,6 @@ public class ResponseHandler {
     }
 
     public void onSuccess(Result result) {
-    }
-
-    public void onTokenError(Result result) {
-        onUnknownError(result);
-    }
-
-    public void onTooManyRequestsError(Result result) {
-        onUnknownError(result);
-    }
-
-    public void onCaptchaError(Result result) {
-        onUnknownError(result);
     }
 
     public void onNoResultError(Result result) {

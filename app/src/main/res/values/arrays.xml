@@ -22,14 +22,6 @@
         <item>2</item>
     </string-array>
 
-    <string-array name="searchCountValues">
-        <item>30</item>
-        <item>50</item>
-        <item>100</item>
-        <item>200</item>
-        <item>300</item>
-    </string-array>
-
     <string-array name="languageArray">
         <item>Türkmen</item>
         <item>English</item>

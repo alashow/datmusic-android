@@ -22,6 +22,6 @@ package tm.alashow.datmusic.rest;
  */
 public class NetworkErrorException extends IllegalStateException {
     public NetworkErrorException() {
-        super("Response is not success or null");
+        super("Response is not successfull or null");
     }
 }

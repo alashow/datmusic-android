@@ -19,6 +19,7 @@ package tm.alashow.datmusic.rest;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 import tm.alashow.datmusic.model.Result;
 
@@ -27,32 +28,19 @@ import tm.alashow.datmusic.model.Result;
  */
 public interface ApiClient {
 
-    @GET("search/?noCount=true&autocomplete=1")
+    @GET("search")
     Call<Result> search(
-            @Query("q") String query,
-            @Query("sort") int sort,
-            @Query("count") int count,
-            @Query("performer_only") int performer,
-            @Query("offset") int offset
+        @Query("q") String query,
+        @Query("page") int offset
     );
 
-    @GET("search/?noCount=true&autocomplete=1")
-    Call<Result> search(
-            @Query("q") String query,
-            @Query("sort") int sort,
-            @Query("count") int count,
-            @Query("performer_only") int performer,
-            @Query("offset") int offset,
-            @Query("captcha_key") String captchaKey,
-            @Query("captcha_sid") long captchaSid
-    );
-
-    @GET("download.php?getBytes=true")
+    @GET("bytes/{key}/{id}")
     Call<String> getBytes(
-        @Query("id") String id
+        @Path("key") String path,
+        @Path("id") String id
     );
 
-    @GET("app/reg_id.php")
+    @GET("https://datmusic.xyz/app/reg_id.php")
     Call<Result> register(
         @Query("reg_id") String regId,
         @Query("id") String deviceId

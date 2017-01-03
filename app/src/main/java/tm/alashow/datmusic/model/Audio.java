@@ -30,14 +30,8 @@ import tm.alashow.datmusic.util.U;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Audio {
 
-    @JsonProperty("aid")
-    private long id;
-
     @JsonProperty("duration")
     private int duration;
-
-    @JsonProperty("owner_id")
-    private long ownerId;
 
     @JsonProperty("artist")
     private String artist;
@@ -45,21 +39,19 @@ public class Audio {
     @JsonProperty("title")
     private String title;
 
+    @JsonProperty("download")
+    private String downloadUrl;
+
+    @JsonProperty("stream")
+    private String streamUrl;
+
     private long bytes = - 1;
 
     public Audio() {
     }
 
-    public String getEncodedAudioId() {
-        return String.format(Locale.ROOT, "%s:%s", U.encode(ownerId), U.encode(id));
-    }
-
-    public String getStreamUrl() {
-        return String.format(Locale.ROOT, "%sstream/%s", Config.MAIN_SERVER, getEncodedAudioId());
-    }
-
-    public String getDownloadUrl() {
-        return String.format(Locale.ROOT, "%s%s", Config.MAIN_SERVER, getEncodedAudioId());
+    public String[] getHashes() {
+        return getDownloadUrl().replace(Config.API_ENDPOINT, "").split("/");
     }
 
     public String getDownloadUrl(int bitrate) {
@@ -103,15 +95,6 @@ public class Audio {
         return String.format(Locale.ROOT, "%s - %s", getArtist(), getTitle());
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public Audio setId(long id) {
-        this.id = id;
-        return this;
-    }
-
     public int getDuration() {
         return duration;
     }
@@ -121,17 +104,8 @@ public class Audio {
         return this;
     }
 
-    public long getOwnerId() {
-        return ownerId;
-    }
-
-    public Audio setOwnerId(long ownerId) {
-        this.ownerId = ownerId;
-        return this;
-    }
-
     public String getArtist() {
-        return artist.replace("&amp;", "&");
+        return artist;
     }
 
     public Audio setArtist(String artist) {
@@ -140,11 +114,29 @@ public class Audio {
     }
 
     public String getTitle() {
-        return title.replace("&amp;", "&");
+        return title;
     }
 
     public Audio setTitle(String title) {
         this.title = title;
+        return this;
+    }
+
+    public String getDownloadUrl() {
+        return downloadUrl;
+    }
+
+    public Audio setDownloadUrl(String downloadUrl) {
+        this.downloadUrl = downloadUrl;
+        return this;
+    }
+
+    public String getStreamUrl() {
+        return streamUrl;
+    }
+
+    public Audio setStreamUrl(String streamUrl) {
+        this.streamUrl = streamUrl;
         return this;
     }
 

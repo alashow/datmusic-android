@@ -74,6 +74,7 @@ import tm.alashow.datmusic.model.Audio;
 import tm.alashow.datmusic.model.Result;
 import tm.alashow.datmusic.rest.ApiHelper;
 import tm.alashow.datmusic.rest.ApiService;
+import tm.alashow.datmusic.rest.NetworkErrorException;
 import tm.alashow.datmusic.rest.ResponseHandler;
 import tm.alashow.datmusic.rest.Summon;
 import tm.alashow.datmusic.ui.adapter.AudioListAdapter;
@@ -103,9 +104,8 @@ public class MainActivity extends BaseActivity implements EndlessRecyclerView.Pa
     private String oldQuery = "";
 
     //Preferences
-    private int CONFIG_SORT;
-    private int CONFIG_COUNT;
-    private int CONFIG_PERFORMER_ONLY;
+    //private int CONFIG_SORT;
+    //private int CONFIG_PERFORMER_ONLY;
 
     @Bind(R.id.swipeRefreshLayout) SwipeRefreshLayout refreshLayout;
     @Bind(R.id.recyclerView) EndlessRecyclerView recyclerView;
@@ -279,23 +279,8 @@ public class MainActivity extends BaseActivity implements EndlessRecyclerView.Pa
 
         Call<Result> resultCall = ApiService.getClientJackson().search(
             query,
-            CONFIG_SORT,
-            CONFIG_COUNT,
-            (performerOnly) ? 1 : CONFIG_PERFORMER_ONLY,
-            getPage() * CONFIG_COUNT
+            getPage()
         );
-
-        if (captchaSid > 1) {
-            resultCall = ApiService.getClientJackson().search(
-                query,
-                CONFIG_SORT,
-                CONFIG_COUNT,
-                (performerOnly) ? 1 : CONFIG_PERFORMER_ONLY,
-                getPage() * CONFIG_COUNT,
-                captchaKey,
-                captchaSid
-            );
-        }
 
         resultCall.enqueue(new Summon<Result>() {
             @Override
@@ -304,22 +289,12 @@ public class MainActivity extends BaseActivity implements EndlessRecyclerView.Pa
             }
 
             @Override
-            public void onSuccess(Call<Result> call, Response<Result> response) {
+            public void onSuccess(final Call<Result> call, Response<Result> response) {
                 new ResponseHandler(MainActivity.this, this, call, response) {
-                    @Override
-                    public void onTokenError(Result result) {
-                        showError("token");
-                    }
 
                     @Override
-                    public void onTooManyRequestsError(Result result) {
-                        search(oldQuery);
-                    }
-
-                    @Override
-                    public void onCaptchaError(Result result) {
-                        showCaptcha(result.getError().getCaptchaImage(), result.getError().getCaptchaSid());
-                        showError("captcha");
+                    public void onSuccess(Result result) {
+                        onLoadListener.onSuccess(result.getAudios());
                     }
 
                     @Override
@@ -329,12 +304,7 @@ public class MainActivity extends BaseActivity implements EndlessRecyclerView.Pa
 
                     @Override
                     public void onUnknownError(Result result) {
-                        showError(result.getError().getMessage());
-                    }
-
-                    @Override
-                    public void onSuccess(Result result) {
-                        onLoadListener.onSuccess(result.getAudios());
+                        onFailure(call, new NetworkErrorException());
                     }
                 };
             }
@@ -379,16 +349,19 @@ public class MainActivity extends BaseActivity implements EndlessRecyclerView.Pa
         if (audio.getBytes() > 1) {
             setSizeAndBitrate(bottomSheet, audio);
         } else {
-            ApiService.getClientScalars().getBytes(audio.getEncodedAudioId()).enqueue(new Summon<String>() {
-                @Override
-                public void onSuccess(Call<String> call, Response<String> response) {
-                    if (ApiHelper.isSuccess(response)) {
-                        long bytes = Long.parseLong(response.body());
-                        audio.setBytes(bytes);
-                        setSizeAndBitrate(bottomSheet, audio);
+            String[] hashes = audio.getHashes();
+            ApiService.getClientScalars()
+                .getBytes(hashes[0], hashes[1])
+                .enqueue(new Summon<String>() {
+                    @Override
+                    public void onSuccess(Call<String> call, Response<String> response) {
+                        if (ApiHelper.isSuccess(response)) {
+                            long bytes = Long.parseLong(response.body());
+                            audio.setBytes(bytes);
+                            setSizeAndBitrate(bottomSheet, audio);
+                        }
                     }
-                }
-            });
+                });
         }
     }
 
@@ -492,9 +465,8 @@ public class MainActivity extends BaseActivity implements EndlessRecyclerView.Pa
             IntentManager.with(this).main();
             finish();
         }
-        CONFIG_COUNT = Integer.parseInt(sharedPreferences.getString("searchCount", Config.DEFAULT_COUNT));
-        CONFIG_SORT = Integer.parseInt(sharedPreferences.getString("searchSort", Config.DEFAULT_SORT));
-        CONFIG_PERFORMER_ONLY = (sharedPreferences.getBoolean("performerOnly", false)) ? 1 : 0;
+        //CONFIG_COUNT = Integer.parseInt(sharedPreferences.getString("searchCount", Config.DEFAULT_COUNT));
+        //CONFIG_PERFORMER_ONLY = (sharedPreferences.getBoolean("performerOnly", false)) ? 1 : 0;
     }
 
     /**

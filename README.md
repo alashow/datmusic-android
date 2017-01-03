@@ -1,3 +1,5 @@
+[![Build Status](https://www.bitrise.io/app/dd7755c1c28ffd25.svg?token=U0tmZGfd2I2Bkhzg8MEQnA&branch=master)](https://www.bitrise.io/app/dd7755c1c28ffd25)
+
 # music-android
 Android client of [datmusic](https://github.com/alashow/music).
 

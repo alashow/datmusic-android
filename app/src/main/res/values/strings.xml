@@ -61,8 +61,6 @@
     <string name="preferences_language">Language</string>
     <string name="preference_search">Search</string>
     <string name="preference_search_sort">Sort</string>
-    <string name="preference_search_count">Count</string>
-    <string name="preference_search_count_description">Number of audio tracks to return</string>
     <string name="preference_search_performer_only">Performer only</string>
     <string name="preference_search_performer_only_description">To search only by artist name</string>
 
@@ -74,14 +72,6 @@
         <item>By date added</item>
         <item>By duration</item>
         <item>By popularity</item>
-    </string-array>
-
-    <string-array name="searchCount">
-        <item>30 tracks</item>
-        <item>50 tracks</item>
-        <item>100 tracks</item>
-        <item>200 tracks</item>
-        <item>300 tracks</item>
     </string-array>
 
 </resources>
