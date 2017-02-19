@@ -2,22 +2,31 @@
 format_version: 1.3.0
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 trigger_map:
-- push_branch: master
+- push_branch: "*"
   workflow: primary
 - pull_request_source_branch: "*"
   workflow: primary
 workflows:
   primary:
     steps:
-    - activate-ssh-key:
+    - activate-ssh-key@3.1.1:
         run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
-    - git-clone: {}
-    - script:
+    - git-clone@3.4.1: {}
+    - script@1.1.3:
         title: Do anything with Script step
-    - gradle-runner@1.5.2:
+        inputs:
+        - content: |-
+            #!/bin/bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            rsync -avhP ./android-licenses/ "$ANDROID_HOME/licenses/"
+    - gradle-runner:
         inputs:
         - gradle_task: "$GRADLE_TASK"
-    - deploy-to-bitrise-io@1.2.6:
+    - deploy-to-bitrise-io:
         is_always_run: false
     - deploy-to-bitrise-io:
         inputs:
