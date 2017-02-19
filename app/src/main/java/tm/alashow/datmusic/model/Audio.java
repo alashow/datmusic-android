@@ -16,6 +16,8 @@
 
 package tm.alashow.datmusic.model;
 
+import android.support.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -50,8 +52,17 @@ public class Audio {
     public Audio() {
     }
 
+    @Nullable
     public String[] getHashes() {
-        return getDownloadUrl().replace(Config.API_ENDPOINT, "").split("/");
+        String[] parts = getDownloadUrl().split("/");
+        int length = parts.length;
+        if (length >= 2) {
+            return new String[]{
+                parts[length - 2], parts[length - 1]
+            };
+        }
+
+        return null;
     }
 
     public String getDownloadUrl(int bitrate) {
@@ -69,11 +80,11 @@ public class Audio {
         return bitrate / 8 * getDuration() * 1000;
     }
 
-    public String getFileSize(){
+    public String getFileSize() {
         return U.humanReadableByteCount(getBytes(), false);
     }
 
-    public String getFileSizeForBitrate(int bitrate){
+    public String getFileSizeForBitrate(int bitrate) {
         return U.humanReadableByteCount(getBytesForBitrate(bitrate), false);
     }
 

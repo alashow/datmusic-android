@@ -350,6 +350,10 @@ public class MainActivity extends BaseActivity implements EndlessRecyclerView.Pa
             setSizeAndBitrate(bottomSheet, audio);
         } else {
             String[] hashes = audio.getHashes();
+            if (hashes == null) {
+                return;
+            }
+
             ApiService.getClientScalars()
                 .getBytes(hashes[0], hashes[1])
                 .enqueue(new Summon<String>() {
