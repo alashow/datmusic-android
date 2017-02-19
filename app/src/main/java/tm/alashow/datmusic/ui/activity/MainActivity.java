@@ -235,7 +235,7 @@ public class MainActivity extends BaseActivity implements EndlessRecyclerView.Pa
         String[] artists = {
             "2 Cellos", "Agnes Obel", "Aloe Black", "Andrew Belle", "Angus Stone", "Aquilo", "Arctic Monkeys",
             "Avicii", "Balmorhea", "Barcelona", "Bastille", "Ben Howard", "Benj Heard", "Birdy", "Broods",
-            "Calvin Harris", "Charlotte OC", "City of The Sun", "Civil Twilight", "Clint Mansell", "Coldplay",
+            "Calvin Harris", "Charlotte OC", "City of The Sun", "Civil Twilight", "Clint Mansel", "Coldplay",
             "Daft Punk", "Damien Rice", "Daniela Andrade", "Daughter", "David O'Dowda", "Dawn Golden", "Dirk Maassen",
             "Ed Sheeran", "Eminem", "Fabrizio Paterlini", "Fink", "Fleurie", "Florence and The Machine", "Gem club",
             "Glass Animals", "Greg Haines", "Greg Maroney", "Groen Land", "Halsey", "Hans Zimmer", "Hozier",

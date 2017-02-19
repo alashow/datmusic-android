@@ -25,8 +25,8 @@ android {
         applicationId "tm.alashow.datmusic"
         minSdkVersion 14
         targetSdkVersion 25
-        versionCode 23
-        versionName "1.4.0-${gitSha}"
+        versionCode 24
+        versionName "1.4.3-${gitSha}"
     }
 
     buildTypes {
