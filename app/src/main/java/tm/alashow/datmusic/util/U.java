@@ -213,47 +213,6 @@ public class U {
         return string;
     }
 
-    //from gist https://gist.github.com/alashow/07d9ef9c02ee697ab47d
-    public static Character[] characters = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K',
-        'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',
-        'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g',
-        'h', 'j', 'k', 'm', 'n', 'p', 'q', 'r', 's', 't',
-        'u', 'v', 'x', 'y', 'z', '1', '2', '3'};
-
-    public static String encode(long input) {
-        int length = characters.length;
-        String encoded = "";
-
-        if (input == 0) {
-            return String.valueOf(characters[0]);
-        } else if (input < 0) {
-            input *= - 1;
-            encoded += "-";
-        }
-
-        while (input > 0) {
-            long val = input % length;
-            input = input / length;
-            encoded += characters[(int) val];
-        }
-
-        return encoded;
-    }
-
-    public static long decode(String encoded) {
-        int length = characters.length;
-
-        long decoded = 0;
-
-        for(int i = encoded.length() - 1; i >= 0; i--) {
-            char ch = encoded.charAt(i);
-            long val = indexOf(ch, characters);
-            decoded = (decoded * length) + val;
-        }
-
-        return decoded;
-    }
-
     public static <T> int indexOf(T needle, T[] haystack) {
         for(int i = 0; i < haystack.length; i++) {
             if (haystack[i] != null && haystack[i].equals(needle)
