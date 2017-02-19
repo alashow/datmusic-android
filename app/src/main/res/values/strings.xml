@@ -36,8 +36,7 @@
     <string name="error.permissionNotGranted">Storage permissions not granted. Enable "Storage permissions" from phone settings manually.</string>
 
     <!--MainActivity-->
-    <string name="share_text">Hey! You should check up this music! \n</string>
-    <string name="error_token">Token error. Retry</string>
+    <string name="share_text">Hey! You should check out this song! \n</string>
     <string name="error_not_found">Not found</string>
     <string name="error_captcha">Captcha needed</string>
 

@@ -392,9 +392,6 @@ public class MainActivity extends BaseActivity implements EndlessRecyclerView.Pa
             case "network":
                 errorView.setSubtitle(R.string.network_error);
                 break;
-            case "token":
-                errorView.setSubtitle(R.string.error_token);
-                break;
             case "notFound":
                 errorView.setSubtitle(R.string.error_not_found);
                 break;
