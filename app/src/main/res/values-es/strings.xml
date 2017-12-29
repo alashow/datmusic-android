@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2015. Alashov Berkeli
+  ~
+  ~    Licensed under the Apache License, Version 2.0 (the "License");
+  ~    you may not use this file except in compliance with the License.
+  ~    You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~    Unless required by applicable law or agreed to in writing, software
+  ~    distributed under the License is distributed on an "AS IS" BASIS,
+  ~    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~    See the License for the specific language governing permissions and
+  ~    limitations under the License.
+  -->
+
+<resources>
+
+    <!--General-->
+    <string name="app_name">datmusic</string>
+    <string name="exception">Error de la aplicación!</string>
+    <string name="retry">Intentar de nuevo</string>
+    <string name="error">Error</string>
+    <string name="cancel">Cancelar</string>
+    <string name="loading">Cargando..</string>
+    <string name="yes">Si</string>
+    <string name="no">No</string>
+    <string name="network_error">Error de conexión</string>
+    <string name="unknown_error">Error desconocido</string>
+    <string name="search">Buscar</string>
+    <string name="search_hint">Escriba algo que buscar</string>
+    <string name="web_version">Versión Web</string>
+    <string name="powered_by"><![CDATA[With ♥ by <a href=\'https://alashov.com\'>Alashov</a>]]></string>
+    <string name="share">Compartir</string>
+
+    <string name="error.permissionNotGranted">Permisos de almacenamiento no otorgados. Habilite "Permisos de almacenamiento" desde la configuración del teléfono manualmente.</string>
+
+    <!--MainActivity-->
+    <string name="share_text">Hey! Deberías echarle un vistazo a esta canción! \n</string>
+    <string name="error_not_found">No encontrado</string>
+    <string name="error_captcha">Captcha requerido</string>
+
+    <!--AudioActions-->
+    <string name="audio_download">Descargar</string>
+    <string name="audio_play">Reproducir</string>
+    <string name="audio_share">Compartir</string>
+    <string name="audio_copy">Copiar enlace</string>
+    <string name="audio_copied">Enlace copiado</string>
+    <string name="audio_bitrate">Elija la calidad y descargue</string>
+    <string name="audio_player_close">Cerrar</string>
+
+    <!--Captcha-->
+    <string name="captcha_submit">Enviar</string>
+    <string name="captcha_reload">Recargar</string>
+    <string name="captcha_hint">Escriba las letras de arriba</string>
+    <string name="captcha_empty">El captcha no puede estar vacío</string>
+
+    <!--Preferences-->
+    <string name="preferences_title">Ajustes</string>
+    <string name="preferences_language">Idioma</string>
+    <string name="preference_search">Buscar</string>
+    <string name="preference_search_sort">Ordenar</string>
+    <string name="preference_search_performer_only">Solo artista</string>
+    <string name="preference_search_performer_only_description">Para buscar solo por el nombre del artista</string>
+
+    <string name="preferences_general">General</string>
+    <string name="preferences_popular_start">Música popular</string>
+    <string name="preferences_popular_start_description">Muestra la música popular al iniciar la aplicación</string>
+
+    <string-array name="searchSort">
+        <item>Por fecha agregada</item>
+        <item>Por duración</item>
+        <item>Por popularidad</item>
+    </string-array>
+
+</resources>
