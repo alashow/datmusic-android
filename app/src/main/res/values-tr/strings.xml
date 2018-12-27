@@ -18,59 +18,59 @@
 
     <!--General-->
     <string name="app_name">datmusic</string>
-    <string name="exception">Application error!</string>
-    <string name="retry">Try again</string>
-    <string name="error">Error</string>
-    <string name="cancel">Cancel</string>
-    <string name="loading">Loading..</string>
-    <string name="yes">Yes</string>
-    <string name="no">No</string>
-    <string name="network_error">Network error</string>
-    <string name="unknown_error">Unknown error</string>
-    <string name="search">Search</string>
-    <string name="search_hint">Type search query</string>
-    <string name="web_version">Web version</string>
+    <string name="exception">Uygulama Hatası!</string>
+    <string name="retry">Tekrar Deneyin</string>
+    <string name="error">Hata</string>
+    <string name="cancel">İptal Et</string>
+    <string name="loading">Yükleniyor..</string>
+    <string name="yes">Evet</string>
+    <string name="no">Hayır</string>
+    <string name="network_error">Ağ hatası</string>
+    <string name="unknown_error">Bilinmeyen hata</string>
+    <string name="search">Ara</string>
+    <string name="search_hint">Aranacak metni girin</string>
+    <string name="web_version">Web versiyonu</string>
     <string name="powered_by"><![CDATA[With ♥ by <a href=\'https://alashov.com\'>Alashov</a>]]></string>
-    <string name="share">Share</string>
+    <string name="share">Paylaş</string>
 
-    <string name="error.permissionNotGranted">Storage permissions not granted. Enable "Storage permissions" from phone settings manually.</string>
+    <string name="error.permissionNotGranted">Depolama izni verilmemiş. Lütfen telefon ayarlarından depolama iznini aktive edin</string>
 
     <!--MainActivity-->
-    <string name="share_text">Hey! You should check out this song! \n</string>
-    <string name="error_not_found">Not found</string>
-    <string name="error_captcha">Captcha needed</string>
+    <string name="share_text">Hey! Bu şarkıyı denemelisin!! \n</string>
+    <string name="error_not_found">Bulunamadı</string>
+    <string name="error_captcha">Captcha gerekiyor</string>
 
     <!--AudioActions-->
-    <string name="audio_download">Download</string>
-    <string name="audio_play">Play</string>
-    <string name="audio_share">Share</string>
-    <string name="audio_copy">Copy link</string>
-    <string name="audio_copied">Link copied</string>
-    <string name="audio_bitrate">Choose bitrate and download</string>
-    <string name="audio_player_close">Close</string>
+    <string name="audio_download">İndir</string>
+    <string name="audio_play">Oynat</string>
+    <string name="audio_share">Paylaş</string>
+    <string name="audio_copy">Linki kopyala</string>
+    <string name="audio_copied">Link kopyalandı</string>
+    <string name="audio_bitrate">Bitrate seç ve indir</string>
+    <string name="audio_player_close">Kapat</string>
 
     <!--Captcha-->
-    <string name="captcha_submit">Send</string>
-    <string name="captcha_reload">Reload</string>
-    <string name="captcha_hint">Type letters above</string>
-    <string name="captcha_empty">Captcha cannot be empty</string>
+    <string name="captcha_submit">Gönder</string>
+    <string name="captcha_reload">Tekrar yükle</string>
+    <string name="captcha_hint">Kelimeleri yukarıya yazıne</string>
+    <string name="captcha_empty">Captcha boş olamaz</string>
 
     <!--Preferences-->
-    <string name="preferences_title">Settings</string>
-    <string name="preferences_language">Language</string>
-    <string name="preference_search">Search</string>
-    <string name="preference_search_sort">Sort</string>
-    <string name="preference_search_performer_only">Performer only</string>
-    <string name="preference_search_performer_only_description">To search only by artist name</string>
+    <string name="preferences_title">Ayarlar</string>
+    <string name="preferences_language">Dil</string>
+    <string name="preference_search">Ara</string>
+    <string name="preference_search_sort">Sırala</string>
+    <string name="preference_search_performer_only">Yalnızca sanatçı</string>
+    <string name="preference_search_performer_only_description">Yalnizca sanatçı ismi kullanarak arama yapmak için</string>
 
-    <string name="preferences_general">General</string>
-    <string name="preferences_popular_start">Popular music</string>
-    <string name="preferences_popular_start_description">Show popular music on app start</string>
+    <string name="preferences_general">Genel</string>
+    <string name="preferences_popular_start">Popüler müzik</string>
+    <string name="preferences_popular_start_description">Uygulama açılınca popüler müzikleri göster</string>
 
     <string-array name="searchSort">
-        <item>By date added</item>
-        <item>By duration</item>
-        <item>By popularity</item>
+        <item>Eklenme tarihi</item>
+        <item>Süre</item>
+        <item>Popülerlik</item>
     </string-array>
 
 </resources>
