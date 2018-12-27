@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2015. Alashov Berkeli
+  ~
+  ~    Licensed under the Apache License, Version 2.0 (the "License");
+  ~    you may not use this file except in compliance with the License.
+  ~    You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~    Unless required by applicable law or agreed to in writing, software
+  ~    distributed under the License is distributed on an "AS IS" BASIS,
+  ~    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~    See the License for the specific language governing permissions and
+  ~    limitations under the License.
+  -->
+
+<resources>
+    <color name="text_color">#212121</color>
+    <color name="secondary_text_color">#727272</color>
+    <color name="primary">#34495e</color>
+    <color name="primary_dark">#2c3e50</color>
+    <color name="transparent_turquoise">#2034495e</color>
+    <color name="transparent_primary_30">#3034495e</color>
+    <color name="transparent_primary_80">#8034495e</color>
+    <color name="nav_drawer_list_item_color">#676767</color>
+    <color name="circle_image_border">#e1e1e1</color>
+    <color name="divider">#ffe5e5e5</color>
+    <color name="image_placeholder">#ffdedede</color>
+
+    <color name="selector.white">#c5c5c5</color>
+    <color name="selector.white.30">#30c5c5c5</color>
+    <color name="selector.white.70">#70c5c5c5</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="whiter">#ecf0f1</color>
+    <color name="silver">#ffced4d8</color>
+    <color name="dark_silver">#95a5a6</color>
+    <color name="dark_silver_40">#400c223e</color>
+    <color name="black">#ff000000</color>
+    <color name="input_border">#ccc</color>
+    <color name="input_disabled">#ffe0e0e0</color>
+    <color name="blue">#3498db</color>
+    <color name="dark_blue">#2980b9</color>
+    <color name="darker_blue">#0061b9</color>
+    <color name="asphalt">#2c3e50</color>
+    <color name="dark_asphalt">#ff202e3f</color>
+    <color name="darker_asphalt">#ff16212d</color>
+    <color name="red">#e74c3c</color>
+    <color name="dark_red">#c0392b</color>
+    <color name="darker_red">#a80409</color>
+    <color name="green">#2ecc71</color>
+    <color name="dark_green">#27ae60</color>
+    <color name="darker_green">#ff269448</color>
+    <color name="sea_green">#1abc9c</color>
+    <color name="dark_sea_green">#16a085</color>
+    <color name="darker_sea_green">#ff16856d</color>
+    <color name="yellow">#f1c40f</color>
+    <color name="dark_yellow">#fff3aa12</color>
+    <color name="darker_yellow">#ffe08912</color>
+    <color name="orange">#e67e22</color>
+    <color name="dark_orange">#d35400</color>
+</resources>
