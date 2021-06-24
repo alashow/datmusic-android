@@ -54,11 +54,9 @@ object Deps {
             const val insets = "com.google.accompanist:accompanist-insets:$version"
             const val insetsUi = "com.google.accompanist:accompanist-insets-ui:$version"
             const val permissions = "com.google.accompanist:accompanist-permissions:$version"
-            const val placeholder =
-                "com.google.accompanist:accompanist-placeholder-material:$version"
+            const val placeholder = "com.google.accompanist:accompanist-placeholder-material:$version"
             const val swiperefresh = "com.google.accompanist:accompanist-swiperefresh:$version"
-            const val systemUiController =
-                "com.google.accompanist:accompanist-systemuicontroller:$version"
+            const val systemUiController = "com.google.accompanist:accompanist-systemuicontroller:$version"
         }
 
         object Lifecycle {
@@ -71,8 +69,7 @@ object Deps {
             const val extensions = "androidx.lifecycle:lifecycle-extensions:2.2.0"
             const val reactiveStreams = "androidx.lifecycle:lifecycle-reactivestreams:$version"
             const val vmKotlin = "androidx.lifecycle:lifecycle-viewmodel-ktx:$version"
-            const val vmSavedState =
-                "androidx.lifecycle:lifecycle-viewmodel-savedstate:$vmSavedStateVersion"
+            const val vmSavedState = "androidx.lifecycle:lifecycle-viewmodel-savedstate:$vmSavedStateVersion"
         }
 
         object Room {
@@ -98,9 +95,7 @@ object Deps {
         const val localizationActivity = "com.github.akexorcist:Localization:3226dc6d5d"
         const val timber = "com.jakewharton.timber:timber:4.7.1"
         const val threeTenAbp = "com.jakewharton.threetenabp:threetenabp:1.3.1"
-        const val proguardSnippets =
-            "com.github.yongjhih.android-proguards:android-proguards-all:-SNAPSHOT"
-        const val fuzzywuzzy = "me.xdrop:fuzzywuzzy:1.3.1"
+        const val proguardSnippets = "com.github.yongjhih.android-proguards:android-proguards-all:-SNAPSHOT"
 
         const val junit = "junit:junit:4.13.2"
         const val threeTen = "org.threeten:threetenbp:1.5.1"
@@ -122,12 +117,6 @@ object Deps {
         const val retroAuth = "com.andretietz.retroauth:retroauth-android:$retroAuthVersion"
         const val kotlinSerializerConverter =
             "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0"
-    }
-
-    object Rx {
-        const val java = "io.reactivex.rxjava2:rxjava:2.2.21"
-        const val kotlin = "io.reactivex.rxjava2:rxkotlin:2.4.0"
-        const val android = "io.reactivex.rxjava2:rxandroid:2.1.1"
     }
 
     object Dagger {

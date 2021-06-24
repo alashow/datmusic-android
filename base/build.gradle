@@ -52,10 +52,6 @@ dependencies {
 
 	api Deps.Android.Paging.runtime
 
-	api Deps.Rx.java
-	api Deps.Rx.kotlin
-	implementation Deps.Rx.android
-
 	api Deps.Firebase.analytics
 	api Deps.Firebase.crashlytics
 

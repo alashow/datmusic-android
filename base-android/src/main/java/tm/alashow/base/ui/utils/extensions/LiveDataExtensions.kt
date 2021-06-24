@@ -8,7 +8,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import io.reactivex.subjects.BehaviorSubject
 
 inline fun <T> LiveData<T>.behold(owner: LifecycleOwner, crossinline observer: (T?) -> Unit) {
     this.observe(owner, Observer { observer(it) })
@@ -28,9 +27,3 @@ fun <T> LiveData<Set<T>>.orEmpty(): Set<T> = value.orEmpty()
 fun <K, V> LiveData<Map<K, V>>.orEmpty(): Map<K, V> = value.orEmpty()
 fun <K, V> LiveData<MutableMap<K, V>>.orImmutableEmpty(): Map<K, V> = value.orEmpty()
 fun <K, V> LiveData<MutableMap<K, V>>.orMutableEmpty(): MutableMap<K, V> = orImmutableEmpty().toMutableMap()
-
-fun <T> BehaviorSubject<List<T>>.orEmpty(): List<T> = value.orEmpty()
-fun <T> BehaviorSubject<Set<T>>.orEmpty(): Set<T> = value.orEmpty()
-fun <K, V> BehaviorSubject<Map<K, V>>.orEmpty(): Map<K, V> = value.orEmpty()
-fun <K, V> BehaviorSubject<MutableMap<K, V>>.orMutableEmpty(): MutableMap<K, V> = value.orEmpty().toMutableMap()
-fun <K, V> BehaviorSubject<MutableMap<K, V>>.orImmutableEmpty(): Map<K, V> = value.orEmpty()

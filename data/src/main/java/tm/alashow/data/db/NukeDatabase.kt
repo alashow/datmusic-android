@@ -4,17 +4,14 @@
  */
 package tm.alashow.data.db
 
-import io.reactivex.Completable
-import javax.inject.Inject
-import tm.alashow.base.util.rx.AppRxSchedulers
 import tm.alashow.datmusic.data.db.AppDatabase
+import javax.inject.Inject
 
 /**
  * Tiny class for clearing all tables of database.
  */
 class NukeDatabase @Inject constructor(
-    private val database: AppDatabase,
-    private val schedulers: AppRxSchedulers
+    private val database: AppDatabase
 ) {
-    fun nuke() = Completable.fromAction { database.clearAllTables() }.subscribeOn(schedulers.database)
+    suspend fun nuke() = database.clearAllTables()
 }

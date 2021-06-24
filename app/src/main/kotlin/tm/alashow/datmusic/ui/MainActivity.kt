@@ -14,12 +14,11 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -38,18 +37,24 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
-            val viewModel: MainViewModel = hiltViewModel()
-            AppTheme {
-                ProvideWindowInsets(consumeWindowInsets = false) {
-                    Scaffold(
-                        bottomBar = {
-                            HomeBottomNavigation()
-                        }
-                    ) {
-                        val state by viewModel.state.collectAsState(initial = MainViewState.Empty)
-                        Screen(state)
-                    }
+            App()
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun App() {
+    val viewModel: MainViewModel = hiltViewModel()
+    AppTheme {
+        ProvideWindowInsets(consumeWindowInsets = false) {
+            Scaffold(
+                bottomBar = {
+                    HomeBottomNavigation()
                 }
+            ) {
+                val state by viewModel.state.collectAsState(initial = MainViewState.Empty)
+                Screen(state)
             }
         }
     }

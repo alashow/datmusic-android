@@ -4,32 +4,24 @@
  */
 package tm.alashow.data.db
 
-import io.reactivex.Completable
-import io.reactivex.Single
-import tm.alashow.base.util.rx.AppRxSchedulers
 import tm.alashow.domain.Entry
 import tm.alashow.domain.Params
 
 abstract class RoomRepo<E : Entry>(
-    private val dao: EntryDao<Params, E>,
-    private val schedulers: AppRxSchedulers
+    private val dao: EntryDao<Params, E>
 ) {
-    fun entries(params: Params) = dao.entries(params)
-        .distinctUntilChanged()
-        .subscribeOn(schedulers.database)
+    suspend fun entries(params: Params) = dao.entries(params)
 
-    fun isEmpty(params: Params): Single<Boolean> {
-        return dao.count(params)
-            .subscribeOn(schedulers.database)
-            .map { it == 0 }
+    suspend fun isEmpty(params: Params): Boolean {
+        return dao.count(params) != 0
     }
 
-    fun entry(id: Long) = dao.entry(id).subscribeOn(schedulers.database)
-    fun delete(id: Long) = Completable.fromCallable { dao.delete(id) }.subscribeOn(schedulers.database)
+    suspend fun entry(id: Long) = dao.entry(id)
+    suspend fun delete(id: Long) = dao.delete(id)
 
-    fun insert(item: E) = Single.fromCallable { dao.insert(item) }.subscribeOn(schedulers.database)
-    fun insert(items: List<E>) = Single.fromCallable { dao.insert(items) }.subscribeOn(schedulers.database)
-    fun update(item: E) = Completable.fromCallable { dao.update(item) }.subscribeOn(schedulers.database)
+    suspend fun insert(item: E) = dao.insert(item)
+    suspend fun insert(items: List<E>) = dao.insert(items)
+    suspend fun update(item: E) = dao.update(item)
 
-    fun clear() = Completable.fromCallable { dao.deleteAll() }.subscribeOn(schedulers.database)
+    suspend fun clear() = dao.deleteAll()
 }

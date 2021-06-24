@@ -8,45 +8,43 @@ import androidx.paging.DataSource
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Update
-import io.reactivex.Flowable
-import io.reactivex.Single
 import tm.alashow.domain.Entry
 import tm.alashow.domain.PaginatedEntry
 
 interface EntryDao<in Params, E : Entry> {
-    fun entries(params: Params): Flowable<List<E>>
-    fun count(params: Params): Single<Int>
+    suspend fun entries(params: Params): List<E>
+    suspend fun count(params: Params): Int
     fun deleteAll()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(entry: E): Long
+    suspend fun insert(entry: E): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(entry: List<E>): List<Long>
+    suspend fun insert(entry: List<E>): List<Long>
 
     @Update
-    fun update(entry: E)
+    suspend fun update(entry: E)
 
-    fun entry(id: Long): Flowable<E>
-    fun has(id: Long): Single<Int>
-    fun delete(id: Long)
+    suspend fun entry(id: Long): E
+    suspend fun has(id: Long): Int
+    suspend fun delete(id: Long)
 }
 
 interface PaginatedEntryDao<in Params, E : PaginatedEntry> : EntryDao<Params, E> {
-    fun entriesDataSource(params: Params): DataSource.Factory<Int, E>
-    fun entriesPage(params: Params, page: Int): Flowable<List<E>>
-    fun deletePage(params: Params, page: Int)
+    suspend fun entriesDataSource(params: Params): DataSource.Factory<Int, E>
+    suspend fun entriesPage(params: Params, page: Int): List<E>
+    suspend fun deletePage(params: Params, page: Int)
 }
 
 interface PaginatedItemEntryDao<in Params, E : PaginatedEntry> : PaginatedEntryDao<Params, E>
 
 interface SingleEntryDao<in Params, E : Entry> {
-    fun entry(params: Params): Flowable<E>
-    fun count(params: Params): Single<Int>
-    fun reset()
+    suspend fun entry(params: Params): E
+    suspend fun count(params: Params): Int
+    suspend fun reset()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(entry: E): Long
+    suspend fun insert(entry: E): Long
 
     @Update
     fun update(entry: E)

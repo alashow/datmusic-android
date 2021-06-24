@@ -5,19 +5,18 @@
 package tm.alashow.datmusic.ui
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import tm.alashow.base.ui.base.vm.RxAwareViewModel
-import tm.alashow.base.util.rx.AppRxSchedulers
 import tm.alashow.datmusic.data.api.Endpoints
 import tm.alashow.datmusic.data.api.HttpBinResponse
+import javax.inject.Inject
 
 data class MainViewState(
     val response: HttpBinResponse = HttpBinResponse(),
@@ -32,8 +31,7 @@ data class MainViewState(
 class MainViewModel @Inject constructor(
     val handle: SavedStateHandle,
     val api: Endpoints,
-    val schedulers: AppRxSchedulers
-) : RxAwareViewModel() {
+) : ViewModel() {
 
     private val responseState = MutableStateFlow(HttpBinResponse())
     private val responseError = MutableStateFlow(Throwable())

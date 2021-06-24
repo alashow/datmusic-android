@@ -4,12 +4,8 @@
  */
 package tm.alashow.domain
 
-import io.reactivex.Observable
-import io.reactivex.ObservableTransformer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import tm.alashow.domain.errors.ApiErrorException
-import tm.alashow.domain.errors.transform
 
 @Serializable
 data class Result(
@@ -37,12 +33,4 @@ data class Result(
         @SerialName("items")
         val items: List<String> = arrayListOf()
     )
-}
-
-typealias ResultTransformer = ObservableTransformer<Result, Result>
-
-fun Observable<Result>.checkForErrors(): Observable<Result> = this.map {
-    if (!it.success)
-        throw ApiErrorException(it.error ?: Result.Error("unknown", "Unknown error")).transform()
-    it
 }
