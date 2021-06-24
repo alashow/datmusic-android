@@ -7,7 +7,7 @@ package tm.alashow.data.db
 import androidx.room.TypeConverter
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
-import tm.alashow.domain.Params
+import tm.alashow.domain.models.Params
 
 object BaseTypeConverters {
 

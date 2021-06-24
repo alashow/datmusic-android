@@ -45,10 +45,10 @@ object Deps {
             const val foundation = "androidx.compose.foundation:foundation:$version"
             const val materialDesign = "androidx.compose.material:material:$version"
             const val materialDesignIcons = "androidx.compose.material:material-icons-core:$version"
+            const val liveData = "androidx.compose.runtime:runtime-livedata:$version"
             const val activity = "androidx.activity:activity-compose:$activityVersion"
             const val viewModels = "androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha06"
-            const val liveData = "androidx.compose.runtime:runtime-livedata:$version"
-            const val rxjava = "androidx.compose.runtime:runtime-rxjava2:$version"
+            const val paging = "androidx.paging:paging-compose:1.0.0-alpha10"
         }
 
         object Accompanist {
@@ -84,9 +84,10 @@ object Deps {
         }
 
         object Paging {
-            private const val version = "2.1.1"
+            private const val version = "3.0.0"
 
-            const val runtime = "androidx.paging:paging-runtime:$version"
+            const val common = "androidx.paging:paging-common-ktx:$version"
+            const val runtime = "androidx.paging:paging-runtime-ktx:$version"
         }
     }
 
@@ -105,6 +106,7 @@ object Deps {
 
         const val coilVersion = "1.2.1"
         const val coil = "io.coil-kt:coil:$coilVersion"
+        const val store = "com.dropbox.mobile.store:store4:4.0.2-KT15"
     }
 
     object OkHttp {

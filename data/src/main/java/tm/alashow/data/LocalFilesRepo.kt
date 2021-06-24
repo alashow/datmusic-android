@@ -5,14 +5,12 @@
 package tm.alashow.data
 
 import android.content.Context
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.withContext
-import timber.log.Timber
-import tm.alashow.base.util.CoroutineDispatchers
-import tm.alashow.domain.Optional
-import tm.alashow.domain.some
 import java.io.File
 import javax.inject.Inject
+import kotlinx.coroutines.withContext
+import tm.alashow.base.util.CoroutineDispatchers
+import tm.alashow.domain.models.Optional
+import tm.alashow.domain.models.some
 
 open class LocalFilesRepo @Inject constructor(private val context: Context, private val dispatchers: CoroutineDispatchers) {
 

@@ -46,6 +46,7 @@ dependencies {
 	kapt Deps.Android.Room.compiler
 
 	api Deps.Android.Paging.runtime
+	api Deps.Utils.store
 
 	api project(':base')
 	api project(':domain')

@@ -5,9 +5,9 @@
 package tm.alashow.base.inititializer
 
 import android.app.Application
+import javax.inject.Inject
 import timber.log.Timber
 import tm.alashow.baseAndroid.BuildConfig
-import javax.inject.Inject
 
 class TimberInitializer @Inject constructor() : AppInitializer {
     override fun init(application: Application) {

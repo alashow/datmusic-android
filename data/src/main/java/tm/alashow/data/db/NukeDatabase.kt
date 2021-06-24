@@ -4,8 +4,8 @@
  */
 package tm.alashow.data.db
 
-import tm.alashow.datmusic.data.db.AppDatabase
 import javax.inject.Inject
+import tm.alashow.datmusic.data.db.AppDatabase
 
 /**
  * Tiny class for clearing all tables of database.

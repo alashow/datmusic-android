@@ -4,7 +4,7 @@
  */
 package tm.alashow.base.util.arch
 
-import tm.alashow.domain.Optional
+import tm.alashow.domain.models.Optional
 
 typealias LiveEvent<T> = SingleLiveEvent<Event<T>>
 

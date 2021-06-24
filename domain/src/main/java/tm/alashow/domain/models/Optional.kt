@@ -2,7 +2,7 @@
  * Copyright (C) 2018, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.domain
+package tm.alashow.domain.models
 
 sealed class Optional<out T> {
     open operator fun invoke(): T? = null
@@ -40,7 +40,7 @@ typealias None = Optional.None
  */
 fun <T> T?.orNone(): Optional<T> = when (this != null) {
     true -> Optional.Some(this)
-    else -> Optional.None
+    else -> None
 }
 
 fun <T> some(value: T?): Optional<T> = value.orNone()
@@ -55,7 +55,7 @@ fun <T> Optional<T>?.orNull(): T? = when (this) {
  */
 fun <T> Optional<T>?.orNone(): Optional<T> = when (this != null) {
     true -> this
-    else -> Optional.None
+    else -> None
 }
 
 /**

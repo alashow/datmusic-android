@@ -9,11 +9,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
@@ -21,19 +18,15 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.coil.rememberCoilPainter
-import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.insets.navigationBarsPadding
-import com.google.accompanist.insets.rememberInsetsPaddingValues
 import dagger.hilt.android.AndroidEntryPoint
 import tm.alashow.common.compose.Scaffold
 import tm.alashow.datmusic.ui.search.SearchAppBar
@@ -41,7 +34,6 @@ import tm.alashow.datmusic.ui.theme.AppBarAlphas
 import tm.alashow.datmusic.ui.theme.AppTheme
 import tm.alashow.datmusic.ui.theme.ContentPadding
 import tm.alashow.datmusic.ui.theme.ContentPaddingSmall
-import tm.alashow.datmusic.ui.theme.parseColor
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

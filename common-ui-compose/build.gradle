@@ -53,7 +53,7 @@ dependencies {
 	api Deps.Android.Compose.activity
 	api Deps.Android.Compose.viewModels
 	api Deps.Android.Compose.liveData
-	api Deps.Android.Compose.rxjava
+	api Deps.Android.Compose.paging
 
 	api Deps.Android.Accompanist.coil
 	api Deps.Android.Accompanist.insets

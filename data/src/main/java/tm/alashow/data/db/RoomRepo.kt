@@ -6,8 +6,8 @@ package tm.alashow.data.db
 
 import kotlinx.coroutines.withContext
 import tm.alashow.base.util.CoroutineDispatchers
-import tm.alashow.domain.Entry
-import tm.alashow.domain.Params
+import tm.alashow.domain.models.Entry
+import tm.alashow.domain.models.Params
 
 abstract class RoomRepo<E : Entry>(
     private val dao: EntryDao<Params, E>,

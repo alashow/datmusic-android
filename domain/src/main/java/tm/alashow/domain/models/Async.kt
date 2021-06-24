@@ -2,7 +2,7 @@
  * Copyright (C) 2019, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.domain
+package tm.alashow.domain.models
 
 import androidx.lifecycle.MutableLiveData
 import tm.alashow.base.util.extensions.pass

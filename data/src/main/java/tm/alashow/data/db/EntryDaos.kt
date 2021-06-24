@@ -8,8 +8,8 @@ import androidx.paging.DataSource
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Update
-import tm.alashow.domain.Entry
-import tm.alashow.domain.PaginatedEntry
+import tm.alashow.domain.models.Entry
+import tm.alashow.domain.models.PaginatedEntry
 
 interface EntryDao<in Params, E : Entry> {
     suspend fun entries(params: Params): List<E>

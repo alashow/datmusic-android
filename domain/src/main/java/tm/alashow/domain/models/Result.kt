@@ -2,7 +2,7 @@
  * Copyright (C) 2018, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.domain
+package tm.alashow.domain.models
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

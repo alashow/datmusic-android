@@ -14,7 +14,7 @@ interface Call<in Params, Output> {
 
 interface ListCall<in Params, Output> : Call<Params, List<Output>>
 
-interface PaginationCall<in Params, Output> : ListCall<Params, Output> {
+interface PaginationCall<in Params, Output : Any> : ListCall<Params, Output> {
     val pageSize: Int
 
     suspend fun dataPage(params: Params): List<Output>
@@ -23,7 +23,7 @@ interface PaginationCall<in Params, Output> : ListCall<Params, Output> {
     suspend fun loadNextPage(params: Params)
 }
 
-interface PaginatingItemCall<in Params, DatabaseOutput> : PaginationCall<Params, DatabaseOutput> {
+interface PaginatingItemCall<in Params, DatabaseOutput : Any> : PaginationCall<Params, DatabaseOutput> {
     suspend fun dataItem(params: Params): DatabaseOutput
     suspend fun has(params: Params): Boolean
     suspend fun refreshItem(params: Params)

@@ -6,7 +6,6 @@ package tm.alashow.base.inititializer
 
 import android.app.Application
 import com.jakewharton.threetenabp.AndroidThreeTen
-import tm.alashow.base.inititializer.AppInitializer
 import javax.inject.Inject
 
 class ThreeTenAbpInitializer @Inject constructor() : AppInitializer {

@@ -53,6 +53,7 @@ dependencies {
 	api Deps.Retrofit.kotlinSerializerConverter
 
 	api Deps.Android.Paging.runtime
+	api Deps.Android.Paging.common
 
 	api Deps.Firebase.analytics
 	api Deps.Firebase.crashlytics

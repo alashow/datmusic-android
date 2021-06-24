@@ -11,8 +11,8 @@ import java.io.IOException
 import retrofit2.HttpException
 import tm.alashow.base.util.ValidationErrorException
 import tm.alashow.baseAndroid.R
-import tm.alashow.domain.errors.ApiErrorException
-import tm.alashow.domain.errors.EmptyResultException
+import tm.alashow.domain.models.errors.ApiErrorException
+import tm.alashow.domain.models.errors.EmptyResultException
 
 @StringRes
 fun Throwable?.localizedTitle(): Int = when (this) {

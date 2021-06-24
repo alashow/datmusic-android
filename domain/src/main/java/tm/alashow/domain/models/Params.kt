@@ -2,7 +2,7 @@
  * Copyright (C) 2018, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.domain
+package tm.alashow.domain.models
 
 /**
  * Used with Calls for saving and pass call request params.

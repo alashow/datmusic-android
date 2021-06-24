@@ -2,11 +2,11 @@
  * Copyright (C) 2018, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.domain.errors
+package tm.alashow.domain.models.errors
 
 import androidx.annotation.StringRes
 import tm.alashow.domain.R
-import tm.alashow.domain.Result
+import tm.alashow.domain.models.Result
 
 open class ApiErrorException(
     open val error: Result.Error = Result.Error(),

@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2021, Alashov Berkeli
+ * All rights reserved.
+ */
 package tm.alashow.datmusic.ui.theme
 
 import androidx.compose.ui.unit.dp
