@@ -1,0 +1,52 @@
+/*
+* Copyright (C) 2019, Alashov Berkeli
+* All rights reserved.
+*/
+
+import tm.alashow.buildSrc.App
+import tm.alashow.buildSrc.Deps
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+
+android {
+	compileSdkVersion App.targetSdkVersion
+
+	defaultConfig {
+		minSdkVersion App.minSdkVersion
+
+		javaCompileOptions {
+			annotationProcessorOptions {
+				arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
+			}
+		}
+	}
+
+	lintOptions {
+		disable 'GradleCompatible'
+	}
+
+	compileOptions {
+		sourceCompatibility JavaVersion.VERSION_1_8
+		targetCompatibility JavaVersion.VERSION_1_8
+	}
+}
+
+repositories {
+	mavenCentral()
+	maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+	kapt Deps.Dagger.compiler
+	kapt Deps.Dagger.hiltCompiler
+
+	implementation Deps.Android.Room.rx
+	kapt Deps.Android.Room.compiler
+
+	api Deps.Android.Paging.runtime
+
+	api project(':base')
+	api project(':domain')
+}

@@ -1,17 +1,40 @@
-# Add project specific ProGuard rules here.
-# By default, the flags in this file are appended to flags specified
-# in /Users/alashov/android/sdk/tools/proguard/proguard-android.txt
-# You can edit the include path and order by changing the proguardFiles
-# directive in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# okhttp
+-dontwarn okhttp3.**
+-dontwarn okio.**
+-dontwarn javax.annotation.**
+-dontwarn org.conscrypt.**
+-keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
 
-# Add any project specific keep options here:
+# serializer
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+-keepattributes *Annotation*, InnerClasses
+-dontnote kotlinx.serialization.SerializationKt
+-keep,includedescriptorclasses class tm.alashow.**$$serializer { *; }
+-keepclassmembers class tm.alashow.** {
+    *** Companion;
+}
+-keepclasseswithmembers class tm.alashow.** {
+    kotlinx.serialization.KSerializer serializer(...);
+}
+
+-keep @kotlinx.serialization.Serializer public class *
+
+-keep class kotlin.Metadata { *; }
+
+# end serializer
+
+# web
+-keepattributes JavascriptInterface
+
+-keepclassmembers class * {
+    @android.webkit.JavascriptInterface <methods>;
+}
+
+# crashlytics recommendations
+-keepattributes *Annotation*
+-keepattributes LineNumberTable
+-keep public class * extends java.lang.Exception
+
+# project
+-keep class tm.alashow.datmusic.domain.entities.** { *; }
+-keep class tm.alashow.datmusic.domain.models.** { *; }

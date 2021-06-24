@@ -1,0 +1,63 @@
+/*
+* Copyright (C) 2019, Alashov Berkeli
+* All rights reserved.
+*/
+
+import tm.alashow.buildSrc.App
+import tm.alashow.buildSrc.Deps
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+
+android {
+	compileSdkVersion App.targetSdkVersion
+
+	defaultConfig {
+		minSdkVersion App.minSdkVersion
+	}
+
+	lintOptions {
+		disable 'GradleCompatible'
+	}
+
+	compileOptions {
+		sourceCompatibility JavaVersion.VERSION_1_8
+		targetCompatibility JavaVersion.VERSION_1_8
+	}
+}
+
+repositories {
+	mavenCentral()
+	maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+	api Deps.Kotlin.stdlib
+
+	api Deps.Utils.timber
+	api Deps.Utils.threeTenAbp
+
+	api Deps.Dagger.dagger
+	kapt Deps.Dagger.compiler
+	api Deps.Dagger.hilt
+	kapt Deps.Dagger.hiltCompiler
+
+	api Deps.OkHttp.okhttp
+	api Deps.OkHttp.logger
+	api Deps.Retrofit.retrofit
+	api Deps.Retrofit.rxjavaAdapter
+	api Deps.Retrofit.retroAuth
+	api Deps.Retrofit.kotlinSerializerConverter
+
+	api Deps.Android.Paging.runtime
+
+	api Deps.Rx.java
+	api Deps.Rx.kotlin
+	implementation Deps.Rx.android
+
+	api Deps.Firebase.analytics
+	api Deps.Firebase.crashlytics
+
+	api project(':i18n')
+}

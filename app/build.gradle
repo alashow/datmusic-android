@@ -1,89 +1,151 @@
 /*
- * Copyright 2015. Alashov Berkeli
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- */
+* Copyright (C) 2019, Alashov Berkeli
+* All rights reserved.
+*/
+
+import tm.alashow.buildSrc.App
+import tm.alashow.buildSrc.Deps
+
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'dagger.hilt.android.plugin'
+apply plugin: 'androidx.navigation.safeargs.kotlin'
+
+apply plugin: 'com.getkeepsafe.dexcount'
+dexcount {
+	runOnEachPackage = false // run on ci only
+}
+
+apply plugin: 'com.github.triplet.play'
+play {
+	defaultToAppBundles = true
+	track = prop('PUBLISH_TRACK', 'alpha')
+	serviceAccountCredentials = rootProject.file('signing/play-account.json')
+}
 
 def gitSha = 'git rev-parse --short HEAD'.execute([], project.rootDir).text.trim()
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+	compileSdkVersion App.targetSdkVersion
 
-    defaultConfig {
-        applicationId "tm.alashow.datmusic"
-        minSdkVersion 14
-        targetSdkVersion 25
-        versionCode 24
-        versionName "1.4.3-${gitSha}"
-    }
+	defaultConfig {
+		applicationId App.id
+		targetSdkVersion App.targetSdkVersion
+		minSdkVersion App.minSdkVersion
+		versionCode App.versionCode
+		versionName "${App.versionName}-${gitSha}"
 
-    buildTypes {
-        release {
-            minifyEnabled false
-        }
-    }
-    lintOptions {
-        abortOnError false
-    }
-    sourceSets {
-        main.res.srcDirs += 'src/main/res-drawable'
-    }
-    packagingOptions {
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/NOTICE'
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/NOTICE.txt'
-    }
+		multiDexEnabled true
+		vectorDrawables.useSupportLibrary = true
+	}
+
+	sourceSets {
+		main.java.srcDirs += 'src/main/kotlin'
+		test.java.srcDirs += 'src/test/kotlin'
+
+		main.res.srcDirs += 'src/main/res-drawable'
+	}
+
+	compileOptions {
+		sourceCompatibility 1.8
+		targetCompatibility 1.8
+	}
+
+	lintOptions {
+		abortOnError false
+	}
+
+	buildFeatures {
+		compose = true
+	}
+
+	composeOptions {
+		kotlinCompilerExtensionVersion Deps.Android.Compose.version
+		kotlinCompilerVersion Deps.Kotlin.version
+	}
+
+	androidExtensions {
+		experimental = true
+	}
+
+	signingConfigs {
+		debug {
+			storeFile rootProject.file('signing/alashov-debug.jks')
+			storePassword 'alashov'
+			keyPassword 'alashov'
+			keyAlias 'alashov'
+		}
+
+		release {
+			storeFile rootProject.file('signing/alashov-release.jks')
+			storePassword prop('ALASHOV_RELEASE_KEYSTORE_PWD', '')
+			keyPassword prop('ALASHOV_RELEASE_KEY_PWD', '')
+			keyAlias 'alashov'
+		}
+	}
+
+	buildTypes {
+		debug {
+			signingConfig signingConfigs.debug
+			versionNameSuffix '-DEBUG'
+			applicationIdSuffix '.debug'
+
+			multiDexKeepProguard file('multidex-config.pro')
+		}
+
+		release {
+			signingConfig signingConfigs.release
+			minifyEnabled true
+			shrinkResources true
+			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+			multiDexKeepProguard file('multidex-config.pro')
+		}
+	}
+
+	// app bundling configuration
+	bundle {
+		language {
+			enableSplit = false // don't split language resources, as the app supports locale changing
+		}
+	}
+	kotlinOptions {
+		jvmTarget = '1.8'
+		useIR = true
+	}
 }
 
 repositories {
-    mavenCentral()
-    repositories {
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-    }
-    repositories {
-        maven {
-            url "https://jitpack.io"
-        }
-    }
+	mavenCentral()
+	maven { url 'https://jitpack.io' }
+	maven { url 'https://oss.jfrog.org/artifactory/oss-snapshot-local/' }
+	maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
 
-    compile 'com.github.plusCubed:recycler-fast-scroll:0.3.2'
-    compile 'com.github.jksiezni.permissive:permissive:0.1'
-    compile 'com.github.xiprox.errorview:library:2.0.0'
-    compile 'com.pnikosis:materialish-progress:1.5'
-    compile 'com.github.alashow:Remember:v1.0.2'
-    compile 'com.jakewharton:butterknife:7.0.1'
-    compile 'com.cocosw:bottomsheet:1.3.0'
+	// utils
+	implementation Deps.Utils.proguardSnippets
 
-    //network
-    compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
-    compile 'com.squareup.retrofit2:converter-jackson:2.1.0'
-    compile 'com.squareup.retrofit2:converter-scalars:2.1.0'
-    compile 'com.squareup.retrofit2:retrofit:2.1.0'
-    compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.squareup.okhttp3:okhttp:3.4.1'
+	kapt Deps.Android.Lifecycle.compiler
 
-    //jackson
-    compile 'com.fasterxml.jackson.core:jackson-core:2.7.3'
-    compile 'com.fasterxml.jackson.core:jackson-annotations:2.7.3'
+	// dagger-2
+	implementation Deps.Dagger.hilt
+	kapt Deps.Dagger.compiler
+	kapt Deps.Dagger.hiltCompiler
 
-    compile 'com.android.support:recyclerview-v7:25.0.1'
-    compile 'com.android.support:appcompat-v7:25.0.1'
-    compile 'com.android.support:support-v4:25.0.1'
+	// leak canary
+	debugImplementation Deps.LeakCanary.leakCanary
+	debugImplementation Deps.LeakCanary.supportFragment
+	releaseImplementation Deps.LeakCanary.noop
+
+	// android
+	implementation Deps.Android.multiDex
+
+	implementation project(':common-ui-compose')
 }
+
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'

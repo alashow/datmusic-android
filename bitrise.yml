@@ -1,45 +1,91 @@
 ---
-format_version: 1.3.0
+format_version: '6'
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
+project_type: android
 trigger_map:
-- push_branch: "*"
-  workflow: primary
-- pull_request_source_branch: "*"
-  workflow: primary
+  - push_branch: "*"
+    workflow: primary
+  - pull_request_source_branch: "*"
+    workflow: primary
+  - tag: v*
+    workflow: publish
 workflows:
   primary:
     steps:
-    - activate-ssh-key@3.1.1:
-        run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
-    - git-clone@3.4.1: {}
-    - script@1.1.3:
-        title: Do anything with Script step
-        inputs:
-        - content: |-
-            #!/bin/bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
+      - activate-ssh-key:
+          run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
+      - git-clone: {}
+      - cache-pull: {}
+      - install-missing-android-tools:
+          inputs:
+            - gradlew_path: "$PROJECT_LOCATION/gradlew"
+      - script:
+          title: Descrypts signing files
+          inputs:
+            - content: |-
+                #!/bin/bash
+                set -e -x
 
-            rsync -avhP ./android-licenses/ "$ANDROID_HOME/licenses/"
-    - gradle-runner:
-        inputs:
-        - gradle_task: "$GRADLE_TASK"
-    - deploy-to-bitrise-io:
-        is_always_run: false
-    - deploy-to-bitrise-io:
-        inputs:
-        - deploy_path: app/build/outputs/
-        - is_compress: 'true'
+                ./signing/decrypt.sh $SIGNING_KEY
+      - android-build:
+          inputs:
+            - project_location: "$PROJECT_LOCATION"
+            - module: "$MODULE"
+            - cache_level: all
+            - variant: "$BUILD_VARIANT"
+      - sign-apk:
+          run_if: '{{getenv "BITRISEIO_ANDROID_KEYSTORE_URL" | ne ""}}'
+      - script:
+          title: Cleans up decrypted signing files
+          inputs:
+            - content: |-
+                #!/bin/bash
+                set -e -x
+
+                ./signing/cleanup.sh
+      - deploy-to-bitrise-io: {}
+      - cache-push: {}
+  publish:
+    steps:
+      - activate-ssh-key@4.0.3:
+          run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
+      - git-clone: {}
+      - cache-pull: {}
+      - install-missing-android-tools:
+          inputs:
+            - gradlew_path: "$PROJECT_LOCATION/gradlew"
+      - android-lint:
+          inputs:
+            - project_location: "$PROJECT_LOCATION"
+            - module: "$MODULE"
+            - variant: "$TEST_VARIANT"
+      - script:
+          title: Publishes the app to play store, to $PUBLISH_TRACK (default is production)
+            track
+          inputs:
+            - content: |-
+                #!/bin/bash
+                set -e -x
+
+                ./signing/decrypt.sh $SIGNING_KEY
+                ./gradlew publishRelease
+                ./signing/cleanup.sh
+      - deploy-to-bitrise-io: {}
+      - cache-push: {}
 app:
   envs:
-  - opts:
-      is_expand: false
-    GRADLE_BUILD_FILE_PATH: build.gradle
-  - opts:
-      is_expand: false
-    GRADLE_TASK: assembleRelease
-  - opts:
-      is_expand: false
-    GRADLEW_PATH: "./gradlew"
+    - opts:
+        is_expand: false
+      PROJECT_LOCATION: "."
+    - opts:
+        is_expand: false
+      MODULE: app
+    - opts:
+        is_expand: false
+      BUILD_VARIANT: Release
+    - opts:
+        is_expand: false
+      TEST_VARIANT: Debug
+    - opts:
+        is_expand: false
+      PUBLISH_TRACK: production

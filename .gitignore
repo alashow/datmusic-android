@@ -42,3 +42,9 @@ local.properties
 
 # Sandbox stuff
 _sandbox
+
+captures/
+
+# Do not commit plain signing files
+signing/*-release.jks
+signing/play-account.json

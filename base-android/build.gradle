@@ -1,0 +1,67 @@
+/*
+* Copyright (C) 2019, Alashov Berkeli
+* All rights reserved.
+*/
+
+import tm.alashow.buildSrc.App
+import tm.alashow.buildSrc.Deps
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+
+android {
+	compileSdkVersion App.targetSdkVersion
+
+	defaultConfig {
+		minSdkVersion App.minSdkVersion
+
+		vectorDrawables.useSupportLibrary = true
+	}
+
+	lintOptions {
+		disable 'GradleCompatible'
+	}
+
+	compileOptions {
+		sourceCompatibility JavaVersion.VERSION_1_8
+		targetCompatibility JavaVersion.VERSION_1_8
+	}
+
+	buildFeatures {
+		dataBinding = true
+	}
+}
+
+repositories {
+	mavenCentral()
+	maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+	// views
+	api Deps.Views.lottie
+
+	api Deps.Utils.localizationActivity
+
+	// android
+	api Deps.Android.activityKtx
+
+	api Deps.Android.navigationFragment
+	api Deps.Android.navigationUi
+	api Deps.Android.navigationHilt
+
+	api Deps.Android.Lifecycle.runtime
+	api Deps.Android.Lifecycle.runtimeKtx
+	api Deps.Android.Lifecycle.extensions
+	api Deps.Android.Lifecycle.reactiveStreams
+	api Deps.Android.Lifecycle.vmKotlin
+	api Deps.Android.Lifecycle.vmSavedState
+
+	api Deps.Android.Paging.runtime
+
+	api Deps.Firebase.core
+
+	api project(':base')
+	api project(':data')
+}

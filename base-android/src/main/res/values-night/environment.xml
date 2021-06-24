@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (C) 2021, Alashov Berkeli
+  All rights reserved.
+  -->
+
+<resources>
+    <bool name="is_dark_theme">true</bool>
+    <bool name="is_light_theme">false</bool>
+</resources>

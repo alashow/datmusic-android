@@ -1,0 +1,64 @@
+/*
+* Copyright (C) 2021, Alashov Berkeli
+* All rights reserved.
+*/
+
+import tm.alashow.buildSrc.App
+import tm.alashow.buildSrc.Deps
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+
+android {
+	compileSdkVersion App.targetSdkVersion
+
+	defaultConfig {
+		minSdkVersion App.minSdkVersion
+
+		vectorDrawables.useSupportLibrary = true
+	}
+
+	lintOptions {
+		disable 'GradleCompatible'
+	}
+
+	compileOptions {
+		sourceCompatibility JavaVersion.VERSION_1_8
+		targetCompatibility JavaVersion.VERSION_1_8
+	}
+
+	buildFeatures {
+		compose = true
+	}
+
+	composeOptions {
+		kotlinCompilerExtensionVersion Deps.Android.Compose.version
+		kotlinCompilerVersion Deps.Kotlin.version
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	api project(':base-android')
+
+	api Deps.Android.Compose.ui
+	api Deps.Android.Compose.uiTooling
+	api Deps.Android.Compose.foundation
+	api Deps.Android.Compose.materialDesign
+	api Deps.Android.Compose.materialDesignIcons
+	api Deps.Android.Compose.activity
+	api Deps.Android.Compose.viewModels
+	api Deps.Android.Compose.liveData
+	api Deps.Android.Compose.rxjava
+
+	api Deps.Android.Accompanist.coil
+	api Deps.Android.Accompanist.insets
+	api Deps.Android.Accompanist.insetsUi
+	api Deps.Android.Accompanist.permissions
+	api Deps.Android.Accompanist.swiperefresh
+	api Deps.Android.Accompanist.systemUiController
+}

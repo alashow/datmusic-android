@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (C) 2021, Alashov Berkeli
+  All rights reserved.
+  -->
+
+<resources>
+    <color name="system_ui_scrim_light">#B3FFFFFF</color> <!-- 70% white -->
+    <color name="system_ui_scrim_dark">#30000000</color> <!-- 19% black -->
+</resources>
