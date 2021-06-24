@@ -14,6 +14,10 @@ object Deps {
         const val gradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:$version"
         const val serialization = "org.jetbrains.kotlin:kotlin-serialization:$version"
         const val serializationRuntime = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1"
+
+        const val coroutinesVersion = "1.5.0"
+        const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
+        const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
     }
 
     object Android {
@@ -66,10 +70,9 @@ object Deps {
             const val runtime = "androidx.lifecycle:lifecycle-runtime:$version"
             const val runtimeKtx = "androidx.lifecycle:lifecycle-runtime-ktx:$version"
             const val compiler = "androidx.lifecycle:lifecycle-compiler:$version"
-            const val extensions = "androidx.lifecycle:lifecycle-extensions:2.2.0"
-            const val reactiveStreams = "androidx.lifecycle:lifecycle-reactivestreams:$version"
             const val vmKotlin = "androidx.lifecycle:lifecycle-viewmodel-ktx:$version"
             const val vmSavedState = "androidx.lifecycle:lifecycle-viewmodel-savedstate:$vmSavedStateVersion"
+            const val extensions = "androidx.lifecycle:lifecycle-extensions:2.2.0"
         }
 
         object Room {
@@ -132,11 +135,9 @@ object Deps {
     }
 
     object LeakCanary {
-        private const val version = "1.6.3"
+        private const val version = "2.7"
 
         const val leakCanary = "com.squareup.leakcanary:leakcanary-android:$version"
-        const val noop = "com.squareup.leakcanary:leakcanary-android-no-op:$version"
-        const val supportFragment = "com.squareup.leakcanary:leakcanary-support-fragment:$version"
     }
 
     object Firebase {

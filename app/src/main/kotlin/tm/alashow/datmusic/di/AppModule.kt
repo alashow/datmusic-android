@@ -12,6 +12,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.Dispatchers
+import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.base.util.LocalConfig
 import tm.alashow.datmusic.base.initializers.AppInitializers
 import tm.alashow.datmusic.base.initializers.ThreeTenAbpInitializer
@@ -21,6 +23,14 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 @Module
 class AppModule {
+
+    @Singleton
+    @Provides
+    fun coroutineDispatchers() = CoroutineDispatchers(
+        io = Dispatchers.IO,
+        computation = Dispatchers.Default,
+        main = Dispatchers.Main
+    )
 
     @Provides
     fun appContext(app: Application): Context = app.applicationContext

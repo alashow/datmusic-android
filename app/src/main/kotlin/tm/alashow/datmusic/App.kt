@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018, Alashov Berkeli
+ * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
 package tm.alashow.datmusic
@@ -19,12 +19,6 @@ class App : BaseApp() {
 
     override fun onCreate() {
         super.onCreate()
-        // Enable LeakCanary only sometimes because of all weird system leaks
-        //        // Return if this process is dedicated to LeakCanary for heap analysis.
-        //        if (LeakCanary.isInAnalyzerProcess(this)) {
-        //            return
-        //        }
-        //        LeakCanary.install(this)
         initializers.init(this)
     }
 

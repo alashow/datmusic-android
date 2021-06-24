@@ -30,6 +30,7 @@
     <style name="Theme.App.Home" parent="Theme.App.Immerse">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorSecondary">@color/secondary</item>
+        <item name="android:windowSplashScreenBackground" tools:targetApi="s">@color/primary</item>
         <item name="android:windowLightStatusBar" tools:targetApi="23">@bool/use_light_status_bar</item>
     </style>
 

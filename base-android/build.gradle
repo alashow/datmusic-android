@@ -11,7 +11,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
 android {
-	compileSdkVersion App.targetSdkVersion
+	compileSdkVersion App.compileSdkVersion
 
 	defaultConfig {
 		minSdkVersion App.minSdkVersion
@@ -39,9 +39,6 @@ repositories {
 }
 
 dependencies {
-	// views
-	api Deps.Views.lottie
-
 	api Deps.Utils.localizationActivity
 
 	// android
@@ -54,7 +51,6 @@ dependencies {
 	api Deps.Android.Lifecycle.runtime
 	api Deps.Android.Lifecycle.runtimeKtx
 	api Deps.Android.Lifecycle.extensions
-	api Deps.Android.Lifecycle.reactiveStreams
 	api Deps.Android.Lifecycle.vmKotlin
 	api Deps.Android.Lifecycle.vmSavedState
 

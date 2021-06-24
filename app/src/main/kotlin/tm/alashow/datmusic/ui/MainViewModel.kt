@@ -8,18 +8,15 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import timber.log.Timber
-import tm.alashow.datmusic.data.api.Endpoints
-import tm.alashow.datmusic.data.api.HttpBinResponse
+import tm.alashow.data.LocalFilesRepo
+import tm.alashow.domain.or
 import javax.inject.Inject
 
 data class MainViewState(
-    val response: HttpBinResponse = HttpBinResponse(),
+    val response: String = "",
     val error: Throwable = Throwable()
 ) {
     companion object {
@@ -28,12 +25,9 @@ data class MainViewState(
 }
 
 @HiltViewModel
-class MainViewModel @Inject constructor(
-    val handle: SavedStateHandle,
-    val api: Endpoints,
-) : ViewModel() {
+class MainViewModel @Inject constructor(val handle: SavedStateHandle) : ViewModel() {
 
-    private val responseState = MutableStateFlow(HttpBinResponse())
+    private val responseState = MutableStateFlow("")
     private val responseError = MutableStateFlow(Throwable())
 
     val state = combine(responseState, responseError) { response, error ->
@@ -42,16 +36,6 @@ class MainViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                try {
-                    val response = api.getHttpBin()
-                    responseState.value = response
-                    Timber.d(response.toString())
-                } catch (e: Exception) {
-                    responseError.value = e
-                    Timber.e(e)
-                }
-            }
         }
     }
 }

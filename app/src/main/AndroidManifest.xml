@@ -18,8 +18,8 @@
         android:theme="@style/Theme.App.Home">
         <activity
             android:name="tm.alashow.datmusic.ui.MainActivity"
-            android:exported="true"
-            android:theme="@style/Theme.App.Home">
+            android:theme="@style/Theme.App.Home"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

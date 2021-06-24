@@ -8,10 +8,10 @@ import tm.alashow.buildSrc.Deps
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: 'androidx.navigation.safeargs.kotlin'
+apply plugin: 'kotlin-parcelize'
+apply plugin: 'kotlin-kapt'
 
 apply plugin: 'com.getkeepsafe.dexcount'
 dexcount {
@@ -28,7 +28,7 @@ play {
 def gitSha = 'git rev-parse --short HEAD'.execute([], project.rootDir).text.trim()
 
 android {
-	compileSdkVersion App.targetSdkVersion
+	compileSdkVersion App.compileSdkVersion
 
 	defaultConfig {
 		applicationId App.id
@@ -63,11 +63,6 @@ android {
 
 	composeOptions {
 		kotlinCompilerExtensionVersion Deps.Android.Compose.version
-		kotlinCompilerVersion Deps.Kotlin.version
-	}
-
-	androidExtensions {
-		experimental = true
 	}
 
 	signingConfigs {
@@ -126,6 +121,8 @@ repositories {
 
 dependencies {
 
+	implementation Deps.Kotlin.coroutinesAndroid
+
 	// utils
 	implementation Deps.Utils.proguardSnippets
 
@@ -138,8 +135,6 @@ dependencies {
 
 	// leak canary
 	debugImplementation Deps.LeakCanary.leakCanary
-	debugImplementation Deps.LeakCanary.supportFragment
-	releaseImplementation Deps.LeakCanary.noop
 
 	// android
 	implementation Deps.Android.multiDex
