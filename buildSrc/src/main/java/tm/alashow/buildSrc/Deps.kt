@@ -102,6 +102,9 @@ object Deps {
 
         const val junit = "junit:junit:4.13.2"
         const val threeTen = "org.threeten:threetenbp:1.5.1"
+
+        const val coilVersion = "1.2.1"
+        const val coil = "io.coil-kt:coil:$coilVersion"
     }
 
     object OkHttp {

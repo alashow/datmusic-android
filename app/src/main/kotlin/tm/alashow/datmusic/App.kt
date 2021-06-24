@@ -9,7 +9,7 @@ import androidx.multidex.MultiDex
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 import tm.alashow.base.BaseApp
-import tm.alashow.datmusic.base.initializers.AppInitializers
+import tm.alashow.base.inititializer.AppInitializers
 
 @HiltAndroidApp
 class App : BaseApp() {

@@ -13,11 +13,12 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.Dispatchers
+import tm.alashow.base.imageloading.CoilAppInitializer
+import tm.alashow.base.inititializer.AppInitializers
+import tm.alashow.base.inititializer.ThreeTenAbpInitializer
+import tm.alashow.base.inititializer.TimberInitializer
 import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.base.util.LocalConfig
-import tm.alashow.datmusic.base.initializers.AppInitializers
-import tm.alashow.datmusic.base.initializers.ThreeTenAbpInitializer
-import tm.alashow.datmusic.base.initializers.TimberInitializer
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -48,8 +49,9 @@ class AppModule {
     fun appInitializers(
         timberManager: TimberInitializer,
         threeTen: ThreeTenAbpInitializer,
+        coilAppInitializer: CoilAppInitializer
     ): AppInitializers {
-        return AppInitializers(timberManager, threeTen)
+        return AppInitializers(timberManager, threeTen, coilAppInitializer)
     }
 
     @Provides

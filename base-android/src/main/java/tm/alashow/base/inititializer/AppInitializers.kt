@@ -2,7 +2,7 @@
  * Copyright (C) 2018, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.datmusic.base.initializers
+package tm.alashow.base.inititializer
 
 import android.app.Application
 
@@ -12,4 +12,8 @@ class AppInitializers(private vararg val initializers: AppInitializer) : AppInit
             it.init(application)
         }
     }
+}
+
+interface AppInitializer {
+    fun init(application: Application)
 }

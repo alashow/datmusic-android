@@ -2,12 +2,12 @@
  * Copyright (C) 2018, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.datmusic.base.initializers
+package tm.alashow.base.inititializer
 
 import android.app.Application
-import javax.inject.Inject
 import timber.log.Timber
-import tm.alashow.datmusic.BuildConfig
+import tm.alashow.baseAndroid.BuildConfig
+import javax.inject.Inject
 
 class TimberInitializer @Inject constructor() : AppInitializer {
     override fun init(application: Application) {

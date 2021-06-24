@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  Copyright (C) 2021, Alashov Berkeli
+  All rights reserved.
+  -->
+<resources>
+    <string name="search.hint">Search songs, albums, artists</string>
+</resources>
