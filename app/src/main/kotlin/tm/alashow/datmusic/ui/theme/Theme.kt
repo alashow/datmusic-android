@@ -6,57 +6,45 @@ package tm.alashow.datmusic.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
-private val DarkColorPalette = darkColors(
-    primary = Primary,
-    onPrimary = Color.White,
-    primaryVariant = PrimaryVariant,
-    secondary = Secondary,
-    onSecondary = Color.White,
-    secondaryVariant = SecondaryVariant,
-    background = Primary,
-    surface = Primary,
-    onSurface = Color.White,
-)
-
-private val LightColorPalette = lightColors(
-    primary = Primary,
-    onPrimary = Color.White,
-    primaryVariant = PrimaryVariant,
-    secondary = Secondary,
-    onSecondary = Color.White,
-    secondaryVariant = SecondaryVariant,
-    background = Color.White,
-    surface = Color.White,
-    onSurface = Color.Black,
-
-    /* Other default colors to override
-    surface = Color.White,
-    onPrimary = Color.White,
-    onSecondary = Color.Black,
-    onBackground = Color.Black,
-    onSurface = Color.Black,
-    */
-)
+val DefaultTheme = ThemeState()
 
 @Composable
 fun AppTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    themeState: ThemeState = DefaultTheme,
     content: @Composable () -> Unit
 ) {
-    val colors = if (darkTheme) {
-        DarkColorPalette
-    } else {
-        LightColorPalette
+    val isDarkTheme = when (themeState.darkModePreference) {
+        DarkModePreference.AUTO -> isSystemInDarkTheme()
+        DarkModePreference.ON -> true
+        DarkModePreference.OFF -> false
     }
-    MaterialTheme(
-        colors = colors,
-        typography = Typography,
-        shapes = Shapes,
-        content = content
-    )
+    val colors = when (themeState.colorPalettePreference) {
+        ColorPalettePreference.Default -> if (isDarkTheme) DarkAppColors else LightAppColors
+        ColorPalettePreference.Red -> if (isDarkTheme) appDarkColors(Red700, Blue) else appLightColors(Red700, Red)
+        ColorPalettePreference.Asphalt -> if (isDarkTheme) appDarkColors(Asphalt, Orange) else appLightColors(Asphalt, Orange)
+        ColorPalettePreference.Blue -> if (isDarkTheme) appDarkColors(Blue, Red) else appLightColors(Blue, Red)
+        ColorPalettePreference.Orange -> if (isDarkTheme) appDarkColors(Orange, Color.Black) else appLightColors(Orange, Orange)
+    }
+
+    val systemUiController = rememberSystemUiController()
+    SideEffect {
+        systemUiController.setSystemBarsColor(
+            color = Color.Transparent,
+            darkIcons = !isDarkTheme
+        )
+    }
+
+    ProvideAppColors(colors) {
+        MaterialTheme(
+            colors = animate(colors.materialColors),
+            typography = Typography,
+            shapes = Shapes,
+            content = content
+        )
+    }
 }

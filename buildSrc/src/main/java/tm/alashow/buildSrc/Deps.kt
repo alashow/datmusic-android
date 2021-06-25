@@ -45,6 +45,7 @@ object Deps {
             const val foundation = "androidx.compose.foundation:foundation:$version"
             const val materialDesign = "androidx.compose.material:material:$version"
             const val materialDesignIcons = "androidx.compose.material:material-icons-core:$version"
+            const val materialDesignIconsExtended = "androidx.compose.material:material-icons-extended:$version"
             const val liveData = "androidx.compose.runtime:runtime-livedata:$version"
             const val activity = "androidx.activity:activity-compose:$activityVersion"
             const val viewModels = "androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha06"
