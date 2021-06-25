@@ -52,8 +52,6 @@ import tm.alashow.datmusic.ui.search.SearchAppBar
 import tm.alashow.datmusic.ui.theme.AppBarAlphas
 import tm.alashow.datmusic.ui.theme.AppTheme
 import tm.alashow.datmusic.ui.theme.ColorPalettePreference
-import tm.alashow.datmusic.ui.theme.ContentPadding
-import tm.alashow.datmusic.ui.theme.ContentPaddingSmall
 import tm.alashow.datmusic.ui.theme.DarkModePreference
 import tm.alashow.datmusic.ui.theme.DefaultTheme
 import tm.alashow.datmusic.ui.theme.ThemeState
@@ -104,7 +102,7 @@ private fun Screen(state: MainViewState, themeState: ThemeState, setThemeState: 
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
-                        .padding(ContentPadding)
+                        .padding(AppTheme.specs.paddings)
                         .fillMaxWidth()
                 ) {
                     Text("Dark mode")
@@ -117,7 +115,7 @@ private fun Screen(state: MainViewState, themeState: ThemeState, setThemeState: 
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
-                        .padding(ContentPadding)
+                        .padding(AppTheme.specs.paddings)
                         .fillMaxWidth()
                 ) {
                     Text("Color palette")
@@ -130,7 +128,7 @@ private fun Screen(state: MainViewState, themeState: ThemeState, setThemeState: 
             }
 
             items(500) { index ->
-                Row(Modifier.padding(ContentPadding)) {
+                Row(Modifier.padding(AppTheme.specs.paddings)) {
                     val image = rememberCoilPainter("https://source.unsplash.com/100x100", fadeIn = true)
                     Image(
                         painter = image,
@@ -139,8 +137,8 @@ private fun Screen(state: MainViewState, themeState: ThemeState, setThemeState: 
                             .size(60.dp)
                             .clip(MaterialTheme.shapes.small)
                     )
-                    Spacer(Modifier.width(ContentPadding))
-                    Column(verticalArrangement = Arrangement.spacedBy(ContentPaddingSmall)) {
+                    Spacer(Modifier.width(AppTheme.specs.padding))
+                    Column(verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall)) {
                         Text("Title")
                         Text("Artist")
                     }

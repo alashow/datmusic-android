@@ -20,13 +20,20 @@ import kotlinx.parcelize.Parcelize
 private val LocalAppColors = staticCompositionLocalOf<AppColors> {
     error("No AppColors provided")
 }
+private val LocalSpecs = staticCompositionLocalOf<Specs> {
+    error("No LocalSpecs provided")
+}
 
 object AppTheme {
     val colors: AppColors
         @Composable
         get() = LocalAppColors.current
+    val specs: Specs
+        @Composable
+        get() = LocalSpecs.current
 }
 
+// TODO: rename this to reflect other [CompositionLocal]s included in the tree.
 @Composable
 fun ProvideAppColors(
     colors: AppColors,
@@ -36,6 +43,7 @@ fun ProvideAppColors(
 
     CompositionLocalProvider(
         LocalAppColors provides appColors,
+        LocalSpecs provides DefaultSpecs,
         content = content
     )
 }
@@ -56,6 +64,9 @@ data class AppColors(
     }
 }
 
+enum class DarkModePreference { ON, OFF, AUTO }
+enum class ColorPalettePreference { Default, Red, Asphalt, Blue, Orange }
+
 @Parcelize
 data class ThemeState(
     val darkModePreference: DarkModePreference = DarkModePreference.AUTO,
@@ -63,6 +74,3 @@ data class ThemeState(
 ) : Parcelable {
     val isDarkMode get() = darkModePreference == DarkModePreference.ON
 }
-
-enum class DarkModePreference { ON, OFF, AUTO }
-enum class ColorPalettePreference { Default, Red, Asphalt, Blue, Orange }

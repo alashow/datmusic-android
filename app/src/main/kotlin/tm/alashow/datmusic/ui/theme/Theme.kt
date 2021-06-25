@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 val DefaultTheme = ThemeState()
+val DefaultSpecs = Specs()
 
 @Composable
 fun AppTheme(

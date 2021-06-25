@@ -36,8 +36,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.google.accompanist.insets.statusBarsPadding
 import tm.alashow.datmusic.R
 import tm.alashow.datmusic.ui.theme.AppTheme
-import tm.alashow.datmusic.ui.theme.ContentPadding
-import tm.alashow.datmusic.ui.theme.ContentPaddingSmall
 
 @Preview
 @Composable
@@ -101,7 +99,7 @@ fun SearchTextField(
             unfocusedBorderColor = Color.Transparent
         ),
         modifier = modifier
-            .padding(horizontal = ContentPadding, vertical = ContentPaddingSmall)
+            .padding(AppTheme.specs.inputPaddings)
             .background(AppTheme.colors.onSurfaceInputBackground, MaterialTheme.shapes.small)
     )
 }
