@@ -4,7 +4,7 @@
  */
 package tm.alashow.datmusic.util
 
-import java.util.*
+import java.util.Locale
 import okhttp3.Interceptor
 import okhttp3.Response
 import tm.alashow.datmusic.Config

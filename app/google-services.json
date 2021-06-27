@@ -95,6 +95,51 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:182339910251:android:0471ac7b2dc78ac3",
+        "android_client_info": {
+          "package_name": "tm.alashow.datmusic.alpha"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "182339910251-datbtp2tvjb73datqfvi6u41b6n85s8c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "tm.alashow.datmusic.alpha",
+            "certificate_hash": "6ec75dfd6a33d784aad67a7c31ab5e514e6aea1f"
+          }
+        },
+        {
+          "client_id": "182339910251-lcah9j8gv6cujtvdufhtlb3gf5gfd8rc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "tm.alashow.datmusic.alpha",
+            "certificate_hash": "4b375199270328a40f2a289c3c9a370fe0c740e5"
+          }
+        },
+        {
+          "client_id": "182339910251-ggksg3k3tc5sll614r68a7tp9asc6dj6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBv7ZqZs939I6mqsScARttYcjTHoT2GAeE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "182339910251-ggksg3k3tc5sll614r68a7tp9asc6dj6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"

@@ -9,31 +9,55 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
+import tm.alashow.datmusic.data.observers.ObservePagedDatmusicSearchAudios
+import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
 
-data class MainViewState(
-    val response: String = "",
-    val error: Throwable = Throwable()
-) {
-    companion object {
-        val Empty = MainViewState()
-    }
-}
-
+@OptIn(FlowPreview::class)
 @HiltViewModel
-class MainViewModel @Inject constructor(val handle: SavedStateHandle) : ViewModel() {
+internal class MainViewModel @Inject constructor(
+    val handle: SavedStateHandle,
+    private val pager: ObservePagedDatmusicSearchAudios
+) : ViewModel() {
 
-    private val responseState = MutableStateFlow("")
-    private val responseError = MutableStateFlow(Throwable())
+    private val searchQuery = MutableStateFlow("")
 
-    val state = combine(responseState, responseError) { response, error ->
-        MainViewState(response, error)
-    }
+    private val pendingActions = MutableSharedFlow<SearchAction>()
+
+    val pagedAudioList get() = pager.observe()
 
     init {
         viewModelScope.launch {
+            pendingActions.collect { action ->
+                when (action) {
+                    is SearchAction.Search -> {
+                        searchQuery.value = action.query
+                    }
+                }
+            }
+        }
+
+        viewModelScope.launch {
+            searchQuery.debounce(250)
+                .collectLatest { query ->
+                    val job = launch {
+                        val searchParams = DatmusicSearchParams(query)
+                        pager(ObservePagedDatmusicSearchAudios.Params(searchParams))
+                    }
+                    job.join()
+                }
+        }
+    }
+
+    fun submitAction(action: SearchAction) {
+        viewModelScope.launch {
+            pendingActions.emit(action)
         }
     }
 }

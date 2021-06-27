@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2019, Alashov Berkeli
+ * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
 
 
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import tm.alashow.buildSrc.Deps
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
@@ -44,9 +43,13 @@ allprojects {
         jcenter()
     }
 
-    tasks.withType(KotlinCompile).all {
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
         kotlinOptions {
             jvmTarget = "1.8"
+
+            freeCompilerArgs += "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
+            freeCompilerArgs += "-Xopt-in=kotlinx.coroutines.FlowPreview"
+            freeCompilerArgs += "-Xopt-in=kotlin.Experimental"
         }
     }
 }

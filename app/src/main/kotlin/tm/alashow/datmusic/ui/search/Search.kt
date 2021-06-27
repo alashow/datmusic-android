@@ -40,7 +40,8 @@ import tm.alashow.datmusic.ui.theme.AppTheme
 @Preview
 @Composable
 fun SearchAppBar(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onSearchQueryChange: (String) -> Unit = {},
 ) {
     Box(
         modifier
@@ -50,7 +51,10 @@ fun SearchAppBar(
         var queryValue by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue("")) }
         SearchTextField(
             value = queryValue,
-            onValueChange = { value -> queryValue = value },
+            onValueChange = { value ->
+                queryValue = value
+                onSearchQueryChange(value.text)
+            },
             hint = stringResource(R.string.search_hint),
             modifier = Modifier
                 .fillMaxWidth()

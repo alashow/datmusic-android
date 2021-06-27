@@ -8,13 +8,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -31,8 +32,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -42,11 +41,17 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.google.accompanist.coil.rememberCoilPainter
+import com.google.accompanist.imageloading.ImageLoadState
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.insets.navigationBarsPadding
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.placeholder
+import com.google.accompanist.placeholder.material.shimmer
 import dagger.hilt.android.AndroidEntryPoint
 import tm.alashow.common.compose.Scaffold
+import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.ui.components.SelectableDropdownMenu
 import tm.alashow.datmusic.ui.search.SearchAppBar
 import tm.alashow.datmusic.ui.theme.AppBarAlphas
@@ -80,79 +85,95 @@ private fun App() {
                     HomeBottomNavigation()
                 }
             ) {
-                val state by viewModel.state.collectAsState(initial = MainViewState.Empty)
-                Screen(state, themeState, setThemeState)
+                Screen(viewModel, themeState, setThemeState)
             }
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun Screen(state: MainViewState, themeState: ThemeState, setThemeState: (ThemeState) -> Unit) {
+private fun Screen(viewModel: MainViewModel, themeState: ThemeState, setThemeState: (ThemeState) -> Unit) {
     Scaffold(
         topBar = {
-            ScreenAppBar()
+            SearchAppBar(
+                onSearchQueryChange = { query ->
+                    viewModel.submitAction(SearchAction.Search(query))
+                }
+            )
         }
     ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = paddingValues
-        ) {
-            item {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                        .padding(AppTheme.specs.paddings)
-                        .fillMaxWidth()
-                ) {
-                    Text("Dark mode")
-                    SelectableDropdownMenu(
-                        items = DarkModePreference.values().toList(),
-                        selectedItem = themeState.darkModePreference,
-                        onItemSelect = { setThemeState(themeState.copy(darkModePreference = it)) }
-                    )
-                }
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                        .padding(AppTheme.specs.paddings)
-                        .fillMaxWidth()
-                ) {
-                    Text("Color palette")
-                    SelectableDropdownMenu(
-                        items = ColorPalettePreference.values().toList(),
-                        selectedItem = themeState.colorPalettePreference,
-                        onItemSelect = { setThemeState(themeState.copy(colorPalettePreference = it)) }
-                    )
-                }
-            }
-
-            items(500) { index ->
-                Row(Modifier.padding(AppTheme.specs.paddings)) {
-                    val image = rememberCoilPainter("https://source.unsplash.com/100x100", fadeIn = true)
-                    Image(
-                        painter = image,
-                        contentDescription = null,
-                        Modifier
-                            .size(60.dp)
-                            .clip(MaterialTheme.shapes.small)
-                    )
-                    Spacer(Modifier.width(AppTheme.specs.padding))
-                    Column(verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall)) {
-                        Text("Title")
-                        Text("Artist")
+        val uiSettingsVisible = false
+        if (uiSettingsVisible)
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = paddingValues,
+            ) {
+                item {
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .padding(AppTheme.specs.paddings)
+                            .fillMaxWidth()
+                    ) {
+                        Text("Dark mode")
+                        SelectableDropdownMenu(
+                            items = DarkModePreference.values().toList(),
+                            selectedItem = themeState.darkModePreference,
+                            onItemSelect = { setThemeState(themeState.copy(darkModePreference = it)) }
+                        )
+                    }
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .padding(AppTheme.specs.paddings)
+                            .fillMaxWidth()
+                    ) {
+                        Text("Color palette")
+                        SelectableDropdownMenu(
+                            items = ColorPalettePreference.values().toList(),
+                            selectedItem = themeState.colorPalettePreference,
+                            onItemSelect = { setThemeState(themeState.copy(colorPalettePreference = it)) }
+                        )
                     }
                 }
             }
-        }
+        AudioList(viewModel, paddingValues)
     }
 }
 
 @Composable
-private fun ScreenAppBar(
-    modifier: Modifier = Modifier
-) {
-    SearchAppBar()
+private fun AudioList(viewModel: MainViewModel, paddingValues: PaddingValues) {
+    EntityList(
+        lazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedAudioList).collectAsLazyPagingItems(),
+        paddingValues = paddingValues
+    ) {
+        val audio = it ?: return@EntityList
+
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(AppTheme.specs.padding)
+        ) {
+            val image = rememberCoilPainter(audio.coverUrlSmall, fadeIn = true)
+            Image(
+                painter = image,
+                contentDescription = null,
+                Modifier
+                    .size(70.dp)
+                    .clip(MaterialTheme.shapes.small)
+                    .placeholder(
+                        visible = image.loadState is ImageLoadState.Loading,
+                        highlight = PlaceholderHighlight.shimmer(),
+                    )
+            )
+            Spacer(Modifier.width(AppTheme.specs.padding))
+            Column(verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall)) {
+                Text(audio.title)
+                Text(audio.artist)
+            }
+        }
+    }
 }
 
 @Composable

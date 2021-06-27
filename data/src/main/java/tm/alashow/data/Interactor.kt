@@ -2,7 +2,7 @@
  * Copyright (C) 2018, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.domain
+package tm.alashow.data
 
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -55,6 +55,13 @@ abstract class ResultInteractor<in P, R> {
 abstract class PagingInteractor<P : PagingInteractor.Parameters<T>, T : Any> : SubjectInteractor<P, PagingData<T>>() {
     interface Parameters<T : Any> {
         val pagingConfig: PagingConfig
+    }
+
+    companion object {
+        val DEFAULT_PAGING_CONFIG = PagingConfig(
+            pageSize = 60,
+            initialLoadSize = 60
+        )
     }
 }
 

@@ -1,11 +1,13 @@
 /*
- * Copyright (C) 2019, Alashov Berkeli
+ * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
 package tm.alashow.datmusic
 
 object Config {
     const val APP_USER_AGENT = "Android App/${BuildConfig.VERSION_NAME}-${BuildConfig.VERSION_CODE}"
+
+    const val API_BASE_URL = "https://api.datmusic.xyz/"
 
     val IS_DEBUG = BuildConfig.DEBUG
 }

@@ -21,6 +21,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import tm.alashow.datmusic.Config
 import tm.alashow.datmusic.util.AppHeadersInterceptor
 import tm.alashow.datmusic.util.RewriteCachesInterceptor
 
@@ -80,7 +81,7 @@ class NetworkModule {
     @ExperimentalSerializationApi
     fun retrofit(client: OkHttpClient, json: Json): Retrofit =
         Retrofit.Builder()
-            .baseUrl("https://google.com")
+            .baseUrl(Config.API_BASE_URL)
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .client(client)

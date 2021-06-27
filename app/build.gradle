@@ -96,6 +96,9 @@ android {
 			shrinkResources true
 			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
+			versionNameSuffix '-alpha'
+			applicationIdSuffix '.alpha'
+
 			multiDexKeepProguard file('multidex-config.pro')
 		}
 	}

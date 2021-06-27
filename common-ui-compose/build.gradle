@@ -60,6 +60,7 @@ dependencies {
 	api Deps.Android.Accompanist.insets
 	api Deps.Android.Accompanist.insetsUi
 	api Deps.Android.Accompanist.permissions
+	api Deps.Android.Accompanist.placeholder
 	api Deps.Android.Accompanist.swiperefresh
 	api Deps.Android.Accompanist.systemUiController
 }

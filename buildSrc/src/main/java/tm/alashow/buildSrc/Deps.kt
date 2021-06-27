@@ -81,7 +81,7 @@ object Deps {
 
             const val compiler = "androidx.room:room-compiler:$roomVersion"
             const val runtime = "androidx.room:room-runtime:$roomVersion"
-            const val rx = "androidx.room:room-rxjava2:$roomVersion"
+            const val ktx = "androidx.room:room-ktx:$roomVersion"
         }
 
         object Paging {
@@ -124,8 +124,7 @@ object Deps {
         const val retrofit = "com.squareup.retrofit2:retrofit:$version"
         const val rxjavaAdapter = "com.squareup.retrofit2:adapter-rxjava2:$version"
         const val retroAuth = "com.andretietz.retroauth:retroauth-android:$retroAuthVersion"
-        const val kotlinSerializerConverter =
-            "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0"
+        const val kotlinSerializerConverter = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0"
     }
 
     object Dagger {

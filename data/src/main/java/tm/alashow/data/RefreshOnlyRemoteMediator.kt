@@ -2,22 +2,22 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.domain
+package tm.alashow.data
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
-import tm.alashow.domain.models.PaginatedEntry
+import tm.alashow.domain.models.PaginatedEntity
 
 /**
- * A [RemoteMediator] which works on [PaginatedEntry] entities, but only calls
+ * A [RemoteMediator] which works on [PaginatedEntity] entities, but only calls
  * [fetch] for [LoadType.REFRESH] events.
  */
 @OptIn(ExperimentalPagingApi::class)
 internal class RefreshOnlyRemoteMediator<LI, E>(
     private val fetch: suspend () -> Unit
-) : RemoteMediator<Int, E>() where E : PaginatedEntry {
+) : RemoteMediator<Int, E>() where E : PaginatedEntity {
     override suspend fun load(
         loadType: LoadType,
         state: PagingState<Int, E>
