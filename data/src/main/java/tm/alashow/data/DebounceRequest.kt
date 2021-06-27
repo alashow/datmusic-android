@@ -2,7 +2,7 @@
  * Copyright (C) 2020, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.data.calls
+package tm.alashow.data
 
 import javax.inject.Inject
 import timber.log.Timber
