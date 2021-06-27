@@ -9,17 +9,18 @@ import kotlinx.coroutines.withContext
 import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.data.Interactor
 import tm.alashow.data.fetch
-import tm.alashow.datmusic.data.repos.search.DatmusicSearchAudioStore
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
+import tm.alashow.datmusic.data.repos.search.DatmusicSearchStore
+import tm.alashow.domain.models.Entity
 
-class SearchDatmusicAudios @Inject constructor(
-    private val datmusicSearchAudioStore: DatmusicSearchAudioStore,
+class SearchDatmusic<T : Entity> @Inject constructor(
+    private val datmusicSearchStore: DatmusicSearchStore<T>,
     private val dispatchers: CoroutineDispatchers
-) : Interactor<SearchDatmusicAudios.Params>() {
+) : Interactor<SearchDatmusic.Params>() {
 
     override suspend fun doWork(params: Params) {
         withContext(dispatchers.io) {
-            datmusicSearchAudioStore.fetch(params.searchParams, params.forceRefresh)
+            datmusicSearchStore.fetch(params.searchParams, params.forceRefresh)
         }
     }
 

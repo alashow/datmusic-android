@@ -138,7 +138,8 @@ private fun Screen(viewModel: MainViewModel, themeState: ThemeState, setThemeSta
                     }
                 }
             }
-        AudioList(viewModel, paddingValues)
+        ArtistList(viewModel, paddingValues)
+        // AudioList(viewModel, paddingValues)
     }
 }
 
@@ -172,6 +173,37 @@ private fun AudioList(viewModel: MainViewModel, paddingValues: PaddingValues) {
                 Text(audio.title)
                 Text(audio.artist)
             }
+        }
+    }
+}
+
+@Composable
+private fun ArtistList(viewModel: MainViewModel, paddingValues: PaddingValues) {
+    EntityListRow(
+        lazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedArtistsList).collectAsLazyPagingItems(),
+        paddingValues = paddingValues
+    ) {
+        val audio = it ?: return@EntityListRow
+
+        Column(
+            verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(AppTheme.specs.padding)
+        ) {
+            val image = rememberCoilPainter(audio.photo?.url, fadeIn = true)
+            Image(
+                painter = image,
+                contentDescription = null,
+                Modifier
+                    .size(70.dp)
+                    .clip(MaterialTheme.shapes.small)
+                    .placeholder(
+                        visible = image.loadState is ImageLoadState.Loading,
+                        highlight = PlaceholderHighlight.shimmer(),
+                    )
+            )
+            Text(audio.name)
         }
     }
 }

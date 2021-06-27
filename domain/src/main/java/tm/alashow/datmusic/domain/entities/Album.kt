@@ -10,14 +10,19 @@ import androidx.room.Entity
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
+import tm.alashow.domain.models.BasePaginatedEntity
 
 @Parcelize
 @Serializable
 @Entity(tableName = "albums")
 data class Album(
     @SerialName("id")
+    val _id: Long = 0L,
+
+    @Transient
     @ColumnInfo(name = "id")
-    val id: Long = 0L,
+    override val id: String = _id.toString(),
 
     @SerialName("access_key")
     @ColumnInfo(name = "access_key")
@@ -75,7 +80,9 @@ data class Album(
     @ColumnInfo(name = "photo")
     val photo: Photo = Photo(),
 
-) : Parcelable {
+    override var params: String = defaultParams,
+    override var page: Int = defaultPage,
+) : BasePaginatedEntity(), Parcelable {
 
     @Serializable
     @Parcelize

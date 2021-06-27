@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,6 +63,78 @@ fun <T : PaginatedEntity> EntityList(
                             .padding(24.dp)
                     ) {
                         CircularProgressIndicator(Modifier.align(Alignment.Center))
+                    }
+                }
+            }
+
+            when (val refreshState = lazyPagingItems.loadState.refresh) {
+                is LoadState.Error -> {
+                    item {
+                        Box(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(24.dp)
+                        ) {
+                            Text("Error: ${refreshState.error}")
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun <T : PaginatedEntity> EntityListRow(
+    lazyPagingItems: LazyPagingItems<out T>,
+    modifier: Modifier = Modifier,
+    paddingValues: PaddingValues,
+    itemContent: @Composable LazyListScope.(T?) -> Unit
+) {
+    SwipeRefresh(
+        state = rememberSwipeRefreshState(
+            isRefreshing = lazyPagingItems.loadState.refresh == LoadState.Loading
+        ),
+        onRefresh = { lazyPagingItems.refresh() },
+        indicatorPadding = paddingValues,
+        indicator = { state, trigger ->
+            SwipeRefreshIndicator(
+                state = state,
+                refreshTriggerDistance = trigger,
+                scale = true
+            )
+        }
+    ) {
+        LazyRow(
+            contentPadding = paddingValues,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            items(lazyPagingItems = lazyPagingItems) {
+                this@LazyRow.itemContent(it)
+            }
+
+            if (lazyPagingItems.loadState.append == LoadState.Loading) {
+                item {
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp)
+                    ) {
+                        CircularProgressIndicator(Modifier.align(Alignment.Center))
+                    }
+                }
+            }
+
+            when (val refreshState = lazyPagingItems.loadState.refresh) {
+                is LoadState.Error -> {
+                    item {
+                        Box(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(24.dp)
+                        ) {
+                            Text("Error: ${refreshState.error}")
+                        }
                     }
                 }
             }

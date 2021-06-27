@@ -15,9 +15,9 @@ class DatmusicSearchDataSource @Inject constructor(
     private val endpoints: Endpoints,
     private val dispatchers: CoroutineDispatchers
 ) {
-    suspend operator fun invoke(params: DatmusicSearchParams): Result<ApiResponse.Data> {
+    suspend operator fun invoke(params: DatmusicSearchParams): Result<ApiResponse> {
         return resultApiCall(dispatchers.network) {
             endpoints.multisearch(params.toQueryMap(), *params.types.toTypedArray())
-        }.map { it.data }
+        }
     }
 }

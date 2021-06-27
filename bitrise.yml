@@ -15,11 +15,12 @@ workflows:
       - script:
           title: Activates Java 11
           inputs:
-            - content: "#!/usr/bin/env bash\n# fail if any commands fails\nset -e\n# debug
-            log\nset -x\n\nsudo update-alternatives --set javac /usr/lib/jvm/java-11-openjdk-amd64/bin/javac\nsudo
-            update-alternatives --set java /usr/lib/jvm/java-11-openjdk-amd64/bin/java\n
-            \  \nexport JAVA_HOME='/usr/lib/jvm/java-11-openjdk-amd64'\nenvman add
-            --key JAVA_HOME --value '/usr/lib/jvm/java-11-openjdk-amd64'"
+            - content: |-
+                sudo update-alternatives --set javac /usr/lib/jvm/java-11-openjdk-amd64/bin/javac
+                sudo update-alternatives --set java /usr/lib/jvm/java-11-openjdk-amd64/bin/java
+
+                export JAVA_HOME='/usr/lib/jvm/java-11-openjdk-amd64'
+                envman add --key JAVA_HOME --value '/usr/lib/jvm/java-11-openjdk-amd64'
       - activate-ssh-key:
           run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
       - git-clone: {}
@@ -55,7 +56,16 @@ workflows:
       - cache-push: {}
   publish:
     steps:
-      - activate-ssh-key@4.0.3:
+      - script:
+          title: Activates Java 11
+          inputs:
+            - content: |-
+                sudo update-alternatives --set javac /usr/lib/jvm/java-11-openjdk-amd64/bin/javac
+                sudo update-alternatives --set java /usr/lib/jvm/java-11-openjdk-amd64/bin/java
+
+                export JAVA_HOME='/usr/lib/jvm/java-11-openjdk-amd64'
+                envman add --key JAVA_HOME --value '/usr/lib/jvm/java-11-openjdk-amd64'
+      - activate-ssh-key:
           run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
       - git-clone: {}
       - cache-pull: {}

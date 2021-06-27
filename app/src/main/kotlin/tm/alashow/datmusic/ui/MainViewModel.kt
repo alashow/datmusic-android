@@ -16,21 +16,29 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
-import tm.alashow.datmusic.data.observers.ObservePagedDatmusicSearchAudios
+import tm.alashow.datmusic.data.observers.ObservePagedDatmusicSearch
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
+import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams.Companion.withTypes
+import tm.alashow.datmusic.domain.entities.Album
+import tm.alashow.datmusic.domain.entities.Artist
+import tm.alashow.datmusic.domain.entities.Audio
 
 @OptIn(FlowPreview::class)
 @HiltViewModel
 internal class MainViewModel @Inject constructor(
     val handle: SavedStateHandle,
-    private val pager: ObservePagedDatmusicSearchAudios
+    private val audiosPager: ObservePagedDatmusicSearch<Audio>,
+    private val artistsPager: ObservePagedDatmusicSearch<Artist>,
+    private val albumsPager: ObservePagedDatmusicSearch<Album>,
 ) : ViewModel() {
 
     private val searchQuery = MutableStateFlow("")
 
     private val pendingActions = MutableSharedFlow<SearchAction>()
 
-    val pagedAudioList get() = pager.observe()
+    val pagedAudioList get() = audiosPager.observe()
+    val pagedArtistsList get() = artistsPager.observe()
+    val pagedAlbumsList get() = albumsPager.observe()
 
     init {
         viewModelScope.launch {
@@ -48,7 +56,8 @@ internal class MainViewModel @Inject constructor(
                 .collectLatest { query ->
                     val job = launch {
                         val searchParams = DatmusicSearchParams(query)
-                        pager(ObservePagedDatmusicSearchAudios.Params(searchParams))
+                        audiosPager(ObservePagedDatmusicSearch.Params(searchParams))
+                        artistsPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(DatmusicSearchParams.BackendType.ARTISTS)))
                     }
                     job.join()
                 }

@@ -10,6 +10,7 @@ import androidx.room.Entity
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import tm.alashow.domain.models.BasePaginatedEntity
 
 @Parcelize
 @Serializable
@@ -17,7 +18,7 @@ import kotlinx.serialization.Serializable
 data class Artist(
     @SerialName("id")
     @ColumnInfo(name = "id")
-    val id: String = "",
+    override val id: String = "",
 
     @SerialName("name")
     @ColumnInfo(name = "name")
@@ -29,9 +30,13 @@ data class Artist(
 
     @SerialName("photo")
     @ColumnInfo(name = "photo")
-    val photo: List<Photo>? = null,
+    val _photo: List<Photo>? = null,
 
-) : Parcelable {
+    override var params: String = defaultParams,
+    override var page: Int = defaultPage,
+) : BasePaginatedEntity(), Parcelable {
+
+    val photo get() = _photo?.maxByOrNull { it.height }
 
     @Serializable
     @Parcelize
