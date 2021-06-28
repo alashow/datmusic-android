@@ -4,86 +4,75 @@
   All rights reserved.
   -->
 <resources>
-    <string name="app_name">App</string>
-    <string name="app_launcher">App</string>
-    <string name="app_label">App</string>
-    <string name="currency.tmt">%1$.2f manat</string>
-    <string name="currency.tmt.short">%1$.2f m.</string>
-    <string name="currency.tmt.plain">manat</string>
+    <string name="generic.close">Close</string>
+    <string name="generic.clear">Clear</string>
 
-    <string name="generic.close">Ýap</string>
-    <string name="generic.clear">Poz</string>
-
-    <string name="dialog.warning">Duýduryş</string>
-    <string name="dialog.confirm">Tassyklaň</string>
-    <string name="dialog.confirm.no">Ýok</string>
+    <string name="dialog.warning">Warning</string>
+    <string name="dialog.confirm">Confirm</string>
+    <string name="dialog.confirm.no">No</string>
     <string name="dialog.confirm.yes">@string/dialog.ok</string>
     <string name="dialog.ok">@android:string/ok</string>
     <string name="dialog.dismiss">@string/generic.close</string>
 
-    <string name="unknown">Näbelli</string>
-    <string name="error.title">Ýalňyşlyk</string>
-    <string name="error.subtitle">Birzada boldy :(</string>
-    <string name="error.tryAgain">Täzeden barlaň</string>
-    <string name="error.network">Internet näsazlygy</string>
-    <string name="error.server">Serwerimizde näsazlyk</string>
-    <string name="error.auth">Awtorizasiýa ýalňyşlygy</string>
-    <string name="error.noAuth">Içeri girmeli. Täzeden synanşyň</string>
-    <string name="error.notFound">Hiçzat tapylmady</string>
-    <string name="error.api">API ýalňyşlygy</string>
-    <string name="error.empty">Hiçzat tapylmady</string>
-    <string name="error.blank">Boş bolmaly däl</string>
-    <string name="error.unknown">Näbelli ýalňyşlyk</string>
-    <string name="error.errorLogOut">Hasabyňyzdan çykyp bolmady. Programmany pozup täzeden açyp bilersiňiz.</string>
-    <string name="error.alreadyLogined">Hasabyňyz eýýäm bar. Hasapdan çykyp täzeden barlaň.</string>
-    <string name="error.loading">Ýükläp bolmady. Täzeden barlamak üçin basyň</string>
+    <string name="unknown">Unknown</string>
+    <string name="error.title">Error</string>
+    <string name="error.subtitle">Whoops :(</string>
+    <string name="error.tryAgain">Try again</string>
+    <string name="error.network">Network error</string>
+    <string name="error.server">Server error</string>
+    <string name="error.auth">Authorization error</string>
+    <string name="error.noAuth">You need to login</string>
+    <string name="error.notFound">Not found</string>
+    <string name="error.api">API error</string>
+    <string name="error.empty">Empty</string>
+    <string name="error.blank">Must not be empty</string>
+    <string name="error.unknown">Unknown error</string>
+    <string name="error.errorLogOut">Log out failed, try resetting app settings</string>
+    <string name="error.alreadyLogined">Already logged in</string>
+    <string name="error.loading">Loading failed. Tap to retry</string>
 
-    <string name="error.title.empty">Tapylmady</string>
+    <string name="error.title.empty">Empty</string>
 
-    <string name="settings.title">Sazlamalar</string>
-    <string name="settings.language">Dil</string>
-    <string name="settings.version">Wersiýa - %1$s</string>
-
-    <string name="time.duration">%1$d sagat %2$d min.</string>
-    <string name="time.duration.minutes">%1$d minut</string>
+    <string name="time.duration">%1$d hour %2$d min.</string>
+    <string name="time.duration.minutes">%1$d minute</string>
 
     <string-array name="months">
-        <item>Ýanwar</item>
-        <item>Fewral</item>
-        <item>Mart</item>
-        <item>Aprel</item>
-        <item>Maý</item>
-        <item>Iýun</item>
-        <item>Iýul</item>
-        <item>Awgust</item>
-        <item>Sentýabr</item>
-        <item>Oktýabr</item>
-        <item>Noýabr</item>
-        <item>Dekabr</item>
+        <item>January</item>
+        <item>February</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
     </string-array>
 
     <string-array name="months.short">
-        <item>Ýan</item>
-        <item>Few</item>
-        <item>Mart</item>
+        <item>Jan</item>
+        <item>Feb</item>
+        <item>Mar</item>
         <item>Apr</item>
-        <item>Maý</item>
-        <item>Iýun</item>
-        <item>Iýul</item>
-        <item>Awg</item>
-        <item>Sen</item>
-        <item>Okt</item>
-        <item>Noý</item>
-        <item>Dek</item>
+        <item>May</item>
+        <item>Jun</item>
+        <item>Jul</item>
+        <item>Aug</item>
+        <item>Sept</item>
+        <item>Oct</item>
+        <item>Nov</item>
+        <item>Dec</item>
     </string-array>
 
     <string-array name="weeks.short">
-        <item>Duş</item>
-        <item>Siş</item>
-        <item>Çar</item>
-        <item>Pen</item>
-        <item>Anna</item>
-        <item>Şen</item>
-        <item>Ýek</item>
+        <item>Mon</item>
+        <item>Tue</item>
+        <item>Wed</item>
+        <item>Th</item>
+        <item>Fri</item>
+        <item>Sat</item>
+        <item>Sun</item>
     </string-array>
 </resources>

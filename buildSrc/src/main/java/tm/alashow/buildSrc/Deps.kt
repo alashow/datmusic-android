@@ -27,7 +27,7 @@ object Deps {
 
         const val multiDex = "androidx.multidex:multidex:2.0.1"
 
-        const val activityVersion = "1.3.0-beta01"
+        const val activityVersion = "1.3.0-beta02"
         const val activityKtx = "androidx.activity:activity-ktx:$activityVersion"
         const val fragmentKtx = "androidx.fragment:fragment-ktx:1.4.0-alpha02"
 

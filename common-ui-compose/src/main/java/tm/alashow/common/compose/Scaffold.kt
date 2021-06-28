@@ -43,7 +43,7 @@ val LocalScaffoldPadding = staticCompositionLocalOf { PaddingValues(0.dp) }
  * @from https://github.com/chrisbanes/tivi/blob/c03009fd0821fff214619c06d01d7c2c521ec72f/common-ui-compose/src/main/java/app/tivi/common/compose/Scaffold.kt
  */
 @Composable
-fun Scaffold(
+fun AppScaffold(
     modifier: Modifier = Modifier,
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     topBar: @Composable () -> Unit = {},

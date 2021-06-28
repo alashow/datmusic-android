@@ -30,7 +30,7 @@ import tm.alashow.domain.models.PaginatedEntity
 fun <T : PaginatedEntity> EntityList(
     lazyPagingItems: LazyPagingItems<out T>,
     modifier: Modifier = Modifier,
-    paddingValues: PaddingValues,
+    padding: PaddingValues,
     itemContent: @Composable LazyListScope.(T?) -> Unit
 ) {
     SwipeRefresh(
@@ -38,7 +38,7 @@ fun <T : PaginatedEntity> EntityList(
             isRefreshing = lazyPagingItems.loadState.refresh == LoadState.Loading
         ),
         onRefresh = { lazyPagingItems.refresh() },
-        indicatorPadding = paddingValues,
+        indicatorPadding = padding,
         indicator = { state, trigger ->
             SwipeRefreshIndicator(
                 state = state,
@@ -48,7 +48,7 @@ fun <T : PaginatedEntity> EntityList(
         }
     ) {
         LazyColumn(
-            contentPadding = paddingValues,
+            contentPadding = padding,
             modifier = Modifier.fillMaxSize()
         ) {
             items(lazyPagingItems = lazyPagingItems) {
@@ -88,7 +88,7 @@ fun <T : PaginatedEntity> EntityList(
 fun <T : PaginatedEntity> EntityListRow(
     lazyPagingItems: LazyPagingItems<out T>,
     modifier: Modifier = Modifier,
-    paddingValues: PaddingValues,
+    padding: PaddingValues,
     itemContent: @Composable LazyListScope.(T?) -> Unit
 ) {
     SwipeRefresh(
@@ -96,7 +96,7 @@ fun <T : PaginatedEntity> EntityListRow(
             isRefreshing = lazyPagingItems.loadState.refresh == LoadState.Loading
         ),
         onRefresh = { lazyPagingItems.refresh() },
-        indicatorPadding = paddingValues,
+        indicatorPadding = padding,
         indicator = { state, trigger ->
             SwipeRefreshIndicator(
                 state = state,
@@ -106,7 +106,7 @@ fun <T : PaginatedEntity> EntityListRow(
         }
     ) {
         LazyRow(
-            contentPadding = paddingValues,
+            contentPadding = padding,
             modifier = Modifier.fillMaxSize()
         ) {
             items(lazyPagingItems = lazyPagingItems) {

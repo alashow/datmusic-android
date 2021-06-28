@@ -1,0 +1,43 @@
+/*
+* Copyright (C) 2021, Alashov Berkeli
+* All rights reserved.
+*/
+
+
+import tm.alashow.buildSrc.App
+import tm.alashow.buildSrc.Deps
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+
+android {
+	compileSdkVersion App.compileSdkVersion
+
+	defaultConfig {
+		minSdkVersion App.minSdkVersion
+	}
+
+	compileOptions {
+		sourceCompatibility JavaVersion.VERSION_1_8
+		targetCompatibility JavaVersion.VERSION_1_8
+	}
+
+	buildFeatures {
+		compose = true
+	}
+
+	composeOptions {
+		kotlinCompilerExtensionVersion Deps.Android.Compose.version
+		kotlinCompilerVersion Deps.Kotlin.version
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	api project(':base-android')
+	api project(':common-ui-compose')
+}

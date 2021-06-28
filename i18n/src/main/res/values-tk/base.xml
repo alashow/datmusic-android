@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+  Copyright (C) 2019, Alashov Berkeli
+  All rights reserved.
+  -->
+<resources>
+    <string name="generic.close">Ýap</string>
+    <string name="generic.clear">Poz</string>
+
+    <string name="dialog.warning">Duýduryş</string>
+    <string name="dialog.confirm">Tassyklaň</string>
+    <string name="dialog.confirm.no">Ýok</string>
+    <string name="dialog.confirm.yes">@string/dialog.ok</string>
+    <string name="dialog.ok">@android:string/ok</string>
+    <string name="dialog.dismiss">@string/generic.close</string>
+
+    <string name="unknown">Näbelli</string>
+    <string name="error.title">Ýalňyşlyk</string>
+    <string name="error.subtitle">Birzada boldy :(</string>
+    <string name="error.tryAgain">Täzeden barlaň</string>
+    <string name="error.network">Internet näsazlygy</string>
+    <string name="error.server">Serwerimizde näsazlyk</string>
+    <string name="error.auth">Awtorizasiýa ýalňyşlygy</string>
+    <string name="error.noAuth">Içeri girmeli. Täzeden synanşyň</string>
+    <string name="error.notFound">Hiçzat tapylmady</string>
+    <string name="error.api">API ýalňyşlygy</string>
+    <string name="error.empty">Hiçzat tapylmady</string>
+    <string name="error.blank">Boş bolmaly däl</string>
+    <string name="error.unknown">Näbelli ýalňyşlyk</string>
+    <string name="error.errorLogOut">Hasabyňyzdan çykyp bolmady. Programmany pozup täzeden açyp bilersiňiz.</string>
+    <string name="error.alreadyLogined">Hasabyňyz eýýäm bar. Hasapdan çykyp täzeden barlaň.</string>
+    <string name="error.loading">Ýükläp bolmady. Täzeden barlamak üçin basyň</string>
+
+    <string name="error.title.empty">Tapylmady</string>
+
+    <string name="time.duration">%1$d sagat %2$d min.</string>
+    <string name="time.duration.minutes">%1$d minut</string>
+
+    <string-array name="months">
+        <item>Ýanwar</item>
+        <item>Fewral</item>
+        <item>Mart</item>
+        <item>Aprel</item>
+        <item>Maý</item>
+        <item>Iýun</item>
+        <item>Iýul</item>
+        <item>Awgust</item>
+        <item>Sentýabr</item>
+        <item>Oktýabr</item>
+        <item>Noýabr</item>
+        <item>Dekabr</item>
+    </string-array>
+
+    <string-array name="months.short">
+        <item>Ýan</item>
+        <item>Few</item>
+        <item>Mart</item>
+        <item>Apr</item>
+        <item>Maý</item>
+        <item>Iýun</item>
+        <item>Iýul</item>
+        <item>Awg</item>
+        <item>Sen</item>
+        <item>Okt</item>
+        <item>Noý</item>
+        <item>Dek</item>
+    </string-array>
+
+    <string-array name="weeks.short">
+        <item>Duş</item>
+        <item>Siş</item>
+        <item>Çar</item>
+        <item>Pen</item>
+        <item>Anna</item>
+        <item>Şen</item>
+        <item>Ýek</item>
+    </string-array>
+</resources>

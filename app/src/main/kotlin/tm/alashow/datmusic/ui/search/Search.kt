@@ -8,6 +8,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.expandIn
 import androidx.compose.animation.shrinkOut
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,6 +24,7 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -33,9 +35,48 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.statusBarsPadding
+import com.google.accompanist.insets.ui.Scaffold
+import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.R
+import tm.alashow.datmusic.ui.theme.AppBarAlphas
 import tm.alashow.datmusic.ui.theme.AppTheme
+
+@Composable
+fun Search() {
+    Search(
+        viewModel = hiltViewModel(),
+    )
+}
+
+@Composable
+internal fun Search(
+    viewModel: SearchViewModel,
+) {
+    val viewState by rememberFlowWithLifecycle(viewModel.state)
+        .collectAsState(initial = SearchViewState.Empty)
+
+    Search(viewModel, viewState) { action ->
+        viewModel.submitAction(action)
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
+@Composable
+internal fun Search(
+    viewModel: SearchViewModel,
+    state: SearchViewState,
+    actioner: (SearchAction) -> Unit
+) {
+    Scaffold(
+        topBar = {
+            SearchAppBar(onSearchQueryChange = { actioner(SearchAction.Search(it)) })
+        }
+    ) { padding ->
+        AudioList(viewModel, padding)
+    }
+}
 
 @Preview
 @Composable
@@ -45,7 +86,7 @@ fun SearchAppBar(
 ) {
     Box(
         modifier
-            .background(MaterialTheme.colors.surface.copy(alpha = 0.95f))
+            .background(MaterialTheme.colors.surface.copy(alpha = AppBarAlphas.translucentBarAlpha()))
             .fillMaxWidth()
     ) {
         var queryValue by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue("")) }

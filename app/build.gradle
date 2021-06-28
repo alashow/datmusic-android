@@ -143,6 +143,7 @@ dependencies {
 	implementation Deps.Android.multiDex
 
 	implementation project(':common-ui-compose')
+	implementation project(':navigation')
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -5,7 +5,7 @@
   -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Platform.Theme.App" parent="Theme.MaterialComponents.DayNight.NoActionBar" />
+    <style name="Platform.Theme.App" parent="android:Theme.Material.Light" />
 
     <style name="Base.Theme.App" parent="Platform.Theme.App">
         <item name="android:windowActionModeOverlay">true</item>
@@ -28,8 +28,8 @@
     </style>
 
     <style name="Theme.App.Home" parent="Theme.App.Immerse">
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorSecondary">@color/secondary</item>
+        <item name="android:colorPrimary">@color/primary</item>
+        <item name="android:colorSecondary" tools:targetApi="25">@color/secondary</item>
         <item name="android:windowSplashScreenBackground" tools:targetApi="s">@color/primary</item>
         <item name="android:windowLightStatusBar" tools:targetApi="23">@bool/use_light_status_bar</item>
     </style>
