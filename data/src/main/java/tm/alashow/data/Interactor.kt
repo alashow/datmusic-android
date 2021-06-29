@@ -11,6 +11,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
@@ -92,4 +93,16 @@ abstract class SubjectInteractor<P : Any, T> {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun observe(): Flow<T> = paramState.flatMapLatest { createObservable(it) }
+
+    private val errorState = MutableSharedFlow<Throwable>(
+        replay = 1,
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+
+    protected fun onError(error: Throwable) {
+        errorState.tryEmit(error)
+    }
+
+    fun errors(): Flow<Throwable> = errorState.asSharedFlow()
 }

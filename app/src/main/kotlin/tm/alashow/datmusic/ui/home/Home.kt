@@ -43,7 +43,7 @@ import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
 import tm.alashow.datmusic.R
 import tm.alashow.datmusic.ui.AppNavigation
-import tm.alashow.datmusic.ui.theme.AppBarAlphas
+import tm.alashow.datmusic.ui.theme.translucentSurfaceColor
 import tm.alashow.navigation.RootScreen
 import tm.alashow.navigation.RootScreen.Search as SearchTab
 import tm.alashow.navigation.RootScreen.Settings as SettingsTab
@@ -114,7 +114,7 @@ internal fun HomeBottomNavigation(
     modifier: Modifier = Modifier
 ) {
     Surface(
-        color = MaterialTheme.colors.surface.copy(alpha = AppBarAlphas.translucentBarAlpha()),
+        color = translucentSurfaceColor(),
         contentColor = contentColorFor(MaterialTheme.colors.surface),
         elevation = 8.dp,
         modifier = modifier

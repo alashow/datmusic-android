@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
@@ -54,16 +55,24 @@ internal class SearchViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
+            audiosPager(ObservePagedDatmusicSearch.Params(DatmusicSearchParams("adam")))
             searchQuery.debounce(250)
                 .collectLatest { query ->
-                    val job = launch {
-                        val searchParams = DatmusicSearchParams(query)
-                        audiosPager(ObservePagedDatmusicSearch.Params(searchParams))
-                        artistsPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(DatmusicSearchParams.BackendType.ARTISTS)))
-                    }
-                    job.join()
+                    val searchParams = DatmusicSearchParams(query)
+                    audiosPager(ObservePagedDatmusicSearch.Params(searchParams))
+                    artistsPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(DatmusicSearchParams.BackendType.ARTISTS)))
+                    albumsPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(DatmusicSearchParams.BackendType.ALBUMS)))
                 }
         }
+
+        listOf(audiosPager, artistsPager, albumsPager).forEach { pager ->
+            pager.errors().watchForErrors(pager)
+        }
+    }
+
+    private fun Flow<Throwable>.watchForErrors(pager: ObservePagedDatmusicSearch<*>) = viewModelScope.launch { collectErrors(pager) }
+
+    private suspend fun Flow<Throwable>.collectErrors(pager: ObservePagedDatmusicSearch<*>) = collect { error ->
     }
 
     fun submitAction(action: SearchAction) {

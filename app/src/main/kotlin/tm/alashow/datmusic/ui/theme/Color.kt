@@ -6,11 +6,14 @@ package tm.alashow.datmusic.ui.theme
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.background
 import androidx.compose.material.Colors
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
 fun parseColor(hexColor: String) = Color(android.graphics.Color.parseColor(hexColor))
@@ -101,3 +104,9 @@ internal fun animate(colors: Colors): Colors {
         isLight = colors.isLight,
     )
 }
+
+@Composable
+fun translucentSurfaceColor() = MaterialTheme.colors.surface.copy(alpha = AppBarAlphas.translucentBarAlpha())
+
+@Composable
+fun Modifier.translucentSurface() = background(translucentSurfaceColor())

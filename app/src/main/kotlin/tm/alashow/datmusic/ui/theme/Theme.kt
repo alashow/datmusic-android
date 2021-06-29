@@ -29,9 +29,7 @@ fun AppTheme(
     }
     val colors = when (themeState.colorPalettePreference) {
         ColorPalettePreference.Default -> if (isDarkTheme) DarkAppColors else LightAppColors
-        ColorPalettePreference.Red -> if (isDarkTheme) appDarkColors(Red700, Blue) else appLightColors(Red700, Red)
         ColorPalettePreference.Asphalt -> if (isDarkTheme) appDarkColors(Asphalt, Orange) else appLightColors(Asphalt, Orange)
-        ColorPalettePreference.Blue -> if (isDarkTheme) appDarkColors(Blue, Red) else appLightColors(Blue, Red)
         ColorPalettePreference.Orange -> if (isDarkTheme) appDarkColors(Orange, Color.Black) else appLightColors(Orange, Orange)
     }
 

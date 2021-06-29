@@ -4,7 +4,9 @@
  */
 package tm.alashow.datmusic.ui.theme
 
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Typography
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -30,3 +32,7 @@ val Typography = Typography(
     )
     */
 )
+
+// TODO: not sure if this is the best way to define styles
+@Composable
+fun topAppBarTitleStyle() = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.Bold)

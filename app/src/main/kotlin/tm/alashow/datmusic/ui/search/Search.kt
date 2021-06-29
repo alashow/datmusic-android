@@ -10,7 +10,9 @@ import androidx.compose.animation.expandIn
 import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
@@ -36,12 +38,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.R
-import tm.alashow.datmusic.ui.theme.AppBarAlphas
 import tm.alashow.datmusic.ui.theme.AppTheme
+import tm.alashow.datmusic.ui.theme.topAppBarTitleStyle
+import tm.alashow.datmusic.ui.theme.translucentSurface
 
 @Composable
 fun Search() {
@@ -74,33 +78,53 @@ internal fun Search(
             SearchAppBar(onSearchQueryChange = { actioner(SearchAction.Search(it)) })
         }
     ) { padding ->
-        AudioList(viewModel, padding)
+        Column {
+            // ArtistList(viewModel, padding)
+            AudioList(viewModel, padding)
+        }
     }
 }
 
 @Preview
 @Composable
+@OptIn(ExperimentalAnimationApi::class)
 fun SearchAppBar(
     modifier: Modifier = Modifier,
     onSearchQueryChange: (String) -> Unit = {},
 ) {
     Box(
-        modifier
-            .background(MaterialTheme.colors.surface.copy(alpha = AppBarAlphas.translucentBarAlpha()))
+        modifier = modifier
+            .translucentSurface()
             .fillMaxWidth()
+            .statusBarsPadding()
     ) {
-        var queryValue by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue("")) }
-        SearchTextField(
-            value = queryValue,
-            onValueChange = { value ->
-                queryValue = value
-                onSearchQueryChange(value.text)
-            },
-            hint = stringResource(R.string.search_hint),
-            modifier = Modifier
-                .fillMaxWidth()
-                .statusBarsPadding()
-        )
+        val keyboardVisible = when (LocalWindowInsets.current.ime.bottom) {
+            0 -> false
+            else -> true
+        }
+
+        Column(verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall)) {
+            AnimatedVisibility(visible = !keyboardVisible) {
+                Text(
+                    text = stringResource(R.string.search_title),
+                    style = topAppBarTitleStyle(),
+                    modifier = Modifier.padding(start = AppTheme.specs.padding, top = AppTheme.specs.padding, bottom = AppTheme.specs.paddingTiny),
+                )
+            }
+
+            var queryValue by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue("")) }
+
+            SearchTextField(
+                value = queryValue,
+                onValueChange = { value ->
+                    queryValue = value
+                    onSearchQueryChange(value.text)
+                },
+                hint = if (!keyboardVisible) stringResource(R.string.search_hint) else stringResource(R.string.search_hint_query),
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+        }
     }
 }
 
@@ -141,10 +165,11 @@ fun SearchTextField(
         singleLine = true,
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = Color.Transparent,
-            unfocusedBorderColor = Color.Transparent
+            unfocusedBorderColor = Color.Transparent,
+            cursorColor = MaterialTheme.colors.secondary
         ),
         modifier = modifier
-            .padding(AppTheme.specs.inputPaddings)
+            .padding(horizontal = AppTheme.specs.padding)
             .background(AppTheme.colors.onSurfaceInputBackground, MaterialTheme.shapes.small)
     )
 }
