@@ -10,6 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import tm.alashow.base.ui.ColorPalettePreference
+import tm.alashow.base.ui.DarkModePreference
+import tm.alashow.base.ui.ThemeState
 
 val DefaultTheme = ThemeState()
 val DefaultSpecs = Specs()

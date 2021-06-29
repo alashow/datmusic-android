@@ -6,9 +6,13 @@
 import tm.alashow.buildSrc.App
 import tm.alashow.buildSrc.Deps
 
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
+plugins {
+	id "com.android.library"
+	id "kotlin-android"
+	id "kotlin-kapt"
+	id "kotlin-parcelize"
+	id "org.jetbrains.kotlin.plugin.serialization"
+}
 
 android {
 	compileSdkVersion App.compileSdkVersion
@@ -44,6 +48,8 @@ dependencies {
 
 	// android
 	api Deps.Android.activityKtx
+
+	api Deps.Android.dataStore
 
 	api Deps.Android.navigationFragment
 	api Deps.Android.navigationUi

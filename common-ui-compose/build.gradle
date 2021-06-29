@@ -6,9 +6,11 @@
 import tm.alashow.buildSrc.App
 import tm.alashow.buildSrc.Deps
 
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
+plugins {
+	id "com.android.library"
+	id "kotlin-android"
+	id "kotlin-kapt"
+}
 
 android {
 	compileSdkVersion App.compileSdkVersion
@@ -34,7 +36,6 @@ android {
 
 	composeOptions {
 		kotlinCompilerExtensionVersion Deps.Android.Compose.version
-		kotlinCompilerVersion Deps.Kotlin.version
 	}
 }
 

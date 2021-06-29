@@ -37,6 +37,8 @@ object Deps {
         const val navigationSafeArgs = "androidx.navigation:navigation-safe-args-gradle-plugin:$navigationVersion"
         const val navigationHilt = "androidx.hilt:hilt-navigation-compose:1.0.0-alpha02"
 
+        const val dataStore = "androidx.datastore:datastore-preferences:1.0.0-beta02"
+
         object Compose {
             const val version = "1.0.0-beta09"
 

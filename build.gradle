@@ -60,8 +60,6 @@ subprojects {
         exclude group: 'com.google.android.material', module: 'material'
     }
 
-    apply plugin: 'kotlinx-serialization'
-
     apply plugin: 'com.diffplug.spotless'
     spotless {
         kotlin {

@@ -7,11 +7,13 @@ package tm.alashow.datmusic.ui
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.insets.ProvideWindowInsets
 import dagger.hilt.android.AndroidEntryPoint
+import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.ui.home.Home
 import tm.alashow.datmusic.ui.theme.AppTheme
 import tm.alashow.datmusic.ui.theme.DefaultTheme
@@ -22,8 +24,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
-
-            val (themeState, setThemeState) = rememberSaveable { mutableStateOf(DefaultTheme) }
+            val appViewModel = viewModel<AppViewModel>()
+            val themeState by rememberFlowWithLifecycle(appViewModel.themeState).collectAsState(DefaultTheme)
 
             AppTheme(themeState) {
                 ProvideWindowInsets(consumeWindowInsets = false) {

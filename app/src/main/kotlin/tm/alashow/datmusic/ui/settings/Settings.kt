@@ -13,23 +13,31 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.ui.Scaffold
 import com.google.accompanist.insets.ui.TopAppBar
+import tm.alashow.base.ui.ColorPalettePreference
+import tm.alashow.base.ui.DarkModePreference
+import tm.alashow.base.ui.ThemeState
+import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.R
+import tm.alashow.datmusic.ui.AppViewModel
 import tm.alashow.datmusic.ui.components.SelectableDropdownMenu
 import tm.alashow.datmusic.ui.theme.AppBarAlphas
 import tm.alashow.datmusic.ui.theme.AppTheme
-import tm.alashow.datmusic.ui.theme.ColorPalettePreference
-import tm.alashow.datmusic.ui.theme.DarkModePreference
 import tm.alashow.datmusic.ui.theme.DefaultTheme
-import tm.alashow.datmusic.ui.theme.ThemeState
 
 @Composable
 fun Settings() {
+    val appViewModel = hiltViewModel<AppViewModel>()
+    val themeState by rememberFlowWithLifecycle(appViewModel.themeState).collectAsState(DefaultTheme)
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -40,7 +48,7 @@ fun Settings() {
             )
         }
     ) { padding ->
-        Settings(DefaultTheme, {}, padding)
+        Settings(themeState, appViewModel::applyThemeState, padding)
     }
 }
 

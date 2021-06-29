@@ -1,17 +1,20 @@
 /*
-* Copyright (C) 2019, Alashov Berkeli
+* Copyright (C) 2021, Alashov Berkeli
 * All rights reserved.
 */
 
 import tm.alashow.buildSrc.App
 import tm.alashow.buildSrc.Deps
 
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'dagger.hilt.android.plugin'
-apply plugin: 'androidx.navigation.safeargs.kotlin'
-apply plugin: 'kotlin-parcelize'
-apply plugin: 'kotlin-kapt'
+plugins {
+	id "com.android.application"
+	id "dagger.hilt.android.plugin"
+	id "kotlin-android"
+	id "kotlin-kapt"
+	id "kotlin-parcelize"
+	id "org.jetbrains.kotlin.plugin.serialization"
+	id "androidx.navigation.safeargs.kotlin"
+}
 
 apply plugin: 'com.getkeepsafe.dexcount'
 dexcount {
@@ -24,6 +27,7 @@ play {
 	track = prop('PUBLISH_TRACK', 'alpha')
 	serviceAccountCredentials = rootProject.file('signing/play-account.json')
 }
+
 
 def gitSha = 'git rev-parse --short HEAD'.execute([], project.rootDir).text.trim()
 
@@ -123,7 +127,6 @@ repositories {
 }
 
 dependencies {
-
 	implementation Deps.Kotlin.coroutinesAndroid
 
 	// utils
@@ -148,3 +151,4 @@ dependencies {
 
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
+apply plugin: 'kotlinx-serialization'
