@@ -6,6 +6,8 @@ package tm.alashow.datmusic.data.repos.search
 
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams.CaptchaAnswer.Companion.toQueryMap
 
+typealias BackendTypes = Set<DatmusicSearchParams.BackendType>
+
 data class DatmusicSearchParams(
     val query: String,
     val page: Int = 0,

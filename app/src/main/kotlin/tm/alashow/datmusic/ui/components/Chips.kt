@@ -26,9 +26,10 @@ import tm.alashow.datmusic.ui.theme.DefaultThemeDark
 @Composable
 fun <T : Any> ChipsRow(
     items: List<T>,
-    selectedItem: T,
+    selectedItem: T?,
     onItemSelect: (Boolean, T) -> Unit,
-    modifier: Modifier = Modifier
+    labelMapper: @Composable (T) -> String = { it.toString().replaceFirstChar { it.uppercase() } },
+    modifier: Modifier = Modifier,
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall),
@@ -41,7 +42,7 @@ fun <T : Any> ChipsRow(
             val selected = selectedItem == item
             Chip(
                 selected = selected,
-                label = item.toString(),
+                label = labelMapper(item),
                 modifier = Modifier.toggleable(
                     value = selected,
                     onValueChange = { onItemSelect(it, item) }

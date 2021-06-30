@@ -91,9 +91,9 @@ data class Album(
         val largeUrl: String = "",
 
         @SerialName("photo_600")
-        val largeMedium: String = "",
+        val mediumUrl: String = "",
 
         @SerialName("photo_300")
-        val largeSmall: String = "",
+        val smallUrl: String = "",
     ) : Parcelable
 }

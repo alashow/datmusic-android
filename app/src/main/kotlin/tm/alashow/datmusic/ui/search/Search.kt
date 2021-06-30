@@ -13,8 +13,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
@@ -29,21 +31,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.capitalize
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.input.TransformedText
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
+import tm.alashow.common.compose.LogCompositions
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.R
+import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
 import tm.alashow.datmusic.ui.components.ChipsRow
 import tm.alashow.datmusic.ui.theme.AppTheme
 import tm.alashow.datmusic.ui.theme.topAppBarTitleStyle
@@ -54,16 +61,14 @@ fun Search() {
     Search(
         viewModel = hiltViewModel(),
     )
+    LogCompositions(tag = "SearchCore")
 }
 
 @Composable
 internal fun Search(
     viewModel: SearchViewModel,
 ) {
-    val viewState by rememberFlowWithLifecycle(viewModel.state)
-        .collectAsState(initial = SearchViewState.Empty)
-
-    Search(viewModel, viewState) { action ->
+    Search(viewModel) { action ->
         viewModel.submitAction(action)
     }
 }
@@ -72,27 +77,37 @@ internal fun Search(
 @Composable
 internal fun Search(
     viewModel: SearchViewModel,
-    state: SearchViewState,
     actioner: (SearchAction) -> Unit
 ) {
+    val viewState by rememberFlowWithLifecycle(viewModel.state)
+        .collectAsState(initial = SearchViewState.Empty)
+
     Scaffold(
         topBar = {
-            SearchAppBar(onSearchQueryChange = { actioner(SearchAction.Search(it)) })
+            SearchAppBar(
+                state = viewState,
+                onSearch = { actioner(SearchAction.Search(it)) },
+                onBackendTypeSelect = { actioner(it) },
+            )
         }
     ) { padding ->
-        Column {
-            // ArtistList(viewModel, padding)
-            AudioList(viewModel, padding)
-        }
+        val listState = rememberLazyListState()
+
+        SearchList(
+            viewModel = viewModel,
+            padding = padding,
+            listState = listState,
+        )
     }
 }
 
-@Preview
 @Composable
 @OptIn(ExperimentalAnimationApi::class)
-fun SearchAppBar(
+private fun SearchAppBar(
+    state: SearchViewState,
     modifier: Modifier = Modifier,
-    onSearchQueryChange: (String) -> Unit = {},
+    onSearch: (String) -> Unit = {},
+    onBackendTypeSelect: (SearchAction.SelectBackendType) -> Unit = {}
 ) {
     Box(
         modifier = modifier
@@ -111,30 +126,55 @@ fun SearchAppBar(
                 )
             }
 
-            var queryValue by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue("")) }
+            var queryValue by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue()) }
 
             SearchTextField(
                 value = queryValue,
                 onValueChange = { value ->
                     queryValue = value
-                    onSearchQueryChange(value.text)
+                },
+                onSearch = { value ->
+                    onSearch(value.text)
                 },
                 hint = if (!keyboardVisible) stringResource(R.string.search_hint) else stringResource(R.string.search_hint_query),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth()
             )
 
-            val (selected, setSelected) = remember { mutableStateOf("") }
+            SearchFilterPanel(keyboardVisible, state) { selectAction ->
+                onBackendTypeSelect(selectAction)
+                onSearch(queryValue.text)
+            }
+        }
+    }
+}
 
-            AnimatedVisibility(visible = keyboardVisible) {
-                ChipsRow(
-                    listOf("Songs", "Artists", "Albums"), selected,
-                    onItemSelect = { selected, item ->
-                        if (selected) setSelected(item)
-                        else setSelected("")
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+private fun ColumnScope.SearchFilterPanel(
+    keyboardVisible: Boolean,
+    state: SearchViewState,
+    onBackendTypeSelect: (SearchAction.SelectBackendType) -> Unit
+) {
+    AnimatedVisibility(visible = keyboardVisible) {
+        ChipsRow(
+            items = DatmusicSearchParams.BackendType.values().toList(),
+            selectedItem = when (state.searchFilter.backends.size) {
+                1 -> state.searchFilter.backends.first()
+                else -> null
+            },
+            onItemSelect = { selected, item ->
+                onBackendTypeSelect(SearchAction.SelectBackendType(selected, item))
+            },
+            labelMapper = {
+                stringResource(
+                    when (it) {
+                        DatmusicSearchParams.BackendType.AUDIOS -> R.string.search_audios
+                        DatmusicSearchParams.BackendType.ARTISTS -> R.string.search_artists
+                        DatmusicSearchParams.BackendType.ALBUMS -> R.string.search_albums
                     }
                 )
             }
-        }
+        )
     }
 }
 
@@ -143,10 +183,11 @@ fun SearchAppBar(
 fun SearchTextField(
     value: TextFieldValue,
     onValueChange: (TextFieldValue) -> Unit,
+    onSearch: (TextFieldValue) -> Unit = {},
     hint: String,
     modifier: Modifier = Modifier,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    keyboardActions: KeyboardActions = KeyboardActions(),
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search, keyboardType = KeyboardType.Text),
+    keyboardActions: KeyboardActions = KeyboardActions(onSearch = { onSearch(value) }),
 ) {
     OutlinedTextField(
         value = value,
@@ -169,15 +210,18 @@ fun SearchTextField(
                 }
             }
         },
-        keyboardOptions = keyboardOptions,
-        keyboardActions = keyboardActions,
-        maxLines = 1,
-        singleLine = true,
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = Color.Transparent,
             unfocusedBorderColor = Color.Transparent,
             cursorColor = MaterialTheme.colors.secondary
         ),
+        keyboardOptions = keyboardOptions,
+        singleLine = true,
+        keyboardActions = keyboardActions,
+        maxLines = 1,
+        visualTransformation = { text ->
+            TransformedText(text.capitalize(), OffsetMapping.Identity)
+        },
         modifier = modifier
             .padding(horizontal = AppTheme.specs.padding)
             .background(AppTheme.colors.onSurfaceInputBackground, MaterialTheme.shapes.small)

@@ -12,6 +12,10 @@
     <string name="search.hint">Tracks, albums, artists</string>
     <string name="search.hint.query">Search query</string>
 
+    <string name="search.audios">Songs</string>
+    <string name="search.artists">Artists</string>
+    <string name="search.albums">Albums</string>
+
     <string name="settings.title">Settings</string>
     <string name="settings.darkMode">Dark mode</string>
     <string name="settings.colorPalette">Color palette</string>
