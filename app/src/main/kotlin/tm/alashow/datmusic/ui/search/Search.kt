@@ -29,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -43,6 +44,7 @@ import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.R
+import tm.alashow.datmusic.ui.components.ChipsRow
 import tm.alashow.datmusic.ui.theme.AppTheme
 import tm.alashow.datmusic.ui.theme.topAppBarTitleStyle
 import tm.alashow.datmusic.ui.theme.translucentSurface
@@ -98,17 +100,14 @@ fun SearchAppBar(
             .fillMaxWidth()
             .statusBarsPadding()
     ) {
-        val keyboardVisible = when (LocalWindowInsets.current.ime.bottom) {
-            0 -> false
-            else -> true
-        }
+        val keyboardVisible = LocalWindowInsets.current.ime.isVisible
 
         Column(verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall)) {
             AnimatedVisibility(visible = !keyboardVisible) {
                 Text(
                     text = stringResource(R.string.search_title),
                     style = topAppBarTitleStyle(),
-                    modifier = Modifier.padding(start = AppTheme.specs.padding, top = AppTheme.specs.padding, bottom = AppTheme.specs.paddingTiny),
+                    modifier = Modifier.padding(start = AppTheme.specs.padding, top = AppTheme.specs.padding),
                 )
             }
 
@@ -121,9 +120,20 @@ fun SearchAppBar(
                     onSearchQueryChange(value.text)
                 },
                 hint = if (!keyboardVisible) stringResource(R.string.search_hint) else stringResource(R.string.search_hint_query),
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
+
+            val (selected, setSelected) = remember { mutableStateOf("") }
+
+            AnimatedVisibility(visible = keyboardVisible) {
+                ChipsRow(
+                    listOf("Songs", "Artists", "Albums"), selected,
+                    onItemSelect = { selected, item ->
+                        if (selected) setSelected(item)
+                        else setSelected("")
+                    }
+                )
+            }
         }
     }
 }

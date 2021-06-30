@@ -32,6 +32,7 @@ import tm.alashow.datmusic.ui.AppViewModel
 import tm.alashow.datmusic.ui.components.SelectableDropdownMenu
 import tm.alashow.datmusic.ui.theme.AppTheme
 import tm.alashow.datmusic.ui.theme.DefaultTheme
+import tm.alashow.datmusic.ui.theme.DefaultThemeDark
 import tm.alashow.datmusic.ui.theme.topAppBarTitleStyle
 import tm.alashow.datmusic.ui.theme.translucentSurface
 
@@ -120,7 +121,7 @@ fun SettingsPreview() {
 @Preview
 @Composable
 fun SettingsPreviewDark() {
-    AppTheme(DefaultTheme.copy(darkModePreference = DarkModePreference.ON)) {
-        Settings(DefaultTheme, {})
+    AppTheme(DefaultThemeDark) {
+        Settings(DefaultThemeDark, {})
     }
 }

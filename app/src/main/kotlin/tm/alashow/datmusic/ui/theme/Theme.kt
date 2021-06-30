@@ -15,6 +15,7 @@ import tm.alashow.base.ui.DarkModePreference
 import tm.alashow.base.ui.ThemeState
 
 val DefaultTheme = ThemeState()
+val DefaultThemeDark = ThemeState(DarkModePreference.ON)
 val DefaultSpecs = Specs()
 
 @Composable
