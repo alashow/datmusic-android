@@ -23,7 +23,9 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
@@ -41,6 +43,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
+import tm.alashow.common.compose.LocalScaffoldState
 import tm.alashow.datmusic.R
 import tm.alashow.datmusic.ui.AppNavigation
 import tm.alashow.datmusic.ui.theme.translucentSurfaceColor
@@ -51,28 +54,33 @@ import tm.alashow.navigation.RootScreen.Settings as SettingsTab
 @Composable
 internal fun Home() {
     val navController = rememberNavController()
-    Scaffold(
-        bottomBar = {
-            val currentSelectedItem by navController.currentScreenAsState()
+    val scaffoldState = rememberScaffoldState()
 
-            HomeBottomNavigation(
-                selectedNavigation = currentSelectedItem,
-                onNavigationSelected = { selected ->
-                    navController.navigate(selected.route) {
-                        launchSingleTop = true
-                        restoreState = true
+    CompositionLocalProvider(LocalScaffoldState provides scaffoldState) {
+        Scaffold(
+            scaffoldState = scaffoldState,
+            bottomBar = {
+                val currentSelectedItem by navController.currentScreenAsState()
 
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
+                HomeBottomNavigation(
+                    selectedNavigation = currentSelectedItem,
+                    onNavigationSelected = { selected ->
+                        navController.navigate(selected.route) {
+                            launchSingleTop = true
+                            restoreState = true
+
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
                         }
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-    ) {
-        Box(Modifier.fillMaxSize()) {
-            AppNavigation(navController)
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        ) {
+            Box(Modifier.fillMaxSize()) {
+                AppNavigation(navController)
+            }
         }
     }
 }

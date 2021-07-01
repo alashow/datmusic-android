@@ -52,10 +52,12 @@ dependencies {
 	api Deps.Android.Compose.materialDesign
 	api Deps.Android.Compose.materialDesignIcons
 	api Deps.Android.Compose.materialDesignIconsExtended
+	api Deps.Android.Compose.constraintLayout
 	api Deps.Android.Compose.activity
 	api Deps.Android.Compose.viewModels
 	api Deps.Android.Compose.liveData
 	api Deps.Android.Compose.paging
+	api Deps.Android.Compose.lottie
 
 	api Deps.Android.Accompanist.coil
 	api Deps.Android.Accompanist.insets

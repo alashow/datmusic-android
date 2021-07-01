@@ -48,10 +48,14 @@ object Deps {
             const val materialDesign = "androidx.compose.material:material:$version"
             const val materialDesignIcons = "androidx.compose.material:material-icons-core:$version"
             const val materialDesignIconsExtended = "androidx.compose.material:material-icons-extended:$version"
+            const val constraintLayout = "androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha08"
             const val liveData = "androidx.compose.runtime:runtime-livedata:$version"
             const val activity = "androidx.activity:activity-compose:$activityVersion"
             const val viewModels = "androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha06"
             const val paging = "androidx.paging:paging-compose:1.0.0-alpha10"
+
+            private const val lottieVersion = "1.0.0-beta09-1-SNAPSHOT"
+            const val lottie = "com.airbnb.android:lottie-compose:$lottieVersion"
         }
 
         object Accompanist {
@@ -92,10 +96,6 @@ object Deps {
             const val common = "androidx.paging:paging-common-ktx:$version"
             const val runtime = "androidx.paging:paging-runtime-ktx:$version"
         }
-    }
-
-    object Views {
-        const val lottie = "com.airbnb.android:lottie:3.7.0"
     }
 
     object Utils {

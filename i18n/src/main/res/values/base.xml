@@ -24,14 +24,15 @@
     <string name="error.noAuth">You need to login</string>
     <string name="error.notFound">Not found</string>
     <string name="error.api">API error</string>
-    <string name="error.empty">Empty</string>
+    <string name="error.empty.title">Empty</string>
+    <string name="error.empty">No results</string>
     <string name="error.blank">Must not be empty</string>
     <string name="error.unknown">Unknown error</string>
     <string name="error.errorLogOut">Log out failed, try resetting app settings</string>
     <string name="error.alreadyLogined">Already logged in</string>
     <string name="error.loading">Loading failed. Tap to retry</string>
-
-    <string name="error.title.empty">Empty</string>
+    <string name="error.retry">Retry</string>
+    <string name="error.serverUnavailable">Server unavailable</string>
 
     <string name="time.duration">%1$d hour %2$d min.</string>
     <string name="time.duration.minutes">%1$d minute</string>

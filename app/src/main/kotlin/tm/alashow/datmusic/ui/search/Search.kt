@@ -47,7 +47,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
-import tm.alashow.common.compose.LogCompositions
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.R
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
@@ -58,10 +57,7 @@ import tm.alashow.datmusic.ui.theme.translucentSurface
 
 @Composable
 fun Search() {
-    Search(
-        viewModel = hiltViewModel(),
-    )
-    LogCompositions(tag = "SearchCore")
+    Search(viewModel = hiltViewModel())
 }
 
 @Composable

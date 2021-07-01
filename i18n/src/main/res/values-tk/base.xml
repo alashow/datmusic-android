@@ -24,14 +24,16 @@
     <string name="error.noAuth">Içeri girmeli. Täzeden synanşyň</string>
     <string name="error.notFound">Hiçzat tapylmady</string>
     <string name="error.api">API ýalňyşlygy</string>
+    <string name="error.empty.title">Tapylmady</string>
     <string name="error.empty">Hiçzat tapylmady</string>
     <string name="error.blank">Boş bolmaly däl</string>
     <string name="error.unknown">Näbelli ýalňyşlyk</string>
     <string name="error.errorLogOut">Hasabyňyzdan çykyp bolmady. Programmany pozup täzeden açyp bilersiňiz.</string>
     <string name="error.alreadyLogined">Hasabyňyz eýýäm bar. Hasapdan çykyp täzeden barlaň.</string>
     <string name="error.loading">Ýükläp bolmady. Täzeden barlamak üçin basyň</string>
+    <string name="error.retry">Täzeden</string>
+    <string name="error.serverUnavailable">Serwer el ýeterli däl</string>
 
-    <string name="error.title.empty">Tapylmady</string>
 
     <string name="time.duration">%1$d sagat %2$d min.</string>
     <string name="time.duration.minutes">%1$d minut</string>

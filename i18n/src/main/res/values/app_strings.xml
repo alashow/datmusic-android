@@ -19,4 +19,7 @@
     <string name="settings.title">Settings</string>
     <string name="settings.darkMode">Dark mode</string>
     <string name="settings.colorPalette">Color palette</string>
+
+    <string name="error.keyError">Key error, update app or contact developer</string>
+    <string name="error.unavailable">You\'re doing that too fast</string>
 </resources>

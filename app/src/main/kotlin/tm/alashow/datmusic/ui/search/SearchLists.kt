@@ -11,6 +11,7 @@ import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -26,11 +27,13 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.SnackbarResult
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,6 +53,10 @@ import com.google.accompanist.placeholder.material.shimmer
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import kotlinx.coroutines.launch
+import tm.alashow.base.util.extensions.localizedMessage
+import tm.alashow.base.util.extensions.localizedTitle
+import tm.alashow.common.compose.LocalScaffoldState
 import tm.alashow.common.compose.LogCompositions
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.R
@@ -57,6 +64,7 @@ import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
+import tm.alashow.datmusic.ui.components.ErrorBox
 import tm.alashow.datmusic.ui.theme.AppTheme
 
 @Composable
@@ -95,7 +103,14 @@ internal fun SearchList(
         }.toSet()
         else -> setOf(audiosLazyPagingItems, artistsLazyPagingItems, albumsLazyPagingItems)
     }
+
     val pagerRefreshStates = pagers.map { it.loadState.refresh }.toTypedArray()
+    val pagersAreEmpty = pagers.all { it.itemCount == 0 }
+    val refreshPagers = { pagers.forEach { it.refresh() } }
+    val refreshErrorState = pagerRefreshStates.firstOrNull { it is LoadState.Error }
+
+    val scaffoldState = LocalScaffoldState.current
+    val coroutineScope = rememberCoroutineScope()
 
     // scroll to top when any of active pagers refresh state change
     LaunchedEffect(*pagerRefreshStates) {
@@ -106,7 +121,7 @@ internal fun SearchList(
         state = rememberSwipeRefreshState(
             isRefreshing = pagers.all { it.itemCount == 0 } && pagerRefreshStates.any { it == LoadState.Loading }
         ),
-        onRefresh = { pagers.forEach { it.refresh() } },
+        onRefresh = { refreshPagers() },
         indicatorPadding = padding,
         indicator = { state, trigger ->
             SwipeRefreshIndicator(
@@ -116,11 +131,76 @@ internal fun SearchList(
             )
         }
     ) {
+
+        // show snackbar error if there's an error state in any of the pagers and some of the pagers is not empty (in which case full screen error will be shown)
+        if (refreshErrorState is LoadState.Error && !pagersAreEmpty) {
+            val message = stringResource(refreshErrorState.error.localizedMessage())
+            val actionLabel = stringResource(R.string.error_retry)
+            coroutineScope.launch {
+                val snackbarResult = scaffoldState.snackbarHostState.showSnackbar(message, actionLabel)
+                if (snackbarResult == SnackbarResult.ActionPerformed) {
+                    refreshPagers()
+                }
+            }
+        }
+
+        SearchListContent(
+            audiosLazyPagingItems,
+            artistsLazyPagingItems,
+            albumsLazyPagingItems,
+            listState,
+            searchFilter,
+            pagersAreEmpty,
+            refreshPagers,
+            refreshErrorState,
+            padding
+        )
+    }
+}
+
+@Composable
+private fun SearchListContent(
+    audiosLazyPagingItems: LazyPagingItems<Audio>,
+    artistsLazyPagingItems: LazyPagingItems<Artist>,
+    albumsLazyPagingItems: LazyPagingItems<Album>,
+    listState: LazyListState,
+    searchFilter: SearchFilter,
+    pagersAreEmpty: Boolean,
+    pagersAreNotLoading: Boolean,
+    refreshPagers: () -> Unit,
+    refreshErrorState: LoadState?,
+    padding: PaddingValues
+) {
+    BoxWithConstraints {
         LazyColumn(
             state = listState,
             contentPadding = padding,
             modifier = Modifier.fillMaxSize()
         ) {
+
+            if (refreshErrorState is LoadState.Error) {
+                if (pagersAreEmpty)
+                    item {
+                        ErrorBox(
+                            title = stringResource(refreshErrorState.error.localizedTitle()),
+                            message = stringResource(refreshErrorState.error.localizedMessage()),
+                            onRetryClick = { refreshPagers() },
+                            maxHeight = this@BoxWithConstraints.maxHeight
+                        )
+                    }
+            }
+
+            // todo: need better way to detect empty results, i.e map empty results to an error
+            // if (pagersAreEmpty && pagersAreNotLoading) {
+            //     item {
+            //         ErrorBox(
+            //             title = stringResource(R.string.error_empty_title),
+            //             message = stringResource(R.string.error_empty),
+            //             onRetryClick = { refreshPagers() },
+            //             maxHeight = this@BoxWithConstraints.maxHeight
+            //         )
+            //     }
+            // }
 
             item {
                 if (searchFilter.backends.contains(DatmusicSearchParams.BackendType.ARTISTS))
@@ -136,24 +216,12 @@ internal fun SearchList(
                     Box(
                         Modifier
                             .fillMaxWidth()
-                            .padding(24.dp)
+                            .padding(AppTheme.specs.padding)
                     ) {
                         CircularProgressIndicator(Modifier.align(Alignment.Center))
                     }
                 }
             }
-
-            val refreshErrorState = pagerRefreshStates.firstOrNull { it is LoadState.Error }
-            if (refreshErrorState is LoadState.Error)
-                item {
-                    Box(
-                        Modifier
-                            .fillMaxSize()
-                            .padding(24.dp)
-                    ) {
-                        Text("Error: ${refreshErrorState.error}")
-                    }
-                }
         }
     }
 }

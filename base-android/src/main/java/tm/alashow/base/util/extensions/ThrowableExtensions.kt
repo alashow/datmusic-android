@@ -16,7 +16,7 @@ import tm.alashow.domain.models.errors.EmptyResultException
 
 @StringRes
 fun Throwable?.localizedTitle(): Int = when (this) {
-    is EmptyResultException -> R.string.error_title_empty
+    is EmptyResultException -> R.string.error_empty_title
     else -> R.string.error_title
 }
 
@@ -28,6 +28,8 @@ fun Throwable?.localizedMessage(): Int = when (this) {
         when (code()) {
             404 -> R.string.error_notFound
             500 -> R.string.error_server
+            502 -> R.string.error_keyError
+            503 -> R.string.error_unavailable
             403, 401 -> R.string.error_auth
             else -> R.string.error_unknown
         }
