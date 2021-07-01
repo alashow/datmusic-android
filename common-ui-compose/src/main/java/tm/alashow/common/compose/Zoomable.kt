@@ -17,7 +17,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /**
- * It is what it is. Makes given [content] zoomable, optionally snaps back [snapBack] is true.
+ * It is what it is. Makes given [content] zoomable, optionally snaps back when [snapBack] is true.
  */
 @Composable
 fun Zoomable(
@@ -40,7 +40,7 @@ fun Zoomable(
     Box(
         modifier = modifier
             .pointerInput(Unit) {
-                detectTransformGestures(false) { centroid, pan, zoomChange, rotationChange ->
+                detectTransformGestures(false) { _, pan, zoomChange, rotationChange ->
                     coroutineScope.launch {
                         scale.snapTo(limitScale(zoomChange))
                         rotation.snapTo(rotation.value + rotationChange)

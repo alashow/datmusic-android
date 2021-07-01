@@ -95,6 +95,6 @@ fun Chip(
 fun ChipsPreview() {
     val items = listOf("Songs", "Artists", "Albums")
     AppTheme(DefaultThemeDark) {
-        ChipsRow(items, items.first(), { x, y -> })
+        ChipsRow(items, items.first(), { _, _ -> })
     }
 }

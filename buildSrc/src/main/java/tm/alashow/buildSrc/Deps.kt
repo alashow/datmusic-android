@@ -2,8 +2,8 @@ package tm.alashow.buildSrc
 
 object Deps {
     object Gradle {
-        const val dexCount = "com.getkeepsafe.dexcount:dexcount-gradle-plugin:2.1.0-RC01"
-        const val playPublisher = "com.github.triplet.gradle:play-publisher:3.4.0-agp4.2"
+        const val dexCount = "com.getkeepsafe.dexcount:dexcount-gradle-plugin:2.0.0"
+        const val playPublisher = "com.github.triplet.gradle:play-publisher:3.5.0-agp7.0"
         const val googleServices = "com.google.gms:google-services:4.3.8"
     }
 
@@ -151,7 +151,7 @@ object Deps {
 
         const val core = "com.google.firebase:firebase-core:19.0.0"
         const val analytics = "com.google.firebase:firebase-analytics:19.0.0"
-        const val crashlytics = "com.google.firebase:firebase-crashlytics:18.0.1"
+        const val crashlytics = "com.google.firebase:firebase-crashlytics:18.1.0"
         const val crashlyticsGradle = "com.google.firebase:firebase-crashlytics-gradle:2.7.0"
     }
 }

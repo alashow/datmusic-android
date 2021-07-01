@@ -166,7 +166,6 @@ private fun SearchListContent(
     listState: LazyListState,
     searchFilter: SearchFilter,
     pagersAreEmpty: Boolean,
-    pagersAreNotLoading: Boolean,
     refreshPagers: () -> Unit,
     refreshErrorState: LoadState?,
     padding: PaddingValues

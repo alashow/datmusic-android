@@ -23,7 +23,6 @@ buildscript {
         classpath Deps.Kotlin.serialization
         classpath Deps.Dagger.hiltGradle
         classpath Deps.Gradle.googleServices
-        classpath Deps.Gradle.dexCount
         classpath Deps.Gradle.playPublisher
         classpath Deps.Firebase.crashlyticsGradle
         classpath Deps.Android.navigationSafeArgs

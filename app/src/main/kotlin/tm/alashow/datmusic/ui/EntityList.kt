@@ -49,7 +49,7 @@ fun <T : PaginatedEntity> EntityList(
     ) {
         LazyColumn(
             contentPadding = padding,
-            modifier = Modifier.fillMaxSize()
+            modifier = modifier.fillMaxSize()
         ) {
             items(lazyPagingItems = lazyPagingItems) {
                 this@LazyColumn.itemContent(it)
@@ -107,7 +107,7 @@ fun <T : PaginatedEntity> EntityListRow(
     ) {
         LazyRow(
             contentPadding = padding,
-            modifier = Modifier.fillMaxSize()
+            modifier = modifier.fillMaxSize()
         ) {
             items(lazyPagingItems = lazyPagingItems) {
                 this@LazyRow.itemContent(it)

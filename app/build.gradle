@@ -16,11 +16,6 @@ plugins {
 	id "androidx.navigation.safeargs.kotlin"
 }
 
-apply plugin: 'com.getkeepsafe.dexcount'
-dexcount {
-	runOnEachPackage = false // run on ci only
-}
-
 apply plugin: 'com.github.triplet.play'
 play {
 	defaultToAppBundles = true
