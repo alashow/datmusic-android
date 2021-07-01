@@ -45,6 +45,7 @@ workflows:
       - sign-apk:
           run_if: '{{getenv "BITRISEIO_ANDROID_KEYSTORE_URL" | ne ""}}'
       - script:
+          is_always_run: true
           title: Cleans up decrypted signing files
           inputs:
             - content: |-
