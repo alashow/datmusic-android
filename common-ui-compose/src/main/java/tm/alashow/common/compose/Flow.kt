@@ -2,8 +2,6 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
-@file:Suppress("NOTHING_TO_INLINE")
-
 package tm.alashow.common.compose
 
 import androidx.compose.runtime.Composable

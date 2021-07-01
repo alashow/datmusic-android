@@ -80,7 +80,8 @@ internal fun SearchList(
     listState: LazyListState,
     padding: PaddingValues,
 ) {
-    // TODO: figire out better way of hoisting this state out without recomposing [SearchList] one level above (which causes pagers to restart/request unnecessarily)
+    // TODO: figure out better way of hoisting this state out without recomposing [SearchList] two levels above (in [Search] screen where viewState is originally hosted
+    // which causes pagers to restart/request unnecessarily)
     val viewState by rememberFlowWithLifecycle(viewModel.state).collectAsState(initial = SearchViewState.Empty)
     val searchFilter = viewState.searchFilter
 
@@ -94,14 +95,16 @@ internal fun SearchList(
         }.toSet()
         else -> setOf(audiosLazyPagingItems, artistsLazyPagingItems, albumsLazyPagingItems)
     }
+    val pagerRefreshStates = pagers.map { it.loadState.refresh }.toTypedArray()
 
-    LaunchedEffect(audiosLazyPagingItems.loadState.refresh, artistsLazyPagingItems.loadState.refresh, albumsLazyPagingItems.loadState.refresh) {
+    // scroll to top when any of active pagers refresh state change
+    LaunchedEffect(*pagerRefreshStates) {
         listState.animateScrollToItem(0)
     }
 
     SwipeRefresh(
         state = rememberSwipeRefreshState(
-            isRefreshing = pagers.all { it.itemCount == 0 } && pagers.any { it.loadState.refresh == LoadState.Loading }
+            isRefreshing = pagers.all { it.itemCount == 0 } && pagerRefreshStates.any { it == LoadState.Loading }
         ),
         onRefresh = { pagers.forEach { it.refresh() } },
         indicatorPadding = padding,
@@ -120,11 +123,10 @@ internal fun SearchList(
         ) {
 
             item {
-                LogCompositions(tag = "SearchList#item,")
                 if (searchFilter.backends.contains(DatmusicSearchParams.BackendType.ARTISTS))
-                    this@LazyColumn.ArtistList(artistsLazyPagingItems)
+                    ArtistList(artistsLazyPagingItems)
                 if (searchFilter.backends.contains(DatmusicSearchParams.BackendType.ALBUMS))
-                    this@LazyColumn.AlbumList(albumsLazyPagingItems)
+                    AlbumList(albumsLazyPagingItems)
                 if (searchFilter.backends.contains(DatmusicSearchParams.BackendType.AUDIOS))
                     this@LazyColumn.AudioList(audiosLazyPagingItems)
             }
@@ -141,19 +143,17 @@ internal fun SearchList(
                 }
             }
 
-            when (val refreshState = audiosLazyPagingItems.loadState.refresh) {
-                is LoadState.Error -> {
-                    item {
-                        Box(
-                            Modifier
-                                .fillMaxSize()
-                                .padding(24.dp)
-                        ) {
-                            Text("Error: ${refreshState.error}")
-                        }
+            val refreshErrorState = pagerRefreshStates.firstOrNull { it is LoadState.Error }
+            if (refreshErrorState is LoadState.Error)
+                item {
+                    Box(
+                        Modifier
+                            .fillMaxSize()
+                            .padding(24.dp)
+                    ) {
+                        Text("Error: ${refreshErrorState.error}")
                     }
                 }
-            }
         }
     }
 }
@@ -193,7 +193,7 @@ internal fun LazyListScope.AudioList(pagingItems: LazyPagingItems<Audio>) {
 }
 
 @Composable
-internal fun LazyListScope.ArtistList(pagingItems: LazyPagingItems<Artist>) {
+internal fun ArtistList(pagingItems: LazyPagingItems<Artist>) {
     LogCompositions(tag = "ArtistList")
     if (pagingItems.itemCount > 0)
         SearchListLabel(stringResource(R.string.search_artists), pagingItems.loadState)
@@ -228,7 +228,7 @@ internal fun LazyListScope.ArtistList(pagingItems: LazyPagingItems<Artist>) {
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-internal fun LazyListScope.AlbumList(pagingItems: LazyPagingItems<Album>) {
+internal fun AlbumList(pagingItems: LazyPagingItems<Album>) {
     LogCompositions(tag = "AlbumList")
     if (pagingItems.itemCount > 0)
         SearchListLabel(stringResource(R.string.search_albums), pagingItems.loadState)
