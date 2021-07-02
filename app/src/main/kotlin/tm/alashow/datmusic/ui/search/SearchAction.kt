@@ -9,4 +9,6 @@ import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
 internal sealed class SearchAction {
     data class Search(val query: String = "") : SearchAction()
     data class SelectBackendType(val selected: Boolean, val backendType: DatmusicSearchParams.BackendType) : SearchAction()
+    data class AddError(val error: Throwable) : SearchAction()
+    object ClearError : SearchAction()
 }

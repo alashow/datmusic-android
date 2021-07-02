@@ -18,7 +18,7 @@ import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
 
 typealias DatmusicSearchStore<T> = Store<DatmusicSearchParams, List<T>>
-typealias DatmusicSearchAudioStore = Store<DatmusicSearchParams, List<Audio>>
+typealias DatmusicSearchAudioStore = DatmusicSearchStore<Audio>
 
 @InstallIn(SingletonComponent::class)
 @Module

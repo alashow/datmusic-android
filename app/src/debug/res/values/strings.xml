@@ -1,9 +1,9 @@
 <!--
-  Copyright (C) 2019, Alashov Berkeli
+  Copyright (C) 2021, Alashov Berkeli
   All rights reserved.
   -->
 
 <resources>
-    <string name="app_launcher">[D] App</string>
-    <string name="app_name">[D] App</string>
+    <string name="app_launcher">[D] Datmusic</string>
+    <string name="app_name">[D] Datmusic</string>
 </resources>

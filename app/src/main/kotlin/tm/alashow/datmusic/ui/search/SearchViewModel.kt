@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import tm.alashow.base.ui.SnackbarManager
 import tm.alashow.datmusic.data.observers.ObservePagedDatmusicSearch
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams.Companion.withTypes
@@ -32,6 +33,7 @@ internal class SearchViewModel @Inject constructor(
     private val audiosPager: ObservePagedDatmusicSearch<Audio>,
     private val artistsPager: ObservePagedDatmusicSearch<Artist>,
     private val albumsPager: ObservePagedDatmusicSearch<Album>,
+    private val snackbarManager: SnackbarManager,
 ) : ViewModel() {
 
     private val searchQuery = MutableStateFlow("")
@@ -43,8 +45,8 @@ internal class SearchViewModel @Inject constructor(
     val pagedArtistsList get() = artistsPager.observe()
     val pagedAlbumsList get() = albumsPager.observe()
 
-    val state = combine(searchQuery, searchFilter) { query, filter ->
-        SearchViewState(query, filter)
+    val state = combine(searchQuery, searchFilter, snackbarManager.errors) { query, filter, error ->
+        SearchViewState(query, filter, error)
     }
 
     init {
@@ -53,6 +55,8 @@ internal class SearchViewModel @Inject constructor(
                 when (action) {
                     is SearchAction.Search -> searchQuery.value = action.query
                     is SearchAction.SelectBackendType -> selectBackendType(action)
+                    is SearchAction.AddError -> snackbarManager.addError(action.error)
+                    is SearchAction.ClearError -> snackbarManager.removeCurrentError()
                 }
             }
         }

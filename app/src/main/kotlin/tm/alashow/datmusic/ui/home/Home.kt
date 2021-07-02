@@ -44,6 +44,7 @@ import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
 import tm.alashow.common.compose.LocalScaffoldState
+import tm.alashow.common.compose.ui.DismissableSnackbarHost
 import tm.alashow.datmusic.R
 import tm.alashow.datmusic.ui.AppNavigation
 import tm.alashow.datmusic.ui.theme.translucentSurfaceColor
@@ -59,6 +60,7 @@ internal fun Home() {
     CompositionLocalProvider(LocalScaffoldState provides scaffoldState) {
         Scaffold(
             scaffoldState = scaffoldState,
+            snackbarHost = { DismissableSnackbarHost(it) },
             bottomBar = {
                 val currentSelectedItem by navController.currentScreenAsState()
 

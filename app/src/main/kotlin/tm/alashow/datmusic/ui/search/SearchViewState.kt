@@ -18,7 +18,8 @@ data class SearchFilter(
 
 data class SearchViewState(
     val query: String = "",
-    val searchFilter: SearchFilter = SearchFilter()
+    val searchFilter: SearchFilter = SearchFilter(),
+    val error: Throwable? = null
 ) {
     companion object {
         val Empty = SearchViewState()

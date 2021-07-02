@@ -9,7 +9,7 @@
     <string name="app_label">Datmusic</string>
 
     <string name="search.title">Search</string>
-    <string name="search.hint">Tracks, albums, artists</string>
+    <string name="search.hint">Songs, albums, artists</string>
     <string name="search.hint.query">Search query</string>
 
     <string name="search.audios">Songs</string>
