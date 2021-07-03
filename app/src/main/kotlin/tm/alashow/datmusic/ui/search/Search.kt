@@ -34,8 +34,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.input.ImeAction
@@ -47,6 +49,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
+import me.onebone.toolbar.CollapsingToolbarScaffold
+import me.onebone.toolbar.ScrollStrategy
+import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.R
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
@@ -77,28 +82,35 @@ internal fun Search(
 ) {
     val viewState by rememberFlowWithLifecycle(viewModel.state)
         .collectAsState(initial = SearchViewState.Empty)
+    val listState = rememberLazyListState()
+    val collapsingToolbarState = rememberCollapsingToolbarScaffoldState()
 
-    Scaffold(
-        topBar = {
-            SearchAppBar(
-                state = viewState,
-                onSearch = { actioner(SearchAction.Search(it)) },
-                onBackendTypeSelect = { actioner(it) },
+    Scaffold { padding ->
+
+        CollapsingToolbarScaffold(
+            modifier = Modifier.translucentSurface(),
+            scrollStrategy = ScrollStrategy.EnterAlways,
+            state = collapsingToolbarState,
+            toolbar = {
+                SearchAppBar(
+                    state = viewState,
+                    onSearch = { actioner(SearchAction.Search(it)) },
+                    onBackendTypeSelect = { actioner(it) }
+                )
+            }
+        ) {
+
+            SearchList(
+                viewModel = viewModel,
+                padding = padding,
+                listState = listState,
             )
         }
-    ) { padding ->
-        val listState = rememberLazyListState()
-
-        SearchList(
-            viewModel = viewModel,
-            padding = padding,
-            listState = listState,
-        )
     }
 }
 
 @Composable
-@OptIn(ExperimentalAnimationApi::class)
+@OptIn(ExperimentalAnimationApi::class, ExperimentalComposeUiApi::class)
 private fun SearchAppBar(
     state: SearchViewState,
     modifier: Modifier = Modifier,
@@ -112,6 +124,7 @@ private fun SearchAppBar(
             .statusBarsPadding()
     ) {
         val keyboardVisible = LocalWindowInsets.current.ime.isVisible
+        val keyboardController = LocalSoftwareKeyboardController.current
 
         Column(verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall)) {
             AnimatedVisibility(visible = !keyboardVisible) {
@@ -131,12 +144,13 @@ private fun SearchAppBar(
                 },
                 onSearch = { value ->
                     onSearch(value.text)
+                    keyboardController?.hide()
                 },
                 hint = if (!keyboardVisible) stringResource(R.string.search_hint) else stringResource(R.string.search_hint_query),
                 modifier = Modifier.fillMaxWidth()
             )
 
-            SearchFilterPanel(keyboardVisible, state) { selectAction ->
+            SearchFilterPanel(visible = keyboardVisible || queryValue.text.isNotBlank(), state) { selectAction ->
                 onBackendTypeSelect(selectAction)
                 onSearch(queryValue.text)
             }
@@ -147,11 +161,11 @@ private fun SearchAppBar(
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun ColumnScope.SearchFilterPanel(
-    keyboardVisible: Boolean,
+    visible: Boolean,
     state: SearchViewState,
     onBackendTypeSelect: (SearchAction.SelectBackendType) -> Unit
 ) {
-    AnimatedVisibility(visible = keyboardVisible) {
+    AnimatedVisibility(visible = visible) {
         ChipsRow(
             items = DatmusicSearchParams.BackendType.values().toList(),
             selectedItem = when (state.searchFilter.backends.size) {

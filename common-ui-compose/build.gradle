@@ -46,6 +46,7 @@ repositories {
 dependencies {
 	api project(':base-android')
 
+	// Android
 	api Deps.Android.Compose.ui
 	api Deps.Android.Compose.uiTooling
 	api Deps.Android.Compose.foundation
@@ -57,8 +58,8 @@ dependencies {
 	api Deps.Android.Compose.viewModels
 	api Deps.Android.Compose.liveData
 	api Deps.Android.Compose.paging
-	api Deps.Android.Compose.lottie
 
+	// Accompanist
 	api Deps.Android.Accompanist.coil
 	api Deps.Android.Accompanist.insets
 	api Deps.Android.Accompanist.insetsUi
@@ -66,4 +67,8 @@ dependencies {
 	api Deps.Android.Accompanist.placeholder
 	api Deps.Android.Accompanist.swiperefresh
 	api Deps.Android.Accompanist.systemUiController
+
+	// 3rd party
+	api Deps.Android.Compose.lottie
+	api Deps.Android.Compose.collapsingToolbar
 }

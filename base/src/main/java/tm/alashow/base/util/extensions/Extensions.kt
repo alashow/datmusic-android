@@ -5,6 +5,7 @@
 package tm.alashow.base.util.extensions
 
 import java.util.*
+import kotlin.math.max
 
 typealias Callback = () -> Unit
 
@@ -43,3 +44,5 @@ fun whenApiLevel(api: Int, block: () -> Unit) {
         block()
     }
 }
+
+infix fun Float.muteUntil(that: Float) = max(this - that, 0.0f) * (1 / (1 - that))

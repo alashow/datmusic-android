@@ -2,7 +2,7 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.common.compose
+package tm.alashow.common.compose.ui
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.gestures.detectTransformGestures
@@ -13,6 +13,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -37,6 +38,8 @@ fun Zoomable(
     fun limitScale(k: Float): Float =
         if ((scale.value <= maxScale && k > 1f) || (scale.value >= minScale && k < 1f)) scale.value * k else scale.value
 
+    var snapBackJob: Job? = null
+
     Box(
         modifier = modifier
             .pointerInput(Unit) {
@@ -47,11 +50,14 @@ fun Zoomable(
                         panX.snapTo(panX.value + pan.x)
                         panY.snapTo(panY.value + pan.y)
                         if (snapBack) {
-                            delay(24)
-                            launch { scale.animateTo(1f) }
-                            launch { rotation.animateTo(0f) }
-                            launch { panX.animateTo(0f) }
-                            launch { panY.animateTo(0f) }
+                            snapBackJob?.cancel()
+                            snapBackJob = launch {
+                                delay(150)
+                                launch { scale.animateTo(1f) }
+                                launch { rotation.animateTo(0f) }
+                                launch { panX.animateTo(0f) }
+                                launch { panY.animateTo(0f) }
+                            }
                         }
                     }
                 }

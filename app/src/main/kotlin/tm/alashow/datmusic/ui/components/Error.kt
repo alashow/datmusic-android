@@ -29,7 +29,7 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
-import tm.alashow.common.compose.Zoomable
+import tm.alashow.common.compose.ui.Zoomable
 import tm.alashow.datmusic.R
 import tm.alashow.datmusic.ui.theme.AppTheme
 

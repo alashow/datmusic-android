@@ -7,5 +7,5 @@ object App {
     const val targetSdkVersion = "S"
     const val minSdkVersion = 21
     const val versionCode = 1
-    const val versionName = "2.0.0-alpha"
+    const val versionName = "2.0.0"
 }
