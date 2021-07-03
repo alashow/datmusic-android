@@ -9,6 +9,8 @@ import kotlinx.serialization.Serializable
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
+import tm.alashow.domain.models.errors.ApiErrorException
+import tm.alashow.domain.models.errors.mapToApiError
 
 @Serializable
 data class ApiResponse(
@@ -22,7 +24,7 @@ data class ApiResponse(
     val data: Data = Data(),
 ) {
 
-    val isSuccessful get() = status === "ok"
+    val isSuccessful get() = status == "ok"
 
     @Serializable
     data class Error(
@@ -30,7 +32,19 @@ data class ApiResponse(
         val id: String = "unknown",
 
         @SerialName("message")
-        var message: String? = null
+        var message: String? = null,
+
+        @SerialName("code")
+        val code: String? = "",
+
+        @SerialName("captcha_id")
+        val captchaId: String = "",
+
+        @SerialName("captcha_img")
+        val captchaImageUrl: String = "",
+
+        @SerialName("captcha_index")
+        val captchaIndex: Int = -1,
     )
 
     @Serializable
@@ -45,3 +59,7 @@ data class ApiResponse(
         val albums: List<Album> = arrayListOf(),
     )
 }
+
+fun ApiResponse.checkForErrors(): ApiResponse = if (isSuccessful) this
+else throw ApiErrorException(error ?: ApiResponse.Error("unknown", "Unknown error"))
+    .mapToApiError()

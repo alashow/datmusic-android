@@ -4,17 +4,15 @@
  */
 package tm.alashow.datmusic.data.repos.search
 
-import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams.CaptchaAnswer.Companion.toQueryMap
+import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams.CaptchaSolution.Companion.toQueryMap
 
 typealias BackendTypes = Set<DatmusicSearchParams.BackendType>
 
 data class DatmusicSearchParams(
     val query: String,
-    val page: Int = 0,
-
+    val captchaSolution: CaptchaSolution? = null,
     val types: List<BackendType> = listOf(BackendType.AUDIOS),
-
-    val captchaAnswer: CaptchaAnswer? = null
+    val page: Int = 0,
 ) {
 
     // used in Room queries
@@ -25,8 +23,8 @@ data class DatmusicSearchParams(
             "query" to query,
             "page" to page,
         ).also { map ->
-            if (captchaAnswer != null) {
-                map.putAll(captchaAnswer.toQueryMap())
+            if (captchaSolution != null) {
+                map.putAll(captchaSolution.toQueryMap())
             }
         }
 
@@ -39,13 +37,13 @@ data class DatmusicSearchParams(
         override fun toString() = type
     }
 
-    data class CaptchaAnswer(
-        val captchaId: Int,
+    data class CaptchaSolution(
+        val captchaId: String,
         val captchaIndex: Int,
         val captchaKey: String,
     ) {
         companion object {
-            fun CaptchaAnswer.toQueryMap() = mapOf(
+            fun CaptchaSolution.toQueryMap() = mapOf(
                 "captcha_id" to captchaId,
                 "captcha_index" to captchaIndex,
                 "captcha_key" to captchaKey

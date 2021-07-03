@@ -1,10 +1,11 @@
 /*
- * Copyright (C) 2018, Alashov Berkeli
+ * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
 package tm.alashow.domain.models.errors
 
 import androidx.annotation.StringRes
+import org.threeten.bp.Instant
 import tm.alashow.domain.R
 import tm.alashow.domain.models.ApiResponse
 
@@ -18,9 +19,14 @@ open class ApiErrorException(
 }
 
 data class ApiNotFoundError(override val error: ApiResponse.Error = ApiResponse.Error("notFound")) : ApiErrorException(error, R.string.error_notFound)
+data class ApiCaptchaError(override val error: ApiResponse.Error, val expiresAt: Instant = Instant.now().plusSeconds(30)) :
+    ApiErrorException(error, R.string.captcha_title) {
+    val expired get() = Instant.now().isAfter(expiresAt)
+}
 
-fun ApiErrorException.transform(): ApiErrorException = when (error.id) {
+fun ApiErrorException.mapToApiError(): ApiErrorException = when (error.id) {
     "notFound" -> ApiNotFoundError(error)
+    "captcha" -> ApiCaptchaError(error)
     else -> this
 }
 

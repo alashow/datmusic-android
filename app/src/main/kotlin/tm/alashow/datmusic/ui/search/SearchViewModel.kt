@@ -25,6 +25,7 @@ import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams.Companion.with
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
+import tm.alashow.domain.models.errors.ApiCaptchaError
 
 @OptIn(FlowPreview::class)
 @HiltViewModel
@@ -38,6 +39,9 @@ internal class SearchViewModel @Inject constructor(
 
     private val searchQuery = MutableStateFlow("")
     private val searchFilter = MutableStateFlow(SearchFilter())
+    private val searchTrigger = MutableStateFlow(SearchTrigger())
+
+    private val captchaError = MutableStateFlow<ApiCaptchaError?>(null)
 
     private val pendingActions = MutableSharedFlow<SearchAction>()
 
@@ -45,16 +49,16 @@ internal class SearchViewModel @Inject constructor(
     val pagedArtistsList get() = artistsPager.observe()
     val pagedAlbumsList get() = albumsPager.observe()
 
-    val state = combine(searchQuery, searchFilter, snackbarManager.errors) { query, filter, error ->
-        SearchViewState(query, filter, error)
-    }
+    val state = combine(searchQuery, searchFilter, snackbarManager.errors, captchaError, ::SearchViewState)
 
     init {
         viewModelScope.launch {
             pendingActions.collect { action ->
                 when (action) {
-                    is SearchAction.Search -> searchQuery.value = action.query
+                    is SearchAction.QueryChange -> searchQuery.value = action.query
+                    is SearchAction.Search -> searchTrigger.value = SearchTrigger(searchQuery.value)
                     is SearchAction.SelectBackendType -> selectBackendType(action)
+                    is SearchAction.SolveCaptcha -> solveCaptcha(action)
                     is SearchAction.AddError -> snackbarManager.addError(action.error)
                     is SearchAction.ClearError -> snackbarManager.removeCurrentError()
                 }
@@ -62,23 +66,32 @@ internal class SearchViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            combine(searchQuery, searchFilter) { q, f -> q to f }
-                .collectLatest { (query, filter) ->
-                    Timber.d("Searching with query=$query, backends=${filter.backends.joinToString { it.type }}")
-
-                    val searchParams = DatmusicSearchParams(query)
-                    if (filter.backends.contains(DatmusicSearchParams.BackendType.AUDIOS))
-                        audiosPager(ObservePagedDatmusicSearch.Params(searchParams))
-                    if (query.isNotBlank() && filter.backends.contains(DatmusicSearchParams.BackendType.ARTISTS))
-                        artistsPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(DatmusicSearchParams.BackendType.ARTISTS)))
-
-                    if (query.isNotBlank() && filter.backends.contains(DatmusicSearchParams.BackendType.ALBUMS))
-                        albumsPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(DatmusicSearchParams.BackendType.ALBUMS)))
+            combine(searchTrigger, searchFilter, ::Pair)
+                .collectLatest { (trigger, filter) ->
+                    search(trigger, filter)
                 }
         }
 
         listOf(audiosPager, artistsPager, albumsPager).forEach { pager ->
             pager.errors().watchForErrors(pager)
+        }
+    }
+
+    fun search(trigger: SearchTrigger, filter: SearchFilter) {
+        val query = trigger.query
+
+        Timber.d("Searching with query=$query, backends=${filter.backends.joinToString { it.type }}")
+        val searchParams = DatmusicSearchParams(query, trigger.captchaSolution)
+
+        if (filter.backends.contains(DatmusicSearchParams.BackendType.AUDIOS))
+            audiosPager(ObservePagedDatmusicSearch.Params(searchParams))
+
+        // don't send queries if backend can't handle empty queries
+        if (query.isNotBlank()) {
+            if (filter.backends.contains(DatmusicSearchParams.BackendType.ARTISTS))
+                artistsPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(DatmusicSearchParams.BackendType.ARTISTS)))
+            if (filter.backends.contains(DatmusicSearchParams.BackendType.ALBUMS))
+                albumsPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(DatmusicSearchParams.BackendType.ALBUMS)))
         }
     }
 
@@ -100,8 +113,27 @@ internal class SearchViewModel @Inject constructor(
         )
     }
 
+    /**
+     * Resets captcha error and triggers search with given captcha solution.
+     */
+    private fun solveCaptcha(action: SearchAction.SolveCaptcha) {
+        captchaError.value = null
+        searchTrigger.value = SearchTrigger(
+            query = searchQuery.value,
+            captchaSolution = DatmusicSearchParams.CaptchaSolution(
+                action.captchaError.error.captchaId,
+                action.captchaError.error.captchaIndex,
+                action.key
+            )
+        )
+    }
+
     private fun Flow<Throwable>.watchForErrors(pager: ObservePagedDatmusicSearch<*>) = viewModelScope.launch { collectErrors(pager) }
 
     private suspend fun Flow<Throwable>.collectErrors(pager: ObservePagedDatmusicSearch<*>) = collect { error ->
+        Timber.e(error, "Collected error from a pager")
+        when (error) {
+            is ApiCaptchaError -> captchaError.value = error
+        }
     }
 }

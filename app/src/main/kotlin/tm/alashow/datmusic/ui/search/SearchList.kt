@@ -34,7 +34,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -104,6 +106,14 @@ internal fun SearchList(
             }
         }.toSet()
         else -> setOf(audiosLazyPagingItems, artistsLazyPagingItems, albumsLazyPagingItems)
+    }
+
+    val captchaError = viewState.captchaError
+    var captchaErrorShown by remember(captchaError) { mutableStateOf(true) }
+    if (captchaError != null) {
+        CaptchaErrorDialog(captchaErrorShown, { captchaErrorShown = it }, captchaError) { key ->
+            viewModel.submitAction(SearchAction.SolveCaptcha(captchaError, key))
+        }
     }
 
     val pagerRefreshStates = pagers.map { it.loadState.refresh }.toTypedArray()
@@ -185,7 +195,6 @@ private fun SearchListContent(
             contentPadding = padding,
             modifier = Modifier.fillMaxSize()
         ) {
-
             if (refreshErrorState is LoadState.Error) {
                 if (pagersAreEmpty)
                     item {
@@ -197,18 +206,6 @@ private fun SearchListContent(
                         )
                     }
             }
-
-            // todo: need better way to detect empty results, i.e map empty results to an error
-            // if (pagersAreEmpty && pagersAreNotLoading) {
-            //     item {
-            //         ErrorBox(
-            //             title = stringResource(R.string.error_empty_title),
-            //             message = stringResource(R.string.error_empty),
-            //             onRetryClick = { refreshPagers() },
-            //             maxHeight = this@BoxWithConstraints.maxHeight
-            //         )
-            //     }
-            // }
 
             item {
                 if (searchFilter.backends.contains(DatmusicSearchParams.BackendType.ARTISTS))

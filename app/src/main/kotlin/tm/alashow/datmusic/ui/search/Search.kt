@@ -24,20 +24,22 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.input.ImeAction
@@ -57,6 +59,7 @@ import tm.alashow.datmusic.R
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
 import tm.alashow.datmusic.ui.components.ChipsRow
 import tm.alashow.datmusic.ui.theme.AppTheme
+import tm.alashow.datmusic.ui.theme.borderlessTextFieldColors
 import tm.alashow.datmusic.ui.theme.topAppBarTitleStyle
 import tm.alashow.datmusic.ui.theme.translucentSurface
 
@@ -94,7 +97,8 @@ internal fun Search(
             toolbar = {
                 SearchAppBar(
                     state = viewState,
-                    onSearch = { actioner(SearchAction.Search(it)) },
+                    onQueryChange = { actioner(SearchAction.QueryChange(it)) },
+                    onSearch = { actioner(SearchAction.Search) },
                     onBackendTypeSelect = { actioner(it) }
                 )
             }
@@ -114,7 +118,8 @@ internal fun Search(
 private fun SearchAppBar(
     state: SearchViewState,
     modifier: Modifier = Modifier,
-    onSearch: (String) -> Unit = {},
+    onQueryChange: (String) -> Unit = {},
+    onSearch: () -> Unit = {},
     onBackendTypeSelect: (SearchAction.SelectBackendType) -> Unit = {}
 ) {
     Box(
@@ -123,11 +128,16 @@ private fun SearchAppBar(
             .fillMaxWidth()
             .statusBarsPadding()
     ) {
-        val keyboardVisible = LocalWindowInsets.current.ime.isVisible
         val keyboardController = LocalSoftwareKeyboardController.current
+        val focusManager = LocalFocusManager.current
+        val hasWindowFocus = LocalWindowInfo.current.isWindowFocused
+        val keyboardVisible = LocalWindowInsets.current.ime.isVisible
+
+        var focused by remember { mutableStateOf(false) }
+        val searchActive = focused && hasWindowFocus && keyboardVisible
 
         Column(verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall)) {
-            AnimatedVisibility(visible = !keyboardVisible) {
+            AnimatedVisibility(visible = !searchActive) {
                 Text(
                     text = stringResource(R.string.search_title),
                     style = topAppBarTitleStyle(),
@@ -141,18 +151,22 @@ private fun SearchAppBar(
                 value = queryValue,
                 onValueChange = { value ->
                     queryValue = value
+                    onQueryChange(value.text)
                 },
-                onSearch = { value ->
-                    onSearch(value.text)
+                onSearch = {
+                    onSearch()
                     keyboardController?.hide()
+                    focusManager.clearFocus()
                 },
-                hint = if (!keyboardVisible) stringResource(R.string.search_hint) else stringResource(R.string.search_hint_query),
-                modifier = Modifier.fillMaxWidth()
+                hint = if (!searchActive) stringResource(R.string.search_hint) else stringResource(R.string.search_hint_query),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .onFocusChanged { focused = it.isFocused }
             )
 
-            SearchFilterPanel(visible = keyboardVisible || queryValue.text.isNotBlank(), state) { selectAction ->
+            SearchFilterPanel(visible = searchActive || queryValue.text.isNotBlank(), state) { selectAction ->
                 onBackendTypeSelect(selectAction)
-                onSearch(queryValue.text)
+                onSearch()
             }
         }
     }
@@ -193,15 +207,16 @@ private fun ColumnScope.SearchFilterPanel(
 fun SearchTextField(
     value: TextFieldValue,
     onValueChange: (TextFieldValue) -> Unit,
-    onSearch: (TextFieldValue) -> Unit = {},
+    onSearch: () -> Unit = {},
     hint: String,
+    maxLength: Int = 50,
     modifier: Modifier = Modifier,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search, keyboardType = KeyboardType.Text),
-    keyboardActions: KeyboardActions = KeyboardActions(onSearch = { onSearch(value) }),
+    keyboardActions: KeyboardActions = KeyboardActions(onSearch = { onSearch() }),
 ) {
     OutlinedTextField(
         value = value,
-        onValueChange = onValueChange,
+        onValueChange = { if (it.text.length <= maxLength) onValueChange(it) },
         placeholder = { Text(text = hint) },
         trailingIcon = {
             AnimatedVisibility(
@@ -220,18 +235,12 @@ fun SearchTextField(
                 }
             }
         },
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = Color.Transparent,
-            unfocusedBorderColor = Color.Transparent,
-            cursorColor = MaterialTheme.colors.secondary
-        ),
+        colors = borderlessTextFieldColors(),
         keyboardOptions = keyboardOptions,
-        singleLine = true,
         keyboardActions = keyboardActions,
+        singleLine = true,
         maxLines = 1,
-        visualTransformation = { text ->
-            TransformedText(text.capitalize(), OffsetMapping.Identity)
-        },
+        visualTransformation = { text -> TransformedText(text.capitalize(), OffsetMapping.Identity) },
         modifier = modifier
             .padding(horizontal = AppTheme.specs.padding)
             .background(AppTheme.colors.onSurfaceInputBackground, MaterialTheme.shapes.small)

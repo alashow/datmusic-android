@@ -12,10 +12,10 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
-import kotlinx.coroutines.flow.map
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
+import tm.alashow.domain.models.errors.requireNonEmpty
 
 typealias DatmusicSearchStore<T> = Store<DatmusicSearchParams, List<T>>
 typealias DatmusicSearchAudioStore = DatmusicSearchStore<Audio>
@@ -30,7 +30,7 @@ object DatmusicSearchStoreModule {
         search: DatmusicSearchDataSource
     ): DatmusicSearchStore<Audio> = StoreBuilder.from(
         fetcher = Fetcher.of { params: DatmusicSearchParams ->
-            search(params).map { it.data.audios }.getOrThrow()
+            search(params).map { it.data.audios }.requireNonEmpty()
         }
     ).build()
 
@@ -40,7 +40,7 @@ object DatmusicSearchStoreModule {
         search: DatmusicSearchDataSource
     ): DatmusicSearchStore<Artist> = StoreBuilder.from(
         fetcher = Fetcher.of { params: DatmusicSearchParams ->
-            search(params).map { it.data.artists }.getOrThrow()
+            search(params).map { it.data.artists }.requireNonEmpty()
         }
     ).build()
 
@@ -50,7 +50,7 @@ object DatmusicSearchStoreModule {
         search: DatmusicSearchDataSource
     ): DatmusicSearchStore<Album> = StoreBuilder.from(
         fetcher = Fetcher.of { params: DatmusicSearchParams ->
-            search(params).map { it.data.albums }.getOrThrow()
+            search(params).map { it.data.albums }.requireNonEmpty()
         }
     ).build()
 

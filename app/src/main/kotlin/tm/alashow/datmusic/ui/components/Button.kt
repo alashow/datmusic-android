@@ -22,6 +22,7 @@ import tm.alashow.datmusic.ui.theme.*
 @Composable
 fun AppButton(
     onClick: () -> Unit,
+    enabled: Boolean = true,
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(percent = 50),
     backgroundColor: Color = MaterialTheme.colors.secondary,
@@ -35,6 +36,7 @@ fun AppButton(
         ),
         onClick = onClick,
         shape = shape,
+        enabled = enabled,
         modifier = modifier,
         content = content
     )
@@ -44,9 +46,10 @@ fun AppButton(
 fun TextRoundedButton(
     onClick: () -> Unit,
     text: String,
+    enabled: Boolean = true,
     modifier: Modifier = Modifier
 ) {
-    AppButton(onClick = onClick, modifier = modifier) {
+    AppButton(onClick, enabled, modifier) {
         Text(text)
     }
 }
@@ -59,7 +62,7 @@ fun ButtonListPreview() {
             Modifier
                 .fillMaxWidth()
                 .height(400.dp)
-                .background(parseColor("#16053D")),
+                .background(Primary),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
