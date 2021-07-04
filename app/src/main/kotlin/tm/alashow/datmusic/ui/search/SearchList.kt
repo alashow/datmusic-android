@@ -117,6 +117,7 @@ internal fun SearchList(
         }
     }
 
+    val hasMultiplePagers = pagers.size > 1
     val pagerRefreshStates = pagers.map { it.loadState.refresh }.toTypedArray()
     val pagersAreEmpty = pagers.all { it.itemCount == 0 }
     val refreshPagers = { pagers.forEach { it.refresh() } }
@@ -140,7 +141,11 @@ internal fun SearchList(
     // show snackbar error if there's an error state in any of the active pagers (except empty result errors)
     // and some of the pagers is not empty (in which case full screen error will be shown)
     remember(refreshErrorState, pagersAreEmpty) {
-        if (refreshErrorState is LoadState.Error && refreshErrorState.error !is EmptyResultException && !pagersAreEmpty) {
+        if (refreshErrorState is LoadState.Error && !pagersAreEmpty) {
+            // we don't wanna show empty results error snackbar when there's multiple pagers and one of the pagers gets empty result error (but we have some results if we are here)
+            val emptyResultsButHasMultiplePagers = refreshErrorState.error is EmptyResultException && hasMultiplePagers
+            if (!emptyResultsButHasMultiplePagers)
+                return@remember
             viewModel.submitAction(SearchAction.AddError(refreshErrorState.error))
         }
     }
@@ -190,6 +195,7 @@ private fun SearchListContent(
     refreshErrorState: LoadState?,
     padding: PaddingValues
 ) {
+    LogCompositions(tag = "SearchListContent")
     BoxWithConstraints {
         LazyColumn(
             state = listState,
