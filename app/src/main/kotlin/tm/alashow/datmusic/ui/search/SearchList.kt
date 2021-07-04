@@ -237,7 +237,7 @@ internal fun ArtistList(pagingItems: LazyPagingItems<Artist>) {
                     .fillMaxWidth()
                     .padding(AppTheme.specs.padding)
             ) {
-                val image = rememberCoilPainter(artist.photo?.url, fadeIn = true)
+                val image = rememberCoilPainter(artist.photo, fadeIn = true)
                 Image(
                     painter = image,
                     contentDescription = null,

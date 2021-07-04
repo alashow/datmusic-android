@@ -4,12 +4,14 @@
  */
 package tm.alashow.datmusic.domain.entities
 
+import android.net.Uri
 import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import tm.alashow.Config
 import tm.alashow.domain.models.BasePaginatedEntity
 
 @Parcelize
@@ -36,7 +38,9 @@ data class Artist(
     override var page: Int = defaultPage,
 ) : BasePaginatedEntity(), Parcelable {
 
-    val photo get() = _photo?.maxByOrNull { it.height }
+    val photo get() = _photo?.maxByOrNull { it.height }?.url ?: buildAlternatePhotoUrl()
+
+    private fun buildAlternatePhotoUrl() = Uri.parse(Config.API_BASE_URL).buildUpon().encodedPath("cover/artists").appendPath(name).appendPath("small").build().toString()
 
     @Serializable
     @Parcelize
