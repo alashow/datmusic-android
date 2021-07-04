@@ -4,18 +4,19 @@
  */
 package tm.alashow.datmusic.ui.search
 
+import android.R.attr.maxLines
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.expandIn
 import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,11 +27,17 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarResult
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -39,9 +46,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.paging.CombinedLoadStates
 import androidx.paging.LoadState
@@ -49,10 +59,6 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.google.accompanist.coil.rememberCoilPainter
-import com.google.accompanist.imageloading.ImageLoadState
-import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.material.placeholder
-import com.google.accompanist.placeholder.material.shimmer
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -67,6 +73,7 @@ import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.ui.components.ErrorBox
+import tm.alashow.datmusic.ui.components.ImageWithPlaceholder
 import tm.alashow.datmusic.ui.components.ProgressIndicator
 import tm.alashow.datmusic.ui.components.ProgressIndicatorSmall
 import tm.alashow.datmusic.ui.theme.AppTheme
@@ -239,23 +246,34 @@ internal fun ArtistList(pagingItems: LazyPagingItems<Artist>) {
 
             Column(
                 verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall),
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
+                    .clickable { }
                     .fillMaxWidth()
-                    .padding(AppTheme.specs.padding)
+                    .padding(horizontal = AppTheme.specs.paddingTiny)
             ) {
                 val image = rememberCoilPainter(artist.photo, fadeIn = true)
-                Image(
+                ImageWithPlaceholder(
                     painter = image,
-                    contentDescription = null,
-                    Modifier
-                        .size(70.dp)
-                        .clip(MaterialTheme.shapes.small)
-                        .placeholder(
-                            visible = image.loadState is ImageLoadState.Loading,
-                            highlight = PlaceholderHighlight.shimmer(),
-                        )
+                    icon = Icons.Default.Person,
+                    shape = CircleShape,
+                    size = 60.dp
+                ) { modifier ->
+                    Image(
+                        painter = image,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = modifier
+                    )
+                }
+                Text(
+                    artist.name,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .width(100.dp)
                 )
-                Text(artist.name)
             }
         }
 
@@ -265,9 +283,8 @@ internal fun ArtistList(pagingItems: LazyPagingItems<Artist>) {
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-internal fun AlbumList(pagingItems: LazyPagingItems<Album>) {
+internal fun AlbumList(pagingItems: LazyPagingItems<Album>, itemSize: Dp = 150.dp) {
     LogCompositions(tag = "AlbumList")
-
     if (pagingItems.itemCount > 0)
         SearchListLabel(stringResource(R.string.search_albums), pagingItems.loadState)
 
@@ -278,22 +295,29 @@ internal fun AlbumList(pagingItems: LazyPagingItems<Album>) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall),
                 modifier = Modifier
+                    .clickable { }
                     .fillMaxWidth()
                     .padding(AppTheme.specs.padding)
             ) {
-                val image = rememberCoilPainter(album.photo.smallUrl, fadeIn = true)
-                Image(
-                    painter = image,
-                    contentDescription = null,
-                    Modifier
-                        .size(70.dp)
-                        .clip(MaterialTheme.shapes.small)
-                        .placeholder(
-                            visible = image.loadState is ImageLoadState.Loading,
-                            highlight = PlaceholderHighlight.shimmer(),
-                        )
-                )
-                Text(album.title)
+                val image = rememberCoilPainter(album.photo.mediumUrl, fadeIn = true)
+                ImageWithPlaceholder(image, size = itemSize, iconPadding = 48.dp) { modifier ->
+                    Image(
+                        painter = image,
+                        contentDescription = null,
+                        modifier = modifier
+                    )
+                }
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingTiny),
+                    modifier = Modifier.width(itemSize)
+                ) {
+
+                    Text(album.title, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                        Text(album.artists.first().name, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        Text(album.year.toString())
+                    }
+                }
             }
         }
 
@@ -310,26 +334,26 @@ internal fun LazyListScope.audioList(pagingItems: LazyPagingItems<Audio>) {
     items(lazyPagingItems = pagingItems) {
         val audio = it ?: return@items
         Row(
-            Modifier
+            horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
+            modifier = Modifier
+                .clickable { }
                 .fillMaxWidth()
-                .padding(AppTheme.specs.padding)
+                .padding(AppTheme.specs.inputPaddings)
         ) {
-            val image = rememberCoilPainter(audio.coverUrlSmall, fadeIn = true)
-            Image(
-                painter = image,
-                contentDescription = null,
-                Modifier
-                    .size(70.dp)
-                    .clip(MaterialTheme.shapes.small)
-                    .placeholder(
-                        visible = image.loadState is ImageLoadState.Loading,
-                        highlight = PlaceholderHighlight.shimmer(),
-                    )
-            )
-            Spacer(Modifier.width(AppTheme.specs.padding))
+            val image = rememberCoilPainter(audio.coverUrlSmall ?: audio.coverAlternate, fadeIn = true)
+            ImageWithPlaceholder(image) { modifier ->
+                Image(
+                    painter = image,
+                    contentDescription = null,
+                    modifier = modifier
+                )
+            }
+
             Column(verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall)) {
-                Text(audio.title)
-                Text(audio.artist)
+                Text(audio.title, style = MaterialTheme.typography.body1)
+                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                    Text(audio.artist, style = MaterialTheme.typography.body2)
+                }
             }
         }
     }
@@ -362,7 +386,7 @@ private fun SearchListLabel(label: String, loadState: CombinedLoadStates) {
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(AppTheme.specs.padding),
+            .padding(horizontal = AppTheme.specs.padding, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
