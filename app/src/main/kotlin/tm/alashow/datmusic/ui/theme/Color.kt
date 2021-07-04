@@ -4,6 +4,7 @@
  */
 package tm.alashow.datmusic.ui.theme
 
+import android.graphics.Color as AndroidColor
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
@@ -15,8 +16,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import kotlin.random.Random
 
-fun parseColor(hexColor: String) = Color(android.graphics.Color.parseColor(hexColor))
+fun parseColor(hexColor: String) = Color(AndroidColor.parseColor(hexColor))
 
 val Primary = Color(0xFF16053D)
 val PrimaryVariant = Color(0xFF221652)
@@ -110,3 +112,8 @@ fun translucentSurfaceColor() = MaterialTheme.colors.surface.copy(alpha = AppBar
 
 @Composable
 fun Modifier.translucentSurface() = background(translucentSurfaceColor())
+
+@Composable
+fun Modifier.randomBackground(memoize: Boolean = true) = background(if (memoize) remember { randomColor() } else randomColor())
+
+fun randomColor() = Color(Random.nextInt(255), Random.nextInt(255), Random.nextInt(255), Random.nextInt(255))

@@ -6,7 +6,10 @@ package tm.alashow.datmusic.ui.search
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.expandIn
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -136,14 +139,17 @@ private fun SearchAppBar(
         var focused by remember { mutableStateOf(false) }
         val searchActive = focused && hasWindowFocus && keyboardVisible
 
-        Column(verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall)) {
-            AnimatedVisibility(visible = !searchActive) {
-                Text(
-                    text = stringResource(R.string.search_title),
-                    style = topAppBarTitleStyle(),
-                    modifier = Modifier.padding(start = AppTheme.specs.padding, top = AppTheme.specs.padding),
-                )
-            }
+        Column(
+            verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall),
+            modifier = Modifier.animateContentSize()
+        ) {
+            // hide title bar if we can make search list not jump during transitions caused by toolbar height change
+            // if (!searchActive)
+            Text(
+                text = stringResource(R.string.search_title),
+                style = topAppBarTitleStyle(),
+                modifier = Modifier.padding(start = AppTheme.specs.padding, top = AppTheme.specs.padding),
+            )
 
             var queryValue by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue()) }
 
@@ -164,7 +170,13 @@ private fun SearchAppBar(
                     .onFocusChanged { focused = it.isFocused }
             )
 
-            SearchFilterPanel(visible = searchActive || queryValue.text.isNotBlank(), state) { selectAction ->
+            var backends = state.searchFilter.backends
+            // this applies until default selections mean everything is chosen
+            if (backends == SearchFilter.DefaultBackends)
+                backends = emptySet()
+
+            val filterVisible = searchActive || queryValue.text.isNotBlank() || backends.isNotEmpty()
+            SearchFilterPanel(visible = filterVisible, backends) { selectAction ->
                 onBackendTypeSelect(selectAction)
                 onSearch()
             }
@@ -176,16 +188,17 @@ private fun SearchAppBar(
 @Composable
 private fun ColumnScope.SearchFilterPanel(
     visible: Boolean,
-    state: SearchViewState,
+    selectedItems: Set<DatmusicSearchParams.BackendType>,
     onBackendTypeSelect: (SearchAction.SelectBackendType) -> Unit
 ) {
-    AnimatedVisibility(visible = visible) {
+    AnimatedVisibility(
+        visible = visible,
+        enter = expandIn(Alignment.TopCenter) + fadeIn(),
+        exit = shrinkOut(Alignment.BottomCenter) + fadeOut()
+    ) {
         ChipsRow(
             items = DatmusicSearchParams.BackendType.values().toList(),
-            selectedItem = when (state.searchFilter.backends.size) {
-                1 -> state.searchFilter.backends.first()
-                else -> null
-            },
+            selectedItems = selectedItems,
             onItemSelect = { selected, item ->
                 onBackendTypeSelect(SearchAction.SelectBackendType(selected, item))
             },

@@ -26,7 +26,7 @@ import tm.alashow.datmusic.ui.theme.DefaultThemeDark
 @Composable
 fun <T : Any> ChipsRow(
     items: List<T>,
-    selectedItem: T?,
+    selectedItems: Set<T> = setOf(),
     onItemSelect: (Boolean, T) -> Unit,
     labelMapper: @Composable (T) -> String = { it.toString().replaceFirstChar { it.uppercase() } },
     modifier: Modifier = Modifier,
@@ -39,12 +39,12 @@ fun <T : Any> ChipsRow(
         )
     ) {
         items.forEach { item ->
-            val selected = selectedItem == item
+            val isSelected = selectedItems.contains(item)
             Chip(
-                selected = selected,
+                selected = isSelected,
                 label = labelMapper(item),
                 modifier = Modifier.toggleable(
-                    value = selected,
+                    value = isSelected,
                     onValueChange = { onItemSelect(it, item) }
                 ),
             )
@@ -95,6 +95,6 @@ fun Chip(
 fun ChipsPreview() {
     val items = listOf("Songs", "Artists", "Albums")
     AppTheme(DefaultThemeDark) {
-        ChipsRow(items, items.first(), { _, _ -> })
+        ChipsRow(items, setOf(items.first()), { _, _ -> })
     }
 }
