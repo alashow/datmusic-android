@@ -70,6 +70,7 @@ import tm.alashow.datmusic.ui.components.ErrorBox
 import tm.alashow.datmusic.ui.components.ProgressIndicator
 import tm.alashow.datmusic.ui.components.ProgressIndicatorSmall
 import tm.alashow.datmusic.ui.theme.AppTheme
+import tm.alashow.domain.models.errors.EmptyResultException
 
 @Composable
 internal fun SearchList(viewModel: SearchViewModel, listState: LazyListState, padding: PaddingValues) {
@@ -136,10 +137,10 @@ internal fun SearchList(
         }
     }
 
-    // show snackbar error if there's an error state in any of the active pagers
+    // show snackbar error if there's an error state in any of the active pagers (except empty result errors)
     // and some of the pagers is not empty (in which case full screen error will be shown)
     remember(refreshErrorState, pagersAreEmpty) {
-        if (refreshErrorState is LoadState.Error && !pagersAreEmpty) {
+        if (refreshErrorState is LoadState.Error && refreshErrorState.error !is EmptyResultException && !pagersAreEmpty) {
             viewModel.submitAction(SearchAction.AddError(refreshErrorState.error))
         }
     }
