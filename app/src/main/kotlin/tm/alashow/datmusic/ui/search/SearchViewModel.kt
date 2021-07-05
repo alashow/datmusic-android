@@ -7,15 +7,20 @@ package tm.alashow.datmusic.ui.search
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import tm.alashow.base.ui.SnackbarManager
@@ -45,11 +50,17 @@ internal class SearchViewModel @Inject constructor(
 
     private val pendingActions = MutableSharedFlow<SearchAction>()
 
-    val pagedAudioList get() = audiosPager.observe()
-    val pagedArtistsList get() = artistsPager.observe()
-    val pagedAlbumsList get() = albumsPager.observe()
+    @OptIn(DelicateCoroutinesApi::class)
+    val pagedAudioList
+        get() = audiosPager.observe().cachedIn(GlobalScope)
+    val pagedArtistsList get() = artistsPager.observe().cachedIn(viewModelScope)
+    val pagedAlbumsList get() = albumsPager.observe().cachedIn(viewModelScope)
 
-    val state = combine(searchQuery, searchFilter, snackbarManager.errors, captchaError, ::SearchViewState)
+    val state = combine(searchQuery, searchFilter, snackbarManager.errors, captchaError, ::SearchViewState).shareIn(
+        scope = viewModelScope,
+        replay = 0,
+        started = SharingStarted.WhileSubscribed()
+    )
 
     init {
         viewModelScope.launch {

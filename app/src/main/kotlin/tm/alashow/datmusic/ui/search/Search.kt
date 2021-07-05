@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -92,9 +93,8 @@ internal fun Search(
     val collapsingToolbarState = rememberCollapsingToolbarScaffoldState()
 
     Scaffold { padding ->
-
         CollapsingToolbarScaffold(
-            modifier = Modifier.translucentSurface(),
+            modifier = Modifier.fillMaxSize(),
             scrollStrategy = ScrollStrategy.EnterAlways,
             state = collapsingToolbarState,
             toolbar = {
@@ -121,6 +121,7 @@ internal fun Search(
 private fun SearchAppBar(
     state: SearchViewState,
     modifier: Modifier = Modifier,
+    titleModifier: Modifier = Modifier,
     onQueryChange: (String) -> Unit = {},
     onSearch: () -> Unit = {},
     onBackendTypeSelect: (SearchAction.SelectBackendType) -> Unit = {}
@@ -148,7 +149,7 @@ private fun SearchAppBar(
             Text(
                 text = stringResource(R.string.search_title),
                 style = topAppBarTitleStyle(),
-                modifier = Modifier.padding(start = AppTheme.specs.padding, top = AppTheme.specs.padding),
+                modifier = titleModifier.padding(start = AppTheme.specs.padding, top = AppTheme.specs.padding),
             )
 
             var queryValue by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue()) }

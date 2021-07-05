@@ -5,6 +5,7 @@
 package tm.alashow.datmusic.data.repos.search
 
 import com.dropbox.android.external.store4.Fetcher
+import com.dropbox.android.external.store4.MemoryPolicy
 import com.dropbox.android.external.store4.Store
 import com.dropbox.android.external.store4.StoreBuilder
 import dagger.Module
@@ -12,10 +13,13 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
+import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
+import kotlin.time.minutes
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
-import tm.alashow.domain.models.errors.requireNonEmpty
+import tm.alashow.domain.models.errors.requireNonEmptyInitialPage
 
 typealias DatmusicSearchStore<T> = Store<DatmusicSearchParams, List<T>>
 typealias DatmusicSearchAudioStore = DatmusicSearchStore<Audio>
@@ -30,9 +34,9 @@ object DatmusicSearchStoreModule {
         search: DatmusicSearchDataSource
     ): DatmusicSearchStore<Audio> = StoreBuilder.from(
         fetcher = Fetcher.of { params: DatmusicSearchParams ->
-            search(params).map { it.data.audios }.requireNonEmpty()
+            search(params).map { it.data.audios }.requireNonEmptyInitialPage(params.page)
         }
-    ).build()
+    ).searchCachePolicy().build()
 
     @Provides
     @Singleton
@@ -40,9 +44,9 @@ object DatmusicSearchStoreModule {
         search: DatmusicSearchDataSource
     ): DatmusicSearchStore<Artist> = StoreBuilder.from(
         fetcher = Fetcher.of { params: DatmusicSearchParams ->
-            search(params).map { it.data.artists }.requireNonEmpty()
+            search(params).map { it.data.artists }.requireNonEmptyInitialPage(params.page)
         }
-    ).build()
+    ).searchCachePolicy().build()
 
     @Provides
     @Singleton
@@ -50,9 +54,17 @@ object DatmusicSearchStoreModule {
         search: DatmusicSearchDataSource
     ): DatmusicSearchStore<Album> = StoreBuilder.from(
         fetcher = Fetcher.of { params: DatmusicSearchParams ->
-            search(params).map { it.data.albums }.requireNonEmpty()
+            search(params).map { it.data.albums }.requireNonEmptyInitialPage(params.page)
         }
-    ).build()
+    ).searchCachePolicy().build()
+
+    @OptIn(ExperimentalTime::class)
+    fun <L : Any> StoreBuilder<DatmusicSearchParams, L>.searchCachePolicy() = cachePolicy(
+        MemoryPolicy.builder<DatmusicSearchParams, L>()
+            .setMaxSize(2000)
+            .setExpireAfterAccess(Duration.minutes(10))
+            .build()
+    )
 
     // @Provides
     // @Singleton

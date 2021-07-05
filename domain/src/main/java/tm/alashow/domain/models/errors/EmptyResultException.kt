@@ -8,6 +8,8 @@ class EmptyResultException(override val message: String = "Result was empty") : 
 
 fun <T> List<T>?.throwOnEmpty() = if (isNullOrEmpty()) throw EmptyResultException() else this
 
-fun <T> Result<List<T>>.requireNonEmpty(): List<T> {
-    return getOrThrow().throwOnEmpty()
+fun <T> Result<List<T>>.requireNonEmpty(condition: () -> Boolean = { true }): List<T> {
+    return getOrThrow().apply { if (condition()) throwOnEmpty() }
 }
+
+fun <T> Result<List<T>>.requireNonEmptyInitialPage(page: Int) = requireNonEmpty { page == 0 }
