@@ -10,6 +10,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import java.util.concurrent.TimeUnit
 import javax.inject.Named
 import javax.inject.Singleton
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -32,6 +33,8 @@ class NetworkModule {
     private fun getBaseBuilder(cache: Cache): OkHttpClient.Builder {
         return OkHttpClient.Builder()
             .cache(cache)
+            .readTimeout(Config.API_TIMEOUT, TimeUnit.MILLISECONDS)
+            .writeTimeout(Config.API_TIMEOUT, TimeUnit.MILLISECONDS)
             .retryOnConnectionFailure(true)
     }
 
