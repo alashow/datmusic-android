@@ -57,9 +57,6 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.google.accompanist.coil.rememberCoilPainter
-import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.material.placeholder
-import com.google.accompanist.placeholder.material.shimmer
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -126,18 +123,20 @@ internal fun SearchList(
         }
     }
 
-    val hasMultiplePagers = pagers.size > 1
     val pagerRefreshStates = pagers.map { it.loadState.refresh }.toTypedArray()
     val pagersAreEmpty = pagers.all { it.itemCount == 0 }
     val refreshPagers = { pagers.forEach { it.refresh() } }
     val retryPagers = { pagers.forEach { it.retry() } }
     val refreshErrorState = pagerRefreshStates.firstOrNull { it is LoadState.Error }
 
-    val scaffoldState = LocalScaffoldState.current
+    val hasMultiplePagers = pagers.size > 1
+    val hasLoadingPager = pagerRefreshStates.any { it == LoadState.Loading }
 
+    val scaffoldState = LocalScaffoldState.current
     val message = stringResource(viewState.error.localizedMessage())
     val retryLabel = stringResource(R.string.error_retry)
 
+    // show snackbar if there's an error to show
     LaunchedEffect(viewState.error) {
         viewState.error?.let {
             when (scaffoldState.snackbarHostState.showSnackbar(message, retryLabel, SnackbarDuration.Long)) {
@@ -147,7 +146,7 @@ internal fun SearchList(
         }
     }
 
-    // show snackbar error if there's an error state in any of the active pagers (except empty result errors)
+    // add snackbar error if there's an error state in any of the active pagers (except empty result errors)
     // and some of the pagers is not empty (in which case full screen error will be shown)
     remember(refreshErrorState, pagersAreEmpty) {
         if (refreshErrorState is LoadState.Error && !pagersAreEmpty) {
@@ -166,7 +165,7 @@ internal fun SearchList(
 
     SwipeRefresh(
         state = rememberSwipeRefreshState(
-            isRefreshing = pagers.all { it.itemCount == 0 } && pagerRefreshStates.any { it == LoadState.Loading }
+            isRefreshing = pagersAreEmpty && hasLoadingPager
         ),
         onRefresh = { refreshPagers() },
         indicatorPadding = padding,
@@ -322,7 +321,7 @@ internal fun AlbumList(pagingItems: LazyPagingItems<Album>, itemSize: Dp = 150.d
             }
         }
 
-        loadingMoreRow(pagingItems, height = itemSize + 32.dp)
+        loadingMoreRow(pagingItems, height = itemSize + 32.dp) // additional height is to account for the vertical padding [loadingMore] adds
     }
 }
 
@@ -333,8 +332,7 @@ internal fun LazyListScope.audioList(pagingItems: LazyPagingItems<Audio>) {
         }
 
     items(pagingItems, key = { _, item -> item.id }) {
-        val isPlaceholder = it == null
-        val audio = it ?: Audio()
+        val audio = it ?: return@items
         Row(
             horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
             modifier = Modifier
@@ -347,14 +345,11 @@ internal fun LazyListScope.audioList(pagingItems: LazyPagingItems<Audio>) {
                 Image(
                     painter = image,
                     contentDescription = null,
-                    modifier = modifier.placeholder(visible = isPlaceholder, highlight = PlaceholderHighlight.shimmer())
+                    modifier = modifier
                 )
             }
 
-            Column(
-                verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall),
-                modifier = Modifier.placeholder(visible = isPlaceholder, highlight = PlaceholderHighlight.shimmer())
-            ) {
+            Column(verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall)) {
                 Text(audio.title, style = MaterialTheme.typography.body1)
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                     Text(audio.artist, style = MaterialTheme.typography.body2)
@@ -372,8 +367,7 @@ private fun <T : Any> LazyListScope.loadingMoreRow(pagingItems: LazyPagingItems<
 
 private fun <T : Any> LazyListScope.loadingMore(pagingItems: LazyPagingItems<T>, modifier: Modifier = Modifier) {
     item {
-        val isLoading =
-            remember(pagingItems) { pagingItems.loadState.source.append == LoadState.Loading || pagingItems.loadState.mediator?.append == LoadState.Loading }
+        val isLoading = remember(pagingItems.loadState) { pagingItems.loadState.source.append == LoadState.Loading || pagingItems.loadState.mediator?.append == LoadState.Loading }
         if (isLoading)
             Box(
                 modifier
@@ -400,7 +394,7 @@ private fun SearchListLabel(label: String, loadState: CombinedLoadStates) {
         )
 
         AnimatedVisibility(
-            visible = loadState.refresh == LoadState.Loading || loadState.source.refresh == LoadState.Loading,
+            visible = loadState.source.refresh == LoadState.Loading || loadState.mediator?.refresh == LoadState.Loading,
             enter = expandIn(Alignment.Center),
             exit = shrinkOut(Alignment.Center)
         ) {
