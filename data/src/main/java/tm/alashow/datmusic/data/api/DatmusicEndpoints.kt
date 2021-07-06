@@ -9,21 +9,31 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 import retrofit2.http.QueryMap
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
+import tm.alashow.datmusic.domain.entities.AlbumId
+import tm.alashow.datmusic.domain.entities.ArtistId
 import tm.alashow.domain.models.ApiResponse
 
-interface Endpoints {
+interface DatmusicEndpoints {
 
-    @GET("/multisearch")
     @JvmSuppressWildcards
+    @GET("/multisearch")
     suspend fun multisearch(@QueryMap params: Map<String, Any>, @Query("types[]") vararg types: DatmusicSearchParams.BackendType): ApiResponse
 
-    @GET("/search/artists")
     @JvmSuppressWildcards
+    @GET("/search/artists")
     suspend fun searchArtists(@QueryMap params: Map<String, Any>, @Query("types[]") vararg types: DatmusicSearchParams.BackendType): ApiResponse
 
-    @GET("/search/albums")
     @JvmSuppressWildcards
+    @GET("/search/albums")
     suspend fun searchAlbums(@QueryMap params: Map<String, Any>, @Query("types[]") vararg types: DatmusicSearchParams.BackendType): ApiResponse
+
+    @JvmSuppressWildcards
+    @GET("/artists/{id}")
+    suspend fun artist(@Path("id") id: ArtistId, @QueryMap params: Map<String, Any>): ApiResponse
+
+    @JvmSuppressWildcards
+    @GET("/albums/{id}")
+    suspend fun album(@Path("id") id: AlbumId, @QueryMap params: Map<String, Any>): ApiResponse
 
     @GET("/bytes/{searchKey}/{audioId}")
     suspend fun bytes(@Path("searchKey") searchKey: String, @Path("audioId") audioId: String): ApiResponse

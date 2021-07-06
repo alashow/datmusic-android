@@ -15,7 +15,6 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
-import kotlin.time.minutes
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio

@@ -4,7 +4,8 @@
  */
 package tm.alashow.datmusic.data.repos.search
 
-import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams.CaptchaSolution.Companion.toQueryMap
+import tm.alashow.datmusic.data.repos.CaptchaSolution
+import tm.alashow.datmusic.data.repos.CaptchaSolution.Companion.toQueryMap
 
 typealias BackendTypes = Set<DatmusicSearchParams.BackendType>
 
@@ -35,19 +36,5 @@ data class DatmusicSearchParams(
         AUDIOS("audios"), ARTISTS("artists"), ALBUMS("albums");
 
         override fun toString() = type
-    }
-
-    data class CaptchaSolution(
-        val captchaId: Long,
-        val captchaIndex: Int,
-        val captchaKey: String,
-    ) {
-        companion object {
-            fun CaptchaSolution.toQueryMap() = mapOf(
-                "captcha_id" to captchaId,
-                "captcha_index" to captchaIndex,
-                "captcha_key" to captchaKey
-            )
-        }
     }
 }

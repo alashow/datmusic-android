@@ -24,7 +24,10 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import tm.alashow.base.ui.SnackbarManager
+import tm.alashow.datmusic.data.interactors.GetAlbumDetails
+import tm.alashow.datmusic.data.interactors.GetArtistDetails
 import tm.alashow.datmusic.data.observers.ObservePagedDatmusicSearch
+import tm.alashow.datmusic.data.repos.CaptchaSolution
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams.Companion.withTypes
 import tm.alashow.datmusic.domain.entities.Album
@@ -40,6 +43,8 @@ internal class SearchViewModel @Inject constructor(
     private val artistsPager: ObservePagedDatmusicSearch<Artist>,
     private val albumsPager: ObservePagedDatmusicSearch<Album>,
     private val snackbarManager: SnackbarManager,
+    private val getArtistDetails: GetArtistDetails,
+    private val getAlbumDetails: GetAlbumDetails,
 ) : ViewModel() {
 
     private val searchQuery = MutableStateFlow("")
@@ -131,7 +136,7 @@ internal class SearchViewModel @Inject constructor(
         captchaError.value = null
         searchTrigger.value = SearchTrigger(
             query = searchQuery.value,
-            captchaSolution = DatmusicSearchParams.CaptchaSolution(
+            captchaSolution = CaptchaSolution(
                 action.captchaError.error.captchaId,
                 action.captchaError.error.captchaIndex,
                 action.key

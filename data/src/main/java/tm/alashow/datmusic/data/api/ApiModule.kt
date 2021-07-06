@@ -16,5 +16,5 @@ import retrofit2.Retrofit
 class ApiModule {
     @Provides
     @Singleton
-    fun provideEndpoints(retrofit: Retrofit): Endpoints = retrofit.create(Endpoints::class.java)
+    fun provideEndpoints(retrofit: Retrofit): DatmusicEndpoints = retrofit.create(DatmusicEndpoints::class.java)
 }

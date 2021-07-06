@@ -49,6 +49,9 @@ data class ApiResponse(
 
     @Serializable
     data class Data(
+        @SerialName("artist")
+        val artist: Artist = Artist(),
+
         @SerialName("audios")
         val audios: List<Audio> = arrayListOf(),
 

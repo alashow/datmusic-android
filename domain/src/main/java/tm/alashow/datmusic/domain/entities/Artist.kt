@@ -14,13 +14,15 @@ import kotlinx.serialization.Serializable
 import tm.alashow.Config
 import tm.alashow.domain.models.BasePaginatedEntity
 
+typealias ArtistId = String
+
 @Parcelize
 @Serializable
 @Entity(tableName = "artists")
 data class Artist(
     @SerialName("id")
     @ColumnInfo(name = "id")
-    override val id: String = "",
+    override val id: ArtistId = "",
 
     @SerialName("name")
     @ColumnInfo(name = "name")
@@ -33,6 +35,14 @@ data class Artist(
     @SerialName("photo")
     @ColumnInfo(name = "photo")
     val _photo: List<Photo>? = null,
+
+    @SerialName("audios")
+    @ColumnInfo(name = "audios")
+    val audios: List<Audio> = emptyList(),
+
+    @SerialName("albums")
+    @ColumnInfo(name = "albums")
+    val albums: List<Album> = emptyList(),
 
     override var params: String = defaultParams,
     override var page: Int = defaultPage,

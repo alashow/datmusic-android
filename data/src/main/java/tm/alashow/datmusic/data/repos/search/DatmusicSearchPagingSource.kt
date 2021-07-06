@@ -8,15 +8,14 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.dropbox.android.external.store4.get
 import tm.alashow.datmusic.data.interactors.SearchDatmusic
+import tm.alashow.datmusic.data.repos.DATMUSIC_FIRST_PAGE_INDEX
 import tm.alashow.domain.models.PaginatedEntity
-
-private const val DATMUSIC_FIRST_PAGE_INDEX = 0
 
 /**
  * Uses [DatmusicSearchStore] to paginate in-memory items that were already fetched via [SearchDatmusic].
  *
  */
-class DatmusicPagingSource<T : PaginatedEntity>(
+class DatmusicSearchPagingSource<T : PaginatedEntity>(
     private val datmusicSearchStore: DatmusicSearchStore<T>,
     private val searchParams: DatmusicSearchParams
 ) : PagingSource<Int, T>() {

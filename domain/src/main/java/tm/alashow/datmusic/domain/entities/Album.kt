@@ -13,12 +13,14 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import tm.alashow.domain.models.BasePaginatedEntity
 
+typealias AlbumId = Long
+
 @Parcelize
 @Serializable
 @Entity(tableName = "albums")
 data class Album(
     @SerialName("id")
-    val _id: Long = 0L,
+    val _id: AlbumId = 0L,
 
     @Transient
     @ColumnInfo(name = "id")

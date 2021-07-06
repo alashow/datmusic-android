@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 import tm.alashow.data.PaginatedEntryRemoteMediator
 import tm.alashow.data.PagingInteractor
 import tm.alashow.datmusic.data.interactors.SearchDatmusic
-import tm.alashow.datmusic.data.repos.search.DatmusicPagingSource
+import tm.alashow.datmusic.data.repos.search.DatmusicSearchPagingSource
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchStore
 import tm.alashow.domain.models.PaginatedEntity
@@ -38,7 +38,7 @@ class ObservePagedDatmusicSearch<T : PaginatedEntity> @Inject constructor(
                     throw error
                 }
             },
-            pagingSourceFactory = { DatmusicPagingSource(datmusicSearchStore, params.searchParams) }
+            pagingSourceFactory = { DatmusicSearchPagingSource(datmusicSearchStore, params.searchParams) }
         ).flow
     }
 

@@ -4,6 +4,7 @@
  */
 package tm.alashow.datmusic.ui.search
 
+import tm.alashow.datmusic.data.repos.CaptchaSolution
 import tm.alashow.datmusic.data.repos.search.BackendTypes
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
 import tm.alashow.domain.models.errors.ApiCaptchaError
@@ -28,4 +29,4 @@ data class SearchViewState(
     }
 }
 
-data class SearchTrigger(val query: String = "", val captchaSolution: DatmusicSearchParams.CaptchaSolution? = null)
+data class SearchTrigger(val query: String = "", val captchaSolution: CaptchaSolution? = null)
