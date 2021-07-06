@@ -38,7 +38,7 @@ data class DatmusicSearchParams(
     }
 
     data class CaptchaSolution(
-        val captchaId: String,
+        val captchaId: Long,
         val captchaIndex: Int,
         val captchaKey: String,
     ) {

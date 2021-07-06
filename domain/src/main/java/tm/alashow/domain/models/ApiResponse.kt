@@ -35,10 +35,10 @@ data class ApiResponse(
         var message: String? = null,
 
         @SerialName("code")
-        val code: String? = "",
+        val code: Int = 0,
 
         @SerialName("captcha_id")
-        val captchaId: String = "",
+        val captchaId: Long = 0,
 
         @SerialName("captcha_img")
         val captchaImageUrl: String = "",
