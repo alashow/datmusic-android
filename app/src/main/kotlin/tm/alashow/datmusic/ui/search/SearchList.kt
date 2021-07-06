@@ -340,7 +340,7 @@ internal fun LazyListScope.audioList(pagingItems: LazyPagingItems<Audio>) {
                 .fillMaxWidth()
                 .padding(AppTheme.specs.inputPaddings)
         ) {
-            val image = rememberCoilPainter(audio.coverUrlSmall ?: audio.coverAlternate, fadeIn = true)
+            val image = rememberCoilPainter(audio.coverUrlSmall, fadeIn = true)
             ImageWithPlaceholder(image) { modifier ->
                 Image(
                     painter = image,

@@ -43,7 +43,7 @@ fun ImageWithPlaceholder(
     image: @Composable (Modifier) -> Unit
 ) {
     Surface(
-        elevation = 2.dp,
+        elevation = 4.dp,
         shape = shape,
         color = backgroundColor,
         modifier = modifier.size(size)
