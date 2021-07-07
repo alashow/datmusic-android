@@ -27,7 +27,7 @@ android {
 	}
 
 	lintOptions {
-		disable 'GradleCompatible'
+		disable "GradleCompatible"
 	}
 
 	compileOptions {
@@ -38,7 +38,7 @@ android {
 
 repositories {
 	mavenCentral()
-	maven { url 'https://jitpack.io' }
+	maven { url "https://jitpack.io" }
 }
 
 dependencies {
@@ -51,6 +51,6 @@ dependencies {
 	api Deps.Android.Paging.runtime
 	api Deps.Utils.store
 
-	api project(':base')
-	api project(':domain')
+	api project(":base")
+	api project(":domain")
 }

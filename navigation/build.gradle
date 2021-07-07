@@ -39,5 +39,5 @@ repositories {
 }
 
 dependencies {
-	api project(':common-ui-compose')
+	api project(":common-ui-compose")
 }

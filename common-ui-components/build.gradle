@@ -39,6 +39,6 @@ repositories {
 }
 
 dependencies {
-	api project(':common-ui-compose')
-	api project(':common-ui-theme')
+	api project(":common-ui-compose")
+	api project(":common-ui-theme")
 }

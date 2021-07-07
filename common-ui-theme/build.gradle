@@ -45,5 +45,5 @@ dependencies {
 	kapt Deps.Dagger.compiler
 	kapt Deps.Dagger.hiltCompiler
 
-	api project(':common-ui-compose')
+	api project(":common-ui-compose")
 }

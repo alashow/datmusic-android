@@ -42,10 +42,10 @@ repositories {
 
 dependencies {
 
-	implementation project(':common-ui-compose')
-	implementation project(':common-ui-theme')
-	implementation project(':common-ui-components')
-	implementation project(':navigation')
+	implementation project(":common-ui-compose")
+	implementation project(":common-ui-theme")
+	implementation project(":common-ui-components")
+	implementation project(":navigation")
 
 	implementation Deps.Dagger.hilt
 	kapt Deps.Dagger.compiler

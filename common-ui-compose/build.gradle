@@ -22,7 +22,7 @@ android {
 	}
 
 	lintOptions {
-		disable 'GradleCompatible'
+		disable "GradleCompatible"
 	}
 
 	compileOptions {
@@ -44,7 +44,7 @@ repositories {
 }
 
 dependencies {
-	api project(':base-android')
+	api project(":base-android")
 
 	// Android
 	api Deps.Android.Compose.ui

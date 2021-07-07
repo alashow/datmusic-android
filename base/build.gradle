@@ -21,7 +21,7 @@ android {
 	}
 
 	lintOptions {
-		disable 'GradleCompatible'
+		disable "GradleCompatible"
 	}
 
 	compileOptions {
@@ -32,7 +32,7 @@ android {
 
 repositories {
 	mavenCentral()
-	maven { url 'https://jitpack.io' }
+	maven { url "https://jitpack.io" }
 }
 
 dependencies {
@@ -61,5 +61,5 @@ dependencies {
 	api Deps.Firebase.analytics
 	api Deps.Firebase.crashlytics
 
-	api project(':i18n')
+	api project(":i18n")
 }

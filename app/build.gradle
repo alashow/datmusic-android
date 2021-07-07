@@ -16,15 +16,15 @@ plugins {
 	id "androidx.navigation.safeargs.kotlin"
 }
 
-apply plugin: 'com.github.triplet.play'
+apply plugin: "com.github.triplet.play"
 play {
 	defaultToAppBundles = true
-	track = prop('PUBLISH_TRACK', 'alpha')
-	serviceAccountCredentials = rootProject.file('signing/play-account.json')
+	track = prop("PUBLISH_TRACK", "alpha")
+	serviceAccountCredentials = rootProject.file("signing/play-account.json")
 }
 
 
-def gitSha = 'git rev-parse --short HEAD'.execute([], project.rootDir).text.trim()
+def gitSha = "git rev-parse --short HEAD".execute([], project.rootDir).text.trim()
 
 android {
 	compileSdkVersion App.compileSdkVersion
@@ -41,10 +41,10 @@ android {
 	}
 
 	sourceSets {
-		main.java.srcDirs += 'src/main/kotlin'
-		test.java.srcDirs += 'src/test/kotlin'
+		main.java.srcDirs += "src/main/kotlin"
+		test.java.srcDirs += "src/test/kotlin"
 
-		main.res.srcDirs += 'src/main/res-drawable'
+		main.res.srcDirs += "src/main/res-drawable"
 	}
 
 	compileOptions {
@@ -66,68 +66,68 @@ android {
 
 	signingConfigs {
 		debug {
-			storeFile rootProject.file('signing/alashov-debug.jks')
-			storePassword 'alashov'
-			keyPassword 'alashov'
-			keyAlias 'alashov'
+			storeFile rootProject.file("signing/alashov-debug.jks")
+			storePassword "alashov"
+			keyPassword "alashov"
+			keyAlias "alashov"
 		}
 
 		release {
-			storeFile rootProject.file('signing/alashov-release.jks')
-			storePassword prop('ALASHOV_RELEASE_KEYSTORE_PWD', '')
-			keyPassword prop('ALASHOV_RELEASE_KEY_PWD', '')
-			keyAlias 'alashov'
+			storeFile rootProject.file("signing/alashov-release.jks")
+			storePassword prop("ALASHOV_RELEASE_KEYSTORE_PWD", "")
+			keyPassword prop("ALASHOV_RELEASE_KEY_PWD", "")
+			keyAlias "alashov"
 		}
 	}
 
 	buildTypes {
 		debug {
 			signingConfig signingConfigs.debug
-			versionNameSuffix '-DEBUG'
-			applicationIdSuffix '.debug'
+			versionNameSuffix "-DEBUG"
+			applicationIdSuffix ".debug"
 
-			multiDexKeepProguard file('multidex-config.pro')
+			multiDexKeepProguard file("multidex-config.pro")
 		}
 
 		release {
 			signingConfig signingConfigs.release
 			minifyEnabled true
 			shrinkResources true
-			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+			proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
 
-			versionNameSuffix '-alpha'
-			applicationIdSuffix '.alpha'
+			versionNameSuffix "-alpha"
+			applicationIdSuffix ".alpha"
 
-			multiDexKeepProguard file('multidex-config.pro')
+			multiDexKeepProguard file("multidex-config.pro")
 		}
 	}
 
 	// app bundling configuration
 	bundle {
 		language {
-			enableSplit = false // don't split language resources, as the app supports locale changing
+			enableSplit = false // don"t split language resources, as the app supports locale changing
 		}
 	}
 	kotlinOptions {
-		jvmTarget = '1.8'
+		jvmTarget = "1.8"
 		useIR = true
 	}
 }
 
 repositories {
 	mavenCentral()
-	maven { url 'https://jitpack.io' }
-	maven { url 'https://oss.jfrog.org/artifactory/oss-snapshot-local/' }
-	maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+	maven { url "https://jitpack.io" }
+	maven { url "https://oss.jfrog.org/artifactory/oss-snapshot-local/" }
+	maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
 }
 
 dependencies {
-	implementation project(':common-ui-compose')
-	implementation project(':common-ui-theme')
-	implementation project(':common-ui-components')
-	implementation project(':navigation')
-	implementation project(':ui-search')
-	implementation project(':ui-settings')
+	implementation project(":common-ui-compose")
+	implementation project(":common-ui-theme")
+	implementation project(":common-ui-components")
+	implementation project(":navigation")
+	implementation project(":ui-search")
+	implementation project(":ui-settings")
 
 	implementation Deps.Kotlin.coroutinesAndroid
 
@@ -149,6 +149,6 @@ dependencies {
 
 }
 
-apply plugin: 'com.google.gms.google-services'
-apply plugin: 'com.google.firebase.crashlytics'
-apply plugin: 'kotlinx-serialization'
+apply plugin: "com.google.gms.google-services"
+apply plugin: "com.google.firebase.crashlytics"
+apply plugin: "kotlinx-serialization"
