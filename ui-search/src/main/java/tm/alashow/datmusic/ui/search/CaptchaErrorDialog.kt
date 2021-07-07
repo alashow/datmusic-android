@@ -44,11 +44,11 @@ import com.google.accompanist.imageloading.LoadPainter
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
+import kotlin.random.Random
 import tm.alashow.domain.models.errors.ApiCaptchaError
 import tm.alashow.ui.components.TextRoundedButton
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.outlinedTextFieldColors
-import kotlin.random.Random
 
 const val MAX_KEY_LENGTH = 20
 
@@ -59,7 +59,7 @@ internal fun CaptchaErrorDialog(
     captchaError: ApiCaptchaError,
     onCaptchaSolve: (String) -> Unit,
 ) {
-    var captchaVersion by remember(captchaError) { mutableStateOf(0) }
+    var captchaVersion by remember(captchaError) { mutableStateOf(Random.nextInt()) }
     val (captchaKey, setCaptchaKey) = remember(captchaError) { mutableStateOf(TextFieldValue()) }
 
     if (captchaErrorShown) {

@@ -44,13 +44,13 @@ import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
 import tm.alashow.common.compose.LocalScaffoldState
-import tm.alashow.ui.DismissableSnackbarHost
 import tm.alashow.datmusic.R
 import tm.alashow.datmusic.ui.AppNavigation
-import tm.alashow.ui.theme.translucentSurfaceColor
 import tm.alashow.navigation.RootScreen
 import tm.alashow.navigation.RootScreen.Search as SearchTab
 import tm.alashow.navigation.RootScreen.Settings as SettingsTab
+import tm.alashow.ui.DismissableSnackbarHost
+import tm.alashow.ui.theme.translucentSurfaceColor
 
 @Composable
 internal fun Home() {
