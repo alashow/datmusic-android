@@ -10,9 +10,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +22,7 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import tm.alashow.base.ui.SnackbarManager
+import tm.alashow.common.compose.getStateFlow
 import tm.alashow.datmusic.data.interactors.GetAlbumDetails
 import tm.alashow.datmusic.data.interactors.GetArtistDetails
 import tm.alashow.datmusic.data.observers.ObservePagedDatmusicSearch
@@ -35,8 +34,8 @@ import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.domain.models.errors.ApiCaptchaError
 
-@HiltViewModel
 @OptIn(FlowPreview::class)
+@HiltViewModel
 internal class SearchViewModel @Inject constructor(
     val handle: SavedStateHandle,
     private val audiosPager: ObservePagedDatmusicSearch<Audio>,
@@ -49,19 +48,17 @@ internal class SearchViewModel @Inject constructor(
 
     private val searchQuery = MutableStateFlow("")
     private val searchFilter = MutableStateFlow(SearchFilter())
-    private val searchTrigger = MutableStateFlow(SearchTrigger())
+    private val searchTrigger = handle.getStateFlow("search_trigger", viewModelScope, SearchTrigger())
 
     private val captchaError = MutableStateFlow<ApiCaptchaError?>(null)
 
     private val pendingActions = MutableSharedFlow<SearchAction>()
 
-    @OptIn(DelicateCoroutinesApi::class)
-    val pagedAudioList
-        get() = audiosPager.observe().cachedIn(GlobalScope)
+    val pagedAudioList get() = audiosPager.observe().cachedIn(viewModelScope)
     val pagedArtistsList get() = artistsPager.observe().cachedIn(viewModelScope)
     val pagedAlbumsList get() = albumsPager.observe().cachedIn(viewModelScope)
 
-    val state = combine(searchQuery, searchFilter, snackbarManager.errors, captchaError, ::SearchViewState).shareIn(
+    val state = combine(searchFilter, snackbarManager.errors, captchaError, ::SearchViewState).shareIn(
         scope = viewModelScope,
         replay = 0,
         started = SharingStarted.WhileSubscribed()
@@ -84,7 +81,8 @@ internal class SearchViewModel @Inject constructor(
         viewModelScope.launch {
             combine(searchTrigger, searchFilter, ::Pair)
                 .collectLatest { (trigger, filter) ->
-                    search(trigger, filter)
+                    if (trigger != null)
+                        search(trigger, filter)
                 }
         }
 

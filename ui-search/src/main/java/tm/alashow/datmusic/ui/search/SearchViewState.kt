@@ -4,6 +4,8 @@
  */
 package tm.alashow.datmusic.ui.search
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import tm.alashow.datmusic.data.repos.CaptchaSolution
 import tm.alashow.datmusic.data.repos.search.BackendTypes
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
@@ -19,7 +21,6 @@ data class SearchFilter(
 }
 
 data class SearchViewState(
-    val query: String = "",
     val searchFilter: SearchFilter = SearchFilter(),
     val error: Throwable? = null,
     val captchaError: ApiCaptchaError? = null,
@@ -29,4 +30,5 @@ data class SearchViewState(
     }
 }
 
-data class SearchTrigger(val query: String = "", val captchaSolution: CaptchaSolution? = null)
+@Parcelize
+data class SearchTrigger(val query: String = "", val captchaSolution: CaptchaSolution? = null) : Parcelable

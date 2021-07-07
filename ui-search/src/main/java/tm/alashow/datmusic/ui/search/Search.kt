@@ -86,8 +86,7 @@ internal fun Search(
     viewModel: SearchViewModel,
     actioner: (SearchAction) -> Unit
 ) {
-    val viewState by rememberFlowWithLifecycle(viewModel.state)
-        .collectAsState(initial = SearchViewState.Empty)
+    val viewState by rememberFlowWithLifecycle(viewModel.state).collectAsState(initial = SearchViewState.Empty)
     val listState = rememberLazyListState()
     val collapsingToolbarState = rememberCollapsingToolbarScaffoldState()
 
@@ -151,12 +150,12 @@ private fun SearchAppBar(
                 modifier = titleModifier.padding(start = AppTheme.specs.padding, top = AppTheme.specs.padding),
             )
 
-            var queryValue by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue()) }
+            var query by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue()) }
 
             SearchTextField(
-                value = queryValue,
+                value = query,
                 onValueChange = { value ->
-                    queryValue = value
+                    query = value
                     onQueryChange(value.text)
                 },
                 onSearch = {
@@ -175,7 +174,7 @@ private fun SearchAppBar(
             if (backends == SearchFilter.DefaultBackends)
                 backends = emptySet()
 
-            val filterVisible = searchActive || queryValue.text.isNotBlank() || backends.isNotEmpty()
+            val filterVisible = searchActive || query.text.isNotBlank() || backends.isNotEmpty()
             SearchFilterPanel(visible = filterVisible, backends) { selectAction ->
                 onBackendTypeSelect(selectAction)
                 onSearch()
