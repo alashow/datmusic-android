@@ -30,6 +30,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
@@ -38,6 +39,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.google.accompanist.coil.rememberCoilPainter
 import com.google.accompanist.imageloading.ImageLoadState
 import com.google.accompanist.imageloading.LoadPainter
@@ -52,6 +54,7 @@ import tm.alashow.ui.theme.outlinedTextFieldColors
 
 const val MAX_KEY_LENGTH = 20
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 internal fun CaptchaErrorDialog(
     captchaErrorShown: Boolean,
@@ -65,6 +68,7 @@ internal fun CaptchaErrorDialog(
     if (captchaErrorShown) {
         Dialog(
             onDismissRequest = { setCaptchaErrorShown(false) },
+            properties = DialogProperties(usePlatformDefaultWidth = true),
         ) {
             val imageUri = Uri.parse(captchaError.error.captchaImageUrl).buildUpon().appendQueryParameter("v", captchaVersion.toString()).build()
             val image = rememberCoilPainter(imageUri)
