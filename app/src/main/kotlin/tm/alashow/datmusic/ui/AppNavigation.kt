@@ -35,11 +35,14 @@ internal fun AppNavigation(
     navController: NavHostController,
     navigator: Navigator
 ) {
-    val navigationEvent by rememberFlowWithLifecycle(navigator.queue).collectAsState(initial = NavigationEvent.None)
+    val navigationEvent by rememberFlowWithLifecycle(navigator.queue).collectAsState(initial = NavigationEvent.Empty)
 
     LaunchedEffect(navigationEvent) {
-        if (navigationEvent != NavigationEvent.None)
-            navController.navigate(navigationEvent.route)
+        when (navigationEvent) {
+            is NavigationEvent.Destination -> navController.navigate(navigationEvent.route)
+            is NavigationEvent.Back -> navController.navigateUp()
+            else -> Unit
+        }
     }
 
     CompositionLocalProvider(LocalNavigator provides navigator) {

@@ -4,6 +4,7 @@
   All rights reserved.
   -->
 <resources>
+    <string name="generic.back">Back</string>
     <string name="generic.close">Close</string>
     <string name="generic.clear">Clear</string>
 

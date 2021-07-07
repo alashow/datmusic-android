@@ -12,10 +12,11 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import org.threeten.bp.Instant
 
-data class NavigationEvent(val route: String, val instant: Instant = Instant.now()) {
-    companion object {
-        val None = NavigationEvent("empty", Instant.ofEpochMilli(0))
-    }
+sealed class NavigationEvent(open val route: String, open val instant: Instant = Instant.now()) {
+
+    object Empty : NavigationEvent("Empty", Instant.ofEpochMilli(0))
+    data class Back(override val instant: Instant = Instant.now()) : NavigationEvent("Back", instant)
+    data class Destination(override val route: String, override val instant: Instant = Instant.now()) : NavigationEvent(route, instant)
 }
 
 val LocalNavigator = staticCompositionLocalOf<Navigator> {
@@ -26,7 +27,11 @@ class Navigator {
     private val navigationQueue = Channel<NavigationEvent>(1, BufferOverflow.DROP_OLDEST)
 
     suspend fun navigate(route: String) {
-        navigationQueue.send(NavigationEvent(route))
+        navigationQueue.send(NavigationEvent.Destination(route))
+    }
+
+    suspend fun back() {
+        navigationQueue.send(NavigationEvent.Back())
     }
 
     val queue = flow {
