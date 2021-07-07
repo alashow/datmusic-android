@@ -31,7 +31,7 @@ class ObservePagedDatmusicSearch<T : PaginatedEntity> @Inject constructor(
             remoteMediator = PaginatedEntryRemoteMediator { page ->
                 try {
                     searchDatmusic.executeSync(
-                        SearchDatmusic.Params(searchParams = params.searchParams.copy(page = page), forceRefresh = true)
+                        SearchDatmusic.Params(searchParams = params.searchParams.copy(page = page))
                     )
                 } catch (error: Exception) {
                     onError(error)

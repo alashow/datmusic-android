@@ -290,7 +290,7 @@ private fun <T : Any> LazyListScope.loadingMoreRow(pagingItems: LazyPagingItems<
 private fun <T : Any> LazyListScope.loadingMore(pagingItems: LazyPagingItems<T>, modifier: Modifier = Modifier) {
     item {
         val isLoading = remember(pagingItems.loadState) {
-            pagingItems.loadState.source.append == LoadState.Loading || pagingItems.loadState.mediator?.append == LoadState.Loading
+            pagingItems.loadState.mediator?.append == LoadState.Loading || pagingItems.loadState.append == LoadState.Loading
         }
         if (isLoading)
             Box(

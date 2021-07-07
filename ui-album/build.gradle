@@ -9,8 +9,10 @@ import tm.alashow.buildSrc.Deps
 
 plugins {
 	id "com.android.library"
+	id "dagger.hilt.android.plugin"
 	id "kotlin-android"
 	id "kotlin-kapt"
+	id "kotlin-parcelize"
 }
 
 android {
@@ -39,7 +41,13 @@ repositories {
 }
 
 dependencies {
-	api Deps.Android.Compose.lottie
-	api project(":common-ui-compose")
-	api project(":common-ui-theme")
+
+	implementation project(":common-ui-compose")
+	implementation project(":common-ui-theme")
+	implementation project(":common-ui-components")
+	implementation project(":navigation")
+
+	implementation Deps.Dagger.hilt
+	kapt Deps.Dagger.compiler
+	kapt Deps.Dagger.hiltCompiler
 }

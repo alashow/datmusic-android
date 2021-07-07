@@ -40,7 +40,7 @@ object Deps {
         const val dataStore = "androidx.datastore:datastore-preferences:1.0.0-beta02"
 
         object Compose {
-            const val version = "1.0.0-beta09"
+            const val version = "1.0.0-rc01"
 
             const val ui = "androidx.compose.ui:ui:$version"
             const val uiTooling = "androidx.compose.ui:ui-tooling:$version"
@@ -54,7 +54,7 @@ object Deps {
             const val viewModels = "androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha06"
             const val paging = "androidx.paging:paging-compose:1.0.0-alpha10"
 
-            private const val lottieVersion = "1.0.0-beta09-1-SNAPSHOT"
+            private const val lottieVersion = "1.0.0-rc01-1-SNAPSHOT"
             const val lottie = "com.airbnb.android:lottie-compose:$lottieVersion"
 
             const val collapsingToolbar = "me.onebone:toolbar-compose:2.1.0"

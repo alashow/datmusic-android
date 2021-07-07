@@ -6,6 +6,7 @@ package tm.alashow.datmusic.data.repos.search
 
 import com.dropbox.android.external.store4.Fetcher
 import com.dropbox.android.external.store4.MemoryPolicy
+import com.dropbox.android.external.store4.SourceOfTruth
 import com.dropbox.android.external.store4.Store
 import com.dropbox.android.external.store4.StoreBuilder
 import dagger.Module
@@ -15,6 +16,10 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
+import kotlinx.coroutines.flow.map
+import tm.alashow.datmusic.data.db.daos.AlbumsDao
+import tm.alashow.datmusic.data.db.daos.ArtistsDao
+import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
@@ -30,31 +35,88 @@ object DatmusicSearchStoreModule {
     @Provides
     @Singleton
     fun datmusicSearchAudioStore(
-        search: DatmusicSearchDataSource
+        search: DatmusicSearchDataSource,
+        dao: AudiosDao,
     ): DatmusicSearchStore<Audio> = StoreBuilder.from(
         fetcher = Fetcher.of { params: DatmusicSearchParams ->
             search(params).map { it.data.audios }.requireNonEmptyInitialPage(params.page)
-        }
+        },
+        sourceOfTruth = SourceOfTruth.of(
+            reader = { params: DatmusicSearchParams ->
+                dao.entriesObservable(params).map { entries ->
+                    when {
+                        entries.isEmpty() -> null
+                        else -> entries
+                    }
+                }
+            },
+            writer = { params, response ->
+                dao.withTransaction {
+                    val entries = response.map { it.copy(params = params.toString(), page = params.page) }
+                    dao.update(params, entries)
+                }
+            },
+            delete = dao::delete,
+            deleteAll = dao::deleteAll
+        )
     ).searchCachePolicy().build()
 
     @Provides
     @Singleton
     fun datmusicSearchArtistsStore(
-        search: DatmusicSearchDataSource
+        search: DatmusicSearchDataSource,
+        dao: ArtistsDao,
     ): DatmusicSearchStore<Artist> = StoreBuilder.from(
         fetcher = Fetcher.of { params: DatmusicSearchParams ->
             search(params).map { it.data.artists }.requireNonEmptyInitialPage(params.page)
-        }
+        },
+        sourceOfTruth = SourceOfTruth.of(
+            reader = { params: DatmusicSearchParams ->
+                dao.entriesObservable(params).map { entries ->
+                    when {
+                        entries.isEmpty() -> null
+                        else -> entries
+                    }
+                }
+            },
+            writer = { params, response ->
+                dao.withTransaction {
+                    val entries = response.map { it.copy(params = params.toString()) }
+                    dao.update(params, entries)
+                }
+            },
+            delete = dao::delete,
+            deleteAll = dao::deleteAll
+        )
     ).searchCachePolicy().build()
 
     @Provides
     @Singleton
     fun datmusicSearchAlbumsStore(
-        search: DatmusicSearchDataSource
+        search: DatmusicSearchDataSource,
+        dao: AlbumsDao,
     ): DatmusicSearchStore<Album> = StoreBuilder.from(
         fetcher = Fetcher.of { params: DatmusicSearchParams ->
             search(params).map { it.data.albums }.requireNonEmptyInitialPage(params.page)
-        }
+        },
+        sourceOfTruth = SourceOfTruth.of(
+            reader = { params: DatmusicSearchParams ->
+                dao.entriesObservable(params).map { entries ->
+                    when {
+                        entries.isEmpty() -> null
+                        else -> entries
+                    }
+                }
+            },
+            writer = { params, response ->
+                dao.withTransaction {
+                    val entries = response.map { it.copy(params = params.toString()) }
+                    dao.update(params, entries)
+                }
+            },
+            delete = dao::delete,
+            deleteAll = dao::deleteAll
+        )
     ).searchCachePolicy().build()
 
     @OptIn(ExperimentalTime::class)

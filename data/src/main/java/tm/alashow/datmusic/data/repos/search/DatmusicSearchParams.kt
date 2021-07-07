@@ -16,8 +16,8 @@ data class DatmusicSearchParams(
     val page: Int = 0,
 ) {
 
-    // used in Room queries
-    override fun toString() = hashCode().toString()
+    // used as a key in Room/Store
+    override fun toString() = "query=$query,page=$page"
 
     companion object {
         fun DatmusicSearchParams.toQueryMap(): Map<String, Any> = mutableMapOf<String, Any>(

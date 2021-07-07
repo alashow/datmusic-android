@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -20,6 +21,7 @@ typealias ArtistId = String
 @Serializable
 @Entity(tableName = "artists")
 data class Artist(
+    @PrimaryKey
     @SerialName("id")
     @ColumnInfo(name = "id")
     override val id: ArtistId = "",
@@ -34,7 +36,7 @@ data class Artist(
 
     @SerialName("photo")
     @ColumnInfo(name = "photo")
-    val _photo: List<Photo>? = null,
+    val _photo: List<Photo> = listOf(),
 
     @SerialName("audios")
     @ColumnInfo(name = "audios")
@@ -48,9 +50,10 @@ data class Artist(
     override var page: Int = defaultPage,
 ) : BasePaginatedEntity(), Parcelable {
 
-    val photo get() = _photo?.maxByOrNull { it.height }?.url ?: buildAlternatePhotoUrl()
+    fun photo() = _photo.maxByOrNull { it.height }?.url ?: buildAlternatePhotoUrl()
 
-    private fun buildAlternatePhotoUrl() = Uri.parse(Config.API_BASE_URL).buildUpon().encodedPath("cover/artists").appendPath(name).appendPath("small").build().toString()
+    private fun buildAlternatePhotoUrl() =
+        Uri.parse(Config.API_BASE_URL).buildUpon().encodedPath("cover/artists").appendPath(name).appendPath("small").build().toString()
 
     @Serializable
     @Parcelize

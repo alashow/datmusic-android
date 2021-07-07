@@ -63,6 +63,18 @@ abstract class PaginatedEntryDao<Params : Any, E : PaginatedEntity> : EntityDao<
     abstract suspend fun getLastPage(params: Params): Int?
 
     @Transaction
+    open suspend fun update(id: String, entity: E) {
+        delete(id)
+        insert(entity)
+    }
+
+    @Transaction
+    open suspend fun update(params: Params, entity: E) {
+        delete(params)
+        insert(entity)
+    }
+
+    @Transaction
     open suspend fun update(params: Params, entities: List<E>) {
         delete(params)
         insertAll(entities)

@@ -30,4 +30,10 @@ class DatabaseModule {
 
     @Provides
     fun audiosDao(db: AppDatabase) = db.audiosDao()
+
+    @Provides
+    fun artistsDao(db: AppDatabase) = db.artistsDao()
+
+    @Provides
+    fun albumsDao(db: AppDatabase) = db.albumsDao()
 }

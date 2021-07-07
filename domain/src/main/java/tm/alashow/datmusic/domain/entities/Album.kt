@@ -7,6 +7,8 @@ package tm.alashow.datmusic.domain.entities
 import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.PrimaryKey
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -67,8 +69,8 @@ data class Album(
     val updatedAt: Long = 0L,
 
     @SerialName("is_explicit")
-    @ColumnInfo(name = "is_explicit")
-    val isExplicit: Boolean = false,
+    @ColumnInfo(name = "explicit")
+    val explicit: Boolean = false,
 
     @SerialName("main_artists")
     @ColumnInfo(name = "main_artists")
@@ -82,9 +84,17 @@ data class Album(
     @ColumnInfo(name = "photo")
     val photo: Photo = Photo(),
 
+    @SerialName("audios")
+    @ColumnInfo(name = "audios")
+    val audios: List<Audio> = emptyList(),
+
     override var params: String = defaultParams,
     override var page: Int = defaultPage,
 ) : BasePaginatedEntity(), Parcelable {
+
+    @PrimaryKey(autoGenerate = true)
+    @IgnoredOnParcel
+    var insertId: Int = 0
 
     @Serializable
     @Parcelize

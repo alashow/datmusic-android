@@ -49,7 +49,7 @@ fun ArtistColumn(
             .fillMaxWidth()
             .padding(horizontal = AppTheme.specs.paddingTiny)
     ) {
-        val image = rememberCoilPainter(artist.photo, fadeIn = true)
+        val image = rememberCoilPainter(artist.photo(), fadeIn = true)
         ImageWithPlaceholder(
             painter = image,
             icon = rememberVectorPainter(Icons.Default.Person),
