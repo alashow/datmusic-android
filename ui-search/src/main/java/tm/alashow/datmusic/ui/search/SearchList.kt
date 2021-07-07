@@ -31,6 +31,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,6 +46,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import kotlinx.coroutines.launch
 import tm.alashow.base.util.extensions.localizedMessage
 import tm.alashow.base.util.extensions.localizedTitle
 import tm.alashow.common.compose.LocalScaffoldState
@@ -60,6 +62,8 @@ import tm.alashow.datmusic.ui.ArtistColumn
 import tm.alashow.datmusic.ui.ArtistsDefaults
 import tm.alashow.datmusic.ui.AudioRow
 import tm.alashow.domain.models.errors.EmptyResultException
+import tm.alashow.navigation.LeafScreen
+import tm.alashow.navigation.LocalNavigator
 import tm.alashow.ui.components.ErrorBox
 import tm.alashow.ui.components.ProgressIndicator
 import tm.alashow.ui.components.ProgressIndicatorSmall
@@ -242,10 +246,14 @@ internal fun ArtistList(pagingItems: LazyPagingItems<Artist>, imageSize: Dp = Ar
         SearchListLabel(stringResource(R.string.search_artists), pagingItems.loadState)
 
     LazyRow(Modifier.fillMaxWidth()) {
-        items(pagingItems, key = { _, item -> item.id }) {
+        items(pagingItems, key = { _, item -> item.id }) { it ->
             val artist = it ?: return@items
 
-            ArtistColumn(artist, imageSize)
+            val navigator = LocalNavigator.current
+            val coroutine = rememberCoroutineScope()
+            ArtistColumn(artist, imageSize) {
+                coroutine.launch { navigator.navigate(LeafScreen.ArtistDetails.buildRoute(it.id)) }
+            }
         }
 
         loadingMoreRow(pagingItems, height = imageSize)
@@ -262,7 +270,11 @@ internal fun AlbumList(pagingItems: LazyPagingItems<Album>, itemSize: Dp = Album
         items(pagingItems, key = { _, item -> item.id }) {
             val album = it ?: return@items
 
-            AlbumColumn(album, itemSize, iconPadding)
+            val navigator = LocalNavigator.current
+            val coroutine = rememberCoroutineScope()
+            AlbumColumn(album, itemSize, iconPadding) {
+                coroutine.launch { navigator.navigate(LeafScreen.AlbumDetails.buildRoute(it.albumId)) }
+            }
         }
 
         loadingMoreRow(pagingItems, height = itemSize + 32.dp) // additional height is to account for the vertical padding [loadingMore] adds

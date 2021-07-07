@@ -16,5 +16,5 @@ class NavigationModule {
 
     @Singleton
     @Provides
-    fun navigator() = Navigator()
+    fun navigator(): Navigator = Navigator()
 }

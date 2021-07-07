@@ -22,11 +22,11 @@ typealias AlbumId = Long
 @Entity(tableName = "albums")
 data class Album(
     @SerialName("id")
-    val _id: AlbumId = 0L,
+    val albumId: AlbumId = 0L,
 
     @Transient
     @ColumnInfo(name = "id")
-    override val id: String = _id.toString(),
+    override val id: String = albumId.toString(),
 
     @SerialName("access_key")
     @ColumnInfo(name = "access_key")

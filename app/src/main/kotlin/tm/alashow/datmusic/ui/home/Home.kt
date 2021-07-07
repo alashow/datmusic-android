@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -54,6 +55,7 @@ import tm.alashow.ui.theme.translucentSurfaceColor
 
 @Composable
 internal fun Home() {
+    val homeViewModel = viewModel<HomeViewModel>()
     val navController = rememberNavController()
     val scaffoldState = rememberScaffoldState()
 
@@ -81,7 +83,7 @@ internal fun Home() {
             }
         ) {
             Box(Modifier.fillMaxSize()) {
-                AppNavigation(navController)
+                AppNavigation(navController, homeViewModel.navigator)
             }
         }
     }
