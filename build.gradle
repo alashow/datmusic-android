@@ -11,7 +11,6 @@ import tm.alashow.buildSrc.Deps
 buildscript {
     repositories {
         google()
-        jcenter()
         maven { url 'https://maven.fabric.io/public' }
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
         mavenCentral()
@@ -21,11 +20,11 @@ buildscript {
         classpath Deps.Android.gradle
         classpath Deps.Kotlin.gradle
         classpath Deps.Kotlin.serialization
-        classpath Deps.Dagger.hiltGradle
         classpath Deps.Gradle.googleServices
         classpath Deps.Gradle.playPublisher
         classpath Deps.Firebase.crashlyticsGradle
         classpath Deps.Android.navigationSafeArgs
+        classpath Deps.Dagger.hiltGradle
     }
 }
 
@@ -40,7 +39,6 @@ allprojects {
         mavenCentral()
         maven { url 'https://jitpack.io' }
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-        jcenter()
     }
 
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {

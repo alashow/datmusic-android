@@ -15,8 +15,9 @@ import com.google.accompanist.insets.ProvideWindowInsets
 import dagger.hilt.android.AndroidEntryPoint
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.ui.home.Home
-import tm.alashow.datmusic.ui.theme.AppTheme
-import tm.alashow.datmusic.ui.theme.DefaultTheme
+import tm.alashow.ui.ThemeViewModel
+import tm.alashow.ui.theme.AppTheme
+import tm.alashow.ui.theme.DefaultTheme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -24,8 +25,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
-            val appViewModel = viewModel<AppViewModel>()
-            val themeState by rememberFlowWithLifecycle(appViewModel.themeState).collectAsState(DefaultTheme)
+            val themeViewModel = viewModel<ThemeViewModel>()
+            val themeState by rememberFlowWithLifecycle(themeViewModel.themeState).collectAsState(DefaultTheme)
 
             AppTheme(themeState) {
                 ProvideWindowInsets(consumeWindowInsets = false) {

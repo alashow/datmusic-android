@@ -122,6 +122,13 @@ repositories {
 }
 
 dependencies {
+	implementation project(':common-ui-compose')
+	implementation project(':common-ui-theme')
+	implementation project(':common-ui-components')
+	implementation project(':navigation')
+	implementation project(':ui-search')
+	implementation project(':ui-settings')
+
 	implementation Deps.Kotlin.coroutinesAndroid
 
 	// utils
@@ -140,8 +147,6 @@ dependencies {
 	// android
 	implementation Deps.Android.multiDex
 
-	implementation project(':common-ui-compose')
-	implementation project(':navigation')
 }
 
 apply plugin: 'com.google.gms.google-services'

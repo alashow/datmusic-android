@@ -1,12 +1,17 @@
 /*
- * Copyright (C) 2019, Alashov Berkeli
+ * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
 
-include ':base', ':i18n'
-include ':base-android'
-include ':data'
-include ':domain'
-include ':app'
-include ':common-ui-compose'
-include ':navigation'
+include ":base"
+include ":i18n"
+include ":base-android"
+include ":data"
+include ":domain"
+include ":app"
+include ":common-ui-compose"
+include ":common-ui-theme"
+include ":common-ui-components"
+include ":navigation"
+include ":ui-search"
+include ":ui-settings"
