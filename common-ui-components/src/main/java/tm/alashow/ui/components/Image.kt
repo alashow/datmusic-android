@@ -4,6 +4,7 @@
  */
 package tm.alashow.ui.components
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.VectorPainter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -26,12 +28,43 @@ import com.google.accompanist.imageloading.ImageLoadState
 import com.google.accompanist.imageloading.LoadPainter
 import com.google.accompanist.placeholder.PlaceholderDefaults
 import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.fade
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.shimmer
 import tm.alashow.ui.theme.AppTheme
 
 @Composable
 fun ImageWithPlaceholder(
+    painter: LoadPainter<Any>,
+    modifier: Modifier = Modifier,
+    shape: Shape = RectangleShape,
+    errorOrEmpty: @Composable () -> Unit = {},
+    image: @Composable (Modifier) -> Unit
+) {
+    Box(
+        modifier = modifier
+    ) {
+        image(
+            Modifier
+                .fillMaxSize()
+                .placeholder(
+                    visible = painter.loadState is ImageLoadState.Loading,
+                    shape = shape,
+                    highlight = PlaceholderHighlight.fade()
+                )
+        )
+
+        when (painter.loadState) {
+            is ImageLoadState.Error, ImageLoadState.Empty -> {
+                errorOrEmpty()
+            }
+            else -> Unit
+        }
+    }
+}
+
+@Composable
+fun CoverImage(
     painter: LoadPainter<Any>,
     size: Dp = 50.dp,
     backgroundColor: Color = MaterialTheme.colors.surface,

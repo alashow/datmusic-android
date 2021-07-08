@@ -21,7 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import com.google.accompanist.coil.rememberCoilPainter
 import tm.alashow.datmusic.domain.entities.Audio
-import tm.alashow.ui.components.ImageWithPlaceholder
+import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.theme.AppTheme
 
 object AudiosDefaults
@@ -39,7 +39,7 @@ fun AudioRow(
             .padding(AppTheme.specs.inputPaddings)
     ) {
         val image = rememberCoilPainter(audio.coverUrlSmall, fadeIn = true)
-        ImageWithPlaceholder(image) { modifier ->
+        CoverImage(image) { modifier ->
             Image(
                 painter = image,
                 contentDescription = null,

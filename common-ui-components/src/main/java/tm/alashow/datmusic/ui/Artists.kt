@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.coil.rememberCoilPainter
 import tm.alashow.datmusic.domain.entities.Artist
-import tm.alashow.ui.components.ImageWithPlaceholder
+import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.theme.AppTheme
 
 object ArtistsDefaults {
@@ -50,7 +50,7 @@ fun ArtistColumn(
             .padding(horizontal = AppTheme.specs.paddingTiny)
     ) {
         val image = rememberCoilPainter(artist.photo(), fadeIn = true)
-        ImageWithPlaceholder(
+        CoverImage(
             painter = image,
             icon = rememberVectorPainter(Icons.Default.Person),
             shape = CircleShape,

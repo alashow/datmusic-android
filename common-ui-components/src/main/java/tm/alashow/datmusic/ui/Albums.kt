@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.coil.rememberCoilPainter
 import tm.alashow.datmusic.domain.entities.Album
-import tm.alashow.ui.components.ImageWithPlaceholder
+import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.theme.AppTheme
 
 object AlbumsDefaults {
@@ -48,7 +48,7 @@ fun AlbumColumn(
             .padding(AppTheme.specs.padding)
     ) {
         val image = rememberCoilPainter(album.photo.mediumUrl, fadeIn = true)
-        ImageWithPlaceholder(
+        CoverImage(
             image, size = imageSize,
             icon = rememberVectorPainter(Icons.Default.Album),
             iconPadding = iconPadding
