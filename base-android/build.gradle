@@ -51,8 +51,6 @@ dependencies {
 	// android
 	api Deps.Android.activityKtx
 
-	api Deps.Android.dataStore
-
 	api Deps.Android.navigationFragment
 	api Deps.Android.navigationUi
 	api Deps.Android.navigationHilt

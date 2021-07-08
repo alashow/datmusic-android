@@ -28,10 +28,10 @@ class ObservePagedDatmusicSearch<T : PaginatedEntity> @Inject constructor(
     ): Flow<PagingData<T>> {
         return Pager(
             config = params.pagingConfig,
-            remoteMediator = PaginatedEntryRemoteMediator { page ->
+            remoteMediator = PaginatedEntryRemoteMediator { page, refreshing ->
                 try {
                     searchDatmusic.executeSync(
-                        SearchDatmusic.Params(searchParams = params.searchParams.copy(page = page))
+                        SearchDatmusic.Params(searchParams = params.searchParams.copy(page = page), forceRefresh = refreshing)
                     )
                 } catch (error: Exception) {
                     onError(error)

@@ -16,7 +16,7 @@ import tm.alashow.domain.models.PaginatedEntity
  */
 @OptIn(ExperimentalPagingApi::class)
 internal class PaginatedEntryRemoteMediator<Params : Any, E>(
-    private val fetch: suspend (page: Int) -> Unit
+    private val fetch: suspend (page: Int, refreshing: Boolean) -> Unit
 ) : RemoteMediator<Params, E>() where E : PaginatedEntity {
     override suspend fun load(
         loadType: LoadType,
@@ -31,7 +31,10 @@ internal class PaginatedEntryRemoteMediator<Params : Any, E>(
             }
         }
         return try {
-            fetch(nextPage)
+            // we're assuming if the are already pages and loadType is refreshing, then user must be refreshing it manually
+            // which can be used to force refresh the data source
+            val isRefreshing = loadType == LoadType.REFRESH && state.pages.isNotEmpty()
+            fetch(nextPage, isRefreshing)
             MediatorResult.Success(endOfPaginationReached = false)
         } catch (t: Throwable) {
             MediatorResult.Error(t)

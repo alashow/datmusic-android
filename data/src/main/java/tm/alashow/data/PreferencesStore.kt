@@ -2,7 +2,7 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.base.preferences
+package tm.alashow.data
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -23,6 +23,12 @@ private const val STORE_NAME = "app_preferences"
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = STORE_NAME)
 
 class PreferencesStore @Inject constructor(@ApplicationContext private val context: Context) {
+
+    suspend fun <T> remove(key: Preferences.Key<T>) {
+        context.dataStore.edit { settings ->
+            settings.remove(key)
+        }
+    }
 
     suspend fun <T> save(key: Preferences.Key<T>, value: T) {
         context.dataStore.edit { settings ->

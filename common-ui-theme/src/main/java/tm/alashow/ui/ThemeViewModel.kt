@@ -10,8 +10,8 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.launch
-import tm.alashow.base.preferences.PreferencesStore
 import tm.alashow.base.ui.ThemeState
+import tm.alashow.data.PreferencesStore
 import tm.alashow.ui.theme.DefaultTheme
 
 object PreferenceKeys {
@@ -21,14 +21,14 @@ object PreferenceKeys {
 @HiltViewModel
 class ThemeViewModel @Inject constructor(
     val handle: SavedStateHandle,
-    private val preferencesStore: PreferencesStore
+    private val preferences: PreferencesStore
 ) : ViewModel() {
 
-    val themeState = preferencesStore.get(PreferenceKeys.THEME_STATE_KEY, ThemeState.serializer(), DefaultTheme)
+    val themeState = preferences.get(PreferenceKeys.THEME_STATE_KEY, ThemeState.serializer(), DefaultTheme)
 
     fun applyThemeState(themeState: ThemeState) {
         viewModelScope.launch {
-            preferencesStore.save(PreferenceKeys.THEME_STATE_KEY, themeState, ThemeState.serializer())
+            preferences.save(PreferenceKeys.THEME_STATE_KEY, themeState, ThemeState.serializer())
         }
     }
 }

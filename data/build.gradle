@@ -51,6 +51,8 @@ dependencies {
 	api Deps.Android.Paging.runtime
 	api Deps.Utils.store
 
+	api Deps.Android.dataStore
+
 	api project(":base")
 	api project(":domain")
 }
