@@ -70,5 +70,4 @@ dependencies {
 
 	// 3rd party
 	api Deps.Android.Compose.lottie
-	api Deps.Android.Compose.collapsingToolbar
 }

@@ -20,24 +20,23 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun OffsetNotifyingBox(height: Dp = 300.dp, content: @Composable (State<Float>) -> Unit) {
-    val heightPx = with(LocalDensity.current) { height.roundToPx().toFloat() }
-    val offsetHeightPx = remember { mutableStateOf(0f) }
+fun OffsetNotifyingBox(headerHeight: Dp = 300.dp, content: @Composable (offsetPx: State<Float>, progress: State<Float>) -> Unit) {
+    val headerHeightPx = with(LocalDensity.current) { headerHeight.roundToPx().toFloat() }
+    val headerOffsetHeightPx = remember { mutableStateOf(0f) }
+    val progress = derivedStateOf { (-headerOffsetHeightPx.value / headerHeightPx).coerceIn(0.0f, 1.0f) }
 
     val nestedScrollConnection = remember {
         object : NestedScrollConnection {
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
                 val delta = available.y
-                val newOffset = offsetHeightPx.value + delta
-                offsetHeightPx.value = newOffset.coerceIn(-heightPx, 0f)
+                val newOffset = headerOffsetHeightPx.value + delta
+                headerOffsetHeightPx.value = newOffset.coerceIn(-headerHeightPx, 0f)
                 return Offset.Zero
             }
         }
     }
 
-    val progress = derivedStateOf { (-offsetHeightPx.value / heightPx).coerceIn(0.0f, 1.0f) }
-
     Box(Modifier.nestedScroll(nestedScrollConnection)) {
-        content(progress)
+        content(headerOffsetHeightPx, progress)
     }
 }

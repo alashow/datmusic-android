@@ -56,8 +56,6 @@ object Deps {
 
             private const val lottieVersion = "1.0.0-rc01-1-SNAPSHOT"
             const val lottie = "com.airbnb.android:lottie-compose:$lottieVersion"
-
-            const val collapsingToolbar = "me.onebone:toolbar-compose:2.1.0"
         }
 
         object Accompanist {

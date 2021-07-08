@@ -7,6 +7,7 @@ package tm.alashow.datmusic.ui.search
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.expandIn
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -17,9 +18,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -31,6 +32,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalWindowInfo
@@ -51,15 +54,15 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
-import me.onebone.toolbar.CollapsingToolbarScaffold
-import me.onebone.toolbar.ScrollStrategy
-import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
+import kotlin.math.round
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
+import tm.alashow.ui.OffsetNotifyingBox
 import tm.alashow.ui.components.ChipsRow
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.borderlessTextFieldColors
@@ -88,23 +91,41 @@ internal fun Search(
 ) {
     val viewState by rememberFlowWithLifecycle(viewModel.state).collectAsState(initial = SearchViewState.Empty)
     val listState = rememberLazyListState()
-    val collapsingToolbarState = rememberCollapsingToolbarScaffoldState()
 
-    Scaffold { padding ->
-        CollapsingToolbarScaffold(
-            modifier = Modifier.fillMaxSize(),
-            scrollStrategy = ScrollStrategy.EnterAlways,
-            state = collapsingToolbarState,
-            toolbar = {
+    Search(viewState, actioner, viewModel, listState)
+}
+
+@Composable
+private fun Search(
+    viewState: SearchViewState,
+    actioner: (SearchAction) -> Unit,
+    viewModel: SearchViewModel,
+    listState: LazyListState
+) {
+    val searchBarHeight = 200.dp
+    val searchBarOffset = Animatable(0f)
+
+    OffsetNotifyingBox(headerHeight = searchBarHeight) { _, progress ->
+        Scaffold(
+            topBar = {
+                LaunchedEffect(progress.value) {
+                    // rounding is important here because we don't searchBar to be stuck in between transitions
+                    searchBarOffset.animateTo(round(progress.value))
+                }
+
                 SearchAppBar(
+                    modifier = Modifier
+                        .graphicsLayer {
+                            alpha = 1 - searchBarOffset.value
+                            translationY = searchBarHeight.value * (-searchBarOffset.value)
+                        },
                     state = viewState,
                     onQueryChange = { actioner(SearchAction.QueryChange(it)) },
                     onSearch = { actioner(SearchAction.Search) },
                     onBackendTypeSelect = { actioner(it) }
                 )
             }
-        ) {
-
+        ) { padding ->
             SearchList(
                 viewModel = viewModel,
                 padding = padding,
@@ -129,6 +150,7 @@ private fun SearchAppBar(
             .translucentSurface()
             .fillMaxWidth()
             .statusBarsPadding()
+            .padding(bottom = AppTheme.specs.paddingTiny)
     ) {
         val keyboardController = LocalSoftwareKeyboardController.current
         val focusManager = LocalFocusManager.current
