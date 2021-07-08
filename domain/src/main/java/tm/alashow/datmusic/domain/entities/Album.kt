@@ -8,7 +8,6 @@ import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -88,13 +87,18 @@ data class Album(
     @ColumnInfo(name = "audios")
     val audios: List<Audio> = emptyList(),
 
+    @Transient
+    @ColumnInfo(name = "params")
     override var params: String = defaultParams,
-    override var page: Int = defaultPage,
-) : BasePaginatedEntity(), Parcelable {
 
-    @PrimaryKey(autoGenerate = true)
-    @IgnoredOnParcel
-    var insertId: Int = 0
+    @Transient
+    @ColumnInfo(name = "page")
+    override var page: Int = defaultPage,
+
+    @PrimaryKey
+    val primaryKey: String = "",
+
+) : BasePaginatedEntity(), Parcelable {
 
     @Serializable
     @Parcelize

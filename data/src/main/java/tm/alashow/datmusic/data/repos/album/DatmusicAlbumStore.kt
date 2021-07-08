@@ -5,7 +5,6 @@
 package tm.alashow.datmusic.data.repos.album
 
 import com.dropbox.android.external.store4.Fetcher
-import com.dropbox.android.external.store4.MemoryPolicy
 import com.dropbox.android.external.store4.SourceOfTruth
 import com.dropbox.android.external.store4.Store
 import com.dropbox.android.external.store4.StoreBuilder
@@ -14,8 +13,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
-import kotlin.time.Duration
-import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.flow.map
 import tm.alashow.datmusic.data.db.daos.AlbumsDao
 import tm.alashow.datmusic.domain.entities.Album
@@ -47,13 +44,5 @@ object DatmusicAlbumStoreModule {
             // idk implications of this when using same dao for search and album details
             deleteAll = dao::deleteAll
         )
-    ).albumCachePolicy().build()
-
-    @OptIn(ExperimentalTime::class)
-    fun StoreBuilder<DatmusicAlbumParams, List<Audio>>.albumCachePolicy() = cachePolicy(
-        MemoryPolicy.builder<DatmusicAlbumParams, List<Audio>>()
-            .setMaxSize(50)
-            .setExpireAfterAccess(Duration.hours(24))
-            .build()
-    )
+    ).build()
 }

@@ -5,7 +5,6 @@
 package tm.alashow.datmusic.data.repos.search
 
 import com.dropbox.android.external.store4.Fetcher
-import com.dropbox.android.external.store4.MemoryPolicy
 import com.dropbox.android.external.store4.SourceOfTruth
 import com.dropbox.android.external.store4.Store
 import com.dropbox.android.external.store4.StoreBuilder
@@ -14,8 +13,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
-import kotlin.time.Duration
-import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.flow.map
 import tm.alashow.datmusic.data.db.daos.AlbumsDao
 import tm.alashow.datmusic.data.db.daos.ArtistsDao
@@ -26,7 +23,8 @@ import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.domain.models.errors.requireNonEmptyInitialPage
 
 typealias DatmusicSearchStore<T> = Store<DatmusicSearchParams, List<T>>
-typealias DatmusicSearchAudioStore = DatmusicSearchStore<Audio>
+
+private fun searchPrimaryKey(sourceIndex: Int, id: Any, params: DatmusicSearchParams) = "${sourceIndex}_${id}_${params.hashCode()}"
 
 @InstallIn(SingletonComponent::class)
 @Module
@@ -52,14 +50,20 @@ object DatmusicSearchStoreModule {
             },
             writer = { params, response ->
                 dao.withTransaction {
-                    val entries = response.map { it.copy(params = params.toString(), page = params.page) }
+                    val entries = response.mapIndexed { i, it ->
+                        it.copy(
+                            params = params.toString(),
+                            page = params.page,
+                            primaryKey = searchPrimaryKey(i, it.id, params)
+                        )
+                    }
                     dao.update(params, entries)
                 }
             },
             delete = dao::delete,
             deleteAll = dao::deleteAll
         )
-    ).searchCachePolicy().build()
+    ).build()
 
     @Provides
     @Singleton
@@ -81,14 +85,21 @@ object DatmusicSearchStoreModule {
             },
             writer = { params, response ->
                 dao.withTransaction {
-                    val entries = response.map { it.copy(params = params.toString()) }
+                    val entries =
+                        response.mapIndexed { i, it ->
+                            it.copy(
+                                params = params.toString(),
+                                page = params.page,
+                                primaryKey = searchPrimaryKey(i, it.id, params)
+                            )
+                        }
                     dao.update(params, entries)
                 }
             },
             delete = dao::delete,
             deleteAll = dao::deleteAll
         )
-    ).searchCachePolicy().build()
+    ).build()
 
     @Provides
     @Singleton
@@ -110,55 +121,19 @@ object DatmusicSearchStoreModule {
             },
             writer = { params, response ->
                 dao.withTransaction {
-                    val entries = response.map { it.copy(params = params.toString()) }
+                    val entries =
+                        response.mapIndexed { i, it ->
+                            it.copy(
+                                params = params.toString(),
+                                page = params.page,
+                                primaryKey = searchPrimaryKey(i, it.id, params)
+                            )
+                        }
                     dao.update(params, entries)
                 }
             },
             delete = dao::delete,
             deleteAll = dao::deleteAll
         )
-    ).searchCachePolicy().build()
-
-    @OptIn(ExperimentalTime::class)
-    fun <L : Any> StoreBuilder<DatmusicSearchParams, L>.searchCachePolicy() = cachePolicy(
-        MemoryPolicy.builder<DatmusicSearchParams, L>()
-            .setMaxSize(2000)
-            .setExpireAfterAccess(Duration.minutes(10))
-            .build()
-    )
-
-    // @Provides
-    // @Singleton
-    // fun datmusicSearchAudioStoreDiskCaching(
-    //     search: DatmusicSearchDataSource,
-    //     dao: AudiosDao
-    // ): DatmusicSearchAudioStore = StoreBuilder.from(
-    //     fetcher = Fetcher.of { params: DatmusicSearchParams ->
-    //         search(params).map { it.data.audios }.getOrThrow()
-    //     },
-    //     sourceOfTruth = SourceOfTruth.of(
-    //         reader = { params: DatmusicSearchParams ->
-    //             dao.entriesObservable(params).map { entries ->
-    //                 when {
-    //                     entries.isEmpty() -> null
-    //                     else -> entries
-    //                 }
-    //             }
-    //         },
-    //         writer = { params, response ->
-    //             dao.withTransaction {
-    //                 val entries = response.map { it.copy(params = params.toString(), page = params.page) }
-    //                 if (params.page == 0) {
-    //                     // If we've requested page 0, remove any existing entries first
-    //                     dao.deleteAll()
-    //                     dao.insertAll(entries)
-    //                 } else {
-    //                     dao.update(params, entries)
-    //                 }
-    //             }
-    //         },
-    //         delete = dao::delete,
-    //         deleteAll = dao::deleteAll
-    //     )
-    // ).build()
+    ).build()
 }

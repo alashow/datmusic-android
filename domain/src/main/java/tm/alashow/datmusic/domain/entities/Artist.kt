@@ -12,6 +12,7 @@ import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import tm.alashow.Config
 import tm.alashow.domain.models.BasePaginatedEntity
 
@@ -21,7 +22,6 @@ typealias ArtistId = String
 @Serializable
 @Entity(tableName = "artists")
 data class Artist(
-    @PrimaryKey
     @SerialName("id")
     @ColumnInfo(name = "id")
     override val id: ArtistId = "",
@@ -46,8 +46,17 @@ data class Artist(
     @ColumnInfo(name = "albums")
     val albums: List<Album> = emptyList(),
 
+    @Transient
+    @ColumnInfo(name = "params")
     override var params: String = defaultParams,
+
+    @Transient
+    @ColumnInfo(name = "page")
     override var page: Int = defaultPage,
+
+    @PrimaryKey
+    val primaryKey: String = "",
+
 ) : BasePaginatedEntity(), Parcelable {
 
     fun photo() = _photo.maxByOrNull { it.height }?.url ?: buildAlternatePhotoUrl()

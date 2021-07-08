@@ -16,7 +16,7 @@ import tm.alashow.datmusic.domain.entities.Album
 @Dao
 abstract class AlbumsDao : PaginatedEntryDao<DatmusicSearchParams, Album>() {
     @Transaction
-    @Query("SELECT * FROM albums WHERE params = :params ORDER BY insertId")
+    @Query("SELECT * FROM albums WHERE params = :params")
     abstract override fun entriesObservable(params: DatmusicSearchParams): Flow<List<Album>>
 
     @Transaction

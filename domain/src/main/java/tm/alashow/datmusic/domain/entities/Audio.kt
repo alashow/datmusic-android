@@ -11,13 +11,13 @@ import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import tm.alashow.domain.models.BasePaginatedEntity
 
 @Parcelize
 @Serializable
 @Entity(tableName = "audios")
 data class Audio(
-    @PrimaryKey
     @SerialName("id")
     @ColumnInfo(name = "id")
     override val id: String = "",
@@ -74,6 +74,14 @@ data class Audio(
     @ColumnInfo(name = "stream")
     val streamUrl: String? = null,
 
+    @Transient
+    @ColumnInfo(name = "params")
     override var params: String = defaultParams,
+
+    @Transient
+    @ColumnInfo(name = "page")
     override var page: Int = defaultPage,
+
+    @PrimaryKey
+    val primaryKey: String = "",
 ) : BasePaginatedEntity(), Parcelable
