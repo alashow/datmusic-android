@@ -11,9 +11,10 @@ import tm.alashow.datmusic.data.repos.search.BackendTypes
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
 import tm.alashow.domain.models.errors.ApiCaptchaError
 
+@Parcelize
 data class SearchFilter(
     val backends: BackendTypes = DefaultBackends
-) {
+) : Parcelable {
 
     companion object {
         val DefaultBackends: BackendTypes = DatmusicSearchParams.BackendType.values().toSet()

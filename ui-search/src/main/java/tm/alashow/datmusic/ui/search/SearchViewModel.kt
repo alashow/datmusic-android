@@ -18,11 +18,12 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import tm.alashow.base.ui.SnackbarManager
-import tm.alashow.common.compose.getStateFlow
+import tm.alashow.base.util.extensions.getStateFlow
 import tm.alashow.datmusic.data.interactors.GetAlbumDetails
 import tm.alashow.datmusic.data.interactors.GetArtistDetails
 import tm.alashow.datmusic.data.observers.ObservePagedDatmusicSearch
@@ -47,7 +48,7 @@ internal class SearchViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val searchQuery = MutableStateFlow("")
-    private val searchFilter = MutableStateFlow(SearchFilter())
+    private val searchFilter = handle.getStateFlow("search_query", viewModelScope, SearchFilter())
     private val searchTrigger = handle.getStateFlow("search_trigger", viewModelScope, SearchTrigger())
 
     private val captchaError = MutableStateFlow<ApiCaptchaError?>(null)
@@ -58,7 +59,7 @@ internal class SearchViewModel @Inject constructor(
     val pagedArtistsList get() = artistsPager.observe().cachedIn(viewModelScope)
     val pagedAlbumsList get() = albumsPager.observe().cachedIn(viewModelScope)
 
-    val state = combine(searchFilter, snackbarManager.errors, captchaError, ::SearchViewState).shareIn(
+    val state = combine(searchFilter.filterNotNull(), snackbarManager.errors, captchaError, ::SearchViewState).shareIn(
         scope = viewModelScope,
         replay = 0,
         started = SharingStarted.WhileSubscribed()
@@ -79,10 +80,9 @@ internal class SearchViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            combine(searchTrigger, searchFilter, ::Pair)
+            combine(searchTrigger.filterNotNull(), searchFilter.filterNotNull(), ::Pair)
                 .collectLatest { (trigger, filter) ->
-                    if (trigger != null)
-                        search(trigger, filter)
+                    search(trigger, filter)
                 }
         }
 
@@ -119,7 +119,7 @@ internal class SearchViewModel @Inject constructor(
      * Sets search filter to only given backend if [action.selected] otherwise resets to [SearchFilter.DefaultBackends].
      */
     private fun selectBackendType(action: SearchAction.SelectBackendType) {
-        searchFilter.value = searchFilter.value.copy(
+        searchFilter.value = searchFilter.value?.copy(
             backends = when (action.selected) {
                 true -> setOf(action.backendType)
                 else -> SearchFilter.DefaultBackends
