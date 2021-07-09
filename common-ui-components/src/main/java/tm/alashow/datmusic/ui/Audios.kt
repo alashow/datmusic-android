@@ -18,8 +18,12 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.text.style.TextOverflow
 import com.google.accompanist.coil.rememberCoilPainter
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.placeholder
+import com.google.accompanist.placeholder.material.shimmer
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.theme.AppTheme
@@ -29,8 +33,13 @@ object AudiosDefaults
 @Composable
 fun AudioRow(
     audio: Audio,
+    isPlaceholder: Boolean = false,
     onClick: (Audio) -> Unit = {},
 ) {
+    val loadingModifier = Modifier.placeholder(
+        visible = isPlaceholder,
+        highlight = PlaceholderHighlight.shimmer(),
+    )
     Row(
         horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
         modifier = Modifier
@@ -43,7 +52,7 @@ fun AudioRow(
             Image(
                 painter = image,
                 contentDescription = null,
-                modifier = modifier
+                modifier = modifier.composed { loadingModifier }
             )
         }
 
@@ -53,6 +62,7 @@ fun AudioRow(
                 style = MaterialTheme.typography.body1,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
+                modifier = loadingModifier
             )
             CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                 Text(
@@ -60,6 +70,7 @@ fun AudioRow(
                     style = MaterialTheme.typography.body2,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
+                    modifier = loadingModifier
                 )
             }
         }

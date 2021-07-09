@@ -62,10 +62,13 @@ data class Artist(
     val primaryKey: String = "",
 ) : BasePaginatedEntity(), Parcelable {
 
-    fun photo() = _photo.maxByOrNull { it.height }?.url ?: buildAlternatePhotoUrl()
+    fun sourcePhoto() = _photo.maxByOrNull { it.height }?.url
 
-    private fun buildAlternatePhotoUrl() =
-        Uri.parse(Config.API_BASE_URL).buildUpon().encodedPath("cover/artists").appendPath(name).appendPath("small").build().toString()
+    fun photo() = sourcePhoto() ?: buildAlternatePhotoUrl("medium")
+    fun largePhoto() = buildAlternatePhotoUrl("large")
+
+    private fun buildAlternatePhotoUrl(size: String) =
+        Uri.parse(Config.API_BASE_URL).buildUpon().encodedPath("cover/artists").appendPath(name).appendPath(size).build().toString()
 
     @Serializable
     @Parcelize

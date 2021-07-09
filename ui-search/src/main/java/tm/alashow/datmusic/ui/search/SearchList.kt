@@ -273,7 +273,7 @@ internal fun AlbumList(pagingItems: LazyPagingItems<Album>, itemSize: Dp = Album
             val navigator = LocalNavigator.current
             val coroutine = rememberCoroutineScope()
             AlbumColumn(album, itemSize, iconPadding) {
-                coroutine.launch { navigator.navigate(LeafScreen.AlbumDetails.buildRoute(it.albumId)) }
+                coroutine.launch { navigator.navigate(LeafScreen.AlbumDetails.buildRoute(it)) }
             }
         }
 

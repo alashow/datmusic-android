@@ -20,8 +20,6 @@ import tm.alashow.datmusic.ui.album.AlbumDetail
 import tm.alashow.datmusic.ui.artist.ArtistDetail
 import tm.alashow.datmusic.ui.search.Search
 import tm.alashow.datmusic.ui.settings.Settings
-import tm.alashow.navigation.ALBUM_ID_KEY
-import tm.alashow.navigation.ARTIST_ID_KEY
 import tm.alashow.navigation.LeafScreen
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.NavigationEvent
@@ -89,15 +87,13 @@ private fun NavGraphBuilder.addSettings(navController: NavController) {
 }
 
 private fun NavGraphBuilder.addArtistDetails(navController: NavController) {
-    composableScreen(LeafScreen.ArtistDetails) { backStackEntry ->
-        val artistId = requireNotNull(backStackEntry.arguments?.getString(ARTIST_ID_KEY))
-        ArtistDetail(artistId)
+    composableScreen(LeafScreen.ArtistDetails) {
+        ArtistDetail()
     }
 }
 
 private fun NavGraphBuilder.addAlbumDetails(navController: NavController) {
-    composableScreen(LeafScreen.AlbumDetails) { backStackEntry ->
-        val albumId = requireNotNull(backStackEntry.arguments?.getLong(ALBUM_ID_KEY))
-        AlbumDetail(albumId)
+    composableScreen(LeafScreen.AlbumDetails) {
+        AlbumDetail()
     }
 }

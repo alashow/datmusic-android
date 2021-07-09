@@ -1,0 +1,207 @@
+/*
+ * Copyright (C) 2021, Alashov Berkeli
+ * All rights reserved.
+ */
+package tm.alashow.datmusic.ui.album
+
+import androidx.compose.animation.core.Animatable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.BoxWithConstraintsScope
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.insets.ui.Scaffold
+import kotlin.math.round
+import kotlinx.coroutines.launch
+import tm.alashow.base.util.extensions.localizedMessage
+import tm.alashow.base.util.extensions.localizedTitle
+import tm.alashow.common.compose.rememberFlowWithLifecycle
+import tm.alashow.datmusic.domain.entities.Album
+import tm.alashow.datmusic.domain.entities.Audio
+import tm.alashow.datmusic.ui.AudioRow
+import tm.alashow.datmusic.ui.components.CoverHeaderDefaults
+import tm.alashow.datmusic.ui.components.CoverHeaderRow
+import tm.alashow.domain.models.Async
+import tm.alashow.domain.models.Fail
+import tm.alashow.domain.models.Incomplete
+import tm.alashow.domain.models.Loading
+import tm.alashow.domain.models.Success
+import tm.alashow.navigation.LocalNavigator
+import tm.alashow.ui.OffsetNotifyingBox
+import tm.alashow.ui.components.DetailScreenAppBar
+import tm.alashow.ui.components.ErrorBox
+import tm.alashow.ui.components.ProgressIndicator
+import tm.alashow.ui.theme.AppTheme
+
+@Composable
+fun AlbumDetail() {
+    val navigator = LocalNavigator.current
+    val coroutine = rememberCoroutineScope()
+
+    AlbumDetail(viewModel = hiltViewModel()) {
+        coroutine.launch { navigator.back() }
+    }
+}
+
+@Composable
+private fun AlbumDetail(viewModel: AlbumDetailViewModel, onBackClick: () -> Unit = {}) {
+    val viewState by rememberFlowWithLifecycle(viewModel.state).collectAsState(initial = AlbumDetailViewState.Empty)
+    val listState = rememberLazyListState()
+
+    val headerHeight = CoverHeaderDefaults.height
+    val headerVisibilityProgress = Animatable(1f)
+
+    OffsetNotifyingBox(headerHeight = headerHeight) { _, progress ->
+        Scaffold(
+            topBar = {
+                LaunchedEffect(progress.value) {
+                    headerVisibilityProgress.animateTo(1 - round(progress.value))
+                }
+                DetailScreenAppBar(
+                    title = "Album",
+                    modifier = Modifier.graphicsLayer {
+                        alpha = 1 - headerVisibilityProgress.value
+                        translationY = headerHeight.value * (-headerVisibilityProgress.value)
+                    },
+                    onNavigationClick = onBackClick,
+                )
+            }
+        ) { padding ->
+            ArtistDetailList(viewState, viewModel::refresh, onBackClick, padding, listState)
+        }
+    }
+}
+
+@Composable
+private fun ArtistDetailList(
+    viewState: AlbumDetailViewState,
+    onRetry: () -> Unit,
+    onBackClick: () -> Unit,
+    padding: PaddingValues = PaddingValues(),
+    listState: LazyListState,
+    modifier: Modifier = Modifier
+) {
+    BoxWithConstraints {
+        LazyColumn(
+            state = listState,
+            modifier = modifier.fillMaxSize(),
+            contentPadding = PaddingValues(bottom = padding.calculateBottomPadding())
+        ) {
+            val album = viewState.album
+            if (album != null) {
+                item {
+                    CoverHeaderRow(title = album.title, imageRequest = album.photo.mediumUrl, onBackClick = onBackClick)
+                }
+
+                val details = viewState.albumDetails
+                val detailsLoading = details is Incomplete
+
+                val albumAudios = albumDetails(album, details, detailsLoading)
+
+                albumDetailsFail(details, this, onRetry, maxHeight)
+                albumDetailsEmpty(details, albumAudios, this, onRetry, maxHeight)
+            } else {
+                item {
+                    AlbumDetailsLoading()
+                }
+            }
+        }
+    }
+}
+
+private fun LazyListScope.albumDetails(
+    album: Album,
+    details: Async<List<Audio>>,
+    detailsLoading: Boolean
+): List<Audio> {
+    val albumAudios = when (details) {
+        is Success -> details()
+        is Loading -> (1..album.songCount).map { Audio(title = "Loading artist...", artist = "Loading") }
+        else -> emptyList()
+    }
+
+    if (albumAudios.isNotEmpty()) {
+        item {
+            Text(
+                stringResource(R.string.search_audios), style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold),
+                modifier = Modifier.padding(AppTheme.specs.inputPaddings)
+            )
+        }
+
+        items(albumAudios) { audio ->
+            AudioRow(audio, isPlaceholder = detailsLoading)
+        }
+    }
+    return albumAudios
+}
+
+private fun albumDetailsFail(
+    details: Async<List<Audio>>,
+    lazyListScope: LazyListScope,
+    onRetry: () -> Unit,
+    maxHeight: Dp,
+) {
+    if (details is Fail) {
+        lazyListScope.item {
+            ErrorBox(
+                title = stringResource(details.error.localizedTitle()),
+                message = stringResource(details.error.localizedMessage()),
+                onRetryClick = onRetry,
+                maxHeight = maxHeight
+            )
+        }
+    }
+}
+
+private fun albumDetailsEmpty(
+    details: Async<List<Audio>>,
+    albumAudios: List<Audio>,
+    lazyListScope: LazyListScope,
+    onRetry: () -> Unit,
+    maxHeight: Dp,
+) {
+    if (details is Success && albumAudios.isEmpty()) {
+        lazyListScope.item {
+            ErrorBox(
+                title = stringResource(R.string.error_empty_title),
+                message = stringResource(R.string.error_empty_title),
+                onRetryClick = onRetry,
+                maxHeight = maxHeight
+            )
+        }
+    }
+}
+
+@Composable
+private fun BoxWithConstraintsScope.AlbumDetailsLoading() {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(maxHeight)
+    ) {
+        ProgressIndicator()
+    }
+}

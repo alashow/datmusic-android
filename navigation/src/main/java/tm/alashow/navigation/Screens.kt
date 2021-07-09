@@ -15,12 +15,14 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NamedNavArgument
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navArgument
-import tm.alashow.datmusic.domain.entities.AlbumId
+import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.ArtistId
 
 const val QUERY_KEY = "query"
 const val ARTIST_ID_KEY = "artist_id"
 const val ALBUM_ID_KEY = "album_id"
+const val ALBUM_OWNER_ID_KEY = "album_owner_id"
+const val ALBUM_ACCESS_KEY = "album_access_key"
 
 interface Screen {
     val route: String
@@ -67,14 +69,20 @@ sealed class LeafScreen(
     }
 
     object AlbumDetails : LeafScreen(
-        "albums/{$ALBUM_ID_KEY}",
+        "albums/{$ALBUM_ID_KEY}/{$ALBUM_OWNER_ID_KEY}/{$ALBUM_ACCESS_KEY}",
         arguments = listOf(
             navArgument(ALBUM_ID_KEY) {
                 type = NavType.LongType
+            },
+            navArgument(ALBUM_OWNER_ID_KEY) {
+                type = NavType.LongType
+            },
+            navArgument(ALBUM_ACCESS_KEY) {
+                type = NavType.StringType
             }
         )
     ) {
-        fun buildRoute(id: AlbumId) = "albums/$id"
+        fun buildRoute(album: Album) = "albums/${album.id}/${album.ownerId}/${album.accessKey}"
     }
 }
 

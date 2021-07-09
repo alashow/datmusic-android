@@ -19,11 +19,16 @@ import androidx.compose.material.icons.filled.Album
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.coil.rememberCoilPainter
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.placeholder
+import com.google.accompanist.placeholder.material.shimmer
+import com.google.accompanist.placeholder.shimmer
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.theme.AppTheme
@@ -38,8 +43,13 @@ fun AlbumColumn(
     album: Album,
     imageSize: Dp = AlbumsDefaults.imageSize,
     iconPadding: Dp = AlbumsDefaults.iconPadding,
+    isPlaceholder: Boolean = false,
     onClick: (Album) -> Unit = {},
 ) {
+    val loadingModifier = Modifier.placeholder(
+        visible = isPlaceholder,
+        highlight = PlaceholderHighlight.shimmer(),
+    )
     Column(
         verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall),
         modifier = Modifier
@@ -56,18 +66,19 @@ fun AlbumColumn(
             Image(
                 painter = image,
                 contentDescription = null,
-                modifier = modifier
+                modifier = modifier.composed { loadingModifier }
             )
         }
         Column(
             verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingTiny),
-            modifier = Modifier.width(imageSize)
+            modifier = Modifier
+                .width(imageSize)
         ) {
 
-            Text(album.title, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(album.title, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = loadingModifier)
             CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                Text(album.artists.first().name, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                Text(album.year.toString())
+                Text(album.artists.firstOrNull()?.name ?: "", maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = loadingModifier)
+                Text(album.year.toString(), modifier = loadingModifier)
             }
         }
     }

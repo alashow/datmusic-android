@@ -49,7 +49,7 @@ data class Album(
 
     @SerialName("count")
     @ColumnInfo(name = "count")
-    val songCount: Int = 0,
+    val songCount: Int = 1,
 
     @SerialName("plays")
     @ColumnInfo(name = "plays")

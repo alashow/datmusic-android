@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import tm.alashow.data.LastRequests
 import tm.alashow.data.PreferencesStore
+import tm.alashow.datmusic.data.db.daos.AlbumsDao
 import tm.alashow.datmusic.data.db.daos.ArtistsDao
 import tm.alashow.datmusic.domain.entities.Artist
 
@@ -51,6 +52,7 @@ object DatmusicArtistDetailsStoreModule {
     fun datmusicArtistDetailsStore(
         artists: DatmusicArtistDataSource,
         dao: ArtistsDao,
+        albumsDao: AlbumsDao,
         @Named("artist_details") lastRequests: LastRequests
     ): DatmusicArtistDetailsStore = StoreBuilder.from(
         fetcher = Fetcher.of { params: DatmusicArtistParams ->
@@ -64,6 +66,9 @@ object DatmusicArtistDetailsStoreModule {
                 dao.withTransaction {
                     val entry = dao.entry(params.id).firstOrNull() ?: response
                     dao.update(params.id, entry.copy(audios = response.audios, albums = response.albums, detailsFetched = true))
+
+                    // insert all albums so AlbumDetailsStore can access it
+                    albumsDao.insertAll(response.albums.mapIndexed { index, it -> it.copy(primaryKey = "${index}_${it.id}") })
                 }
             },
             delete = { error("This store doesn't manage deletes") },
