@@ -17,7 +17,7 @@ data class DatmusicSearchParams(
 ) {
 
     // used as a key in Room/Store
-    override fun toString() = "query=$query,page=$page"
+    override fun toString() = "query=$query"
 
     companion object {
         fun DatmusicSearchParams.toQueryMap(): Map<String, Any> = mutableMapOf<String, Any>(

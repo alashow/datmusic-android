@@ -226,9 +226,12 @@ private fun SearchListContent(
                     }
             }
 
-            item {
+            item("artists") {
                 if (searchFilter.backends.contains(DatmusicSearchParams.BackendType.ARTISTS))
                     ArtistList(artistsLazyPagingItems)
+            }
+
+            item("albums") {
                 if (searchFilter.backends.contains(DatmusicSearchParams.BackendType.ALBUMS))
                     AlbumList(albumsLazyPagingItems)
             }

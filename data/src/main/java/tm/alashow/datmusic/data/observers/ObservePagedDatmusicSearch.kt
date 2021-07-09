@@ -12,17 +12,17 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import tm.alashow.data.PaginatedEntryRemoteMediator
 import tm.alashow.data.PagingInteractor
+import tm.alashow.data.db.PaginatedEntryDao
 import tm.alashow.datmusic.data.interactors.SearchDatmusic
-import tm.alashow.datmusic.data.repos.search.DatmusicSearchPagingSource
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
-import tm.alashow.datmusic.data.repos.search.DatmusicSearchStore
 import tm.alashow.domain.models.PaginatedEntity
 
 @OptIn(ExperimentalPagingApi::class)
 class ObservePagedDatmusicSearch<T : PaginatedEntity> @Inject constructor(
-    private val datmusicSearchStore: DatmusicSearchStore<T>,
     private val searchDatmusic: SearchDatmusic<T>,
+    private val dao: PaginatedEntryDao<DatmusicSearchParams, T>
 ) : PagingInteractor<ObservePagedDatmusicSearch.Params<T>, T>() {
+
     override fun createObservable(
         params: Params<T>
     ): Flow<PagingData<T>> {
@@ -38,7 +38,7 @@ class ObservePagedDatmusicSearch<T : PaginatedEntity> @Inject constructor(
                     throw error
                 }
             },
-            pagingSourceFactory = { DatmusicSearchPagingSource(datmusicSearchStore, params.searchParams) }
+            pagingSourceFactory = { dao.entriesPagingSource(params.searchParams) }
         ).flow
     }
 

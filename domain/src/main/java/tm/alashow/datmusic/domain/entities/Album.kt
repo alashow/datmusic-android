@@ -102,6 +102,9 @@ data class Album(
     @PrimaryKey
     val primaryKey: String = "",
 
+    @Transient
+    @ColumnInfo(name = "search_index")
+    val searchIndex: Int = 0,
 ) : BasePaginatedEntity(), Parcelable {
 
     @Serializable

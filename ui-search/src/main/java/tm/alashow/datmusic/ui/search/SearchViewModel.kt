@@ -36,7 +36,7 @@ import tm.alashow.domain.models.errors.ApiCaptchaError
 @OptIn(FlowPreview::class)
 @HiltViewModel
 internal class SearchViewModel @Inject constructor(
-    val handle: SavedStateHandle,
+    handle: SavedStateHandle,
     private val audiosPager: ObservePagedDatmusicSearch<Audio>,
     private val artistsPager: ObservePagedDatmusicSearch<Artist>,
     private val albumsPager: ObservePagedDatmusicSearch<Album>,

@@ -59,6 +59,7 @@ abstract class PaginatedEntryDao<Params : Any, E : PaginatedEntity> : EntityDao<
     abstract override suspend fun insertAll(entities: List<E>)
 
     abstract fun entriesPagingSource(): PagingSource<Int, E>
+    abstract fun entriesPagingSource(params: Params): PagingSource<Int, E>
 
     abstract suspend fun delete(params: Params)
     abstract suspend fun getLastPage(params: Params): Int?

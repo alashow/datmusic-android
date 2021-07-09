@@ -13,7 +13,7 @@ import tm.alashow.domain.models.PaginatedEntity
 
 /**
  * Uses [DatmusicSearchStore] to paginate in-memory items that were already fetched via [SearchDatmusic].
- *
+ * Not being used anymore, keeping just for reference.
  */
 class DatmusicSearchPagingSource<T : PaginatedEntity>(
     private val datmusicSearchStore: DatmusicSearchStore<T>,

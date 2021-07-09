@@ -33,7 +33,7 @@ typealias DatmusicSearchStore<T> = Store<DatmusicSearchParams, List<T>>
 @Module
 object DatmusicSearchStoreModule {
 
-    private fun searchPrimaryKey(sourceIndex: Int, id: Any, params: DatmusicSearchParams) = "${sourceIndex}_${id}_${params.hashCode()}"
+    private fun searchPrimaryKey(id: Any, params: DatmusicSearchParams) = "${id}_${params.hashCode()}"
 
     private suspend fun <T> Result<List<T>>.fetcherDefaults(lastRequests: LastRequests, params: DatmusicSearchParams) = onSuccess {
         if (params.page == 0)
@@ -64,11 +64,12 @@ object DatmusicSearchStoreModule {
             },
             writer = { params, response ->
                 dao.withTransaction {
-                    val entries = response.mapIndexed { i, it ->
+                    val entries = response.mapIndexed { index, it ->
                         it.copy(
                             params = params.toString(),
                             page = params.page,
-                            primaryKey = searchPrimaryKey(i, it.id, params)
+                            searchIndex = index,
+                            primaryKey = searchPrimaryKey(it.id, params),
                         )
                     }
                     dao.update(params, entries)
@@ -96,11 +97,12 @@ object DatmusicSearchStoreModule {
             writer = { params, response ->
                 dao.withTransaction {
                     val entries =
-                        response.mapIndexed { i, it ->
+                        response.mapIndexed { index, it ->
                             it.copy(
                                 params = params.toString(),
                                 page = params.page,
-                                primaryKey = searchPrimaryKey(i, it.id, params)
+                                searchIndex = index,
+                                primaryKey = searchPrimaryKey(it.id, params),
                             )
                         }
                     dao.update(params, entries)
@@ -128,11 +130,12 @@ object DatmusicSearchStoreModule {
             writer = { params, response ->
                 dao.withTransaction {
                     val entries =
-                        response.mapIndexed { i, it ->
+                        response.mapIndexed { index, it ->
                             it.copy(
                                 params = params.toString(),
                                 page = params.page,
-                                primaryKey = searchPrimaryKey(i, it.id, params)
+                                searchIndex = index,
+                                primaryKey = searchPrimaryKey(it.id, params),
                             )
                         }
                     dao.update(params, entries)
@@ -146,15 +149,15 @@ object DatmusicSearchStoreModule {
     @Provides
     @Singleton
     @Named("audios")
-    fun datmusicAudiosLastRequests(preferences: PreferencesStore) = LastRequests("search_audios", preferences)
+    fun searchAudiosLastRequests(preferences: PreferencesStore) = LastRequests("search_audios", preferences)
 
     @Provides
     @Singleton
     @Named("artists")
-    fun datmusicArtistsLastRequests(preferences: PreferencesStore) = LastRequests("search_artists", preferences, Duration.ofDays(7))
+    fun searchArtistsLastRequests(preferences: PreferencesStore) = LastRequests("search_artists", preferences, Duration.ofDays(7))
 
     @Provides
     @Singleton
     @Named("albums")
-    fun datmusicAlbumsLastRequests(preferences: PreferencesStore) = LastRequests("search_albums", preferences, Duration.ofDays(7))
+    fun searchAlbumsLastRequests(preferences: PreferencesStore) = LastRequests("search_albums", preferences, Duration.ofDays(7))
 }

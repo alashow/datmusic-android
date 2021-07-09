@@ -1,50 +1,50 @@
 {
   "project_info": {
-    "project_number": "182339910251",
-    "firebase_url": "https://datmusic-90b60.firebaseio.com",
-    "project_id": "datmusic-90b60",
-    "storage_bucket": "datmusic-90b60.appspot.com"
+    "project_number": "111111111111111",
+    "firebase_url": "https://fakeapp.firebaseio.com",
+    "project_id": "fake-android-app",
+    "storage_bucket": "fake-android-app.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:182339910251:android:0471ac7b2dc78ac3",
+        "mobilesdk_app_id": "FAKE_VALUE",
         "android_client_info": {
           "package_name": "tm.alashow.datmusic"
         }
       },
       "oauth_client": [
         {
-          "client_id": "182339910251-datbtp2tvjb73datqfvi6u41b6n85s8c.apps.googleusercontent.com",
+          "client_id": "FAKE_VALUE",
           "client_type": 1,
           "android_info": {
             "package_name": "tm.alashow.datmusic",
-            "certificate_hash": "6ec75dfd6a33d784aad67a7c31ab5e514e6aea1f"
+            "certificate_hash": "FAKE_VALUE"
           }
         },
         {
-          "client_id": "182339910251-lcah9j8gv6cujtvdufhtlb3gf5gfd8rc.apps.googleusercontent.com",
+          "client_id": "FAKE_VALUE",
           "client_type": 1,
           "android_info": {
             "package_name": "tm.alashow.datmusic",
-            "certificate_hash": "4b375199270328a40f2a289c3c9a370fe0c740e5"
+            "certificate_hash": "FAKE_VALUE"
           }
         },
         {
-          "client_id": "182339910251-ggksg3k3tc5sll614r68a7tp9asc6dj6.apps.googleusercontent.com",
+          "client_id": "FAKE_VALUE",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBv7ZqZs939I6mqsScARttYcjTHoT2GAeE"
+          "current_key": "FAKE_VALUE"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "182339910251-ggksg3k3tc5sll614r68a7tp9asc6dj6.apps.googleusercontent.com",
+              "client_id": "FAKE_VALUE",
               "client_type": 3
             }
           ]
@@ -53,43 +53,43 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:182339910251:android:0471ac7b2dc78ac3",
+        "mobilesdk_app_id": "FAKE_VALUE",
         "android_client_info": {
           "package_name": "tm.alashow.datmusic.debug"
         }
       },
       "oauth_client": [
         {
-          "client_id": "182339910251-datbtp2tvjb73datqfvi6u41b6n85s8c.apps.googleusercontent.com",
+          "client_id": "FAKE_VALUE",
           "client_type": 1,
           "android_info": {
             "package_name": "tm.alashow.datmusic.debug",
-            "certificate_hash": "6ec75dfd6a33d784aad67a7c31ab5e514e6aea1f"
+            "certificate_hash": "FAKE_VALUE"
           }
         },
         {
-          "client_id": "182339910251-lcah9j8gv6cujtvdufhtlb3gf5gfd8rc.apps.googleusercontent.com",
+          "client_id": "FAKE_VALUE",
           "client_type": 1,
           "android_info": {
             "package_name": "tm.alashow.datmusic.debug",
-            "certificate_hash": "4b375199270328a40f2a289c3c9a370fe0c740e5"
+            "certificate_hash": "FAKE_VALUE"
           }
         },
         {
-          "client_id": "182339910251-ggksg3k3tc5sll614r68a7tp9asc6dj6.apps.googleusercontent.com",
+          "client_id": "FAKE_VALUE",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBv7ZqZs939I6mqsScARttYcjTHoT2GAeE"
+          "current_key": "FAKE_VALUE"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "182339910251-ggksg3k3tc5sll614r68a7tp9asc6dj6.apps.googleusercontent.com",
+              "client_id": "FAKE_VALUE",
               "client_type": 3
             }
           ]
@@ -98,43 +98,43 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:182339910251:android:0471ac7b2dc78ac3",
+        "mobilesdk_app_id": "FAKE_VALUE",
         "android_client_info": {
           "package_name": "tm.alashow.datmusic.alpha"
         }
       },
       "oauth_client": [
         {
-          "client_id": "182339910251-datbtp2tvjb73datqfvi6u41b6n85s8c.apps.googleusercontent.com",
+          "client_id": "FAKE_VALUE",
           "client_type": 1,
           "android_info": {
             "package_name": "tm.alashow.datmusic.alpha",
-            "certificate_hash": "6ec75dfd6a33d784aad67a7c31ab5e514e6aea1f"
+            "certificate_hash": "FAKE_VALUE"
           }
         },
         {
-          "client_id": "182339910251-lcah9j8gv6cujtvdufhtlb3gf5gfd8rc.apps.googleusercontent.com",
+          "client_id": "FAKE_VALUE",
           "client_type": 1,
           "android_info": {
             "package_name": "tm.alashow.datmusic.alpha",
-            "certificate_hash": "4b375199270328a40f2a289c3c9a370fe0c740e5"
+            "certificate_hash": "FAKE_VALUE"
           }
         },
         {
-          "client_id": "182339910251-ggksg3k3tc5sll614r68a7tp9asc6dj6.apps.googleusercontent.com",
+          "client_id": "FAKE_VALUE",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBv7ZqZs939I6mqsScARttYcjTHoT2GAeE"
+          "current_key": "FAKE_VALUE"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "182339910251-ggksg3k3tc5sll614r68a7tp9asc6dj6.apps.googleusercontent.com",
+              "client_id": "FAKE_VALUE",
               "client_type": 3
             }
           ]

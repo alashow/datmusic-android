@@ -15,7 +15,7 @@ data class DatmusicArtistParams(
 ) {
 
     // used in Room queries
-    override fun toString() = "id=$id,page=$page"
+    override fun toString() = "id=$id"
 
     companion object {
         fun DatmusicArtistParams.toQueryMap(): Map<String, Any> = mutableMapOf<String, Any>(
