@@ -75,7 +75,7 @@ fun CoverImage(
     image: @Composable (Modifier) -> Unit
 ) {
     Surface(
-        elevation = 4.dp,
+        elevation = 2.dp,
         shape = shape,
         color = backgroundColor,
         modifier = modifier.size(size)
