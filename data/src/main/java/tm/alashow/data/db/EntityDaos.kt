@@ -42,6 +42,7 @@ abstract class EntityDao<Params : Any, E : Entity> {
     abstract fun entriesObservable(count: Int, offset: Int): Flow<List<E>>
 
     abstract fun entry(id: String): Flow<E>
+    abstract fun entryNullable(id: String): Flow<E?>
 
     abstract suspend fun count(params: Params): Int
     abstract suspend fun has(id: String): Int

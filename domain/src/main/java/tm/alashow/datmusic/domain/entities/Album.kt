@@ -95,6 +95,10 @@ data class Album(
     @ColumnInfo(name = "page")
     override var page: Int = defaultPage,
 
+    @Transient
+    @ColumnInfo(name = "details_fetched")
+    val detailsFetched: Boolean = false,
+
     @PrimaryKey
     val primaryKey: String = "",
 

@@ -4,21 +4,23 @@
  */
 package tm.alashow.datmusic.data.interactors
 
-import com.dropbox.android.external.store4.get
 import javax.inject.Inject
 import kotlinx.coroutines.withContext
 import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.data.ResultInteractor
+import tm.alashow.data.fetch
+import tm.alashow.datmusic.data.repos.album.DatmusicAlbumDetailsStore
 import tm.alashow.datmusic.data.repos.album.DatmusicAlbumParams
-import tm.alashow.datmusic.data.repos.album.DatmusicAlbumStore
 import tm.alashow.datmusic.domain.entities.Audio
 
 class GetAlbumDetails @Inject constructor(
-    private val albumStore: DatmusicAlbumStore,
+    private val albumDetailsStore: DatmusicAlbumDetailsStore,
     private val dispatchers: CoroutineDispatchers
-) : ResultInteractor<DatmusicAlbumParams, List<Audio>>() {
+) : ResultInteractor<GetAlbumDetails.Params, List<Audio>>() {
 
-    override suspend fun doWork(params: DatmusicAlbumParams) = withContext(dispatchers.network) {
-        albumStore.get(params)
+    data class Params(val albumParams: DatmusicAlbumParams, val forceRefresh: Boolean = false)
+
+    override suspend fun doWork(params: Params) = withContext(dispatchers.network) {
+        albumDetailsStore.fetch(params.albumParams, params.forceRefresh)
     }
 }

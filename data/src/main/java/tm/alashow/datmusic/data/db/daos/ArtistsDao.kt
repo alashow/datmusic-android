@@ -31,6 +31,10 @@ abstract class ArtistsDao : PaginatedEntryDao<DatmusicSearchParams, Artist>() {
     @Query("SELECT * FROM artists WHERE id = :id")
     abstract override fun entry(id: String): Flow<Artist>
 
+    @Transaction
+    @Query("SELECT * FROM artists WHERE id = :id")
+    abstract override fun entryNullable(id: String): Flow<Artist?>
+
     @Query("DELETE FROM artists WHERE id = :id")
     abstract override suspend fun delete(id: String)
 

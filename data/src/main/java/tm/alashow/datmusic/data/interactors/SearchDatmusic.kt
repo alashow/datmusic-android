@@ -18,11 +18,11 @@ class SearchDatmusic<T : Entity> @Inject constructor(
     private val dispatchers: CoroutineDispatchers
 ) : Interactor<SearchDatmusic.Params>() {
 
+    data class Params(val searchParams: DatmusicSearchParams, val forceRefresh: Boolean = false)
+
     override suspend fun doWork(params: Params) {
         withContext(dispatchers.io) {
             datmusicSearchStore.fetch(params.searchParams, params.forceRefresh)
         }
     }
-
-    data class Params(val searchParams: DatmusicSearchParams, val forceRefresh: Boolean = false)
 }

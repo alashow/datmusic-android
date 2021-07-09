@@ -16,6 +16,7 @@ import javax.inject.Named
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import org.threeten.bp.Duration
 import tm.alashow.data.LastRequests
 import tm.alashow.data.PreferencesStore
 import tm.alashow.datmusic.data.db.daos.AlbumsDao
@@ -150,10 +151,10 @@ object DatmusicSearchStoreModule {
     @Provides
     @Singleton
     @Named("artists")
-    fun datmusicArtistsLastRequests(preferences: PreferencesStore) = LastRequests("search_artists", preferences)
+    fun datmusicArtistsLastRequests(preferences: PreferencesStore) = LastRequests("search_artists", preferences, Duration.ofDays(7))
 
     @Provides
     @Singleton
     @Named("albums")
-    fun datmusicAlbumsLastRequests(preferences: PreferencesStore) = LastRequests("search_albums", preferences)
+    fun datmusicAlbumsLastRequests(preferences: PreferencesStore) = LastRequests("search_albums", preferences, Duration.ofDays(7))
 }

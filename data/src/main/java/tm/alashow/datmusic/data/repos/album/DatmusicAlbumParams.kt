@@ -16,7 +16,7 @@ data class DatmusicAlbumParams(
 ) {
 
     // used in Room queries
-    override fun toString() = hashCode().toString()
+    override fun toString() = "id=$id"
 
     companion object {
         fun DatmusicAlbumParams.toQueryMap(): Map<String, Any> = mutableMapOf<String, Any>(
