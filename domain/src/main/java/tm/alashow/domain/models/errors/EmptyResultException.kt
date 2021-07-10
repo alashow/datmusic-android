@@ -11,5 +11,3 @@ fun <T> List<T>?.throwOnEmpty() = if (isNullOrEmpty()) throw EmptyResultExceptio
 fun <T> Result<List<T>>.requireNonEmpty(condition: () -> Boolean = { true }): List<T> {
     return getOrThrow().apply { if (condition()) throwOnEmpty() }
 }
-
-fun <T> Result<List<T>>.requireNonEmptyInitialPage(page: Int) = requireNonEmpty { page == 0 }

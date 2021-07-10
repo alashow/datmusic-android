@@ -15,7 +15,7 @@ abstract class RoomRepo<E : Entity>(
     private val dao: EntityDao<Params, E>,
     private val dispatchers: CoroutineDispatchers
 ) {
-    suspend fun entries(params: Params) = withContext(dispatchers.io) { dao.entriesObservable(params) }
+    suspend fun entries(params: Params) = withContext(dispatchers.io) { dao.entriesObservable(params, params.page) }
 
     suspend fun isEmpty(params: Params): Flow<Boolean> {
         return entries(params).map { it.isNotEmpty() }

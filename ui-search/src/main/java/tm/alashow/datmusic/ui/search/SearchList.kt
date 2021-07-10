@@ -254,6 +254,7 @@ internal fun ArtistList(pagingItems: LazyPagingItems<Artist>, imageSize: Dp = Ar
 
             val navigator = LocalNavigator.current
             val coroutine = rememberCoroutineScope()
+
             ArtistColumn(artist, imageSize) {
                 coroutine.launch { navigator.navigate(LeafScreen.ArtistDetails.buildRoute(it.id)) }
             }
@@ -271,11 +272,12 @@ internal fun AlbumList(pagingItems: LazyPagingItems<Album>, itemSize: Dp = Album
 
     LazyRow(Modifier.fillMaxWidth()) {
         items(pagingItems, key = { _, item -> item.id }) {
-            val album = it ?: return@items
+            val album = it ?: Album()
 
             val navigator = LocalNavigator.current
             val coroutine = rememberCoroutineScope()
-            AlbumColumn(album, itemSize, iconPadding) {
+
+            AlbumColumn(album, itemSize, iconPadding, isPlaceholder = it == null) {
                 coroutine.launch { navigator.navigate(LeafScreen.AlbumDetails.buildRoute(it)) }
             }
         }
@@ -291,8 +293,8 @@ internal fun LazyListScope.audioList(pagingItems: LazyPagingItems<Audio>) {
         }
 
     items(pagingItems, key = { _, item -> item.id }) {
-        val audio = it ?: return@items
-        AudioRow(audio)
+        val audio = it ?: Audio()
+        AudioRow(audio, isPlaceholder = it == null)
     }
 
     loadingMore(pagingItems)
@@ -328,9 +330,7 @@ private fun SearchListLabel(label: String, loadState: CombinedLoadStates) {
             .padding(horizontal = AppTheme.specs.padding, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            label, style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold)
-        )
+        Text(label, style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold))
 
         AnimatedVisibility(
             visible = loadState.source.refresh == LoadState.Loading || loadState.mediator?.refresh == LoadState.Loading,

@@ -28,7 +28,7 @@ data class Artist(
 
     @SerialName("name")
     @ColumnInfo(name = "name")
-    val name: String = "",
+    val name: String = "Unknown Artist",
 
     @SerialName("domain")
     @ColumnInfo(name = "domain")
@@ -66,7 +66,7 @@ data class Artist(
     val searchIndex: Int = 0,
 ) : BasePaginatedEntity(), Parcelable {
 
-    fun sourcePhoto() = _photo.maxByOrNull { it.height }?.url
+    private fun sourcePhoto() = _photo.maxByOrNull { it.height }?.url
 
     fun photo() = sourcePhoto() ?: buildAlternatePhotoUrl("medium")
     fun largePhoto() = buildAlternatePhotoUrl("large")

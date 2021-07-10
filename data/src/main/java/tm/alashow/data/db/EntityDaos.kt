@@ -38,7 +38,7 @@ abstract class EntityDao<Params : Any, E : Entity> {
     @Transaction
     open suspend fun withTransaction(tx: suspend () -> Unit) = tx()
 
-    abstract fun entriesObservable(params: Params): Flow<List<E>>
+    abstract fun entriesObservable(params: Params, page: Int): Flow<List<E>>
     abstract fun entriesObservable(count: Int, offset: Int): Flow<List<E>>
 
     abstract fun entry(id: String): Flow<E>
@@ -62,6 +62,7 @@ abstract class PaginatedEntryDao<Params : Any, E : PaginatedEntity> : EntityDao<
     abstract fun entriesPagingSource(params: Params): PagingSource<Int, E>
 
     abstract suspend fun delete(params: Params)
+    abstract suspend fun delete(params: Params, page: Int)
     abstract suspend fun getLastPage(params: Params): Int?
 
     @Transaction
@@ -77,8 +78,8 @@ abstract class PaginatedEntryDao<Params : Any, E : PaginatedEntity> : EntityDao<
     }
 
     @Transaction
-    open suspend fun update(params: Params, entities: List<E>) {
-        delete(params)
+    open suspend fun update(params: Params, page: Int, entities: List<E>) {
+        delete(params, page)
         insertAll(entities)
     }
 }

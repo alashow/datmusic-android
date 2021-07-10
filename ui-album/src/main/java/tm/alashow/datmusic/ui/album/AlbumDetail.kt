@@ -138,7 +138,7 @@ private fun LazyListScope.albumDetails(
 ): List<Audio> {
     val albumAudios = when (details) {
         is Success -> details()
-        is Loading -> (1..album.songCount).map { Audio(title = "Loading artist...", artist = "Loading") }
+        is Loading -> (1..album.songCount).map { Audio() }
         else -> emptyList()
     }
 

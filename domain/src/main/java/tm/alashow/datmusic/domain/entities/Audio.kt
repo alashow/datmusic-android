@@ -32,11 +32,11 @@ data class Audio(
 
     @SerialName("artist")
     @ColumnInfo(name = "artist")
-    val artist: String = "",
+    val artist: String = "Unknown Artist",
 
     @SerialName("title")
     @ColumnInfo(name = "title")
-    val title: String = "",
+    val title: String = "Untitled",
 
     @SerialName("duration")
     @ColumnInfo(name = "duration")

@@ -61,7 +61,8 @@ abstract class PagingInteractor<P : PagingInteractor.Parameters<T>, T : Any> : S
     companion object {
         val DEFAULT_PAGING_CONFIG = PagingConfig(
             pageSize = 100,
-            initialLoadSize = 200,
+            initialLoadSize = 100,
+            prefetchDistance = 5,
             enablePlaceholders = true
         )
     }

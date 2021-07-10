@@ -25,7 +25,7 @@ import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
-import tm.alashow.domain.models.errors.requireNonEmptyInitialPage
+import tm.alashow.domain.models.errors.requireNonEmpty
 
 typealias DatmusicSearchStore<T> = Store<DatmusicSearchParams, List<T>>
 
@@ -33,17 +33,16 @@ typealias DatmusicSearchStore<T> = Store<DatmusicSearchParams, List<T>>
 @Module
 object DatmusicSearchStoreModule {
 
-    private fun searchPrimaryKey(id: Any, params: DatmusicSearchParams) = "${id}_${params.hashCode()}"
+    private fun searchPrimaryKey(id: Any, params: DatmusicSearchParams) = "${id}_${params.toString().hashCode()}"
 
     private suspend fun <T> Result<List<T>>.fetcherDefaults(lastRequests: LastRequests, params: DatmusicSearchParams) = onSuccess {
-        if (params.page == 0)
-            lastRequests.save(params.toString())
-    }.requireNonEmptyInitialPage(params.page)
+        lastRequests.save(params = params.toString() + params.page)
+    }.requireNonEmpty()
 
     private fun <T> Flow<List<T>>.sourceReaderFilter(lastRequests: LastRequests, params: DatmusicSearchParams) = map { entries ->
         when {
             entries.isEmpty() -> null // because Store only treats nulls as no-value
-            lastRequests.isExpired(params.toString()) -> null // this source is invalid if it's expired
+            lastRequests.isExpired(params = params.toString() + params.page) -> null // this source is invalid if it's expired
             else -> entries
         }
     }
@@ -55,13 +54,9 @@ object DatmusicSearchStoreModule {
         dao: AudiosDao,
         @Named("audios") lastRequests: LastRequests
     ): DatmusicSearchStore<Audio> = StoreBuilder.from(
-        fetcher = Fetcher.of { params: DatmusicSearchParams ->
-            search(params).map { it.data.audios }.fetcherDefaults(lastRequests, params)
-        },
+        fetcher = Fetcher.of { params: DatmusicSearchParams -> search(params).map { it.data.audios }.fetcherDefaults(lastRequests, params) },
         sourceOfTruth = SourceOfTruth.of(
-            reader = { params: DatmusicSearchParams ->
-                dao.entriesObservable(params).sourceReaderFilter(lastRequests, params)
-            },
+            reader = { params -> dao.entriesObservable(params, params.page).sourceReaderFilter(lastRequests, params) },
             writer = { params, response ->
                 dao.withTransaction {
                     val entries = response.mapIndexed { index, it ->
@@ -72,7 +67,7 @@ object DatmusicSearchStoreModule {
                             primaryKey = searchPrimaryKey(it.id, params),
                         )
                     }
-                    dao.update(params, entries)
+                    dao.update(params, params.page, entries)
                 }
             },
             delete = dao::delete,
@@ -87,13 +82,9 @@ object DatmusicSearchStoreModule {
         dao: ArtistsDao,
         @Named("artists") lastRequests: LastRequests
     ): DatmusicSearchStore<Artist> = StoreBuilder.from(
-        fetcher = Fetcher.of { params: DatmusicSearchParams ->
-            search(params).map { it.data.artists }.fetcherDefaults(lastRequests, params)
-        },
+        fetcher = Fetcher.of { params: DatmusicSearchParams -> search(params).map { it.data.artists }.fetcherDefaults(lastRequests, params) },
         sourceOfTruth = SourceOfTruth.of(
-            reader = { params: DatmusicSearchParams ->
-                dao.entriesObservable(params).sourceReaderFilter(lastRequests, params)
-            },
+            reader = { params -> dao.entriesObservable(params, params.page).sourceReaderFilter(lastRequests, params) },
             writer = { params, response ->
                 dao.withTransaction {
                     val entries =
@@ -105,7 +96,7 @@ object DatmusicSearchStoreModule {
                                 primaryKey = searchPrimaryKey(it.id, params),
                             )
                         }
-                    dao.update(params, entries)
+                    dao.update(params, params.page, entries)
                 }
             },
             delete = dao::delete,
@@ -120,13 +111,9 @@ object DatmusicSearchStoreModule {
         dao: AlbumsDao,
         @Named("albums") lastRequests: LastRequests
     ): DatmusicSearchStore<Album> = StoreBuilder.from(
-        fetcher = Fetcher.of { params: DatmusicSearchParams ->
-            search(params).map { it.data.albums }.fetcherDefaults(lastRequests, params)
-        },
+        fetcher = Fetcher.of { params: DatmusicSearchParams -> search(params).map { it.data.albums }.fetcherDefaults(lastRequests, params) },
         sourceOfTruth = SourceOfTruth.of(
-            reader = { params: DatmusicSearchParams ->
-                dao.entriesObservable(params).sourceReaderFilter(lastRequests, params)
-            },
+            reader = { params -> dao.entriesObservable(params, params.page).sourceReaderFilter(lastRequests, params) },
             writer = { params, response ->
                 dao.withTransaction {
                     val entries =
@@ -138,7 +125,7 @@ object DatmusicSearchStoreModule {
                                 primaryKey = searchPrimaryKey(it.id, params),
                             )
                         }
-                    dao.update(params, entries)
+                    dao.update(params, params.page, entries)
                 }
             },
             delete = dao::delete,

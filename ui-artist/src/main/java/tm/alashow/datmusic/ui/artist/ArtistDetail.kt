@@ -136,12 +136,12 @@ private fun LazyListScope.ArtistDetails(
 ): Pair<List<Album>, List<Audio>> {
     val artistAlbums = when (details) {
         is Success -> details().albums
-        is Loading -> (1..5).map { Album(title = "Loading", artists = listOf(Artist(name = "Loading")), year = 2000) }
+        is Loading -> (1..5).map { Album() }
         else -> emptyList()
     }
     val artistAudios = when (details) {
         is Success -> details().audios
-        is Loading -> (1..5).map { Audio(title = "Loading artist...", artist = "Loading") }
+        is Loading -> (1..5).map { Audio() }
         else -> emptyList()
     }
 

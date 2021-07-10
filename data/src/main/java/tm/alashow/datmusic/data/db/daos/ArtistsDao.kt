@@ -16,8 +16,8 @@ import tm.alashow.datmusic.domain.entities.Artist
 @Dao
 abstract class ArtistsDao : PaginatedEntryDao<DatmusicSearchParams, Artist>() {
     @Transaction
-    @Query("SELECT * FROM artists WHERE params = :params ORDER BY page ASC, search_index ASC")
-    abstract override fun entriesObservable(params: DatmusicSearchParams): Flow<List<Artist>>
+    @Query("SELECT * FROM artists WHERE params = :params and page = :page ORDER BY page ASC, search_index ASC")
+    abstract override fun entriesObservable(params: DatmusicSearchParams, page: Int): Flow<List<Artist>>
 
     @Transaction
     @Query("SELECT * FROM artists ORDER BY page ASC, search_index ASC LIMIT :count OFFSET :offset")
@@ -44,6 +44,9 @@ abstract class ArtistsDao : PaginatedEntryDao<DatmusicSearchParams, Artist>() {
 
     @Query("DELETE FROM artists WHERE params = :params")
     abstract override suspend fun delete(params: DatmusicSearchParams)
+
+    @Query("DELETE FROM audios WHERE params = :params and page = :page")
+    abstract override suspend fun delete(params: DatmusicSearchParams, page: Int)
 
     @Query("DELETE FROM artists")
     abstract override suspend fun deleteAll()

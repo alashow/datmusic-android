@@ -37,7 +37,7 @@ data class Album(
 
     @SerialName("title")
     @ColumnInfo(name = "title")
-    val title: String = "",
+    val title: String = "Untitled",
 
     @SerialName("subtitle")
     @ColumnInfo(name = "subtitle")
@@ -45,7 +45,7 @@ data class Album(
 
     @SerialName("year")
     @ColumnInfo(name = "year")
-    val year: Int = 0,
+    val year: Int = 1970,
 
     @SerialName("count")
     @ColumnInfo(name = "count")
@@ -73,7 +73,7 @@ data class Album(
 
     @SerialName("main_artists")
     @ColumnInfo(name = "main_artists")
-    val artists: List<Artist> = listOf(),
+    val artists: List<Artist> = listOf(Artist()),
 
     @SerialName("genres")
     @ColumnInfo(name = "genres")
