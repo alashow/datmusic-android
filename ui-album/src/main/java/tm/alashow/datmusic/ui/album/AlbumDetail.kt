@@ -24,7 +24,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -34,7 +33,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.ui.Scaffold
 import kotlin.math.round
-import kotlinx.coroutines.launch
 import tm.alashow.base.util.extensions.localizedMessage
 import tm.alashow.base.util.extensions.localizedTitle
 import tm.alashow.common.compose.rememberFlowWithLifecycle
@@ -58,10 +56,9 @@ import tm.alashow.ui.theme.AppTheme
 @Composable
 fun AlbumDetail() {
     val navigator = LocalNavigator.current
-    val coroutine = rememberCoroutineScope()
 
     AlbumDetail(viewModel = hiltViewModel()) {
-        coroutine.launch { navigator.back() }
+        navigator.back()
     }
 }
 

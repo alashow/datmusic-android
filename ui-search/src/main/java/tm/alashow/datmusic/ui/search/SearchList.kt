@@ -31,7 +31,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,7 +45,6 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import kotlinx.coroutines.launch
 import tm.alashow.base.util.extensions.localizedMessage
 import tm.alashow.base.util.extensions.localizedTitle
 import tm.alashow.common.compose.LocalScaffoldState
@@ -253,10 +251,8 @@ internal fun ArtistList(pagingItems: LazyPagingItems<Artist>, imageSize: Dp = Ar
             val artist = it ?: return@items
 
             val navigator = LocalNavigator.current
-            val coroutine = rememberCoroutineScope()
-
             ArtistColumn(artist, imageSize) {
-                coroutine.launch { navigator.navigate(LeafScreen.ArtistDetails.buildRoute(it.id)) }
+                navigator.navigate(LeafScreen.ArtistDetails.buildRoute(it.id))
             }
         }
 
@@ -275,10 +271,8 @@ internal fun AlbumList(pagingItems: LazyPagingItems<Album>, itemSize: Dp = Album
             val album = it ?: Album()
 
             val navigator = LocalNavigator.current
-            val coroutine = rememberCoroutineScope()
-
             AlbumColumn(album, itemSize, iconPadding, isPlaceholder = it == null) {
-                coroutine.launch { navigator.navigate(LeafScreen.AlbumDetails.buildRoute(it)) }
+                navigator.navigate(LeafScreen.AlbumDetails.buildRoute(it))
             }
         }
 

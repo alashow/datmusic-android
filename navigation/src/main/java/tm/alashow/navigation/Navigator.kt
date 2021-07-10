@@ -26,12 +26,12 @@ val LocalNavigator = staticCompositionLocalOf<Navigator> {
 class Navigator {
     private val navigationQueue = Channel<NavigationEvent>(1, BufferOverflow.DROP_OLDEST)
 
-    suspend fun navigate(route: String) {
-        navigationQueue.send(NavigationEvent.Destination(route))
+    fun navigate(route: String) {
+        navigationQueue.trySend(NavigationEvent.Destination(route))
     }
 
-    suspend fun back() {
-        navigationQueue.send(NavigationEvent.Back())
+    fun back() {
+        navigationQueue.trySend(NavigationEvent.Back())
     }
 
     val queue = flow {
