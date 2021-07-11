@@ -16,6 +16,10 @@
     <string name="search.artists">Artists</string>
     <string name="search.albums">Albums</string>
 
+    <string name="artists.detail.title">Artist</string>
+
+    <string name="albums.detail.title">Album</string>
+
     <string name="settings.title">Settings</string>
     <string name="settings.darkMode">Dark mode</string>
     <string name="settings.colorPalette">Color palette</string>

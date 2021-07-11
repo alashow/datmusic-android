@@ -26,7 +26,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -77,16 +76,13 @@ private fun AlbumDetail(viewModel: AlbumDetailViewModel, onBackClick: () -> Unit
                     headerVisibilityProgress.animateTo(1 - round(progress.value))
                 }
                 DetailScreenAppBar(
-                    title = "Album",
-                    modifier = Modifier.graphicsLayer {
-                        alpha = 1 - headerVisibilityProgress.value
-                        translationY = headerHeight.value * (-headerVisibilityProgress.value)
-                    },
+                    title = stringResource(R.string.albums_detail_title),
+                    collapsed = headerVisibilityProgress.value == 1f,
                     onNavigationClick = onBackClick,
                 )
             }
         ) { padding ->
-            ArtistDetailList(viewState, viewModel::refresh, onBackClick, padding, listState)
+            ArtistDetailList(viewState, viewModel::refresh, padding, listState)
         }
     }
 }
@@ -95,7 +91,6 @@ private fun AlbumDetail(viewModel: AlbumDetailViewModel, onBackClick: () -> Unit
 private fun ArtistDetailList(
     viewState: AlbumDetailViewState,
     onRetry: () -> Unit,
-    onBackClick: () -> Unit,
     padding: PaddingValues = PaddingValues(),
     listState: LazyListState,
     modifier: Modifier = Modifier
@@ -104,12 +99,12 @@ private fun ArtistDetailList(
         LazyColumn(
             state = listState,
             modifier = modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = padding.calculateBottomPadding())
+            contentPadding = PaddingValues(bottom = padding.calculateTopPadding() + padding.calculateBottomPadding())
         ) {
             val album = viewState.album
             if (album != null) {
                 item {
-                    CoverHeaderRow(title = album.title, imageRequest = album.photo.mediumUrl, onBackClick = onBackClick)
+                    CoverHeaderRow(title = album.title, imageRequest = album.photo.mediumUrl)
                 }
 
                 val details = viewState.albumDetails

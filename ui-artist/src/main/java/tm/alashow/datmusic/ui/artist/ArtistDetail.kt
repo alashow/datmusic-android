@@ -26,7 +26,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -45,6 +44,7 @@ import tm.alashow.datmusic.ui.components.CoverHeaderDefaults
 import tm.alashow.datmusic.ui.components.CoverHeaderRow
 import tm.alashow.domain.models.Async
 import tm.alashow.domain.models.Fail
+import tm.alashow.domain.models.Incomplete
 import tm.alashow.domain.models.Loading
 import tm.alashow.domain.models.Success
 import tm.alashow.navigation.LeafScreen
@@ -77,16 +77,13 @@ private fun ArtistDetail(viewModel: ArtistDetailViewModel, onBackClick: () -> Un
                     headerVisibilityProgress.animateTo(1 - round(progress.value))
                 }
                 DetailScreenAppBar(
-                    title = "Artist",
-                    modifier = Modifier.graphicsLayer {
-                        alpha = 1 - headerVisibilityProgress.value
-                        translationY = headerHeight.value * (-headerVisibilityProgress.value)
-                    },
+                    title = stringResource(R.string.artists_detail_title),
+                    collapsed = headerVisibilityProgress.value == 1f,
                     onNavigationClick = onBackClick,
                 )
             }
         ) { padding ->
-            ArtistDetailList(viewState, viewModel::refresh, onBackClick, padding)
+            ArtistDetailList(viewState, viewModel::refresh, padding)
         }
     }
 }
@@ -95,7 +92,6 @@ private fun ArtistDetail(viewModel: ArtistDetailViewModel, onBackClick: () -> Un
 private fun ArtistDetailList(
     viewState: ArtistDetailViewState,
     onRetry: () -> Unit,
-    onBackClick: () -> Unit,
     padding: PaddingValues = PaddingValues(),
     modifier: Modifier = Modifier
 ) {
@@ -103,16 +99,16 @@ private fun ArtistDetailList(
         LazyColumn(
             state = rememberLazyListState(),
             modifier = modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = padding.calculateBottomPadding())
+            contentPadding = PaddingValues(bottom = padding.calculateTopPadding() + padding.calculateBottomPadding())
         ) {
             val artist = viewState.artist
             if (artist != null) {
                 item {
-                    CoverHeaderRow(title = artist.name, imageRequest = artist.largePhoto(), onBackClick = onBackClick)
+                    CoverHeaderRow(title = artist.name, imageRequest = artist.largePhoto())
                 }
 
                 val details = viewState.artistDetails
-                val detailsLoading = details is Loading
+                val detailsLoading = details is Incomplete
 
                 val (artistAlbums, artistAudios) = ArtistDetails(details, detailsLoading)
 
