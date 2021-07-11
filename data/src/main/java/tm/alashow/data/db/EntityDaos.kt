@@ -11,6 +11,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Transaction
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import tm.alashow.domain.models.Entity
 import tm.alashow.domain.models.PaginatedEntity
 
@@ -43,6 +44,8 @@ abstract class EntityDao<Params : Any, E : Entity> {
 
     abstract fun entry(id: String): Flow<E>
     abstract fun entryNullable(id: String): Flow<E?>
+
+    abstract fun entriesById(ids: List<String>): Flow<List<E>>
 
     abstract suspend fun count(params: Params): Int
     abstract suspend fun has(id: String): Int
@@ -81,5 +84,17 @@ abstract class PaginatedEntryDao<Params : Any, E : PaginatedEntity> : EntityDao<
     open suspend fun update(params: Params, page: Int, entities: List<E>) {
         delete(params, page)
         insertAll(entities)
+    }
+
+    /**
+     * Inserts given entities if it doesn't exist already in database.
+     * This is little dirty because entity ids are not actually primary keys.
+     */
+    @Transaction
+    open suspend fun insertMissing(entities: List<E>) {
+        entriesById(entities.map { it.id }).map { existing ->
+            val existingIds = existing.map { it.id }.toSet()
+            insertAll(entities.filterNot { entity -> existingIds.contains(entity.id) })
+        }
     }
 }
