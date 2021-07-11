@@ -28,7 +28,7 @@ data class Artist(
 
     @SerialName("name")
     @ColumnInfo(name = "name")
-    val name: String = "Unknown Artist",
+    val name: String = "Unknown",
 
     @SerialName("domain")
     @ColumnInfo(name = "domain")

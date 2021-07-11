@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
@@ -25,6 +26,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.coil.rememberCoilPainter
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.placeholder
+import com.google.accompanist.placeholder.material.shimmer
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.theme.AppTheme
@@ -39,15 +43,20 @@ fun ArtistColumn(
     artist: Artist,
     imageSize: Dp = ArtistsDefaults.imageSize,
     nameWidth: Dp = ArtistsDefaults.nameWidth,
+    isPlaceholder: Boolean = false,
     onClick: (Artist) -> Unit = {},
 ) {
+    val loadingModifier = Modifier.placeholder(
+        visible = isPlaceholder,
+        highlight = PlaceholderHighlight.shimmer(),
+    )
     Column(
         verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall),
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .clickable { onClick(artist) }
             .fillMaxWidth()
-            .padding(horizontal = AppTheme.specs.paddingTiny)
+            .padding(AppTheme.specs.paddingTiny)
     ) {
         val image = rememberCoilPainter(artist.photo(), fadeIn = true)
         CoverImage(
@@ -60,15 +69,18 @@ fun ArtistColumn(
                 painter = image,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                modifier = modifier
+                modifier = modifier.composed { loadingModifier }
             )
         }
+
         Text(
             artist.name,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,
-            modifier = Modifier.width(nameWidth)
+            modifier = Modifier
+                .width(nameWidth)
+                .composed { loadingModifier }
         )
     }
 }

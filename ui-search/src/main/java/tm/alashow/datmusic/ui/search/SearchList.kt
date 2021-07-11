@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarResult
@@ -123,7 +124,8 @@ internal fun SearchList(
 
     SwipeRefresh(
         state = rememberSwipeRefreshState(
-            isRefreshing = pagersAreEmpty && hasLoadingPager
+            // isRefreshing = pagersAreEmpty && hasLoadingPager
+            isRefreshing = false
         ),
         onRefresh = { refreshPagers() },
         indicatorPadding = padding,
@@ -243,10 +245,20 @@ private fun SearchListContent(
 @Composable
 internal fun ArtistList(pagingItems: LazyPagingItems<Artist>, imageSize: Dp = ArtistsDefaults.imageSize) {
     LogCompositions(tag = "ArtistList")
-    if (pagingItems.itemCount > 0)
-        SearchListLabel(stringResource(R.string.search_artists), pagingItems.loadState)
+
+    val isLoading = pagingItems.loadState.refresh == LoadState.Loading
+    val hasItems = pagingItems.itemCount > 0
+    if (hasItems || isLoading)
+        SearchListLabel(stringResource(R.string.search_artists), hasItems, pagingItems.loadState)
 
     LazyRow(Modifier.fillMaxWidth()) {
+        if (!hasItems && isLoading) {
+            val placeholders = (1..5).map { Artist() }
+            items(placeholders) { placeholder ->
+                ArtistColumn(placeholder, imageSize, isPlaceholder = true)
+            }
+        }
+
         items(pagingItems, key = { _, item -> item.id }) { it ->
             val artist = it ?: return@items
 
@@ -261,18 +273,31 @@ internal fun ArtistList(pagingItems: LazyPagingItems<Artist>, imageSize: Dp = Ar
 }
 
 @Composable
-internal fun AlbumList(pagingItems: LazyPagingItems<Album>, itemSize: Dp = AlbumsDefaults.imageSize, iconPadding: Dp = AlbumsDefaults.iconPadding) {
+internal fun AlbumList(
+    pagingItems: LazyPagingItems<Album>,
+    itemSize: Dp = AlbumsDefaults.imageSize,
+    iconPadding: Dp = AlbumsDefaults.iconPadding
+) {
     LogCompositions(tag = "AlbumList")
-    if (pagingItems.itemCount > 0)
-        SearchListLabel(stringResource(R.string.search_albums), pagingItems.loadState)
+    val isLoading = pagingItems.loadState.refresh == LoadState.Loading
+    val hasItems = pagingItems.itemCount > 0
+    if (hasItems || isLoading)
+        SearchListLabel(stringResource(R.string.search_albums), hasItems, pagingItems.loadState)
 
     LazyRow(Modifier.fillMaxWidth()) {
+        if (!hasItems && isLoading) {
+            val placeholders = (1..5).map { Album() }
+            items(placeholders) { placeholder ->
+                AlbumColumn(placeholder, itemSize, iconPadding, isPlaceholder = true)
+            }
+        }
+
         items(pagingItems, key = { _, item -> item.id }) {
             val album = it ?: Album()
 
             val navigator = LocalNavigator.current
-            AlbumColumn(album, itemSize, iconPadding, isPlaceholder = it == null) {
-                navigator.navigate(LeafScreen.AlbumDetails.buildRoute(it))
+            AlbumColumn(album, itemSize, iconPadding, isPlaceholder = it == null) { clickedAlbum ->
+                navigator.navigate(LeafScreen.AlbumDetails.buildRoute(clickedAlbum))
             }
         }
 
@@ -281,10 +306,19 @@ internal fun AlbumList(pagingItems: LazyPagingItems<Album>, itemSize: Dp = Album
 }
 
 internal fun LazyListScope.audioList(pagingItems: LazyPagingItems<Audio>) {
-    if (pagingItems.itemCount > 0)
+    val isLoading = pagingItems.loadState.refresh == LoadState.Loading
+    val hasItems = pagingItems.itemCount > 0
+    if (hasItems || isLoading)
         item {
-            SearchListLabel(stringResource(R.string.search_audios), pagingItems.loadState)
+            SearchListLabel(stringResource(R.string.search_audios), hasItems, pagingItems.loadState)
         }
+
+    if (!hasItems && isLoading) {
+        val placeholders = (1..20).map { Audio() }
+        items(placeholders) {
+            AudioRow(it, isPlaceholder = true)
+        }
+    }
 
     items(pagingItems, key = { _, item -> item.id }) {
         val audio = it ?: Audio()
@@ -316,7 +350,7 @@ private fun <T : Any> LazyListScope.loadingMore(pagingItems: LazyPagingItems<T>,
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-private fun SearchListLabel(label: String, loadState: CombinedLoadStates) {
+private fun SearchListLabel(label: String, hasItems: Boolean, loadState: CombinedLoadStates) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
@@ -327,7 +361,7 @@ private fun SearchListLabel(label: String, loadState: CombinedLoadStates) {
         Text(label, style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold))
 
         AnimatedVisibility(
-            visible = loadState.source.refresh == LoadState.Loading || loadState.mediator?.refresh == LoadState.Loading,
+            visible = (hasItems && loadState.mediator?.refresh == LoadState.Loading),
             enter = expandIn(Alignment.Center),
             exit = shrinkOut(Alignment.Center)
         ) {
