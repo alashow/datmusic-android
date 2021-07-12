@@ -68,17 +68,17 @@ private fun ArtistDetail(viewModel: ArtistDetailViewModel, onBackClick: () -> Un
     val viewState by rememberFlowWithLifecycle(viewModel.state).collectAsState(initial = ArtistDetailViewState.Empty)
 
     val headerHeight = CoverHeaderDefaults.height
-    val headerVisibilityProgress = Animatable(1f)
+    val headerOffsetProgress = Animatable(0f)
 
     OffsetNotifyingBox(headerHeight = headerHeight) { _, progress ->
         Scaffold(
             topBar = {
                 LaunchedEffect(progress.value) {
-                    headerVisibilityProgress.animateTo(1 - round(progress.value))
+                    headerOffsetProgress.animateTo(round(progress.value))
                 }
                 DetailScreenAppBar(
                     title = stringResource(R.string.artists_detail_title),
-                    collapsed = headerVisibilityProgress.value == 1f,
+                    collapsed = headerOffsetProgress.value == 0f,
                     onNavigationClick = onBackClick,
                 )
             }

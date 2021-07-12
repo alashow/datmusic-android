@@ -67,17 +67,17 @@ private fun AlbumDetail(viewModel: AlbumDetailViewModel, onBackClick: () -> Unit
     val listState = rememberLazyListState()
 
     val headerHeight = CoverHeaderDefaults.height
-    val headerVisibilityProgress = Animatable(1f)
+    val headerVisibilityProgress = Animatable(0f)
 
     OffsetNotifyingBox(headerHeight = headerHeight) { _, progress ->
         Scaffold(
             topBar = {
                 LaunchedEffect(progress.value) {
-                    headerVisibilityProgress.animateTo(1 - round(progress.value))
+                    headerVisibilityProgress.animateTo(round(progress.value))
                 }
                 DetailScreenAppBar(
                     title = stringResource(R.string.albums_detail_title),
-                    collapsed = headerVisibilityProgress.value == 1f,
+                    collapsed = headerVisibilityProgress.value == 0f,
                     onNavigationClick = onBackClick,
                 )
             }
