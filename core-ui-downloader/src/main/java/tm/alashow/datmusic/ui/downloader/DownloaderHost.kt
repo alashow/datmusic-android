@@ -29,13 +29,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import tm.alashow.common.compose.rememberFlowWithLifecycle
-import tm.alashow.datmusic.data.repos.downloads.DownloadManager
-import tm.alashow.datmusic.data.repos.downloads.DownloadManager.*
+import tm.alashow.datmusic.data.repos.downloads.Downloader
+import tm.alashow.datmusic.data.repos.downloads.Downloader.*
 import tm.alashow.ui.components.TextRoundedButton
 import tm.alashow.ui.theme.AppTheme
 
-val LocalDownloadManager = staticCompositionLocalOf<DownloadManager> {
-    error("LocalDownloadManager not provided")
+val LocalDownloader = staticCompositionLocalOf<Downloader> {
+    error("LocalDownloader not provided")
 }
 
 @Composable
@@ -53,7 +53,7 @@ fun DownloaderHost(content: @Composable () -> Unit) {
         }
     }
 
-    CompositionLocalProvider(LocalDownloadManager provides viewModel.downloadManager) {
+    CompositionLocalProvider(LocalDownloader provides viewModel.downloader) {
         DownloadsLocationDialog(downloadsLocationDialogShown, dismissDialog = { downloadsLocationDialogShown = false })
         content()
     }
@@ -62,12 +62,12 @@ fun DownloaderHost(content: @Composable () -> Unit) {
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun DownloadsLocationDialog(dialogShown: Boolean, dismissDialog: () -> Unit) {
-    val downloadManager = LocalDownloadManager.current
+    val downloader = LocalDownloader.current
     val coroutine = rememberCoroutineScope()
     val documentTreeLauncher = rememberLauncherForActivityResult(contract = WriteableOpenDocumentTree()) {
         coroutine.launch {
             try {
-                downloadManager.setDownloadsLocation(it)
+                downloader.setDownloadsLocation(it)
             } catch (e: Exception) {
                 Timber.e(e)
             }

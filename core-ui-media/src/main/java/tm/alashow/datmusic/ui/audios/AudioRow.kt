@@ -4,6 +4,7 @@
  */
 package tm.alashow.datmusic.ui.audios
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,9 +18,14 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextOverflow
 import com.google.accompanist.coil.rememberCoilPainter
 import com.google.accompanist.placeholder.PlaceholderHighlight
@@ -35,23 +41,30 @@ object AudiosDefaults
 fun AudioRow(
     audio: Audio,
     isPlaceholder: Boolean = false,
-    onClick: (Audio) -> Unit = {},
+    onClick: ((Audio) -> Unit)? = null,
 ) {
-    val loadingModifier = Modifier.placeholder(
-        visible = isPlaceholder,
-        highlight = PlaceholderHighlight.shimmer(),
-    )
+    var menuVisible by remember { mutableStateOf(false) }
+    val contentScaleOnMenuVisible = animateFloatAsState((if (menuVisible) 0.975f else 1f))
+
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
-            .clickable { onClick(audio) }
+            .clickable { if (onClick != null) onClick(audio) else menuVisible = true }
             .fillMaxWidth()
             .padding(AppTheme.specs.inputPaddings)
     ) {
-
+        val loadingModifier = Modifier.placeholder(
+            visible = isPlaceholder,
+            highlight = PlaceholderHighlight.shimmer(),
+        )
         Row(
             horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
-            modifier = Modifier.weight(19f)
+            modifier = Modifier
+                .weight(19f)
+                .graphicsLayer {
+                    scaleX *= contentScaleOnMenuVisible.value
+                    scaleY *= contentScaleOnMenuVisible.value
+                }
         ) {
             val image = rememberCoilPainter(audio.coverUrlSmall, fadeIn = true)
             CoverImage(image) { modifier ->
@@ -86,12 +99,14 @@ fun AudioRow(
             val actionHandler = AudioActionHandler()
 
             AudioDropdownMenu(
+                expanded = menuVisible,
+                onExpandedChange = { menuVisible = it },
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
                     .weight(1f),
                 onDropdownSelect = {
                     actionHandler(AudioItemAction.from(it, audio))
-                }
+                },
             )
         }
     }

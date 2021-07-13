@@ -9,11 +9,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.launch
 import tm.alashow.base.util.toast
-import tm.alashow.datmusic.ui.downloader.LocalDownloadManager
+import tm.alashow.datmusic.ui.downloader.LocalDownloader
 
 @Composable
 internal fun AudioActionHandler(): AudioActionHandler {
-    val downloadManager = LocalDownloadManager.current
+    val downloader = LocalDownloader.current
     val context = LocalContext.current
     val coroutine = rememberCoroutineScope()
 
@@ -21,7 +21,7 @@ internal fun AudioActionHandler(): AudioActionHandler {
         when (action) {
             is AudioItemAction.Download -> {
                 coroutine.launch {
-                    val uri = downloadManager.verifyAndGetDownloadsLocationUri()
+                    val uri = downloader.verifyAndGetDownloadsLocationUri()
                     if (uri != null)
                         context.toast("Uri: $uri")
                 }

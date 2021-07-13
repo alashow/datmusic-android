@@ -14,10 +14,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -26,10 +22,14 @@ import androidx.compose.ui.unit.dp
 import tm.alashow.datmusic.ui.media.R
 
 @Composable
-internal fun AudioDropdownMenu(modifier: Modifier = Modifier, onDropdownSelect: (Int) -> Unit = {}) {
-    var expanded by remember { mutableStateOf(false) }
+internal fun AudioDropdownMenu(
+    expanded: Boolean,
+    onExpandedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+    onDropdownSelect: (Int) -> Unit = {}
+) {
     IconButton(
-        onClick = { expanded = true },
+        onClick = { onExpandedChange(true) },
         modifier = modifier
     ) {
         Icon(
@@ -43,7 +43,7 @@ internal fun AudioDropdownMenu(modifier: Modifier = Modifier, onDropdownSelect: 
     Box {
         DropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false },
+            onDismissRequest = { onExpandedChange(false) },
             modifier = Modifier
                 .width(120.dp)
                 .align(Alignment.Center)
@@ -52,7 +52,7 @@ internal fun AudioDropdownMenu(modifier: Modifier = Modifier, onDropdownSelect: 
                 val label = stringResource(item)
                 DropdownMenuItem(
                     onClick = {
-                        expanded = !expanded
+                        onExpandedChange(false)
                         onDropdownSelect(item)
                     }
                 ) {

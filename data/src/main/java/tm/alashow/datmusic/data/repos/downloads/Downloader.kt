@@ -39,7 +39,7 @@ import tm.alashow.domain.models.None
 import tm.alashow.domain.models.Optional
 import tm.alashow.domain.models.some
 
-class DownloadManager @Inject constructor(
+class Downloader @Inject constructor(
     @ApplicationContext private val appContext: Context,
     private val dispatchers: CoroutineDispatchers,
     private val preferences: PreferencesStore,
