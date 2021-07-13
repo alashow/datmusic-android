@@ -5,7 +5,6 @@
 package tm.alashow.datmusic.ui.settings
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,19 +20,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
 import tm.alashow.base.ui.ColorPalettePreference
 import tm.alashow.base.ui.DarkModePreference
 import tm.alashow.base.ui.ThemeState
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.ui.ThemeViewModel
+import tm.alashow.ui.components.AppTopBar
 import tm.alashow.ui.components.SelectableDropdownMenu
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.DefaultTheme
 import tm.alashow.ui.theme.DefaultThemeDark
-import tm.alashow.ui.theme.topAppBarTitleStyle
-import tm.alashow.ui.theme.translucentSurface
 
 @Composable
 fun Settings() {
@@ -47,18 +44,7 @@ fun Settings() {
 private fun Settings(themeState: ThemeState, setThemeState: (ThemeState) -> Unit) {
     Scaffold(
         topBar = {
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .translucentSurface()
-                    .statusBarsPadding()
-            ) {
-                Text(
-                    stringResource(R.string.settings_title),
-                    style = topAppBarTitleStyle(),
-                    modifier = Modifier.padding(AppTheme.specs.padding)
-                )
-            }
+            AppTopBar(title = stringResource(R.string.settings_title))
         }
     ) { padding ->
         SettingsList(themeState, setThemeState, padding)

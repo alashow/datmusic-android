@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "00d8ee92303c3400c2f8d84e69ffd920",
+    "identityHash": "4975b47d1ad57375ac5086af52c7332c",
     "entities": [
       {
         "tableName": "audios",
@@ -351,12 +351,62 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "downloads",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`entity_id` TEXT NOT NULL, `entity_type` TEXT NOT NULL, `request_id` INTEGER NOT NULL, `id` TEXT NOT NULL, `params` TEXT NOT NULL, `_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "entityId",
+            "columnName": "entity_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "entityType",
+            "columnName": "entity_type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "requestId",
+            "columnName": "request_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "params",
+            "columnName": "params",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "_id",
+            "columnName": "_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "_id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '00d8ee92303c3400c2f8d84e69ffd920')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4975b47d1ad57375ac5086af52c7332c')"
     ]
   }
 }

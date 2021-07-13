@@ -32,6 +32,24 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import tm.alashow.ui.Zoomable
 import tm.alashow.ui.theme.AppTheme
 
+@Composable
+fun EmptyErrorBox(
+    onRetryClick: () -> Unit = {},
+    message: String = stringResource(R.string.error_empty),
+    maxHeight: Dp? = null,
+    maxHeightFraction: Float = 0.7f,
+    modifier: Modifier = Modifier
+) {
+    ErrorBox(
+        title = stringResource(R.string.error_empty_title),
+        message = message,
+        onRetryClick = onRetryClick,
+        maxHeight = maxHeight,
+        maxHeightPercent = maxHeightFraction,
+        modifier = modifier
+    )
+}
+
 @Preview
 @Composable
 fun ErrorBox(
@@ -65,7 +83,11 @@ fun ErrorBox(
         ) {
             Text(title, style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold))
             Text(message)
-            TextRoundedButton(onClick = onRetryClick, text = stringResource(R.string.error_retry), modifier = Modifier.padding(top = AppTheme.specs.padding))
+            TextRoundedButton(
+                onClick = onRetryClick,
+                text = stringResource(R.string.error_retry),
+                modifier = Modifier.padding(top = AppTheme.specs.padding)
+            )
         }
     }
 }

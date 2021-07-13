@@ -55,11 +55,11 @@ import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
-import tm.alashow.datmusic.ui.AlbumColumn
-import tm.alashow.datmusic.ui.AlbumsDefaults
-import tm.alashow.datmusic.ui.ArtistColumn
-import tm.alashow.datmusic.ui.ArtistsDefaults
-import tm.alashow.datmusic.ui.AudioRow
+import tm.alashow.datmusic.ui.albums.AlbumColumn
+import tm.alashow.datmusic.ui.albums.AlbumsDefaults
+import tm.alashow.datmusic.ui.artists.ArtistColumn
+import tm.alashow.datmusic.ui.artists.ArtistsDefaults
+import tm.alashow.datmusic.ui.audios.AudioRow
 import tm.alashow.domain.models.errors.EmptyResultException
 import tm.alashow.navigation.LeafScreen
 import tm.alashow.navigation.LocalNavigator
@@ -113,7 +113,6 @@ internal fun SearchList(
     val refreshErrorState = pagerRefreshStates.firstOrNull { it is LoadState.Error }
 
     val hasMultiplePagers = pagers.size > 1
-    val hasLoadingPager = pagerRefreshStates.any { it == LoadState.Loading }
 
     SearchListErrors(viewModel, viewState, refreshPagers, refreshErrorState, pagersAreEmpty, hasMultiplePagers)
 

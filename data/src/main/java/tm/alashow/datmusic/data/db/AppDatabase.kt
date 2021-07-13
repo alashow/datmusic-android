@@ -11,15 +11,18 @@ import tm.alashow.data.db.BaseTypeConverters
 import tm.alashow.datmusic.data.db.daos.AlbumsDao
 import tm.alashow.datmusic.data.db.daos.ArtistsDao
 import tm.alashow.datmusic.data.db.daos.AudiosDao
+import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
+import tm.alashow.datmusic.domain.entities.DownloadRequest
 
 @Database(
     entities = [
         Audio::class,
         Artist::class,
         Album::class,
+        DownloadRequest::class,
     ],
     version = 1
 )
@@ -29,4 +32,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun audiosDao(): AudiosDao
     abstract fun artistsDao(): ArtistsDao
     abstract fun albumsDao(): AlbumsDao
+
+    abstract fun downloadRequestsDao(): DownloadRequestsDao
 }

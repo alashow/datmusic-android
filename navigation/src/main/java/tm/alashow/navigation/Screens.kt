@@ -34,6 +34,7 @@ sealed class RootScreen(
     val deepLinks: List<NavDeepLink> = emptyList()
 ) : Screen {
     object Search : RootScreen("search_root")
+    object Downloads : RootScreen("downloads_root")
     object Settings : RootScreen("settings_root")
 }
 
@@ -54,6 +55,8 @@ sealed class LeafScreen(
     ) {
         fun buildRoute(query: String) = "search/?$QUERY_KEY=$query"
     }
+
+    object Downloads : LeafScreen("downloads")
 
     object Settings : LeafScreen("settings")
 

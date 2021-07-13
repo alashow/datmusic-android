@@ -2,7 +2,7 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.datmusic.ui
+package tm.alashow.datmusic.ui.audios
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -17,6 +17,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.text.style.TextOverflow
@@ -41,38 +42,57 @@ fun AudioRow(
         highlight = PlaceholderHighlight.shimmer(),
     )
     Row(
-        horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
+        horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .clickable { onClick(audio) }
             .fillMaxWidth()
             .padding(AppTheme.specs.inputPaddings)
     ) {
-        val image = rememberCoilPainter(audio.coverUrlSmall, fadeIn = true)
-        CoverImage(image) { modifier ->
-            Image(
-                painter = image,
-                contentDescription = null,
-                modifier = modifier.composed { loadingModifier }
-            )
-        }
 
-        Column(verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall)) {
-            Text(
-                audio.title,
-                style = MaterialTheme.typography.body1,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                modifier = loadingModifier
-            )
-            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
+            modifier = Modifier.weight(19f)
+        ) {
+            val image = rememberCoilPainter(audio.coverUrlSmall, fadeIn = true)
+            CoverImage(image) { modifier ->
+                Image(
+                    painter = image,
+                    contentDescription = null,
+                    modifier = modifier.composed { loadingModifier }
+                )
+            }
+
+            Column(verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall)) {
                 Text(
-                    audio.artist,
-                    style = MaterialTheme.typography.body2,
+                    audio.title,
+                    style = MaterialTheme.typography.body1,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     modifier = loadingModifier
                 )
+                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                    Text(
+                        audio.artist,
+                        style = MaterialTheme.typography.body2,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = loadingModifier
+                    )
+                }
             }
+        }
+
+        if (!isPlaceholder) {
+            val actionHandler = AudioActionHandler()
+
+            AudioDropdownMenu(
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .weight(1f),
+                onDropdownSelect = {
+                    actionHandler(AudioItemAction.from(it, audio))
+                }
+            )
         }
     }
 }

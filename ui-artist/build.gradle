@@ -45,6 +45,7 @@ dependencies {
 	implementation project(":common-ui-compose")
 	implementation project(":common-ui-theme")
 	implementation project(":common-ui-components")
+	implementation project(":core-ui-media")
 	implementation project(":navigation")
 
 	implementation Deps.Dagger.hilt

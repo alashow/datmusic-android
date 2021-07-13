@@ -19,8 +19,10 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.contentColorFor
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.rememberScaffoldState
@@ -47,7 +49,9 @@ import com.google.accompanist.insets.ui.Scaffold
 import tm.alashow.common.compose.LocalScaffoldState
 import tm.alashow.datmusic.R
 import tm.alashow.datmusic.ui.AppNavigation
+import tm.alashow.datmusic.ui.downloader.DownloaderHost
 import tm.alashow.navigation.RootScreen
+import tm.alashow.navigation.RootScreen.Downloads as DownloadsTab
 import tm.alashow.navigation.RootScreen.Search as SearchTab
 import tm.alashow.navigation.RootScreen.Settings as SettingsTab
 import tm.alashow.ui.DismissableSnackbarHost
@@ -82,8 +86,10 @@ internal fun Home() {
                 )
             }
         ) {
-            Box(Modifier.fillMaxSize()) {
-                AppNavigation(navController, homeViewModel.navigator)
+            DownloaderHost {
+                Box(Modifier.fillMaxSize()) {
+                    AppNavigation(navController, homeViewModel.navigator)
+                }
             }
         }
     }
@@ -103,6 +109,9 @@ private fun NavController.currentScreenAsState(): State<RootScreen> {
             when {
                 destination.hierarchy.any { it.route == SearchTab.route } -> {
                     selectedItem.value = SearchTab
+                }
+                destination.hierarchy.any { it.route == DownloadsTab.route } -> {
+                    selectedItem.value = DownloadsTab
                 }
                 destination.hierarchy.any { it.route == SettingsTab.route } -> {
                     selectedItem.value = SettingsTab
@@ -138,7 +147,6 @@ internal fun HomeBottomNavigation(
                 .height(56.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-
             HomeBottomNavigationItem(
                 label = stringResource(R.string.search_title),
                 contentDescription = stringResource(R.string.search_title),
@@ -146,6 +154,14 @@ internal fun HomeBottomNavigation(
                 onClick = { onNavigationSelected(SearchTab) },
                 painter = rememberVectorPainter(Icons.Outlined.Search),
                 selectedPainter = rememberVectorPainter(Icons.Filled.Search),
+            )
+            HomeBottomNavigationItem(
+                label = stringResource(R.string.downloads_title),
+                contentDescription = stringResource(R.string.downloads_title),
+                selected = selectedNavigation == DownloadsTab,
+                onClick = { onNavigationSelected(DownloadsTab) },
+                painter = rememberVectorPainter(Icons.Outlined.Download),
+                selectedPainter = rememberVectorPainter(Icons.Filled.Download),
             )
             HomeBottomNavigationItem(
                 label = stringResource(R.string.settings_title),

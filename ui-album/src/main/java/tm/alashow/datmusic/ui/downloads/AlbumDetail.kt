@@ -37,7 +37,7 @@ import tm.alashow.base.util.extensions.localizedTitle
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Audio
-import tm.alashow.datmusic.ui.AudioRow
+import tm.alashow.datmusic.ui.audios.AudioRow
 import tm.alashow.datmusic.ui.components.CoverHeaderDefaults
 import tm.alashow.datmusic.ui.components.CoverHeaderRow
 import tm.alashow.domain.models.Async
@@ -47,7 +47,8 @@ import tm.alashow.domain.models.Loading
 import tm.alashow.domain.models.Success
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.ui.OffsetNotifyingBox
-import tm.alashow.ui.components.DetailScreenAppBar
+import tm.alashow.ui.components.CollapsingTopBar
+import tm.alashow.ui.components.EmptyErrorBox
 import tm.alashow.ui.components.ErrorBox
 import tm.alashow.ui.components.ProgressIndicator
 import tm.alashow.ui.theme.AppTheme
@@ -75,7 +76,7 @@ private fun AlbumDetail(viewModel: AlbumDetailViewModel, onBackClick: () -> Unit
                 LaunchedEffect(progress.value) {
                     headerVisibilityProgress.animateTo(round(progress.value))
                 }
-                DetailScreenAppBar(
+                CollapsingTopBar(
                     title = stringResource(R.string.albums_detail_title),
                     collapsed = headerVisibilityProgress.value == 0f,
                     onNavigationClick = onBackClick,
@@ -176,9 +177,7 @@ private fun albumDetailsEmpty(
 ) {
     if (details is Success && albumAudios.isEmpty()) {
         lazyListScope.item {
-            ErrorBox(
-                title = stringResource(R.string.error_empty_title),
-                message = stringResource(R.string.error_empty_title),
+            EmptyErrorBox(
                 onRetryClick = onRetry,
                 maxHeight = maxHeight
             )

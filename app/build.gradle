@@ -125,11 +125,13 @@ dependencies {
 	implementation project(":common-ui-compose")
 	implementation project(":common-ui-theme")
 	implementation project(":common-ui-components")
+	implementation project(":core-ui-downloader")
 	implementation project(":navigation")
 	implementation project(":ui-search")
 	implementation project(":ui-settings")
 	implementation project(":ui-artist")
 	implementation project(":ui-album")
+	implementation project(":ui-downloads")
 
 	implementation Deps.Kotlin.coroutinesAndroid
 

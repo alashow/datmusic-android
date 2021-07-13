@@ -18,6 +18,7 @@ import kotlinx.coroutines.InternalCoroutinesApi
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.ui.album.AlbumDetail
 import tm.alashow.datmusic.ui.artist.ArtistDetail
+import tm.alashow.datmusic.ui.downloads.Downloads
 import tm.alashow.datmusic.ui.search.Search
 import tm.alashow.datmusic.ui.settings.Settings
 import tm.alashow.navigation.LeafScreen
@@ -49,6 +50,7 @@ internal fun AppNavigation(
             startDestination = RootScreen.Search.route
         ) {
             addSearchRoot(navController)
+            addDownloadsRoot(navController)
             addSettingsRoot(navController)
         }
     }
@@ -62,6 +64,15 @@ private fun NavGraphBuilder.addSearchRoot(navController: NavController) {
         addSearch(navController)
         addArtistDetails(navController)
         addAlbumDetails(navController)
+    }
+}
+
+private fun NavGraphBuilder.addDownloadsRoot(navController: NavController) {
+    navigation(
+        route = RootScreen.Downloads.route,
+        startDestination = LeafScreen.Downloads.route
+    ) {
+        addDownloads(navController)
     }
 }
 
@@ -83,6 +94,12 @@ private fun NavGraphBuilder.addSearch(navController: NavController) {
 private fun NavGraphBuilder.addSettings(navController: NavController) {
     composableScreen(LeafScreen.Settings) {
         Settings()
+    }
+}
+
+private fun NavGraphBuilder.addDownloads(navController: NavController) {
+    composableScreen(LeafScreen.Downloads) {
+        Downloads()
     }
 }
 

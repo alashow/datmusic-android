@@ -88,4 +88,8 @@ data class Audio(
     @Transient
     @ColumnInfo(name = "search_index")
     val searchIndex: Int = 0,
-) : BasePaginatedEntity(), Parcelable
+) : BasePaginatedEntity(), Parcelable {
+
+    fun buildFileDisplayName() = "$artist - $title"
+    fun buildFileMimeType() = "audio/mp3"
+}

@@ -20,6 +20,18 @@
 
     <string name="albums.detail.title">Album</string>
 
+    <string name="audio.menu.cd">Audio menu</string>
+    <string name="audio.menu.download">Download</string>
+    <string name="audio.menu.copyLink">Copy link</string>
+    <string name="audio.menu.share">Share</string>
+
+    <string name="downloader.downloadsLocationSelect.title">Select downloads location</string>
+    <string name="downloader.downloadsLocationSelect.text">Click Next to select downloads location folder</string>
+    <string name="downloader.downloadsLocationSelect.next">Next</string>
+
+    <string name="downloads.title">Downloads</string>
+    <string name="downloads.empty">No Downloads</string>
+
     <string name="settings.title">Settings</string>
     <string name="settings.darkMode">Dark mode</string>
     <string name="settings.colorPalette">Color palette</string>

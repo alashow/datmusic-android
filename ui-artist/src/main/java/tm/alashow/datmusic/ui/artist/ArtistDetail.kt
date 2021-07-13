@@ -38,8 +38,8 @@ import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
-import tm.alashow.datmusic.ui.AlbumColumn
-import tm.alashow.datmusic.ui.AudioRow
+import tm.alashow.datmusic.ui.albums.AlbumColumn
+import tm.alashow.datmusic.ui.audios.AudioRow
 import tm.alashow.datmusic.ui.components.CoverHeaderDefaults
 import tm.alashow.datmusic.ui.components.CoverHeaderRow
 import tm.alashow.domain.models.Async
@@ -50,7 +50,8 @@ import tm.alashow.domain.models.Success
 import tm.alashow.navigation.LeafScreen
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.ui.OffsetNotifyingBox
-import tm.alashow.ui.components.DetailScreenAppBar
+import tm.alashow.ui.components.CollapsingTopBar
+import tm.alashow.ui.components.EmptyErrorBox
 import tm.alashow.ui.components.ErrorBox
 import tm.alashow.ui.components.ProgressIndicator
 import tm.alashow.ui.theme.AppTheme
@@ -76,7 +77,7 @@ private fun ArtistDetail(viewModel: ArtistDetailViewModel, onBackClick: () -> Un
                 LaunchedEffect(progress.value) {
                     headerOffsetProgress.animateTo(round(progress.value))
                 }
-                DetailScreenAppBar(
+                CollapsingTopBar(
                     title = stringResource(R.string.artists_detail_title),
                     collapsed = headerOffsetProgress.value == 0f,
                     onNavigationClick = onBackClick,
@@ -201,9 +202,7 @@ private fun ArtistDetailsEmpty(
 ) {
     if (details is Success && artistAlbums.isEmpty() && artistAudios.isEmpty()) {
         lazyListScope.item {
-            ErrorBox(
-                title = stringResource(R.string.error_empty_title),
-                message = stringResource(R.string.error_empty_title),
+            EmptyErrorBox(
                 onRetryClick = onRetry,
                 maxHeight = maxHeight
             )

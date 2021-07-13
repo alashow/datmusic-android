@@ -39,6 +39,7 @@ android {
 repositories {
 	mavenCentral()
 	maven { url "https://jitpack.io" }
+	jcenter()
 }
 
 dependencies {
@@ -52,6 +53,9 @@ dependencies {
 	api Deps.Utils.store
 
 	api Deps.Android.dataStore
+	api Deps.Android.documentFile
+
+	api Deps.Utils.fetchOkhttp
 
 	api project(":base")
 	api project(":domain")
