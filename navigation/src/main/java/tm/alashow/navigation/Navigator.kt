@@ -9,8 +9,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 
 sealed class NavigationEvent(open val route: String) {
-
-    object Empty : NavigationEvent("Empty")
     object Back : NavigationEvent("Back")
     data class Destination(override val route: String) : NavigationEvent(route)
 }

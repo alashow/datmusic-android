@@ -65,7 +65,7 @@ fun DownloadsList(
                 item {
                     EmptyErrorBox(
                         message = stringResource(R.string.downloads_empty),
-                        onRetryClick = {},
+                        retryVisible = false,
                         maxHeight = maxHeight,
                         maxHeightFraction = .85f
                     )

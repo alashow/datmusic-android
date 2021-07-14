@@ -13,12 +13,10 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import tm.alashow.base.ui.SnackbarManager
@@ -54,11 +52,7 @@ internal class SearchViewModel @Inject constructor(
     val pagedArtistsList get() = artistsPager.observe()
     val pagedAlbumsList get() = albumsPager.observe()
 
-    val state = combine(searchFilter.filterNotNull(), snackbarManager.errors, captchaError, ::SearchViewState).shareIn(
-        scope = viewModelScope,
-        replay = 0,
-        started = SharingStarted.WhileSubscribed()
-    )
+    val state = combine(searchFilter.filterNotNull(), snackbarManager.errors, captchaError, ::SearchViewState)
 
     init {
         viewModelScope.launch {

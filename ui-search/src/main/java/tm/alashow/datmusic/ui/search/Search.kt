@@ -160,6 +160,12 @@ private fun SearchAppBar(
         var focused by remember { mutableStateOf(false) }
         val searchActive = focused && hasWindowFocus && keyboardVisible
 
+        val triggerSearch = {
+            onSearch()
+            keyboardController?.hide()
+            focusManager.clearFocus()
+        }
+
         Column(
             verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall),
             modifier = Modifier.animateContentSize()
@@ -180,11 +186,7 @@ private fun SearchAppBar(
                     query = value
                     onQueryChange(value.text)
                 },
-                onSearch = {
-                    onSearch()
-                    keyboardController?.hide()
-                    focusManager.clearFocus()
-                },
+                onSearch = { triggerSearch() },
                 hint = if (!searchActive) stringResource(R.string.search_hint) else stringResource(R.string.search_hint_query),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -199,7 +201,7 @@ private fun SearchAppBar(
             val filterVisible = searchActive || query.text.isNotBlank() || backends.isNotEmpty()
             SearchFilterPanel(visible = filterVisible, backends) { selectAction ->
                 onBackendTypeSelect(selectAction)
-                onSearch()
+                triggerSearch()
             }
         }
     }
