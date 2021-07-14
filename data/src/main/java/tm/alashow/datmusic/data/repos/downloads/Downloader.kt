@@ -18,7 +18,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
-import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
@@ -138,7 +137,7 @@ class Downloader @Inject constructor(
         None, ChooseDownloadsLocation, DownloadLocationPermissionError
     }
 
-    private val permissionEventsQueue = Channel<PermissionEvent>(2, BufferOverflow.SUSPEND)
+    private val permissionEventsQueue = Channel<PermissionEvent>(Channel.CONFLATED)
     val permissionEvents = permissionEventsQueue.receiveAsFlow()
 
     suspend fun verifyAndGetDownloadsLocationUri(): Uri? {

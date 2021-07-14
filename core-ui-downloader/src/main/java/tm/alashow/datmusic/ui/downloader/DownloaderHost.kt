@@ -13,8 +13,6 @@ import androidx.compose.material.AlertDialog
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,9 +26,9 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import tm.alashow.common.compose.rememberFlowWithLifecycle
+import tm.alashow.common.compose.collectEvent
 import tm.alashow.datmusic.data.repos.downloads.Downloader
-import tm.alashow.datmusic.data.repos.downloads.Downloader.*
+import tm.alashow.datmusic.data.repos.downloads.Downloader.PermissionEvent
 import tm.alashow.ui.components.TextRoundedButton
 import tm.alashow.ui.theme.AppTheme
 
@@ -43,9 +41,8 @@ fun DownloaderHost(content: @Composable () -> Unit) {
     val viewModel = hiltViewModel<DownloaderViewModel>()
     var downloadsLocationDialogShown by remember { mutableStateOf(false) }
 
-    val permissionEvent by rememberFlowWithLifecycle(viewModel.permissionEvents).collectAsState(initial = PermissionEvent.None)
-    LaunchedEffect(permissionEvent) {
-        when (permissionEvent) {
+    collectEvent(viewModel.permissionEvents) { event ->
+        when (event) {
             PermissionEvent.ChooseDownloadsLocation, PermissionEvent.DownloadLocationPermissionError -> {
                 downloadsLocationDialogShown = true
             }

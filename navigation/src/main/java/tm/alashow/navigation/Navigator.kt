@@ -5,18 +5,14 @@
 package tm.alashow.navigation
 
 import androidx.compose.runtime.staticCompositionLocalOf
-import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.receiveAsFlow
-import org.threeten.bp.Instant
 
-sealed class NavigationEvent(open val route: String, open val instant: Instant = Instant.now()) {
+sealed class NavigationEvent(open val route: String) {
 
-    object Empty : NavigationEvent("Empty", Instant.ofEpochMilli(0))
-    data class Back(override val instant: Instant = Instant.now()) : NavigationEvent("Back", instant)
-    data class Destination(override val route: String, override val instant: Instant = Instant.now()) : NavigationEvent(route, instant)
+    object Empty : NavigationEvent("Empty")
+    object Back : NavigationEvent("Back")
+    data class Destination(override val route: String) : NavigationEvent(route)
 }
 
 val LocalNavigator = staticCompositionLocalOf<Navigator> {
@@ -24,19 +20,15 @@ val LocalNavigator = staticCompositionLocalOf<Navigator> {
 }
 
 class Navigator {
-    private val navigationQueue = Channel<NavigationEvent>(1, BufferOverflow.DROP_OLDEST)
+    private val navigationQueue = Channel<NavigationEvent>(Channel.CONFLATED)
 
     fun navigate(route: String) {
         navigationQueue.trySend(NavigationEvent.Destination(route))
     }
 
     fun back() {
-        navigationQueue.trySend(NavigationEvent.Back())
+        navigationQueue.trySend(NavigationEvent.Back)
     }
 
-    val queue = flow {
-        navigationQueue.receiveAsFlow().collect {
-            emit(it)
-        }
-    }
+    val queue = navigationQueue.receiveAsFlow()
 }

@@ -6,16 +6,14 @@ package tm.alashow.datmusic.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navigation
 import kotlinx.coroutines.InternalCoroutinesApi
-import tm.alashow.common.compose.rememberFlowWithLifecycle
+import timber.log.Timber
+import tm.alashow.common.compose.collectEvent
 import tm.alashow.datmusic.ui.album.AlbumDetail
 import tm.alashow.datmusic.ui.artist.ArtistDetail
 import tm.alashow.datmusic.ui.downloads.Downloads
@@ -34,11 +32,10 @@ internal fun AppNavigation(
     navController: NavHostController,
     navigator: Navigator
 ) {
-    val navigationEvent by rememberFlowWithLifecycle(navigator.queue).collectAsState(initial = NavigationEvent.Empty)
-
-    LaunchedEffect(navigationEvent) {
-        when (navigationEvent) {
-            is NavigationEvent.Destination -> navController.navigate(navigationEvent.route)
+    collectEvent(navigator.queue) { event ->
+        Timber.i("Navigation event: $event")
+        when (event) {
+            is NavigationEvent.Destination -> navController.navigate(event.route)
             is NavigationEvent.Back -> navController.navigateUp()
             else -> Unit
         }

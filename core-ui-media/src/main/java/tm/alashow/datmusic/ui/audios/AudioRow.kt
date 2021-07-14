@@ -44,7 +44,7 @@ fun AudioRow(
     onClick: ((Audio) -> Unit)? = null,
 ) {
     var menuVisible by remember { mutableStateOf(false) }
-    val contentScaleOnMenuVisible = animateFloatAsState((if (menuVisible) 0.975f else 1f))
+    val contentScaleOnMenuVisible = animateFloatAsState((if (menuVisible) 0.97f else 1f))
 
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
