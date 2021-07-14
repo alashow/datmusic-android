@@ -8,7 +8,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import tm.alashow.datmusic.data.repos.downloads.Downloader
+import tm.alashow.datmusic.data.repos.downloader.Downloader
 
 @HiltViewModel
 class DownloadsViewModel @Inject constructor(

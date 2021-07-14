@@ -68,7 +68,7 @@ class DownloadProgress(
     val downloadedBytesPerSecond: Long
 ) : Downloadable(download)
 
-fun createFetchListener(fetch: Fetch): Flow<Downloadable> = callbackFlow {
+fun createFetchListener(fetch: Fetch): Flow<Downloadable?> = callbackFlow {
     val fetchListener = object : AbstractFetchListener() {
         override fun onAdded(download: Download) {
             super.onAdded(download)

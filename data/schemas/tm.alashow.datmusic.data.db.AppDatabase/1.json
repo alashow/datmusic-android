@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "4975b47d1ad57375ac5086af52c7332c",
+    "identityHash": "d9349ba8e7b0e2231120e9cc210de30c",
     "entities": [
       {
         "tableName": "audios",
@@ -354,7 +354,7 @@
       },
       {
         "tableName": "downloads",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`entity_id` TEXT NOT NULL, `entity_type` TEXT NOT NULL, `request_id` INTEGER NOT NULL, `id` TEXT NOT NULL, `params` TEXT NOT NULL, `_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`entity_id` TEXT NOT NULL, `entity_type` TEXT NOT NULL, `request_id` INTEGER NOT NULL, `id` TEXT NOT NULL, `params` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "entityId",
@@ -385,19 +385,13 @@
             "columnName": "params",
             "affinity": "TEXT",
             "notNull": true
-          },
-          {
-            "fieldPath": "_id",
-            "columnName": "_id",
-            "affinity": "INTEGER",
-            "notNull": true
           }
         ],
         "primaryKey": {
           "columnNames": [
-            "_id"
+            "id"
           ],
-          "autoGenerate": true
+          "autoGenerate": false
         },
         "indices": [],
         "foreignKeys": []
@@ -406,7 +400,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4975b47d1ad57375ac5086af52c7332c')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd9349ba8e7b0e2231120e9cc210de30c')"
     ]
   }
 }

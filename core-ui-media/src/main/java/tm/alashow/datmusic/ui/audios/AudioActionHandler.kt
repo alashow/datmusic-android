@@ -21,9 +21,7 @@ internal fun AudioActionHandler(): AudioActionHandler {
         when (action) {
             is AudioItemAction.Download -> {
                 coroutine.launch {
-                    val uri = downloader.verifyAndGetDownloadsLocationUri()
-                    if (uri != null)
-                        context.toast("Uri: $uri")
+                    downloader.queueAudio(action.audio)
                 }
             }
             is AudioItemAction.CopyLink -> {

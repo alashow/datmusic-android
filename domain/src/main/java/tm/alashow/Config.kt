@@ -10,4 +10,5 @@ object Config {
     const val API_BASE_URL = "https://api.datmusic.xyz/"
 
     val API_TIMEOUT = Duration.ofSeconds(40).toMillis()
+    val DOWNLOADER_TIMEOUT = Duration.ofMinutes(3).toMillis()
 }

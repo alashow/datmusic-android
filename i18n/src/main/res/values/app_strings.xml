@@ -26,7 +26,7 @@
     <string name="audio.menu.share">Share</string>
 
     <string name="downloader.downloadsLocationSelect.title">Select downloads location</string>
-    <string name="downloader.downloadsLocationSelect.text">Click Next to select downloads location folder</string>
+    <string name="downloader.downloadsLocationSelect.text">Click Next to select downloads folder location</string>
     <string name="downloader.downloadsLocationSelect.next">Next</string>
 
     <string name="downloads.title">Downloads</string>

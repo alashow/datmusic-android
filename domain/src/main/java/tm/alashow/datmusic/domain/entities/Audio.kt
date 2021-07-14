@@ -91,5 +91,5 @@ data class Audio(
 ) : BasePaginatedEntity(), Parcelable {
 
     fun buildFileDisplayName() = "$artist - $title"
-    fun buildFileMimeType() = "audio/mp3"
+    fun buildFileMimeType() = "audio/mpeg"
 }

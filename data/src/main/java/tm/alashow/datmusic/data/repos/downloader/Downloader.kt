@@ -2,16 +2,13 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.datmusic.data.repos.downloads
+package tm.alashow.datmusic.data.repos.downloader
 
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.documentfile.provider.DocumentFile
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.map
 import com.tonyodev.fetch2.Fetch
 import com.tonyodev.fetch2.Request
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -19,59 +16,60 @@ import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import timber.log.Timber
 import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.data.PreferencesStore
+import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
 import tm.alashow.datmusic.domain.entities.Audio
+import tm.alashow.datmusic.domain.entities.AudioDownloadItem
+import tm.alashow.datmusic.domain.entities.DownloadItem
 import tm.alashow.datmusic.domain.entities.DownloadRequest
 import tm.alashow.domain.FetchEnqueueFailed
 import tm.alashow.domain.FetchEnqueueResult
 import tm.alashow.domain.FetchEnqueueSuccessful
-import tm.alashow.domain.createFetchListener
 import tm.alashow.domain.downloads
 import tm.alashow.domain.models.None
 import tm.alashow.domain.models.Optional
 import tm.alashow.domain.models.some
+
+typealias DownloadItems = Map<DownloadRequest.Type, List<DownloadItem>>
+typealias AudioDownloadItems = List<AudioDownloadItem>
 
 class Downloader @Inject constructor(
     @ApplicationContext private val appContext: Context,
     private val dispatchers: CoroutineDispatchers,
     private val preferences: PreferencesStore,
     private val dao: DownloadRequestsDao,
+    private val audiosDao: AudiosDao,
     private val fetcher: Fetch
 ) {
 
-    private val fetchListenerFlow = createFetchListener(fetcher)
-
-    val downlaodsPager = Pager(
-        config = PagingConfig(pageSize = 20, initialLoadSize = 20, enablePlaceholders = false),
-        pagingSourceFactory = { dao.entriesPagingSource() }
-    ).flow.map { pagingData ->
-        val downloads = fetcher.downloads()
-        pagingData.map { downloadRequest ->
-            if (downloadRequest.hasRequest()) {
-                downloadRequest.download = downloads.firstOrNull { it.id == downloadRequest.requestId }
-                downloadRequest
-            } else downloadRequest
+    private val fetcherDownloadsRefreshInterval = 1200L
+    private val fetcherDownloads = flow {
+        while (true) {
+            emit(fetcher.downloads())
+            delay(fetcherDownloadsRefreshInterval)
         }
-    }
+    }.distinctUntilChanged()
 
-    val downloadRequests = combine(dao.entriesObservable(), fetchListenerFlow) { downloadsRequests, downloadableEvent ->
-        val downloads = fetcher.downloads()
-        downloadsRequests.map {
-            if (it.hasRequest()) {
-                it.download = when (it.requestId) {
-                    downloadableEvent.download.id -> downloadableEvent.download
-                    else -> downloads.firstOrNull { dl -> dl.id == it.requestId }
-                }
-                it
-            } else it
+    val downloadRequests: Flow<DownloadItems> = combine(dao.entriesObservable(), fetcherDownloads) { downloadsRequests, downloads ->
+        val audioRequests = downloadsRequests.filter { it.entityType == DownloadRequest.Type.Audio }
+        val audios = audiosDao.entriesById(audioRequests.map { it.entityId }).first()
+        val audioDownloads = audios.map { audio ->
+            val request = audioRequests.first { it.entityId == audio.id }
+            val downloadInfo = downloads.firstOrNull { dl -> dl.id == request.requestId }
+            AudioDownloadItem.from(request, audio, downloadInfo)
         }
+
+        mapOf(DownloadRequest.Type.Audio to audioDownloads)
     }
 
     suspend fun queueAudio(audio: Audio) {
@@ -134,13 +132,13 @@ class Downloader @Inject constructor(
     }
 
     enum class PermissionEvent {
-        None, ChooseDownloadsLocation, DownloadLocationPermissionError
+        ChooseDownloadsLocation, DownloadLocationPermissionError
     }
 
     private val permissionEventsQueue = Channel<PermissionEvent>(Channel.CONFLATED)
     val permissionEvents = permissionEventsQueue.receiveAsFlow()
 
-    suspend fun verifyAndGetDownloadsLocationUri(): Uri? {
+    private suspend fun verifyAndGetDownloadsLocationUri(): Uri? {
         when (val downloadLocation = getDownloadsLocationUri()) {
             is None -> permissionEventsQueue.trySend(PermissionEvent.ChooseDownloadsLocation)
             is Optional.Some -> {

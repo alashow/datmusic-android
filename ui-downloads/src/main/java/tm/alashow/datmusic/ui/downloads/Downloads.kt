@@ -6,8 +6,8 @@ package tm.alashow.datmusic.ui.downloads
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -24,6 +25,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.ui.Scaffold
 import tm.alashow.common.compose.rememberFlowWithLifecycle
+import tm.alashow.datmusic.data.repos.downloader.AudioDownloadItems
+import tm.alashow.datmusic.data.repos.downloader.DownloadItems
+import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.domain.entities.DownloadRequest
 import tm.alashow.ui.components.AppTopBar
 import tm.alashow.ui.components.EmptyErrorBox
@@ -37,7 +41,7 @@ fun Downloads() {
 @Composable
 private fun Downloads(viewModel: DownloadsViewModel) {
     val listState = rememberLazyListState()
-    val downloads by rememberFlowWithLifecycle(viewModel.downloadRequests).collectAsState(initial = listOf())
+    val downloads by rememberFlowWithLifecycle(viewModel.downloadRequests).collectAsState(initial = emptyMap())
 
     Scaffold(
         topBar = {
@@ -45,7 +49,7 @@ private fun Downloads(viewModel: DownloadsViewModel) {
         }
     ) { padding ->
         DownloadsList(
-            list = downloads,
+            downloads = downloads,
             listState = listState,
             paddingValues = padding
         )
@@ -54,14 +58,14 @@ private fun Downloads(viewModel: DownloadsViewModel) {
 
 @Composable
 fun DownloadsList(
-    list: List<DownloadRequest>,
+    downloads: DownloadItems,
     listState: LazyListState,
     paddingValues: PaddingValues = PaddingValues(),
     modifier: Modifier = Modifier
 ) {
     BoxWithConstraints {
         LazyColumn(state = listState, contentPadding = paddingValues, modifier = modifier.fillMaxSize()) {
-            if (list.isEmpty()) {
+            if (downloads.all { (_, list) -> list.isEmpty() }) {
                 item {
                     EmptyErrorBox(
                         message = stringResource(R.string.downloads_empty),
@@ -71,25 +75,32 @@ fun DownloadsList(
                     )
                 }
             }
-            items(list, key = { it.id }) {
-                DownloadRequestItem(it)
+
+            downloads.forEach { (type, items) ->
+                @Suppress("UNCHECKED_CAST")
+                when (type) {
+                    DownloadRequest.Type.Audio -> {
+                        val audioDownloads = items as AudioDownloadItems
+                        items(audioDownloads, { it.downloadRequest.id }) {
+                            AudioDownloadItem(it)
+                            Divider()
+                        }
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
-fun DownloadRequestItem(downloadRequest: DownloadRequest) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
+fun AudioDownloadItem(audioDownloadItem: AudioDownloadItem) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
         modifier = Modifier
             .fillMaxWidth()
             .padding(AppTheme.specs.inputPaddings)
     ) {
-        Text("Download request:")
-        Text("id=${downloadRequest.id}")
-        Text("entity=${downloadRequest.entityType}#${downloadRequest.entityId}")
-        Text("reqId=${downloadRequest.requestId}")
-        Text("download=${downloadRequest.download}")
+        Text(audioDownloadItem.audio.buildFileDisplayName())
+        Text("Status=${audioDownloadItem.downloadInfo.status}, Progress=${audioDownloadItem.downloadInfo.progress}")
     }
 }
