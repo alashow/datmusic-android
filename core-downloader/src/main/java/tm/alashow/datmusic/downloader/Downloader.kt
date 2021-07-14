@@ -63,7 +63,7 @@ class Downloader @Inject constructor(
             val request = audioRequests.first { it.entityId == audio.id }
             val downloadInfo = downloads.firstOrNull { dl -> dl.id == request.requestId }
             AudioDownloadItem.from(request, audio, downloadInfo)
-        }
+        }.sortedByDescending { it.downloadRequest.createdAt }
 
         mapOf(DownloadRequest.Type.Audio to audioDownloads)
     }

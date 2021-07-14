@@ -7,9 +7,10 @@ package tm.alashow.datmusic.domain.entities
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import org.threeten.bp.LocalDateTime
 import tm.alashow.domain.models.Entity as BaseEntity
 
-@Entity(tableName = "downloads")
+@Entity(tableName = "download_requests")
 data class DownloadRequest(
     @ColumnInfo(name = "entity_id")
     val entityId: String = "",
@@ -19,6 +20,9 @@ data class DownloadRequest(
 
     @ColumnInfo(name = "request_id")
     val requestId: Int = REQUEST_NOT_SET,
+
+    @ColumnInfo(name = "created_at")
+    val createdAt: LocalDateTime = LocalDateTime.now(),
 
     @PrimaryKey
     @ColumnInfo(name = "id")

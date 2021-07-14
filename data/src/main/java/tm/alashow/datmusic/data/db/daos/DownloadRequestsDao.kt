@@ -16,35 +16,35 @@ import tm.alashow.datmusic.domain.entities.DownloadRequest
 abstract class DownloadRequestsDao : BaseDao<DownloadRequest>() {
 
     @Transaction
-    @Query("SELECT * FROM downloads ORDER BY id")
+    @Query("SELECT * FROM download_requests ORDER BY id")
     abstract fun entriesObservable(): Flow<List<DownloadRequest>>
 
     @Transaction
-    @Query("SELECT * FROM downloads ORDER BY id DESC LIMIT :count OFFSET :offset")
+    @Query("SELECT * FROM download_requests ORDER BY id DESC LIMIT :count OFFSET :offset")
     abstract override fun entriesObservable(count: Int, offset: Int): Flow<List<DownloadRequest>>
 
     @Transaction
-    @Query("SELECT * FROM downloads ORDER BY id DESC")
+    @Query("SELECT * FROM download_requests ORDER BY id DESC")
     abstract override fun entriesPagingSource(): PagingSource<Int, DownloadRequest>
 
     @Transaction
-    @Query("SELECT * FROM downloads WHERE id = :id")
+    @Query("SELECT * FROM download_requests WHERE id = :id")
     abstract override fun entry(id: String): Flow<DownloadRequest>
 
     @Transaction
-    @Query("SELECT * FROM downloads WHERE id = :id")
+    @Query("SELECT * FROM download_requests WHERE id = :id")
     abstract override fun entryNullable(id: String): Flow<DownloadRequest?>
 
     @Transaction
-    @Query("SELECT * FROM downloads WHERE id in (:ids)")
+    @Query("SELECT * FROM download_requests WHERE id in (:ids)")
     abstract override fun entriesById(ids: List<String>): Flow<List<DownloadRequest>>
 
-    @Query("DELETE FROM downloads WHERE id = :id")
+    @Query("DELETE FROM download_requests WHERE id = :id")
     abstract override suspend fun delete(id: String)
 
-    @Query("DELETE FROM downloads")
+    @Query("DELETE FROM download_requests")
     abstract override suspend fun deleteAll()
 
-    @Query("SELECT COUNT(*) from downloads where id = :id")
+    @Query("SELECT COUNT(*) from download_requests where id = :id")
     abstract override suspend fun has(id: String): Int
 }

@@ -5,13 +5,13 @@
 package tm.alashow.data.db
 
 import androidx.room.TypeConverter
-import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalDateTime
 import org.threeten.bp.format.DateTimeFormatter
 import tm.alashow.domain.models.Params
 
 object BaseTypeConverters {
 
-    private val localDateFormat = DateTimeFormatter.ISO_LOCAL_DATE
+    private val localDateFormat = DateTimeFormatter.ISO_LOCAL_DATE_TIME
 
     @TypeConverter
     @JvmStatic
@@ -19,9 +19,9 @@ object BaseTypeConverters {
 
     @TypeConverter
     @JvmStatic
-    fun toLocalDate(value: String): LocalDate = LocalDate.parse(value, localDateFormat)
+    fun toLocalDateTime(value: String): LocalDateTime = LocalDateTime.parse(value, localDateFormat)
 
     @TypeConverter
     @JvmStatic
-    fun fromLocalDate(value: LocalDate): String = localDateFormat.format(value)
+    fun fromLocalDateTime(value: LocalDateTime): String = localDateFormat.format(value)
 }
