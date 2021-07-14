@@ -42,7 +42,7 @@ repositories {
 }
 
 dependencies {
-
+	implementation project(":core-ui-downloader")
 	implementation project(":common-ui-compose")
 	implementation project(":common-ui-theme")
 	implementation project(":common-ui-components")

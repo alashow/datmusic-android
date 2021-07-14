@@ -25,14 +25,6 @@ android {
 		sourceCompatibility JavaVersion.VERSION_1_8
 		targetCompatibility JavaVersion.VERSION_1_8
 	}
-
-	buildFeatures {
-		compose = true
-	}
-
-	composeOptions {
-		kotlinCompilerExtensionVersion Deps.Android.Compose.version
-	}
 }
 
 repositories {
@@ -40,10 +32,8 @@ repositories {
 }
 
 dependencies {
-	api project(":core-downloader")
-	api project(":common-ui-compose")
-	api project(":common-ui-theme")
-	api project(":common-ui-components")
+	api project(":data")
+	api Deps.Utils.fetchOkhttp
 
 	implementation Deps.Dagger.hilt
 	kapt Deps.Dagger.compiler

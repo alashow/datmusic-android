@@ -2,7 +2,7 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.datmusic.data.repos.downloader
+package tm.alashow.datmusic.downloader
 
 import android.content.Context
 import android.content.Intent
@@ -32,10 +32,6 @@ import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.domain.entities.DownloadItem
 import tm.alashow.datmusic.domain.entities.DownloadRequest
-import tm.alashow.domain.FetchEnqueueFailed
-import tm.alashow.domain.FetchEnqueueResult
-import tm.alashow.domain.FetchEnqueueSuccessful
-import tm.alashow.domain.downloads
 import tm.alashow.domain.models.None
 import tm.alashow.domain.models.Optional
 import tm.alashow.domain.models.some

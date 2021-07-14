@@ -2,7 +2,7 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.datmusic.data.repos.downloader
+package tm.alashow.datmusic.downloader
 
 import android.content.Context
 import com.tonyodev.fetch2.Fetch
@@ -21,6 +21,10 @@ import okhttp3.OkHttpClient
 @InstallIn(SingletonComponent::class)
 @Module
 class DownloaderModule {
+
+    @Provides
+    @Singleton
+    fun fetchNotificationManager(@ApplicationContext context: Context): FetchNotificationManager = DownloaderNotificationManager(context)
 
     // TODO: when are we going to close the fetch created in here? on App.onDestroy?
     @Provides

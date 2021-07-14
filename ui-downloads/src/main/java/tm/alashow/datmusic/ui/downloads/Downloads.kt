@@ -25,10 +25,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.ui.Scaffold
 import tm.alashow.common.compose.rememberFlowWithLifecycle
-import tm.alashow.datmusic.data.repos.downloader.AudioDownloadItems
-import tm.alashow.datmusic.data.repos.downloader.DownloadItems
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.domain.entities.DownloadRequest
+import tm.alashow.datmusic.downloader.AudioDownloadItems
+import tm.alashow.datmusic.downloader.DownloadItems
 import tm.alashow.ui.components.AppTopBar
 import tm.alashow.ui.components.EmptyErrorBox
 import tm.alashow.ui.theme.AppTheme

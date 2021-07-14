@@ -27,8 +27,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import tm.alashow.common.compose.collectEvent
-import tm.alashow.datmusic.data.repos.downloader.Downloader
-import tm.alashow.datmusic.data.repos.downloader.Downloader.PermissionEvent
+import tm.alashow.datmusic.downloader.Downloader
+import tm.alashow.datmusic.downloader.Downloader.PermissionEvent
 import tm.alashow.ui.components.TextRoundedButton
 import tm.alashow.ui.theme.AppTheme
 
@@ -41,7 +41,7 @@ fun DownloaderHost(content: @Composable () -> Unit) {
     val viewModel = hiltViewModel<DownloaderViewModel>()
     var downloadsLocationDialogShown by remember { mutableStateOf(false) }
 
-    collectEvent(viewModel.permissionEvents) { event ->
+    collectEvent(viewModel.downloader.permissionEvents) { event ->
         when (event) {
             PermissionEvent.ChooseDownloadsLocation, PermissionEvent.DownloadLocationPermissionError -> {
                 downloadsLocationDialogShown = true

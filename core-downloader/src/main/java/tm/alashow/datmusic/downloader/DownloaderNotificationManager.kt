@@ -2,7 +2,7 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.datmusic.ui.downloader
+package tm.alashow.datmusic.downloader
 
 import android.app.PendingIntent
 import android.content.Context

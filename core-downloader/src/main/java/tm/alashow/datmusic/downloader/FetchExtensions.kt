@@ -2,7 +2,7 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.domain
+package tm.alashow.datmusic.downloader
 
 import com.tonyodev.fetch2.AbstractFetchListener
 import com.tonyodev.fetch2.Download

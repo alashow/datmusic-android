@@ -8,12 +8,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import tm.alashow.datmusic.data.repos.downloader.Downloader
+import tm.alashow.datmusic.downloader.Downloader
 
 @HiltViewModel
 class DownloadsViewModel @Inject constructor(
     private val handle: SavedStateHandle,
-    private val downloader: Downloader,
+    private val downloader: tm.alashow.datmusic.downloader.Downloader,
 ) : ViewModel() {
 
     val downloadRequests = downloader.downloadRequests
