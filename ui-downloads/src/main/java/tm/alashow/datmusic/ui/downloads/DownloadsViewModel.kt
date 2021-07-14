@@ -8,13 +8,23 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
 import tm.alashow.datmusic.downloader.Downloader
+import tm.alashow.domain.models.Success
+import tm.alashow.domain.models.Uninitialized
 
 @HiltViewModel
 class DownloadsViewModel @Inject constructor(
     private val handle: SavedStateHandle,
-    private val downloader: tm.alashow.datmusic.downloader.Downloader,
+    private val downloader: Downloader,
 ) : ViewModel() {
 
-    val downloadRequests = downloader.downloadRequests
+    val downloadRequests = flow {
+        emit(Uninitialized)
+        downloader.downloadRequests
+            .collect {
+                emit(Success(it))
+            }
+    }
 }

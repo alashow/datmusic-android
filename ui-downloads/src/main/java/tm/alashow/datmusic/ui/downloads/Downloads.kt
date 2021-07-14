@@ -29,8 +29,12 @@ import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.domain.entities.DownloadRequest
 import tm.alashow.datmusic.downloader.AudioDownloadItems
 import tm.alashow.datmusic.downloader.DownloadItems
+import tm.alashow.domain.models.Incomplete
+import tm.alashow.domain.models.Success
+import tm.alashow.domain.models.Uninitialized
 import tm.alashow.ui.components.AppTopBar
 import tm.alashow.ui.components.EmptyErrorBox
+import tm.alashow.ui.components.FullScreenLoading
 import tm.alashow.ui.theme.AppTheme
 
 @Composable
@@ -41,18 +45,27 @@ fun Downloads() {
 @Composable
 private fun Downloads(viewModel: DownloadsViewModel) {
     val listState = rememberLazyListState()
-    val downloads by rememberFlowWithLifecycle(viewModel.downloadRequests).collectAsState(initial = emptyMap())
+    val asyncDownloads by rememberFlowWithLifecycle(viewModel.downloadRequests).collectAsState(initial = Uninitialized)
 
     Scaffold(
         topBar = {
             AppTopBar(title = stringResource(R.string.downloads_title))
         }
     ) { padding ->
-        DownloadsList(
-            downloads = downloads,
-            listState = listState,
-            paddingValues = padding
-        )
+        BoxWithConstraints {
+            when (val downloads = asyncDownloads) {
+                is Success -> {
+                    DownloadsList(
+                        downloads = downloads(),
+                        listState = listState,
+                        paddingValues = padding
+                    )
+                }
+                is Incomplete -> {
+                    FullScreenLoading()
+                }
+            }
+        }
     }
 }
 

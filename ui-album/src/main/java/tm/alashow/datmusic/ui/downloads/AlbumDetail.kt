@@ -5,13 +5,9 @@
 package tm.alashow.datmusic.ui.album
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -24,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -50,7 +45,7 @@ import tm.alashow.ui.OffsetNotifyingBox
 import tm.alashow.ui.components.CollapsingTopBar
 import tm.alashow.ui.components.EmptyErrorBox
 import tm.alashow.ui.components.ErrorBox
-import tm.alashow.ui.components.ProgressIndicator
+import tm.alashow.ui.components.FullScreenLoading
 import tm.alashow.ui.theme.AppTheme
 
 @Composable
@@ -117,7 +112,7 @@ private fun ArtistDetailList(
                 albumDetailsEmpty(details, albumAudios, this, onRetry, maxHeight)
             } else {
                 item {
-                    AlbumDetailsLoading()
+                    FullScreenLoading()
                 }
             }
         }
@@ -182,17 +177,5 @@ private fun albumDetailsEmpty(
                 maxHeight = maxHeight
             )
         }
-    }
-}
-
-@Composable
-private fun BoxWithConstraintsScope.AlbumDetailsLoading() {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(maxHeight)
-    ) {
-        ProgressIndicator()
     }
 }
