@@ -5,6 +5,7 @@
 package tm.alashow.ui.components
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.ButtonDefaults
@@ -25,7 +26,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.unit.dp
 import tm.alashow.ui.theme.AppTheme
 
 @Composable
@@ -50,7 +50,7 @@ fun <T> SelectableDropdownMenu(
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            modifier = Modifier.width(200.dp)
+            modifier = Modifier.width(IntrinsicSize.Min)
         ) {
             items.forEach { item ->
                 val label = item.toString()

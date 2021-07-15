@@ -5,6 +5,7 @@
 package tm.alashow.datmusic.ui.audios
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -18,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import tm.alashow.datmusic.ui.media.R
 
 @Composable
@@ -45,7 +45,7 @@ internal fun AudioDropdownMenu(
             expanded = expanded,
             onDismissRequest = { onExpandedChange(false) },
             modifier = Modifier
-                .width(120.dp)
+                .width(IntrinsicSize.Min)
                 .align(Alignment.Center)
         ) {
             items.forEach { item ->

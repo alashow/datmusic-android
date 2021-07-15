@@ -9,6 +9,7 @@ import com.tonyodev.fetch2.Download
 import com.tonyodev.fetch2.Error
 import com.tonyodev.fetch2.Fetch
 import com.tonyodev.fetch2.Request
+import com.tonyodev.fetch2.database.DownloadInfo
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.channels.awaitClose
@@ -22,6 +23,7 @@ data class FetchEnqueueFailed(val error: Error) : FetchEnqueueResult()
 sealed class Downloadable(
     val download: Download
 )
+object DownloadUninitialized : Downloadable(DownloadInfo())
 
 class DownloadCompleted(
     download: Download

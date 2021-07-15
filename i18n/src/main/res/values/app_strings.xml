@@ -32,6 +32,19 @@
     <string name="downloads.title">Downloads</string>
     <string name="downloads.empty">No Downloads</string>
 
+    <string name="downloads.download.status.paused">Paused</string>
+    <string name="downloads.download.status.queued">Queued</string>
+    <string name="downloads.download.status.downloading">Downloading</string>
+    <string name="downloads.download.status.failed">Failed</string>
+    <string name="downloads.download.status.cancelled">Cancelled</string>
+
+    <string name="downloads.download.pause">Pause</string>
+    <string name="downloads.download.resume">Resume</string>
+    <string name="downloads.download.cancel">Cancel</string>
+    <string name="downloads.download.retry">Retry</string>
+    <string name="downloads.download.open">Open file</string>
+    <string name="downloads.download.delete">Delete file</string>
+
     <string name="settings.title">Settings</string>
     <string name="settings.darkMode">Dark mode</string>
     <string name="settings.colorPalette">Color palette</string>

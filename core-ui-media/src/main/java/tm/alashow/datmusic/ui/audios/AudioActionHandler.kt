@@ -11,6 +11,8 @@ import kotlinx.coroutines.launch
 import tm.alashow.base.util.toast
 import tm.alashow.datmusic.ui.downloader.LocalDownloader
 
+typealias AudioActionHandler = (AudioItemAction) -> Unit
+
 @Composable
 internal fun AudioActionHandler(): AudioActionHandler {
     val downloader = LocalDownloader.current

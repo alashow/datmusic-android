@@ -35,7 +35,9 @@ import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.theme.AppTheme
 
-object AudiosDefaults
+object AudiosDefaults {
+    const val maxLines = 2
+}
 
 @Composable
 fun AudioRow(
@@ -53,47 +55,16 @@ fun AudioRow(
             .fillMaxWidth()
             .padding(AppTheme.specs.inputPaddings)
     ) {
-        val loadingModifier = Modifier.placeholder(
-            visible = isPlaceholder,
-            highlight = PlaceholderHighlight.shimmer(),
-        )
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
+        AudioRowItem(
+            audio = audio,
+            isPlaceholder = isPlaceholder,
             modifier = Modifier
                 .weight(19f)
                 .graphicsLayer {
                     scaleX *= contentScaleOnMenuVisible.value
                     scaleY *= contentScaleOnMenuVisible.value
                 }
-        ) {
-            val image = rememberCoilPainter(audio.coverUrlSmall, fadeIn = true)
-            CoverImage(image) { modifier ->
-                Image(
-                    painter = image,
-                    contentDescription = null,
-                    modifier = modifier.composed { loadingModifier }
-                )
-            }
-
-            Column(verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall)) {
-                Text(
-                    audio.title,
-                    style = MaterialTheme.typography.body1,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = loadingModifier
-                )
-                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                    Text(
-                        audio.artist,
-                        style = MaterialTheme.typography.body2,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = loadingModifier
-                    )
-                }
-            }
-        }
+        )
 
         if (!isPlaceholder) {
             val actionHandler = AudioActionHandler()
@@ -108,6 +79,51 @@ fun AudioRow(
                     actionHandler(AudioItemAction.from(it, audio))
                 },
             )
+        }
+    }
+}
+
+@Composable
+fun AudioRowItem(
+    audio: Audio,
+    isPlaceholder: Boolean = false,
+    maxLines: Int = AudiosDefaults.maxLines,
+    modifier: Modifier = Modifier.fillMaxWidth()
+) {
+    val loadingModifier = Modifier.placeholder(
+        visible = isPlaceholder,
+        highlight = PlaceholderHighlight.shimmer(),
+    )
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
+        modifier = modifier
+    ) {
+        val image = rememberCoilPainter(audio.coverUrlSmall, fadeIn = true)
+        CoverImage(image) { modifier ->
+            Image(
+                painter = image,
+                contentDescription = null,
+                modifier = modifier.composed { loadingModifier }
+            )
+        }
+
+        Column(verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall)) {
+            Text(
+                audio.title,
+                style = MaterialTheme.typography.body1,
+                maxLines = maxLines,
+                overflow = TextOverflow.Ellipsis,
+                modifier = loadingModifier
+            )
+            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                Text(
+                    audio.artist,
+                    style = MaterialTheme.typography.body2,
+                    maxLines = maxLines,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = loadingModifier
+                )
+            }
         }
     }
 }

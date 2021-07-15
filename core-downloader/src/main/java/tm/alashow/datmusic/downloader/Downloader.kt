@@ -112,6 +112,29 @@ class Downloader @Inject constructor(
         return enqueueResult
     }
 
+    fun pause(vararg downloadItems: DownloadItem) {
+        fetcher.pause(downloadItems.map { it.downloadInfo.id })
+    }
+
+    fun resume(vararg downloadItems: DownloadItem) {
+        fetcher.resume(downloadItems.map { it.downloadInfo.id })
+    }
+
+    fun cancel(vararg downloadItems: DownloadItem) {
+        fetcher.cancel(downloadItems.map { it.downloadInfo.id })
+    }
+
+    fun retry(vararg downloadItems: DownloadItem) {
+        fetcher.retry(downloadItems.map { it.downloadInfo.id })
+    }
+
+    suspend fun delete(vararg downloadItems: DownloadItem) {
+        fetcher.delete(downloadItems.map { it.downloadInfo.id })
+        downloadItems.forEach {
+            dao.delete(it.downloadRequest)
+        }
+    }
+
     suspend fun setDownloadsLocation(uri: Uri) {
         Timber.i("Setting new downloads location: $uri")
         val takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION

@@ -7,8 +7,6 @@ package tm.alashow.datmusic.ui.audios
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.ui.media.R
 
-typealias AudioActionHandler = (AudioItemAction) -> Unit
-
 sealed class AudioItemAction(open val audio: Audio) {
     data class Download(override val audio: Audio) : AudioItemAction(audio)
     data class CopyLink(override val audio: Audio) : AudioItemAction(audio)

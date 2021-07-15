@@ -21,7 +21,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.logging.HttpLoggingInterceptor.*
-import okhttp3.logging.HttpLoggingInterceptor.Level as LevelLevel
+import okhttp3.logging.HttpLoggingInterceptor.Level as LogLevel
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import tm.alashow.Config
@@ -48,7 +48,7 @@ class NetworkModule {
     @Singleton
     fun httpLoggingInterceptor(): HttpLoggingInterceptor {
         val interceptor = HttpLoggingInterceptor()
-        interceptor.level = LevelLevel.BODY
+        interceptor.level = LogLevel.BODY
         return interceptor
     }
 
@@ -84,7 +84,7 @@ class NetworkModule {
         .readTimeout(Config.DOWNLOADER_TIMEOUT, TimeUnit.MILLISECONDS)
         .writeTimeout(Config.DOWNLOADER_TIMEOUT, TimeUnit.MILLISECONDS)
         .addInterceptor(appHeadersInterceptor)
-        .addInterceptor(HttpLoggingInterceptor().apply { level = LevelLevel.HEADERS })
+        .addInterceptor(HttpLoggingInterceptor().apply { level = LogLevel.HEADERS })
         .build()
 
     @Provides
