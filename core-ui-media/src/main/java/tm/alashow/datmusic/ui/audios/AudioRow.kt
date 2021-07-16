@@ -51,7 +51,10 @@ fun AudioRow(
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
-            .clickable { if (onClick != null) onClick(audio) else menuVisible = true }
+            .clickable {
+                if (onClick != null) onClick(audio)
+                else if (!isPlaceholder) menuVisible = true
+            }
             .fillMaxWidth()
             .padding(AppTheme.specs.inputPaddings)
     ) {

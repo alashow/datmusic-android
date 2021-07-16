@@ -56,13 +56,12 @@ class Downloader @Inject constructor(
         }
     }.distinctUntilChanged()
 
-    val downloadRequests: Flow<DownloadItems> = combine(dao.entriesObservable(), fetcherDownloads) { downloadsRequests, downloads ->
-        val audioRequests = downloadsRequests.filter { it.entityType == DownloadRequest.Type.Audio }
-        val audios = audiosDao.entriesById(audioRequests.map { it.entityId }).first()
-        val audioDownloads = audios.map { audio ->
-            val request = audioRequests.first { it.entityId == audio.id }
+    val downloadRequests: Flow<DownloadItems> = combine(dao.entriesObservable(), fetcherDownloads) { downloadRequests, downloads ->
+        val audioRequests = downloadRequests.filter { it.entityType == DownloadRequest.Type.Audio }
+
+        val audioDownloads = audioRequests.map { request ->
             val downloadInfo = downloads.firstOrNull { dl -> dl.id == request.requestId }
-            AudioDownloadItem.from(request, audio, downloadInfo)
+            AudioDownloadItem.from(request, request.audio, downloadInfo)
         }.sortedByDescending { it.downloadRequest.createdAt }
 
         mapOf(DownloadRequest.Type.Audio to audioDownloads)
@@ -78,7 +77,7 @@ class Downloader @Inject constructor(
             ?: error("Failed to create download file")
 
         val request = Request(downloadUrl, file.uri)
-        val downloadRequest = DownloadRequest(entityId = audio.id)
+        val downloadRequest = DownloadRequest.fromAudio(audio)
 
         when (val enqueueResult = enqueue(downloadRequest, request)) {
             is FetchEnqueueSuccessful -> {
