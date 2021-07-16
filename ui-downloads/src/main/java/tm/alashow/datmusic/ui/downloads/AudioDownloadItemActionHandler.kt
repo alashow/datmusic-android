@@ -25,6 +25,7 @@ internal fun AudioDownloadItemActionHandler(): AudioDownloadItemActionHandler {
             is AudioDownloadItemAction.Resume -> downloader.resume(action.audio)
             is AudioDownloadItemAction.Cancel -> downloader.cancel(action.audio)
             is AudioDownloadItemAction.Retry -> downloader.retry(action.audio)
+            is AudioDownloadItemAction.Remove -> coroutine.launch { downloader.remove(action.audio) }
             is AudioDownloadItemAction.Delete -> coroutine.launch { downloader.delete(action.audio) }
             else -> context.toast("Not implemented: $action")
         }

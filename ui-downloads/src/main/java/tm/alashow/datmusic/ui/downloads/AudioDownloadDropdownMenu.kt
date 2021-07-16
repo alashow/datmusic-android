@@ -28,6 +28,7 @@ sealed class AudioDownloadItemAction(open val audio: AudioDownloadItem) {
     data class Cancel(override val audio: AudioDownloadItem) : AudioDownloadItemAction(audio)
     data class Retry(override val audio: AudioDownloadItem) : AudioDownloadItemAction(audio)
     data class Open(override val audio: AudioDownloadItem) : AudioDownloadItemAction(audio)
+    data class Remove(override val audio: AudioDownloadItem) : AudioDownloadItemAction(audio)
     data class Delete(override val audio: AudioDownloadItem) : AudioDownloadItemAction(audio)
 
     companion object {
@@ -37,6 +38,7 @@ sealed class AudioDownloadItemAction(open val audio: AudioDownloadItem) {
             R.string.downloads_download_cancel -> Cancel(audio)
             R.string.downloads_download_retry -> Retry(audio)
             R.string.downloads_download_open -> Open(audio)
+            R.string.downloads_download_remove -> Remove(audio)
             R.string.downloads_download_delete -> Delete(audio)
             else -> error("Unknown action: $actionLabelRes")
         }
@@ -61,6 +63,7 @@ internal fun AudioDownloadDropdownMenu(
         }
         if (downloadInfo.status == Status.COMPLETED) {
             add(R.string.downloads_download_open)
+            add(R.string.downloads_download_remove)
             add(R.string.downloads_download_delete)
         }
     }

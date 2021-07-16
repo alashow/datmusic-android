@@ -127,6 +127,13 @@ class Downloader @Inject constructor(
         fetcher.retry(downloadItems.map { it.downloadInfo.id })
     }
 
+    suspend fun remove(vararg downloadItems: DownloadItem) {
+        fetcher.remove(downloadItems.map { it.downloadInfo.id })
+        downloadItems.forEach {
+            dao.delete(it.downloadRequest)
+        }
+    }
+
     suspend fun delete(vararg downloadItems: DownloadItem) {
         fetcher.delete(downloadItems.map { it.downloadInfo.id })
         downloadItems.forEach {

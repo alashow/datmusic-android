@@ -43,6 +43,7 @@
     <string name="downloads.download.cancel">Cancel</string>
     <string name="downloads.download.retry">Retry</string>
     <string name="downloads.download.open">Open file</string>
+    <string name="downloads.download.remove">Remove</string>
     <string name="downloads.download.delete">Delete file</string>
 
     <string name="settings.title">Settings</string>
