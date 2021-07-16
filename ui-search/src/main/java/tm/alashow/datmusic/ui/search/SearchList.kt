@@ -123,7 +123,6 @@ internal fun SearchList(
 
     SwipeRefresh(
         state = rememberSwipeRefreshState(
-            // isRefreshing = pagersAreEmpty && hasLoadingPager
             isRefreshing = false
         ),
         onRefresh = { refreshPagers() },
@@ -134,7 +133,7 @@ internal fun SearchList(
                 refreshTriggerDistance = trigger,
                 scale = true
             )
-        }
+        },
     ) {
         SearchListContent(
             audiosLazyPagingItems,
@@ -213,24 +212,20 @@ private fun SearchListContent(
             contentPadding = padding,
             modifier = Modifier.fillMaxSize()
         ) {
-            if (refreshErrorState is LoadState.Error) {
-                if (pagersAreEmpty)
-                    item {
-                        ErrorBox(
-                            title = stringResource(refreshErrorState.error.localizedTitle()),
-                            message = stringResource(refreshErrorState.error.localizedMessage()),
-                            onRetryClick = { retryPagers() },
-                            maxHeight = this@BoxWithConstraints.maxHeight
-                        )
-                    }
+            if (refreshErrorState is LoadState.Error && pagersAreEmpty) {
+                item {
+                    ErrorBox(
+                        title = stringResource(refreshErrorState.error.localizedTitle()),
+                        message = stringResource(refreshErrorState.error.localizedMessage()),
+                        onRetryClick = { retryPagers() },
+                        maxHeight = this@BoxWithConstraints.maxHeight
+                    )
+                }
             }
-
-            item("artists") {
+            item {
+                // TODO: separate these into diff [item]s after swiperefresh bug fix
                 if (searchFilter.backends.contains(DatmusicSearchParams.BackendType.ARTISTS))
                     ArtistList(artistsLazyPagingItems)
-            }
-
-            item("albums") {
                 if (searchFilter.backends.contains(DatmusicSearchParams.BackendType.ALBUMS))
                     AlbumList(albumsLazyPagingItems)
             }
