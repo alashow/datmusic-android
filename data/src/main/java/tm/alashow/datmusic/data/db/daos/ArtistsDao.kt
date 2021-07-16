@@ -49,7 +49,7 @@ abstract class ArtistsDao : PaginatedEntryDao<DatmusicSearchParams, Artist>() {
     @Query("DELETE FROM artists WHERE params = :params")
     abstract override suspend fun delete(params: DatmusicSearchParams)
 
-    @Query("DELETE FROM audios WHERE params = :params and page = :page")
+    @Query("DELETE FROM artists WHERE params = :params and page = :page")
     abstract override suspend fun delete(params: DatmusicSearchParams, page: Int)
 
     @Query("DELETE FROM artists")
