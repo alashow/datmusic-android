@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import com.tonyodev.fetch2.Status
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.ui.audios.AudioRowItem
+import tm.alashow.ui.components.ProgressIndicator
 import tm.alashow.ui.theme.AppTheme
 
 @Composable
@@ -69,11 +70,13 @@ internal fun AudioDownload(audioDownloadItem: AudioDownloadItem) {
         ) {
             AudioRowItem(audio = audioDownloadItem.audio, maxLines = 1, modifier = Modifier.weight(16f))
             val isPaused = downloadInfo.status == Status.PAUSED
+            val isQueued = downloadInfo.status == Status.QUEUED
             val isRetriable = downloadInfo.status == Status.FAILED || downloadInfo.status == Status.CANCELLED
             when (downloadInfo.status) {
-                Status.DOWNLOADING, Status.PAUSED, Status.FAILED, Status.CANCELLED -> {
-                    DownloadRequestPauseResume(
+                Status.DOWNLOADING, Status.PAUSED, Status.FAILED, Status.CANCELLED, Status.QUEUED -> {
+                    DownloadRequestProgress(
                         paused = isPaused,
+                        queued = isQueued,
                         retriable = isRetriable,
                         onClick = {
                             actionHandler(
@@ -124,8 +127,9 @@ internal fun AudioDownload(audioDownloadItem: AudioDownloadItem) {
 }
 
 @Composable
-private fun DownloadRequestPauseResume(
+private fun DownloadRequestProgress(
     paused: Boolean,
+    queued: Boolean,
     retriable: Boolean,
     onClick: () -> Unit,
     progress: Float = 0f,
@@ -141,39 +145,41 @@ private fun DownloadRequestPauseResume(
             .clip(CircleShape),
         contentAlignment = Alignment.CenterEnd
     ) {
-
-        CircularProgressIndicator(
-            progress = progressAnimated,
-            color = MaterialTheme.colors.secondary,
-            strokeWidth = strokeWidth,
-            modifier = Modifier
-                .size(size)
-                .clip(CircleShape),
-        )
-
-        Box(
-            Modifier
-                .clip(CircleShape)
-                .clickable(
-                    onClick = onClick,
-                    indication = rememberRipple(color = MaterialTheme.colors.secondary),
-                    interactionSource = remember { MutableInteractionSource() }
-                )
-                .background(MaterialTheme.colors.secondary.copy(alpha = 0.1f))
-        ) {
-            val icon = when {
-                retriable -> Icons.Filled.Refresh
-                paused -> Icons.Filled.PlayArrow
-                else -> Icons.Filled.Pause
-            }
-            Crossfade(icon) {
-                Icon(
-                    painter = rememberVectorPainter(it),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(size)
-                        .padding(AppTheme.specs.paddingSmall)
-                )
+        if (queued) {
+            ProgressIndicator(Modifier.size(size).padding(AppTheme.specs.paddingTiny))
+        } else {
+            CircularProgressIndicator(
+                progress = progressAnimated,
+                color = MaterialTheme.colors.secondary,
+                strokeWidth = strokeWidth,
+                modifier = Modifier
+                    .size(size)
+                    .clip(CircleShape),
+            )
+            Box(
+                Modifier
+                    .clip(CircleShape)
+                    .clickable(
+                        onClick = onClick,
+                        indication = rememberRipple(color = MaterialTheme.colors.secondary),
+                        interactionSource = remember { MutableInteractionSource() }
+                    )
+                    .background(MaterialTheme.colors.secondary.copy(alpha = 0.1f))
+            ) {
+                val icon = when {
+                    retriable -> Icons.Filled.Refresh
+                    paused -> Icons.Filled.PlayArrow
+                    else -> Icons.Filled.Pause
+                }
+                Crossfade(icon) {
+                    Icon(
+                        painter = rememberVectorPainter(it),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(size)
+                            .padding(AppTheme.specs.paddingSmall)
+                    )
+                }
             }
         }
     }

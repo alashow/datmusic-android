@@ -20,8 +20,8 @@ import androidx.compose.ui.unit.dp
 import tm.alashow.ui.Delayed
 
 object ProgressIndicatorDefaults {
-    val sizeMedium = 32.dp to 3.dp
-    val sizeSmall = 16.dp to 2.dp
+    val sizeMedium = 32.dp to 2.dp
+    val sizeSmall = 16.dp to 1.dp
     val size = 48.dp to 4.dp
 }
 
