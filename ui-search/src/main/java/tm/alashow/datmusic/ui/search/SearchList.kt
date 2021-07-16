@@ -63,6 +63,7 @@ import tm.alashow.datmusic.ui.audios.AudioRow
 import tm.alashow.domain.models.errors.EmptyResultException
 import tm.alashow.navigation.LeafScreen
 import tm.alashow.navigation.LocalNavigator
+import tm.alashow.ui.Delayed
 import tm.alashow.ui.components.ErrorBox
 import tm.alashow.ui.components.ProgressIndicator
 import tm.alashow.ui.components.ProgressIndicatorSmall
@@ -214,12 +215,14 @@ private fun SearchListContent(
         ) {
             if (refreshErrorState is LoadState.Error && pagersAreEmpty) {
                 item {
-                    ErrorBox(
-                        title = stringResource(refreshErrorState.error.localizedTitle()),
-                        message = stringResource(refreshErrorState.error.localizedMessage()),
-                        onRetryClick = { retryPagers() },
-                        maxHeight = this@BoxWithConstraints.maxHeight
-                    )
+                    Delayed {
+                        ErrorBox(
+                            title = stringResource(refreshErrorState.error.localizedTitle()),
+                            message = stringResource(refreshErrorState.error.localizedMessage()),
+                            onRetryClick = { retryPagers() },
+                            maxHeight = this@BoxWithConstraints.maxHeight
+                        )
+                    }
                 }
             }
             item {
