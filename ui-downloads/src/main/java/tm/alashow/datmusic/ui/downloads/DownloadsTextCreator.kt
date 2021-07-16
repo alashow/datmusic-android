@@ -30,7 +30,13 @@ private fun Long.humanReadableByteCount(si: Boolean = false): String {
 
 @Composable
 fun Download.fileSizeStatus() = when (status) {
-    Status.DOWNLOADING, Status.PAUSED -> downloaded.humanReadableByteCount() + " / " + total.humanReadableByteCount()
+    Status.DOWNLOADING, Status.PAUSED -> {
+        when {
+            total > 0 -> downloaded.humanReadableByteCount() + " / " + total.humanReadableByteCount()
+            downloaded > 0 -> downloaded.humanReadableByteCount()
+            else -> ""
+        }
+    }
     Status.COMPLETED -> total.humanReadableByteCount()
     else -> ""
 }
