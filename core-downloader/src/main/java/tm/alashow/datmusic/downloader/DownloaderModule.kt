@@ -35,11 +35,13 @@ class DownloaderModule {
         notificationManager: FetchNotificationManager
     ): Fetch {
         val fetcherConfig = FetchConfiguration.Builder(appContext)
+            .setNamespace("downloads")
             .setDownloadConcurrentLimit(2)
+            .setAutoRetryMaxAttempts(2)
+            .enableRetryOnNetworkGain(true)
+            .enableAutoStart(true)
             .setNotificationManager(notificationManager)
             .setHttpDownloader(OkHttpDownloader(okHttpClient))
-            .enableAutoStart(true)
-            .setNamespace("downloads")
             .build()
         Fetch.Impl.setDefaultInstanceConfiguration(fetcherConfig)
         return Fetch.Impl.getInstance(fetcherConfig)

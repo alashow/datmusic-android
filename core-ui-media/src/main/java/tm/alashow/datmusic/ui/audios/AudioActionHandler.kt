@@ -23,7 +23,7 @@ internal fun AudioActionHandler(): AudioActionHandler {
         when (action) {
             is AudioItemAction.Download -> {
                 coroutine.launch {
-                    downloader.queueAudio(action.audio)
+                    downloader.enqueueAudio(action.audio)
                 }
             }
             is AudioItemAction.CopyLink -> {

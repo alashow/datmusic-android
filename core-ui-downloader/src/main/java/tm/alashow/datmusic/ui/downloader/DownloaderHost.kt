@@ -21,14 +21,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import tm.alashow.base.util.asString
+import tm.alashow.common.compose.LocalScaffoldState
 import tm.alashow.common.compose.collectEvent
 import tm.alashow.datmusic.downloader.Downloader
-import tm.alashow.datmusic.downloader.Downloader.PermissionEvent
+import tm.alashow.datmusic.downloader.DownloaderEvent
 import tm.alashow.ui.components.TextRoundedButton
 import tm.alashow.ui.theme.AppTheme
 
@@ -39,12 +42,21 @@ val LocalDownloader = staticCompositionLocalOf<Downloader> {
 @Composable
 fun DownloaderHost(content: @Composable () -> Unit) {
     val viewModel = hiltViewModel<DownloaderViewModel>()
+
+    val scaffoldState = LocalScaffoldState.current
+    val context = LocalContext.current
+    val coroutine = rememberCoroutineScope()
+
     var downloadsLocationDialogShown by remember { mutableStateOf(false) }
 
-    collectEvent(viewModel.downloader.permissionEvents) { event ->
+    collectEvent(viewModel.downloader.downloaderEvents) { event ->
         when (event) {
-            PermissionEvent.ChooseDownloadsLocation, PermissionEvent.DownloadLocationPermissionError -> {
+            DownloaderEvent.ChooseDownloadsLocation, DownloaderEvent.DownloadsLocationPermissionError -> {
                 downloadsLocationDialogShown = true
+            }
+            is DownloaderEvent.DownloaderMessage -> {
+                val message = event.message.asString(context)
+                coroutine.launch { scaffoldState.snackbarHostState.showSnackbar(message) }
             }
             else -> Unit
         }

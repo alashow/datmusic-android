@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   Copyright (C) 2021, Alashov Berkeli
   All rights reserved.
   -->
@@ -29,6 +28,15 @@
     <string name="downloader.downloadsLocationSelect.text">Click Next to select downloads folder location</string>
     <string name="downloader.downloadsLocationSelect.next">Next</string>
 
+    <string name="downloader.enqueue.downloadsNotFound">Selected downloads folder not found</string>
+    <string name="downloader.enqueue.audio.queued">Added to download queue</string>
+    <string name="downloader.enqueue.audio.error.invalidUrl">Audio has invalid download url</string>
+    <string name="downloader.enqueue.audio.error.fileCreate">Couldn\'t create file in downloads location</string>
+    <string name="downloader.enqueue.audio.existing.resuming">Resuming existing download</string>
+    <string name="downloader.enqueue.audio.existing.alreadyQueued">This song is already in the download queue</string>
+    <string name="downloader.enqueue.audio.existing.completed">This song was already downloaded</string>
+    <string name="downloader.enqueue.audio.existing.unknown">Download request exists but has unhandled status: %1$s</string>
+
     <string name="downloads.title">Downloads</string>
     <string name="downloads.empty">No Downloads</string>
 
@@ -45,6 +53,7 @@
     <string name="downloads.download.open">Open file</string>
     <string name="downloads.download.remove">Remove</string>
     <string name="downloads.download.delete">Delete file</string>
+
 
     <string name="settings.title">Settings</string>
     <string name="settings.darkMode">Dark mode</string>

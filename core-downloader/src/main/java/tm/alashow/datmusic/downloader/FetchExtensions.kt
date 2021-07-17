@@ -23,6 +23,7 @@ data class FetchEnqueueFailed(val error: Error) : FetchEnqueueResult()
 sealed class Downloadable(
     val download: Download
 )
+
 object DownloadUninitialized : Downloadable(DownloadInfo())
 
 class DownloadCompleted(
@@ -130,6 +131,12 @@ fun createFetchListener(fetch: Fetch): Flow<Downloadable?> = callbackFlow {
 
 suspend fun Fetch.downloads(): List<Download> = suspendCoroutine { continuation ->
     getDownloads {
+        continuation.resume(it)
+    }
+}
+
+suspend fun Fetch.downloadInfo(id: Int): Download? = suspendCoroutine { continuation ->
+    getDownload(id) {
         continuation.resume(it)
     }
 }

@@ -9,8 +9,8 @@ import androidx.annotation.StringRes
 import com.andretietz.retroauth.AuthenticationCanceledException
 import java.io.IOException
 import retrofit2.HttpException
+import tm.alashow.base.R
 import tm.alashow.base.util.ValidationErrorException
-import tm.alashow.baseAndroid.R
 import tm.alashow.domain.models.errors.ApiErrorException
 import tm.alashow.domain.models.errors.EmptyResultException
 

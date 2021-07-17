@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.tonyodev.fetch2.Status
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
+import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.ui.audios.AudioRowItem
 import tm.alashow.ui.components.ProgressIndicator
 import tm.alashow.ui.theme.AppTheme
@@ -137,7 +138,10 @@ private fun DownloadRequestProgress(
     strokeWidth: Dp = 2.dp,
     modifier: Modifier = Modifier
 ) {
-    val progressAnimated by animateFloatAsState(progress.coerceIn(0f, 1f), animationSpec = tween(2000, easing = LinearEasing))
+    val progressAnimated by animateFloatAsState(
+        progress.coerceIn(0f, 1f),
+        animationSpec = tween(Downloader.DOWNLOADS_STATUS_REFRESH_INTERVAL.toInt(), easing = LinearEasing)
+    )
 
     Box(
         modifier = modifier
@@ -146,7 +150,11 @@ private fun DownloadRequestProgress(
         contentAlignment = Alignment.CenterEnd
     ) {
         if (queued) {
-            ProgressIndicator(Modifier.size(size).padding(AppTheme.specs.paddingTiny))
+            ProgressIndicator(
+                modifier = Modifier
+                    .size(size)
+                    .padding(AppTheme.specs.paddingTiny)
+            )
         } else {
             CircularProgressIndicator(
                 progress = progressAnimated,
