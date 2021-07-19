@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Delete Release key
-rm -f signing/asmanoky-release.jks
+rm -f signing/alashov-release.jks
 
 # Delete Play Store key
 rm -f signing/play-account.json
