@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarResult
 import androidx.compose.material.Text
@@ -63,6 +64,7 @@ import tm.alashow.datmusic.ui.audios.AudioRow
 import tm.alashow.domain.models.errors.EmptyResultException
 import tm.alashow.navigation.LeafScreen
 import tm.alashow.navigation.LocalNavigator
+import tm.alashow.navigation.Navigator
 import tm.alashow.ui.Delayed
 import tm.alashow.ui.components.ErrorBox
 import tm.alashow.ui.components.ProgressIndicator
@@ -157,7 +159,8 @@ private fun SearchListErrors(
     refreshPagers: () -> Unit,
     refreshErrorState: LoadState?,
     pagersAreEmpty: Boolean,
-    hasMultiplePagers: Boolean
+    hasMultiplePagers: Boolean,
+    scaffoldState: ScaffoldState = LocalScaffoldState.current,
 ) {
     val captchaError = viewState.captchaError
     var captchaErrorShown by remember(captchaError) { mutableStateOf(true) }
@@ -170,7 +173,6 @@ private fun SearchListErrors(
     val message = stringResource(viewState.error.localizedMessage())
     val retryLabel = stringResource(R.string.error_retry)
 
-    val scaffoldState = LocalScaffoldState.current
     // show snackbar if there's an error to show
     LaunchedEffect(viewState.error) {
         viewState.error?.let {
@@ -240,7 +242,11 @@ private fun SearchListContent(
 }
 
 @Composable
-internal fun ArtistList(pagingItems: LazyPagingItems<Artist>, imageSize: Dp = ArtistsDefaults.imageSize) {
+internal fun ArtistList(
+    pagingItems: LazyPagingItems<Artist>,
+    imageSize: Dp = ArtistsDefaults.imageSize,
+    navigator: Navigator = LocalNavigator.current
+) {
     LogCompositions(tag = "ArtistList")
 
     val isLoading = pagingItems.loadState.refresh == LoadState.Loading
@@ -259,7 +265,6 @@ internal fun ArtistList(pagingItems: LazyPagingItems<Artist>, imageSize: Dp = Ar
         items(pagingItems, key = { _, item -> item.id }) { it ->
             val artist = it ?: return@items
 
-            val navigator = LocalNavigator.current
             ArtistColumn(artist, imageSize) {
                 navigator.navigate(LeafScreen.ArtistDetails.buildRoute(it.id))
             }
@@ -273,7 +278,8 @@ internal fun ArtistList(pagingItems: LazyPagingItems<Artist>, imageSize: Dp = Ar
 internal fun AlbumList(
     pagingItems: LazyPagingItems<Album>,
     itemSize: Dp = AlbumsDefaults.imageSize,
-    iconPadding: Dp = AlbumsDefaults.iconPadding
+    iconPadding: Dp = AlbumsDefaults.iconPadding,
+    navigator: Navigator = LocalNavigator.current
 ) {
     LogCompositions(tag = "AlbumList")
     val isLoading = pagingItems.loadState.refresh == LoadState.Loading
@@ -292,7 +298,6 @@ internal fun AlbumList(
         items(pagingItems, key = { _, item -> item.id }) {
             val album = it ?: Album()
 
-            val navigator = LocalNavigator.current
             AlbumColumn(album, itemSize, iconPadding, isPlaceholder = it == null) { clickedAlbum ->
                 navigator.navigate(LeafScreen.AlbumDetails.buildRoute(clickedAlbum))
             }

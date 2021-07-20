@@ -45,6 +45,7 @@ import tm.alashow.domain.models.Loading
 import tm.alashow.domain.models.Success
 import tm.alashow.navigation.LeafScreen
 import tm.alashow.navigation.LocalNavigator
+import tm.alashow.navigation.Navigator
 import tm.alashow.ui.OffsetNotifyingBox
 import tm.alashow.ui.components.CollapsingTopBar
 import tm.alashow.ui.components.EmptyErrorBox
@@ -53,8 +54,7 @@ import tm.alashow.ui.components.FullScreenLoading
 import tm.alashow.ui.theme.AppTheme
 
 @Composable
-fun ArtistDetail() {
-    val navigator = LocalNavigator.current
+fun ArtistDetail(navigator: Navigator = LocalNavigator.current) {
     ArtistDetail(viewModel = hiltViewModel()) {
         navigator.back()
     }

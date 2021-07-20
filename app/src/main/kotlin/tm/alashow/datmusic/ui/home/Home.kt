@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.contentColorFor
@@ -43,6 +44,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
@@ -58,11 +60,11 @@ import tm.alashow.ui.DismissableSnackbarHost
 import tm.alashow.ui.theme.translucentSurfaceColor
 
 @Composable
-internal fun Home() {
-    val homeViewModel = viewModel<HomeViewModel>()
-    val navController = rememberNavController()
-    val scaffoldState = rememberScaffoldState()
-
+internal fun Home(
+    navController: NavHostController = rememberNavController(),
+    scaffoldState: ScaffoldState = rememberScaffoldState(),
+    viewModel: HomeViewModel = viewModel()
+) {
     CompositionLocalProvider(LocalScaffoldState provides scaffoldState) {
         Scaffold(
             scaffoldState = scaffoldState,
@@ -88,7 +90,7 @@ internal fun Home() {
         ) {
             DownloaderHost {
                 Box(Modifier.fillMaxSize()) {
-                    AppNavigation(navController, homeViewModel.navigator)
+                    AppNavigation(navController, viewModel.navigator)
                 }
             }
         }

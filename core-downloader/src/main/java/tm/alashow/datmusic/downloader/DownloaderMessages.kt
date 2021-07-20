@@ -15,4 +15,4 @@ val AudioDownloadQueued = UiMessage.Resource(R.string.downloader_enqueue_audio_q
 val AudioDownloadResumingExisting = UiMessage.Resource(R.string.downloader_enqueue_audio_existing_resuming)
 val AudioDownloadAlreadyQueued = UiMessage.Resource(R.string.downloader_enqueue_audio_existing_alreadyQueued)
 val AudioDownloadAlreadyCompleted = UiMessage.Resource(R.string.downloader_enqueue_audio_existing_completed)
-fun audioDownloadExistingUnknownStatus(status: Status) = UiMessage.Resource(R.string.downloader_enqueue_audio_existing_completed, listOf(status))
+fun audioDownloadExistingUnknownStatus(status: Status) = UiMessage.Resource(R.string.downloader_enqueue_audio_existing_unknown, listOf(status))

@@ -9,13 +9,15 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.launch
 import tm.alashow.base.util.toast
+import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.ui.downloader.LocalDownloader
 
 typealias AudioActionHandler = (AudioItemAction) -> Unit
 
 @Composable
-internal fun AudioActionHandler(): AudioActionHandler {
-    val downloader = LocalDownloader.current
+internal fun AudioActionHandler(
+    downloader: Downloader = LocalDownloader.current,
+): AudioActionHandler {
     val context = LocalContext.current
     val coroutine = rememberCoroutineScope()
 

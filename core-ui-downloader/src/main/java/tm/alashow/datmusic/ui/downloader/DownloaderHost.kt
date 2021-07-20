@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.AlertDialog
+import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -40,10 +41,11 @@ val LocalDownloader = staticCompositionLocalOf<Downloader> {
 }
 
 @Composable
-fun DownloaderHost(content: @Composable () -> Unit) {
-    val viewModel = hiltViewModel<DownloaderViewModel>()
-
-    val scaffoldState = LocalScaffoldState.current
+fun DownloaderHost(
+    viewModel: DownloaderViewModel = hiltViewModel(),
+    scaffoldState: ScaffoldState = LocalScaffoldState.current,
+    content: @Composable () -> Unit
+) {
     val context = LocalContext.current
     val coroutine = rememberCoroutineScope()
 
@@ -63,15 +65,18 @@ fun DownloaderHost(content: @Composable () -> Unit) {
     }
 
     CompositionLocalProvider(LocalDownloader provides viewModel.downloader) {
-        DownloadsLocationDialog(downloadsLocationDialogShown, dismissDialog = { downloadsLocationDialogShown = false })
+        DownloadsLocationDialog(dialogShown = downloadsLocationDialogShown, onDismiss = { downloadsLocationDialogShown = false })
         content()
     }
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-private fun DownloadsLocationDialog(dialogShown: Boolean, dismissDialog: () -> Unit) {
-    val downloader = LocalDownloader.current
+private fun DownloadsLocationDialog(
+    dialogShown: Boolean,
+    downloader: Downloader = LocalDownloader.current,
+    onDismiss: () -> Unit,
+) {
     val coroutine = rememberCoroutineScope()
     val documentTreeLauncher = rememberLauncherForActivityResult(contract = WriteableOpenDocumentTree()) {
         coroutine.launch {
@@ -86,7 +91,7 @@ private fun DownloadsLocationDialog(dialogShown: Boolean, dismissDialog: () -> U
     if (dialogShown) {
         AlertDialog(
             properties = DialogProperties(usePlatformDefaultWidth = true),
-            onDismissRequest = { dismissDialog() },
+            onDismissRequest = { onDismiss() },
             title = { Text(stringResource(R.string.downloader_downloadsLocationSelect_title)) },
             text = { Text(stringResource(R.string.downloader_downloadsLocationSelect_text)) },
             buttons = {
@@ -98,7 +103,7 @@ private fun DownloadsLocationDialog(dialogShown: Boolean, dismissDialog: () -> U
                 ) {
                     TextRoundedButton(
                         onClick = {
-                            dismissDialog()
+                            onDismiss()
                             documentTreeLauncher.launch(null)
                         },
                         text = stringResource(R.string.downloader_downloadsLocationSelect_next)
