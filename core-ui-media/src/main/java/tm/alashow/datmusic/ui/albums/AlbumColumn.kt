@@ -53,7 +53,7 @@ fun AlbumColumn(
     Column(
         verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall),
         modifier = Modifier
-            .clickable { onClick(album) }
+            .clickable { if (!isPlaceholder) onClick(album) }
             .fillMaxWidth()
             .padding(AppTheme.specs.padding)
     ) {

@@ -52,8 +52,9 @@ fun AudioRow(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .clickable {
-                if (onClick != null) onClick(audio)
-                else if (!isPlaceholder) menuVisible = true
+                if (!isPlaceholder)
+                    if (onClick != null) onClick(audio)
+                    else menuVisible = true
             }
             .fillMaxWidth()
             .padding(AppTheme.specs.inputPaddings)
@@ -101,7 +102,7 @@ fun AudioRowItem(
         horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
         modifier = modifier
     ) {
-        val image = rememberCoilPainter(audio.coverUrlSmall, fadeIn = true)
+        val image = rememberCoilPainter(audio.coverUrlSmall ?: audio.coverUrl, fadeIn = true)
         CoverImage(image) { modifier ->
             Image(
                 painter = image,
