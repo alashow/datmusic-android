@@ -7,6 +7,7 @@
     <string name="generic.back">Back</string>
     <string name="generic.close">Close</string>
     <string name="generic.clear">Clear</string>
+    <string name="generic.clipboard.copied">Copied</string>
 
     <string name="dialog.warning">Warning</string>
     <string name="dialog.confirm">Confirm</string>

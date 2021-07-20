@@ -38,7 +38,7 @@ internal fun AudioDropdownMenu(
         )
     }
 
-    val items = listOf(R.string.audio_menu_download, R.string.audio_menu_copyLink, R.string.audio_menu_share)
+    val items = listOf(R.string.audio_menu_download, R.string.audio_menu_copyLink)
 
     Box {
         DropdownMenu(

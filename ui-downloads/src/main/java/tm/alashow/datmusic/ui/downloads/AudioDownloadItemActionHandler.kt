@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.launch
-import tm.alashow.base.util.toast
+import tm.alashow.base.util.IntentUtils
 import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.ui.downloader.LocalDownloader
 
@@ -29,7 +29,7 @@ internal fun AudioDownloadItemActionHandler(
             is AudioDownloadItemAction.Retry -> downloader.retry(action.audio)
             is AudioDownloadItemAction.Remove -> coroutine.launch { downloader.remove(action.audio) }
             is AudioDownloadItemAction.Delete -> coroutine.launch { downloader.delete(action.audio) }
-            else -> context.toast("Not implemented: $action")
+            is AudioDownloadItemAction.Open -> IntentUtils.openFile(context, action.audio.downloadInfo.fileUri, action.audio.audio.fileMimeType())
         }
     }
 }

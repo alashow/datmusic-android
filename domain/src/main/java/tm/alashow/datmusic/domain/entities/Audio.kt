@@ -93,8 +93,7 @@ data class Audio(
 ) : BasePaginatedEntity(), Parcelable {
 
     private fun fileDisplayName() = "$artist - $title"
-    private fun fileMimeType() = "audio/mpeg"
-    private fun fileExtension() = ".mp3"
+    fun fileMimeType() = "audio/mpeg"
 
     private fun createDocumentFile(parent: DocumentFile) =
         parent.createFile(fileMimeType(), fileDisplayName()) ?: error("Couldn't create document file")
