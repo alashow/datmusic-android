@@ -35,8 +35,9 @@ fun CoverHeaderRow(
     imageRequest: Any? = null,
     height: Dp = CoverHeaderDefaults.height,
     titleStyle: TextStyle = MaterialTheme.typography.h4.copy(color = Color.White, shadow = textShadow()),
+    modifier: Modifier = Modifier
 ) {
-    Box(modifier = Modifier.fillMaxWidth()) {
+    Box(modifier = modifier.fillMaxWidth()) {
         val painter = rememberCoilPainter(imageRequest, fadeIn = true)
         ImageWithPlaceholder(
             painter = painter,

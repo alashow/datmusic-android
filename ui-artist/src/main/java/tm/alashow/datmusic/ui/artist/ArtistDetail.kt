@@ -5,6 +5,7 @@
 package tm.alashow.datmusic.ui.artist
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -22,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -63,6 +66,7 @@ fun ArtistDetail(navigator: Navigator = LocalNavigator.current) {
 @Composable
 private fun ArtistDetail(viewModel: ArtistDetailViewModel, onBackClick: () -> Unit = {}) {
     val viewState by rememberFlowWithLifecycle(viewModel.state).collectAsState(initial = ArtistDetailViewState.Empty)
+    val listState = rememberLazyListState()
 
     val headerHeight = CoverHeaderDefaults.height
     val headerOffsetProgress = Animatable(0f)
@@ -80,7 +84,7 @@ private fun ArtistDetail(viewModel: ArtistDetailViewModel, onBackClick: () -> Un
                 )
             }
         ) { padding ->
-            ArtistDetailList(viewState, viewModel::refresh, padding)
+            ArtistDetailList(viewState, viewModel::refresh, padding, listState)
         }
     }
 }
@@ -90,27 +94,38 @@ private fun ArtistDetailList(
     viewState: ArtistDetailViewState,
     onRetry: () -> Unit,
     padding: PaddingValues = PaddingValues(),
+    listState: LazyListState,
     modifier: Modifier = Modifier
 ) {
     BoxWithConstraints {
         LazyColumn(
-            state = rememberLazyListState(),
+            state = listState,
             modifier = modifier.fillMaxSize(),
             contentPadding = PaddingValues(bottom = padding.calculateTopPadding() + padding.calculateBottomPadding())
         ) {
             val artist = viewState.artist
             if (artist != null) {
+                var scrolledY = 0f
+                var previousOffset = 0
+                val parallax = 0.3f
                 item {
-                    CoverHeaderRow(title = artist.name, imageRequest = artist.largePhoto())
+                    CoverHeaderRow(
+                        title = artist.name, imageRequest = artist.largePhoto(),
+                        modifier = Modifier.graphicsLayer {
+                            scrolledY += listState.firstVisibleItemScrollOffset - previousOffset
+                            translationY = scrolledY * parallax
+                            previousOffset = listState.firstVisibleItemScrollOffset
+                        }
+                    )
                 }
 
                 val details = viewState.artistDetails
                 val detailsLoading = details is Incomplete
 
-                val (artistAlbums, artistAudios) = ArtistDetails(details, detailsLoading)
+                val (artistAlbums, artistAudios) = artistDetails(details, detailsLoading)
 
-                ArtistDetailsFail(details, this, onRetry, maxHeight)
-                ArtistDetailsEmpty(details, artistAlbums, artistAudios, this, onRetry, maxHeight)
+                artistDetailsFail(details, onRetry, maxHeight)
+                artistDetailsEmpty(details, artistAlbums.isEmpty() && artistAudios.isEmpty(), onRetry, maxHeight)
             } else {
                 item {
                     FullScreenLoading()
@@ -120,7 +135,7 @@ private fun ArtistDetailList(
     }
 }
 
-private fun LazyListScope.ArtistDetails(
+private fun LazyListScope.artistDetails(
     details: Async<Artist>,
     detailsLoading: Boolean
 ): Pair<List<Album>, List<Audio>> {
@@ -139,7 +154,10 @@ private fun LazyListScope.ArtistDetails(
         item {
             Text(
                 stringResource(R.string.search_albums), style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold),
-                modifier = Modifier.padding(AppTheme.specs.inputPaddings)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colors.background)
+                    .padding(AppTheme.specs.inputPaddings)
             )
         }
 
@@ -147,7 +165,7 @@ private fun LazyListScope.ArtistDetails(
             LazyRow(Modifier.fillMaxWidth()) {
                 items(artistAlbums) { album ->
                     val navigator = LocalNavigator.current
-                    AlbumColumn(album, isPlaceholder = detailsLoading) {
+                    AlbumColumn(album, isPlaceholder = detailsLoading, modifier = Modifier.background(MaterialTheme.colors.background)) {
                         navigator.navigate(LeafScreen.AlbumDetails.buildRoute(it))
                     }
                 }
@@ -159,25 +177,27 @@ private fun LazyListScope.ArtistDetails(
         item {
             Text(
                 stringResource(R.string.search_audios), style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold),
-                modifier = Modifier.padding(AppTheme.specs.inputPaddings)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colors.background)
+                    .padding(AppTheme.specs.inputPaddings)
             )
         }
 
         items(artistAudios) { audio ->
-            AudioRow(audio, isPlaceholder = detailsLoading)
+            AudioRow(audio, isPlaceholder = detailsLoading, modifier = Modifier.background(MaterialTheme.colors.background))
         }
     }
     return Pair(artistAlbums, artistAudios)
 }
 
-private fun ArtistDetailsFail(
+private fun LazyListScope.artistDetailsFail(
     details: Async<Artist>,
-    lazyListScope: LazyListScope,
     onRetry: () -> Unit,
     maxHeight: Dp,
 ) {
     if (details is Fail) {
-        lazyListScope.item {
+        item {
             ErrorBox(
                 title = stringResource(details.error.localizedTitle()),
                 message = stringResource(details.error.localizedMessage()),
@@ -188,16 +208,14 @@ private fun ArtistDetailsFail(
     }
 }
 
-private fun ArtistDetailsEmpty(
+private fun LazyListScope.artistDetailsEmpty(
     details: Async<Artist>,
-    artistAlbums: List<Album>,
-    artistAudios: List<Audio>,
-    lazyListScope: LazyListScope,
+    detailsEmpty: Boolean,
     onRetry: () -> Unit,
     maxHeight: Dp,
 ) {
-    if (details is Success && artistAlbums.isEmpty() && artistAudios.isEmpty()) {
-        lazyListScope.item {
+    if (details is Success && detailsEmpty) {
+        item {
             EmptyErrorBox(
                 onRetryClick = onRetry,
                 maxHeight = maxHeight

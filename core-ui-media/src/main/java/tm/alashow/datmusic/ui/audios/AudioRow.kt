@@ -44,13 +44,14 @@ fun AudioRow(
     audio: Audio,
     isPlaceholder: Boolean = false,
     onClick: ((Audio) -> Unit)? = null,
+    modifier: Modifier = Modifier
 ) {
     var menuVisible by remember { mutableStateOf(false) }
     val contentScaleOnMenuVisible = animateFloatAsState((if (menuVisible) 0.97f else 1f))
 
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier
+        modifier = modifier
             .clickable {
                 if (!isPlaceholder)
                     if (onClick != null) onClick(audio)

@@ -44,6 +44,7 @@ fun AlbumColumn(
     imageSize: Dp = AlbumsDefaults.imageSize,
     iconPadding: Dp = AlbumsDefaults.iconPadding,
     isPlaceholder: Boolean = false,
+    modifier: Modifier = Modifier,
     onClick: (Album) -> Unit = {},
 ) {
     val loadingModifier = Modifier.placeholder(
@@ -52,7 +53,7 @@ fun AlbumColumn(
     )
     Column(
         verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall),
-        modifier = Modifier
+        modifier = modifier
             .clickable { if (!isPlaceholder) onClick(album) }
             .fillMaxWidth()
             .padding(AppTheme.specs.padding)
