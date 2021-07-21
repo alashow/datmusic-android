@@ -16,6 +16,14 @@ data class SearchFilter(
     val backends: BackendTypes = DefaultBackends
 ) : Parcelable {
 
+    val hasAudios get() = backends.contains(BackendType.AUDIOS)
+    val hasArtists get() = backends.contains(BackendType.ARTISTS)
+    val hasAlbums get() = backends.contains(BackendType.ALBUMS)
+
+    val hasMinerva get() = backends.contains(BackendType.MINERVA)
+
+    val hasMinervaOnly get() = backends.size == 1 && backends.contains(BackendType.MINERVA)
+
     companion object {
         val DefaultBackends = setOf(BackendType.AUDIOS, BackendType.ARTISTS, BackendType.ALBUMS)
     }

@@ -52,7 +52,7 @@ import tm.alashow.base.util.extensions.localizedTitle
 import tm.alashow.common.compose.LocalScaffoldState
 import tm.alashow.common.compose.LogCompositions
 import tm.alashow.common.compose.rememberFlowWithLifecycle
-import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
+import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams.BackendType
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
@@ -77,7 +77,7 @@ internal fun SearchList(viewModel: SearchViewModel, listState: LazyListState, pa
     SearchList(
         viewModel = viewModel,
         audiosLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedAudioList).collectAsLazyPagingItems(),
-        minervaAudiosLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedMinervaAudioList).collectAsLazyPagingItems(),
+        minervaLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedMinervaList).collectAsLazyPagingItems(),
         artistsLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedArtistsList).collectAsLazyPagingItems(),
         albumsLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedAlbumsList).collectAsLazyPagingItems(),
         listState = listState,
@@ -89,7 +89,7 @@ internal fun SearchList(viewModel: SearchViewModel, listState: LazyListState, pa
 internal fun SearchList(
     viewModel: SearchViewModel,
     audiosLazyPagingItems: LazyPagingItems<Audio>,
-    minervaAudiosLazyPagingItems: LazyPagingItems<Audio>,
+    minervaLazyPagingItems: LazyPagingItems<Audio>,
     artistsLazyPagingItems: LazyPagingItems<Artist>,
     albumsLazyPagingItems: LazyPagingItems<Album>,
     listState: LazyListState,
@@ -103,10 +103,10 @@ internal fun SearchList(
     val pagers = when (searchFilter.backends.size) {
         1 -> searchFilter.backends.map {
             when (it) {
-                DatmusicSearchParams.BackendType.AUDIOS -> audiosLazyPagingItems
-                DatmusicSearchParams.BackendType.ARTISTS -> artistsLazyPagingItems
-                DatmusicSearchParams.BackendType.ALBUMS -> albumsLazyPagingItems
-                DatmusicSearchParams.BackendType.MINERVA -> minervaAudiosLazyPagingItems
+                BackendType.AUDIOS -> audiosLazyPagingItems
+                BackendType.ARTISTS -> artistsLazyPagingItems
+                BackendType.ALBUMS -> albumsLazyPagingItems
+                BackendType.MINERVA -> minervaLazyPagingItems
             }
         }.toSet()
         else -> setOf(audiosLazyPagingItems, artistsLazyPagingItems, albumsLazyPagingItems)
@@ -121,11 +121,6 @@ internal fun SearchList(
     val hasMultiplePagers = pagers.size > 1
 
     SearchListErrors(viewModel, viewState, refreshPagers, refreshErrorState, pagersAreEmpty, hasMultiplePagers)
-
-    // scroll to top when any of active pagers refresh state change
-    LaunchedEffect(*pagerRefreshStates) {
-        listState.animateScrollToItem(0)
-    }
 
     SwipeRefresh(
         state = rememberSwipeRefreshState(
@@ -143,7 +138,7 @@ internal fun SearchList(
     ) {
         SearchListContent(
             audiosLazyPagingItems,
-            minervaAudiosLazyPagingItems,
+            minervaLazyPagingItems,
             artistsLazyPagingItems,
             albumsLazyPagingItems,
             listState,
@@ -234,16 +229,16 @@ private fun SearchListContent(
             }
             item {
                 // TODO: separate these into diff [item]s after swiperefresh bug fix
-                if (searchFilter.backends.contains(DatmusicSearchParams.BackendType.ARTISTS))
+                if (searchFilter.hasArtists)
                     ArtistList(artistsLazyPagingItems)
-                if (searchFilter.backends.contains(DatmusicSearchParams.BackendType.ALBUMS))
+                if (searchFilter.hasAlbums)
                     AlbumList(albumsLazyPagingItems)
             }
 
-            if (searchFilter.backends.contains(DatmusicSearchParams.BackendType.AUDIOS))
+            if (searchFilter.hasAudios)
                 audioList(audiosLazyPagingItems)
 
-            if (searchFilter.backends.contains(DatmusicSearchParams.BackendType.MINERVA))
+            if (searchFilter.hasMinerva)
                 audioList(minervaAudiosLazyPagingItems)
         }
     }

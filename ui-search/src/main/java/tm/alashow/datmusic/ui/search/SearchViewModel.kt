@@ -7,6 +7,7 @@ package tm.alashow.datmusic.ui.search
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingConfig
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.FlowPreview
@@ -37,7 +38,7 @@ import tm.alashow.domain.models.errors.ApiCaptchaError
 internal class SearchViewModel @Inject constructor(
     handle: SavedStateHandle,
     private val audiosPager: ObservePagedDatmusicSearch<Audio>,
-    private val minervaAudiosPager: ObservePagedDatmusicSearch<Audio>,
+    private val minervaPager: ObservePagedDatmusicSearch<Audio>,
     private val artistsPager: ObservePagedDatmusicSearch<Artist>,
     private val albumsPager: ObservePagedDatmusicSearch<Album>,
     private val snackbarManager: SnackbarManager,
@@ -52,7 +53,7 @@ internal class SearchViewModel @Inject constructor(
     private val pendingActions = MutableSharedFlow<SearchAction>()
 
     val pagedAudioList get() = audiosPager.observe()
-    val pagedMinervaAudioList get() = minervaAudiosPager.observe()
+    val pagedMinervaList get() = minervaPager.observe()
     val pagedArtistsList get() = artistsPager.observe()
     val pagedAlbumsList get() = albumsPager.observe()
 
@@ -66,8 +67,7 @@ internal class SearchViewModel @Inject constructor(
                         searchQuery.value = action.query
 
                         // trigger search while typing if minerva is the only backend selected
-                        val backends = searchFilter.value?.backends.orEmpty()
-                        if (backends.size == 1 && backends.contains(BackendType.MINERVA)) {
+                        if (searchFilter.value?.hasMinervaOnly == true) {
                             searchTrigger.value = SearchTrigger(searchQuery.value)
                         }
                     }
@@ -99,17 +99,17 @@ internal class SearchViewModel @Inject constructor(
         Timber.d("Searching with query=$query, backends=${filter.backends.joinToString { it.type }}")
         val searchParams = DatmusicSearchParams(query, trigger.captchaSolution)
 
-        if (filter.backends.contains(BackendType.AUDIOS))
+        if (filter.hasAudios)
             audiosPager(ObservePagedDatmusicSearch.Params(searchParams))
 
-        if (filter.backends.contains(BackendType.MINERVA))
-            minervaAudiosPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(BackendType.MINERVA)))
+        if (filter.hasMinerva)
+            minervaPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(BackendType.MINERVA), MINERVA_PAGING))
 
         // don't send queries if backend can't handle empty queries
         if (query.isNotBlank()) {
-            if (filter.backends.contains(BackendType.ARTISTS))
+            if (filter.hasArtists)
                 artistsPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(BackendType.ARTISTS)))
-            if (filter.backends.contains(BackendType.ALBUMS))
+            if (filter.hasAlbums)
                 albumsPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(BackendType.ALBUMS)))
         }
     }
@@ -154,5 +154,14 @@ internal class SearchViewModel @Inject constructor(
         when (error) {
             is ApiCaptchaError -> captchaError.value = error
         }
+    }
+
+    companion object {
+        val MINERVA_PAGING = PagingConfig(
+            pageSize = 50,
+            initialLoadSize = 50,
+            prefetchDistance = 5,
+            enablePlaceholders = true
+        )
     }
 }

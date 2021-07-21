@@ -37,6 +37,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -60,6 +61,7 @@ import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
 import kotlin.math.round
+import kotlinx.coroutines.launch
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
 import tm.alashow.ui.OffsetNotifyingBox
@@ -102,8 +104,10 @@ private fun Search(
     viewModel: SearchViewModel,
     listState: LazyListState
 ) {
+    val searchBarHideThreshold = 4
     val searchBarHeight = 200.dp
     val searchBarOffset = Animatable(0f)
+    val coroutine = rememberCoroutineScope()
 
     OffsetNotifyingBox(headerHeight = searchBarHeight) { _, progress ->
         Scaffold(
@@ -116,13 +120,29 @@ private fun Search(
                 SearchAppBar(
                     modifier = Modifier
                         .graphicsLayer {
-                            alpha = 1 - searchBarOffset.value
-                            translationY = searchBarHeight.value * (-searchBarOffset.value)
+                            if (listState.firstVisibleItemIndex > searchBarHideThreshold) {
+                                alpha = 1 - searchBarOffset.value
+                                translationY = searchBarHeight.value * (-searchBarOffset.value)
+                            } else {
+                                alpha = 1f
+                                translationY = 0f
+                            }
                         },
                     state = viewState,
-                    onQueryChange = { actioner(SearchAction.QueryChange(it)) },
-                    onSearch = { actioner(SearchAction.Search) },
-                    onBackendTypeSelect = { actioner(it) }
+                    onQueryChange = {
+                        actioner(SearchAction.QueryChange(it))
+                        // don't scroll up unless list is updated while typing
+                        if (viewState.searchFilter.hasMinervaOnly)
+                            coroutine.launch { listState.animateScrollToItem(0) }
+                    },
+                    onSearch = {
+                        actioner(SearchAction.Search)
+                        coroutine.launch { listState.animateScrollToItem(0) }
+                    },
+                    onBackendTypeSelect = {
+                        actioner(it)
+                        coroutine.launch { listState.animateScrollToItem(0) }
+                    }
                 )
             }
         ) { padding ->
