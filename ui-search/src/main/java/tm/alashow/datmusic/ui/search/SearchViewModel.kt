@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -24,6 +25,7 @@ import tm.alashow.base.util.extensions.getStateFlow
 import tm.alashow.datmusic.data.observers.ObservePagedDatmusicSearch
 import tm.alashow.datmusic.data.repos.CaptchaSolution
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
+import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams.BackendType
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams.Companion.withTypes
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
@@ -35,6 +37,7 @@ import tm.alashow.domain.models.errors.ApiCaptchaError
 internal class SearchViewModel @Inject constructor(
     handle: SavedStateHandle,
     private val audiosPager: ObservePagedDatmusicSearch<Audio>,
+    private val minervaAudiosPager: ObservePagedDatmusicSearch<Audio>,
     private val artistsPager: ObservePagedDatmusicSearch<Artist>,
     private val albumsPager: ObservePagedDatmusicSearch<Album>,
     private val snackbarManager: SnackbarManager,
@@ -49,6 +52,7 @@ internal class SearchViewModel @Inject constructor(
     private val pendingActions = MutableSharedFlow<SearchAction>()
 
     val pagedAudioList get() = audiosPager.observe()
+    val pagedMinervaAudioList get() = minervaAudiosPager.observe()
     val pagedArtistsList get() = artistsPager.observe()
     val pagedAlbumsList get() = albumsPager.observe()
 
@@ -58,7 +62,15 @@ internal class SearchViewModel @Inject constructor(
         viewModelScope.launch {
             pendingActions.collect { action ->
                 when (action) {
-                    is SearchAction.QueryChange -> searchQuery.value = action.query
+                    is SearchAction.QueryChange -> {
+                        searchQuery.value = action.query
+
+                        // trigger search while typing if minerva is the only backend selected
+                        val backends = searchFilter.value?.backends.orEmpty()
+                        if (backends.size == 1 && backends.contains(BackendType.MINERVA)) {
+                            searchTrigger.value = SearchTrigger(searchQuery.value)
+                        }
+                    }
                     is SearchAction.Search -> searchTrigger.value = SearchTrigger(searchQuery.value)
                     is SearchAction.SelectBackendType -> selectBackendType(action)
                     is SearchAction.SolveCaptcha -> solveCaptcha(action)
@@ -70,6 +82,7 @@ internal class SearchViewModel @Inject constructor(
 
         viewModelScope.launch {
             combine(searchTrigger.filterNotNull(), searchFilter.filterNotNull(), ::Pair)
+                .debounce(200)
                 .collectLatest { (trigger, filter) ->
                     search(trigger, filter)
                 }
@@ -86,15 +99,18 @@ internal class SearchViewModel @Inject constructor(
         Timber.d("Searching with query=$query, backends=${filter.backends.joinToString { it.type }}")
         val searchParams = DatmusicSearchParams(query, trigger.captchaSolution)
 
-        if (filter.backends.contains(DatmusicSearchParams.BackendType.AUDIOS))
+        if (filter.backends.contains(BackendType.AUDIOS))
             audiosPager(ObservePagedDatmusicSearch.Params(searchParams))
+
+        if (filter.backends.contains(BackendType.MINERVA))
+            minervaAudiosPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(BackendType.MINERVA)))
 
         // don't send queries if backend can't handle empty queries
         if (query.isNotBlank()) {
-            if (filter.backends.contains(DatmusicSearchParams.BackendType.ARTISTS))
-                artistsPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(DatmusicSearchParams.BackendType.ARTISTS)))
-            if (filter.backends.contains(DatmusicSearchParams.BackendType.ALBUMS))
-                albumsPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(DatmusicSearchParams.BackendType.ALBUMS)))
+            if (filter.backends.contains(BackendType.ARTISTS))
+                artistsPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(BackendType.ARTISTS)))
+            if (filter.backends.contains(BackendType.ALBUMS))
+                albumsPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(BackendType.ALBUMS)))
         }
     }
 

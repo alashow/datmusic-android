@@ -77,6 +77,7 @@ internal fun SearchList(viewModel: SearchViewModel, listState: LazyListState, pa
     SearchList(
         viewModel = viewModel,
         audiosLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedAudioList).collectAsLazyPagingItems(),
+        minervaAudiosLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedMinervaAudioList).collectAsLazyPagingItems(),
         artistsLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedArtistsList).collectAsLazyPagingItems(),
         albumsLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedAlbumsList).collectAsLazyPagingItems(),
         listState = listState,
@@ -88,6 +89,7 @@ internal fun SearchList(viewModel: SearchViewModel, listState: LazyListState, pa
 internal fun SearchList(
     viewModel: SearchViewModel,
     audiosLazyPagingItems: LazyPagingItems<Audio>,
+    minervaAudiosLazyPagingItems: LazyPagingItems<Audio>,
     artistsLazyPagingItems: LazyPagingItems<Artist>,
     albumsLazyPagingItems: LazyPagingItems<Album>,
     listState: LazyListState,
@@ -104,6 +106,7 @@ internal fun SearchList(
                 DatmusicSearchParams.BackendType.AUDIOS -> audiosLazyPagingItems
                 DatmusicSearchParams.BackendType.ARTISTS -> artistsLazyPagingItems
                 DatmusicSearchParams.BackendType.ALBUMS -> albumsLazyPagingItems
+                DatmusicSearchParams.BackendType.MINERVA -> minervaAudiosLazyPagingItems
             }
         }.toSet()
         else -> setOf(audiosLazyPagingItems, artistsLazyPagingItems, albumsLazyPagingItems)
@@ -140,6 +143,7 @@ internal fun SearchList(
     ) {
         SearchListContent(
             audiosLazyPagingItems,
+            minervaAudiosLazyPagingItems,
             artistsLazyPagingItems,
             albumsLazyPagingItems,
             listState,
@@ -199,6 +203,7 @@ private fun SearchListErrors(
 @Composable
 private fun SearchListContent(
     audiosLazyPagingItems: LazyPagingItems<Audio>,
+    minervaAudiosLazyPagingItems: LazyPagingItems<Audio>,
     artistsLazyPagingItems: LazyPagingItems<Artist>,
     albumsLazyPagingItems: LazyPagingItems<Album>,
     listState: LazyListState,
@@ -237,6 +242,9 @@ private fun SearchListContent(
 
             if (searchFilter.backends.contains(DatmusicSearchParams.BackendType.AUDIOS))
                 audioList(audiosLazyPagingItems)
+
+            if (searchFilter.backends.contains(DatmusicSearchParams.BackendType.MINERVA))
+                audioList(minervaAudiosLazyPagingItems)
         }
     }
 }

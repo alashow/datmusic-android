@@ -231,6 +231,7 @@ private fun ColumnScope.SearchFilterPanel(
                         DatmusicSearchParams.BackendType.AUDIOS -> R.string.search_audios
                         DatmusicSearchParams.BackendType.ARTISTS -> R.string.search_artists
                         DatmusicSearchParams.BackendType.ALBUMS -> R.string.search_albums
+                        DatmusicSearchParams.BackendType.MINERVA -> R.string.search_minerva
                     }
                 )
             }

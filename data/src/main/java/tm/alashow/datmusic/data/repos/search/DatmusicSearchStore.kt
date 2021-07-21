@@ -54,7 +54,10 @@ object DatmusicSearchStoreModule {
         dao: AudiosDao,
         @Named("audios") lastRequests: LastRequests
     ): DatmusicSearchStore<Audio> = StoreBuilder.from(
-        fetcher = Fetcher.of { params: DatmusicSearchParams -> search(params).map { it.data.audios }.fetcherDefaults(lastRequests, params) },
+        fetcher = Fetcher.of { params: DatmusicSearchParams ->
+            search(params).map { it.data.audios + it.data.minerva }
+                .fetcherDefaults(lastRequests, params)
+        },
         sourceOfTruth = SourceOfTruth.of(
             reader = { params -> dao.entriesObservable(params, params.page).sourceReaderFilter(lastRequests, params) },
             writer = { params, response ->

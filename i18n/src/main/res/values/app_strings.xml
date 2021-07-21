@@ -14,6 +14,7 @@
     <string name="search.audios">Songs</string>
     <string name="search.artists">Artists</string>
     <string name="search.albums">Albums</string>
+    <string name="search.minerva">Minerva</string>
 
     <string name="artists.detail.title">Artist</string>
 
