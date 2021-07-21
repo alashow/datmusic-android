@@ -61,7 +61,6 @@ import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
 import kotlin.math.round
-import kotlinx.coroutines.launch
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
 import tm.alashow.ui.OffsetNotifyingBox
@@ -129,20 +128,9 @@ private fun Search(
                             }
                         },
                     state = viewState,
-                    onQueryChange = {
-                        actioner(SearchAction.QueryChange(it))
-                        // don't scroll up unless list is updated while typing
-                        if (viewState.searchFilter.hasMinervaOnly)
-                            coroutine.launch { listState.animateScrollToItem(0) }
-                    },
-                    onSearch = {
-                        actioner(SearchAction.Search)
-                        coroutine.launch { listState.animateScrollToItem(0) }
-                    },
-                    onBackendTypeSelect = {
-                        actioner(it)
-                        coroutine.launch { listState.animateScrollToItem(0) }
-                    }
+                    onQueryChange = { actioner(SearchAction.QueryChange(it)) },
+                    onSearch = { actioner(SearchAction.Search) },
+                    onBackendTypeSelect = { actioner(it) }
                 )
             }
         ) { padding ->

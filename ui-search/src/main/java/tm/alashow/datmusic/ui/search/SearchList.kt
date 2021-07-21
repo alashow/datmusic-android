@@ -120,6 +120,10 @@ internal fun SearchList(
 
     val hasMultiplePagers = pagers.size > 1
 
+    LaunchedEffect(*pagers.map { it.itemCount }.toTypedArray()) {
+        listState.animateScrollToItem(0)
+    }
+
     SearchListErrors(viewModel, viewState, refreshPagers, refreshErrorState, pagersAreEmpty, hasMultiplePagers)
 
     SwipeRefresh(
@@ -227,7 +231,7 @@ private fun SearchListContent(
                     }
                 }
             }
-            item {
+            item("artists_albums") {
                 // TODO: separate these into diff [item]s after swiperefresh bug fix
                 if (searchFilter.hasArtists)
                     ArtistList(artistsLazyPagingItems)
