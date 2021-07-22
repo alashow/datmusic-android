@@ -19,7 +19,7 @@ internal class AppHeadersInterceptor(context: Context) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request().newBuilder()
-            .header("User-Agent", Config.APP_USER_AGENT)
+            .header("User-Agent", "UNJlh7droPEHeWSmunRB1f1D")
             .header("Accept-Language", Locale.getDefault().language)
             .run {
                 val host = chain.request().url.host
