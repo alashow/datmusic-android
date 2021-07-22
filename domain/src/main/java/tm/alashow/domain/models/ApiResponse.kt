@@ -49,6 +49,9 @@ data class ApiResponse(
 
     @Serializable
     data class Data(
+        @SerialName("message")
+        val message: String = "",
+
         @SerialName("artist")
         val artist: Artist = Artist(),
 
