@@ -5,13 +5,11 @@
 package tm.alashow.datmusic.ui.album
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -24,8 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
@@ -34,13 +30,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.ui.Scaffold
 import kotlin.math.round
-import kotlinx.coroutines.launch
 import tm.alashow.base.util.extensions.localizedMessage
 import tm.alashow.base.util.extensions.localizedTitle
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Audio
-import tm.alashow.datmusic.ui.AudioRow
+import tm.alashow.datmusic.ui.audios.AudioRow
 import tm.alashow.datmusic.ui.components.CoverHeaderDefaults
 import tm.alashow.datmusic.ui.components.CoverHeaderRow
 import tm.alashow.domain.models.Async
@@ -49,19 +44,18 @@ import tm.alashow.domain.models.Incomplete
 import tm.alashow.domain.models.Loading
 import tm.alashow.domain.models.Success
 import tm.alashow.navigation.LocalNavigator
+import tm.alashow.navigation.Navigator
 import tm.alashow.ui.OffsetNotifyingBox
-import tm.alashow.ui.components.DetailScreenAppBar
+import tm.alashow.ui.components.CollapsingTopBar
+import tm.alashow.ui.components.EmptyErrorBox
 import tm.alashow.ui.components.ErrorBox
-import tm.alashow.ui.components.ProgressIndicator
+import tm.alashow.ui.components.FullScreenLoading
 import tm.alashow.ui.theme.AppTheme
 
 @Composable
-fun AlbumDetail() {
-    val navigator = LocalNavigator.current
-    val coroutine = rememberCoroutineScope()
-
+fun AlbumDetail(navigator: Navigator = LocalNavigator.current) {
     AlbumDetail(viewModel = hiltViewModel()) {
-        coroutine.launch { navigator.back() }
+        navigator.back()
     }
 }
 
@@ -71,34 +65,30 @@ private fun AlbumDetail(viewModel: AlbumDetailViewModel, onBackClick: () -> Unit
     val listState = rememberLazyListState()
 
     val headerHeight = CoverHeaderDefaults.height
-    val headerVisibilityProgress = Animatable(1f)
+    val headerVisibilityProgress = Animatable(0f)
 
     OffsetNotifyingBox(headerHeight = headerHeight) { _, progress ->
         Scaffold(
             topBar = {
                 LaunchedEffect(progress.value) {
-                    headerVisibilityProgress.animateTo(1 - round(progress.value))
+                    headerVisibilityProgress.animateTo(round(progress.value))
                 }
-                DetailScreenAppBar(
-                    title = "Album",
-                    modifier = Modifier.graphicsLayer {
-                        alpha = 1 - headerVisibilityProgress.value
-                        translationY = headerHeight.value * (-headerVisibilityProgress.value)
-                    },
+                CollapsingTopBar(
+                    title = stringResource(R.string.albums_detail_title),
+                    collapsed = headerVisibilityProgress.value == 0f,
                     onNavigationClick = onBackClick,
                 )
             }
         ) { padding ->
-            ArtistDetailList(viewState, viewModel::refresh, onBackClick, padding, listState)
+            AlbumDetailList(viewState, viewModel::refresh, padding, listState)
         }
     }
 }
 
 @Composable
-private fun ArtistDetailList(
+private fun AlbumDetailList(
     viewState: AlbumDetailViewState,
     onRetry: () -> Unit,
-    onBackClick: () -> Unit,
     padding: PaddingValues = PaddingValues(),
     listState: LazyListState,
     modifier: Modifier = Modifier
@@ -107,12 +97,22 @@ private fun ArtistDetailList(
         LazyColumn(
             state = listState,
             modifier = modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = padding.calculateBottomPadding())
+            contentPadding = PaddingValues(bottom = padding.calculateTopPadding() + padding.calculateBottomPadding())
         ) {
             val album = viewState.album
             if (album != null) {
                 item {
-                    CoverHeaderRow(title = album.title, imageRequest = album.photo.mediumUrl, onBackClick = onBackClick)
+                    var scrolledY = 0f
+                    var previousOffset = 0
+                    val parallax = 0.6f
+                    CoverHeaderRow(
+                        title = album.title, imageRequest = album.photo.mediumUrl,
+                        modifier = Modifier.graphicsLayer {
+                            scrolledY += listState.firstVisibleItemScrollOffset - previousOffset
+                            translationY = scrolledY * parallax
+                            previousOffset = listState.firstVisibleItemScrollOffset
+                        }
+                    )
                 }
 
                 val details = viewState.albumDetails
@@ -120,11 +120,11 @@ private fun ArtistDetailList(
 
                 val albumAudios = albumDetails(album, details, detailsLoading)
 
-                albumDetailsFail(details, this, onRetry, maxHeight)
-                albumDetailsEmpty(details, albumAudios, this, onRetry, maxHeight)
+                albumDetailsFail(details, onRetry, maxHeight)
+                albumDetailsEmpty(details, albumAudios.isEmpty(), onRetry, maxHeight)
             } else {
                 item {
-                    AlbumDetailsLoading()
+                    FullScreenLoading()
                 }
             }
         }
@@ -138,7 +138,7 @@ private fun LazyListScope.albumDetails(
 ): List<Audio> {
     val albumAudios = when (details) {
         is Success -> details()
-        is Loading -> (1..album.songCount).map { Audio(title = "Loading artist...", artist = "Loading") }
+        is Loading -> (1..album.songCount).map { Audio() }
         else -> emptyList()
     }
 
@@ -146,25 +146,27 @@ private fun LazyListScope.albumDetails(
         item {
             Text(
                 stringResource(R.string.search_audios), style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold),
-                modifier = Modifier.padding(AppTheme.specs.inputPaddings)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colors.background)
+                    .padding(AppTheme.specs.inputPaddings)
             )
         }
 
         items(albumAudios) { audio ->
-            AudioRow(audio, isPlaceholder = detailsLoading)
+            AudioRow(audio, isPlaceholder = detailsLoading, modifier = Modifier.background(MaterialTheme.colors.background))
         }
     }
     return albumAudios
 }
 
-private fun albumDetailsFail(
+private fun LazyListScope.albumDetailsFail(
     details: Async<List<Audio>>,
-    lazyListScope: LazyListScope,
     onRetry: () -> Unit,
     maxHeight: Dp,
 ) {
     if (details is Fail) {
-        lazyListScope.item {
+        item {
             ErrorBox(
                 title = stringResource(details.error.localizedTitle()),
                 message = stringResource(details.error.localizedMessage()),
@@ -175,33 +177,18 @@ private fun albumDetailsFail(
     }
 }
 
-private fun albumDetailsEmpty(
+private fun LazyListScope.albumDetailsEmpty(
     details: Async<List<Audio>>,
-    albumAudios: List<Audio>,
-    lazyListScope: LazyListScope,
+    albumAudiosEmpty: Boolean,
     onRetry: () -> Unit,
     maxHeight: Dp,
 ) {
-    if (details is Success && albumAudios.isEmpty()) {
-        lazyListScope.item {
-            ErrorBox(
-                title = stringResource(R.string.error_empty_title),
-                message = stringResource(R.string.error_empty_title),
+    if (details is Success && albumAudiosEmpty) {
+        item {
+            EmptyErrorBox(
                 onRetryClick = onRetry,
                 maxHeight = maxHeight
             )
         }
-    }
-}
-
-@Composable
-private fun BoxWithConstraintsScope.AlbumDetailsLoading() {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(maxHeight)
-    ) {
-        ProgressIndicator()
     }
 }

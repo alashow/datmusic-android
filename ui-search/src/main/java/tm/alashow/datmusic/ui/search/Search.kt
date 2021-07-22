@@ -37,6 +37,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -102,8 +103,10 @@ private fun Search(
     viewModel: SearchViewModel,
     listState: LazyListState
 ) {
+    val searchBarHideThreshold = 4
     val searchBarHeight = 200.dp
     val searchBarOffset = Animatable(0f)
+    val coroutine = rememberCoroutineScope()
 
     OffsetNotifyingBox(headerHeight = searchBarHeight) { _, progress ->
         Scaffold(
@@ -116,8 +119,13 @@ private fun Search(
                 SearchAppBar(
                     modifier = Modifier
                         .graphicsLayer {
-                            alpha = 1 - searchBarOffset.value
-                            translationY = searchBarHeight.value * (-searchBarOffset.value)
+                            if (listState.firstVisibleItemIndex > searchBarHideThreshold) {
+                                alpha = 1 - searchBarOffset.value
+                                translationY = searchBarHeight.value * (-searchBarOffset.value)
+                            } else {
+                                alpha = 1f
+                                translationY = 0f
+                            }
                         },
                     state = viewState,
                     onQueryChange = { actioner(SearchAction.QueryChange(it)) },
@@ -160,6 +168,12 @@ private fun SearchAppBar(
         var focused by remember { mutableStateOf(false) }
         val searchActive = focused && hasWindowFocus && keyboardVisible
 
+        val triggerSearch = {
+            onSearch()
+            keyboardController?.hide()
+            focusManager.clearFocus()
+        }
+
         Column(
             verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall),
             modifier = Modifier.animateContentSize()
@@ -180,11 +194,7 @@ private fun SearchAppBar(
                     query = value
                     onQueryChange(value.text)
                 },
-                onSearch = {
-                    onSearch()
-                    keyboardController?.hide()
-                    focusManager.clearFocus()
-                },
+                onSearch = { triggerSearch() },
                 hint = if (!searchActive) stringResource(R.string.search_hint) else stringResource(R.string.search_hint_query),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -199,7 +209,7 @@ private fun SearchAppBar(
             val filterVisible = searchActive || query.text.isNotBlank() || backends.isNotEmpty()
             SearchFilterPanel(visible = filterVisible, backends) { selectAction ->
                 onBackendTypeSelect(selectAction)
-                onSearch()
+                triggerSearch()
             }
         }
     }
@@ -229,6 +239,7 @@ private fun ColumnScope.SearchFilterPanel(
                         DatmusicSearchParams.BackendType.AUDIOS -> R.string.search_audios
                         DatmusicSearchParams.BackendType.ARTISTS -> R.string.search_artists
                         DatmusicSearchParams.BackendType.ALBUMS -> R.string.search_albums
+                        DatmusicSearchParams.BackendType.MINERVA -> R.string.search_minerva
                     }
                 )
             }

@@ -32,15 +32,36 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import tm.alashow.ui.Zoomable
 import tm.alashow.ui.theme.AppTheme
 
+@Composable
+fun EmptyErrorBox(
+    message: String = stringResource(R.string.error_empty),
+    retryVisible: Boolean = true,
+    onRetryClick: () -> Unit = {},
+    maxHeight: Dp? = null,
+    maxHeightFraction: Float = 0.7f,
+    modifier: Modifier = Modifier
+) {
+    ErrorBox(
+        title = stringResource(R.string.error_empty_title),
+        message = message,
+        retryVisible = retryVisible,
+        onRetryClick = onRetryClick,
+        maxHeight = maxHeight,
+        maxHeightPercent = maxHeightFraction,
+        modifier = modifier
+    )
+}
+
 @Preview
 @Composable
 fun ErrorBox(
     title: String = stringResource(R.string.error_title),
     message: String = stringResource(R.string.error_unknown),
+    retryVisible: Boolean = true,
     onRetryClick: () -> Unit = {},
     maxHeight: Dp? = null,
     maxHeightPercent: Float = 0.7f,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     ErrorBox(maxHeight, maxHeightPercent) {
         val loadingYOffset = (-70).dp
@@ -65,7 +86,12 @@ fun ErrorBox(
         ) {
             Text(title, style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold))
             Text(message)
-            TextRoundedButton(onClick = onRetryClick, text = stringResource(R.string.error_retry), modifier = Modifier.padding(top = AppTheme.specs.padding))
+            if (retryVisible)
+                TextRoundedButton(
+                    onClick = onRetryClick,
+                    text = stringResource(R.string.error_retry),
+                    modifier = Modifier.padding(top = AppTheme.specs.padding)
+                )
         }
     }
 }

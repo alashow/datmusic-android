@@ -21,6 +21,18 @@ object IntentUtils {
         }
     }
 
+    fun openFile(context: Context, uri: Uri, mimeType: String) {
+        try {
+            val intent = Intent()
+            intent.action = Intent.ACTION_VIEW
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION
+            intent.setDataAndType(uri, mimeType)
+            startActivity(context, intent)
+        } catch (e: ActivityNotFoundException) {
+            RemoteLogger.exception(e)
+        }
+    }
+
     /**
      * Open given intent as [Activity].
      * Just a wrapper so custom stuff can be done just before opening new activity.

@@ -13,6 +13,7 @@ import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
+import tm.alashow.datmusic.domain.entities.DownloadRequest
 import tm.alashow.datmusic.domain.entities.Genre
 
 object AppTypeConverters {
@@ -76,4 +77,12 @@ object AppTypeConverters {
     @TypeConverter
     @JvmStatic
     fun fromGenres(value: List<Genre>): String = Json.encodeToString(ListSerializer(Genre.serializer()), value)
+
+    @TypeConverter
+    @JvmStatic
+    fun toDownloadType(value: String): DownloadRequest.Type = DownloadRequest.Type.from(value)
+
+    @TypeConverter
+    @JvmStatic
+    fun fromDownloadType(value: DownloadRequest.Type): String = value.type
 }

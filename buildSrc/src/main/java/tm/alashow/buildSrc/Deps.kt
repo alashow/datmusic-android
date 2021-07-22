@@ -39,6 +39,8 @@ object Deps {
 
         const val dataStore = "androidx.datastore:datastore-preferences:1.0.0-beta02"
 
+        const val documentFile = "androidx.documentfile:documentfile:1.0.1"
+
         object Compose {
             const val version = "1.0.0-rc01"
 
@@ -110,6 +112,9 @@ object Deps {
         const val coilVersion = "1.2.1"
         const val coil = "io.coil-kt:coil:$coilVersion"
         const val store = "com.dropbox.mobile.store:store4:4.0.2-KT15"
+
+        const val fetch = "androidx.tonyodev.fetch2:xfetch2:3.1.6"
+        const val fetchOkhttp = "androidx.tonyodev.fetch2okhttp:xfetch2okhttp:3.1.6"
     }
 
     object OkHttp {

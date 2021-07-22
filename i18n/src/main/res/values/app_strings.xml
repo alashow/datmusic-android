@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   Copyright (C) 2021, Alashov Berkeli
   All rights reserved.
   -->
@@ -15,6 +14,46 @@
     <string name="search.audios">Songs</string>
     <string name="search.artists">Artists</string>
     <string name="search.albums">Albums</string>
+    <string name="search.minerva">Minerva</string>
+
+    <string name="artists.detail.title">Artist</string>
+
+    <string name="albums.detail.title">Album</string>
+
+    <string name="audio.menu.cd">Audio menu</string>
+    <string name="audio.menu.download">Download</string>
+    <string name="audio.menu.copyLink">Copy link</string>
+
+    <string name="downloader.downloadsLocationSelect.title">Select downloads location</string>
+    <string name="downloader.downloadsLocationSelect.text">Click Next to select downloads folder location</string>
+    <string name="downloader.downloadsLocationSelect.next">Next</string>
+
+    <string name="downloader.enqueue.downloadsNotFound">Selected downloads folder not found</string>
+    <string name="downloader.enqueue.audio.queued">Added to download queue</string>
+    <string name="downloader.enqueue.audio.error.invalidUrl">Audio has invalid download url</string>
+    <string name="downloader.enqueue.audio.error.fileCreate">Couldn\'t create file in downloads location</string>
+    <string name="downloader.enqueue.audio.existing.resuming">Resuming existing download</string>
+    <string name="downloader.enqueue.audio.existing.alreadyQueued">This song is already in the download queue</string>
+    <string name="downloader.enqueue.audio.existing.completed">This song was already downloaded</string>
+    <string name="downloader.enqueue.audio.existing.unknown">Download request exists but has unhandled status: %1$s</string>
+
+    <string name="downloads.title">Downloads</string>
+    <string name="downloads.empty">No Downloads</string>
+
+    <string name="downloads.download.status.paused">Paused</string>
+    <string name="downloads.download.status.queued">Queued</string>
+    <string name="downloads.download.status.downloading">Downloading</string>
+    <string name="downloads.download.status.failed">Failed</string>
+    <string name="downloads.download.status.cancelled">Cancelled</string>
+
+    <string name="downloads.download.pause">Pause</string>
+    <string name="downloads.download.resume">Resume</string>
+    <string name="downloads.download.cancel">Cancel</string>
+    <string name="downloads.download.retry">Retry</string>
+    <string name="downloads.download.open">Open file</string>
+    <string name="downloads.download.remove">Remove</string>
+    <string name="downloads.download.delete">Delete file</string>
+
 
     <string name="settings.title">Settings</string>
     <string name="settings.darkMode">Dark mode</string>

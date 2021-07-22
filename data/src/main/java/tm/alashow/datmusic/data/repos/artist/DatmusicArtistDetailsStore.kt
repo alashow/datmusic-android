@@ -67,8 +67,8 @@ object DatmusicArtistDetailsStoreModule {
                     val entry = dao.entry(params.id).firstOrNull() ?: response
                     dao.update(params.id, entry.copy(audios = response.audios, albums = response.albums, detailsFetched = true))
 
-                    // insert all albums so AlbumDetailsStore can access it
-                    albumsDao.insertAll(response.albums.mapIndexed { index, it -> it.copy(primaryKey = "${index}_${it.id}") })
+                    // insert all missing albums in database so AlbumDetailsStore can access it
+                    albumsDao.insertMissing(response.albums.mapIndexed { index, it -> it.copy(primaryKey = it.id, searchIndex = index) })
                 }
             },
             delete = { error("This store doesn't manage deletes") },

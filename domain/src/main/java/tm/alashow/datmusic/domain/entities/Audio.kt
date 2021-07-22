@@ -5,9 +5,11 @@
 package tm.alashow.datmusic.domain.entities
 
 import android.os.Parcelable
+import androidx.documentfile.provider.DocumentFile
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.io.FileNotFoundException
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -32,11 +34,11 @@ data class Audio(
 
     @SerialName("artist")
     @ColumnInfo(name = "artist")
-    val artist: String = "",
+    val artist: String = "Unknown",
 
     @SerialName("title")
     @ColumnInfo(name = "title")
-    val title: String = "",
+    val title: String = "Untitled Song",
 
     @SerialName("duration")
     @ColumnInfo(name = "duration")
@@ -88,4 +90,29 @@ data class Audio(
     @Transient
     @ColumnInfo(name = "search_index")
     val searchIndex: Int = 0,
-) : BasePaginatedEntity(), Parcelable
+) : BasePaginatedEntity(), Parcelable {
+
+    private fun fileDisplayName() = "$artist - $title"
+    fun fileMimeType() = "audio/mpeg"
+
+    private fun createDocumentFile(parent: DocumentFile) =
+        parent.createFile(fileMimeType(), fileDisplayName()) ?: error("Couldn't create document file")
+
+    fun documentFile(parent: DocumentFile, flatStructure: Boolean = false): DocumentFile {
+        if (!parent.exists())
+            throw FileNotFoundException("Parent folder doesn't exist")
+        return when (flatStructure) {
+            true -> createDocumentFile(parent)
+            false -> {
+                val artistFolder = parent.findFile(artist) ?: parent.createDirectory(artist) ?: error("Couldn't create artist folder: $artist")
+                if (album.isNullOrBlank()) {
+                    createDocumentFile(artistFolder)
+                } else {
+                    val albumFolder =
+                        artistFolder.findFile(album) ?: artistFolder.createDirectory(album) ?: error("Couldn't create album folder: $album")
+                    createDocumentFile(albumFolder)
+                }
+            }
+        }
+    }
+}

@@ -52,6 +52,7 @@ dependencies {
 	api Deps.Utils.store
 
 	api Deps.Android.dataStore
+	api Deps.Android.documentFile
 
 	api project(":base")
 	api project(":domain")

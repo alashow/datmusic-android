@@ -21,7 +21,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarResult
 import androidx.compose.material.Text
@@ -31,7 +33,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,24 +47,25 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import kotlinx.coroutines.launch
 import tm.alashow.base.util.extensions.localizedMessage
 import tm.alashow.base.util.extensions.localizedTitle
 import tm.alashow.common.compose.LocalScaffoldState
 import tm.alashow.common.compose.LogCompositions
 import tm.alashow.common.compose.rememberFlowWithLifecycle
-import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
+import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams.BackendType
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
-import tm.alashow.datmusic.ui.AlbumColumn
-import tm.alashow.datmusic.ui.AlbumsDefaults
-import tm.alashow.datmusic.ui.ArtistColumn
-import tm.alashow.datmusic.ui.ArtistsDefaults
-import tm.alashow.datmusic.ui.AudioRow
+import tm.alashow.datmusic.ui.albums.AlbumColumn
+import tm.alashow.datmusic.ui.albums.AlbumsDefaults
+import tm.alashow.datmusic.ui.artists.ArtistColumn
+import tm.alashow.datmusic.ui.artists.ArtistsDefaults
+import tm.alashow.datmusic.ui.audios.AudioRow
 import tm.alashow.domain.models.errors.EmptyResultException
 import tm.alashow.navigation.LeafScreen
 import tm.alashow.navigation.LocalNavigator
+import tm.alashow.navigation.Navigator
+import tm.alashow.ui.Delayed
 import tm.alashow.ui.components.ErrorBox
 import tm.alashow.ui.components.ProgressIndicator
 import tm.alashow.ui.components.ProgressIndicatorSmall
@@ -75,6 +77,7 @@ internal fun SearchList(viewModel: SearchViewModel, listState: LazyListState, pa
     SearchList(
         viewModel = viewModel,
         audiosLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedAudioList).collectAsLazyPagingItems(),
+        minervaLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedMinervaList).collectAsLazyPagingItems(),
         artistsLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedArtistsList).collectAsLazyPagingItems(),
         albumsLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedAlbumsList).collectAsLazyPagingItems(),
         listState = listState,
@@ -86,6 +89,7 @@ internal fun SearchList(viewModel: SearchViewModel, listState: LazyListState, pa
 internal fun SearchList(
     viewModel: SearchViewModel,
     audiosLazyPagingItems: LazyPagingItems<Audio>,
+    minervaLazyPagingItems: LazyPagingItems<Audio>,
     artistsLazyPagingItems: LazyPagingItems<Artist>,
     albumsLazyPagingItems: LazyPagingItems<Album>,
     listState: LazyListState,
@@ -99,9 +103,10 @@ internal fun SearchList(
     val pagers = when (searchFilter.backends.size) {
         1 -> searchFilter.backends.map {
             when (it) {
-                DatmusicSearchParams.BackendType.AUDIOS -> audiosLazyPagingItems
-                DatmusicSearchParams.BackendType.ARTISTS -> artistsLazyPagingItems
-                DatmusicSearchParams.BackendType.ALBUMS -> albumsLazyPagingItems
+                BackendType.AUDIOS -> audiosLazyPagingItems
+                BackendType.ARTISTS -> artistsLazyPagingItems
+                BackendType.ALBUMS -> albumsLazyPagingItems
+                BackendType.MINERVA -> minervaLazyPagingItems
             }
         }.toSet()
         else -> setOf(audiosLazyPagingItems, artistsLazyPagingItems, albumsLazyPagingItems)
@@ -114,18 +119,16 @@ internal fun SearchList(
     val refreshErrorState = pagerRefreshStates.firstOrNull { it is LoadState.Error }
 
     val hasMultiplePagers = pagers.size > 1
-    val hasLoadingPager = pagerRefreshStates.any { it == LoadState.Loading }
 
-    SearchListErrors(viewModel, viewState, refreshPagers, refreshErrorState, pagersAreEmpty, hasMultiplePagers)
-
-    // scroll to top when any of active pagers refresh state change
-    LaunchedEffect(*pagerRefreshStates) {
+    LaunchedEffect(*pagers.map { it.itemCount }.toTypedArray()) {
         listState.animateScrollToItem(0)
     }
 
+    SearchListErrors(viewModel, viewState, refreshPagers, refreshErrorState, pagersAreEmpty, hasMultiplePagers)
+
     SwipeRefresh(
         state = rememberSwipeRefreshState(
-            isRefreshing = pagersAreEmpty && hasLoadingPager
+            isRefreshing = false
         ),
         onRefresh = { refreshPagers() },
         indicatorPadding = padding,
@@ -135,10 +138,11 @@ internal fun SearchList(
                 refreshTriggerDistance = trigger,
                 scale = true
             )
-        }
+        },
     ) {
         SearchListContent(
             audiosLazyPagingItems,
+            minervaLazyPagingItems,
             artistsLazyPagingItems,
             albumsLazyPagingItems,
             listState,
@@ -158,7 +162,8 @@ private fun SearchListErrors(
     refreshPagers: () -> Unit,
     refreshErrorState: LoadState?,
     pagersAreEmpty: Boolean,
-    hasMultiplePagers: Boolean
+    hasMultiplePagers: Boolean,
+    scaffoldState: ScaffoldState = LocalScaffoldState.current,
 ) {
     val captchaError = viewState.captchaError
     var captchaErrorShown by remember(captchaError) { mutableStateOf(true) }
@@ -171,7 +176,6 @@ private fun SearchListErrors(
     val message = stringResource(viewState.error.localizedMessage())
     val retryLabel = stringResource(R.string.error_retry)
 
-    val scaffoldState = LocalScaffoldState.current
     // show snackbar if there's an error to show
     LaunchedEffect(viewState.error) {
         viewState.error?.let {
@@ -198,6 +202,7 @@ private fun SearchListErrors(
 @Composable
 private fun SearchListContent(
     audiosLazyPagingItems: LazyPagingItems<Audio>,
+    minervaAudiosLazyPagingItems: LazyPagingItems<Audio>,
     artistsLazyPagingItems: LazyPagingItems<Artist>,
     albumsLazyPagingItems: LazyPagingItems<Album>,
     listState: LazyListState,
@@ -214,9 +219,9 @@ private fun SearchListContent(
             contentPadding = padding,
             modifier = Modifier.fillMaxSize()
         ) {
-            if (refreshErrorState is LoadState.Error) {
-                if (pagersAreEmpty)
-                    item {
+            if (refreshErrorState is LoadState.Error && pagersAreEmpty) {
+                item {
+                    Delayed {
                         ErrorBox(
                             title = stringResource(refreshErrorState.error.localizedTitle()),
                             message = stringResource(refreshErrorState.error.localizedMessage()),
@@ -224,38 +229,51 @@ private fun SearchListContent(
                             maxHeight = this@BoxWithConstraints.maxHeight
                         )
                     }
+                }
             }
-
-            item("artists") {
-                if (searchFilter.backends.contains(DatmusicSearchParams.BackendType.ARTISTS))
+            item("artists_albums") {
+                // TODO: separate these into diff [item]s after swiperefresh bug fix
+                if (searchFilter.hasArtists)
                     ArtistList(artistsLazyPagingItems)
-            }
-
-            item("albums") {
-                if (searchFilter.backends.contains(DatmusicSearchParams.BackendType.ALBUMS))
+                if (searchFilter.hasAlbums)
                     AlbumList(albumsLazyPagingItems)
             }
 
-            if (searchFilter.backends.contains(DatmusicSearchParams.BackendType.AUDIOS))
+            if (searchFilter.hasAudios)
                 audioList(audiosLazyPagingItems)
+
+            if (searchFilter.hasMinerva)
+                audioList(minervaAudiosLazyPagingItems)
         }
     }
 }
 
 @Composable
-internal fun ArtistList(pagingItems: LazyPagingItems<Artist>, imageSize: Dp = ArtistsDefaults.imageSize) {
+internal fun ArtistList(
+    pagingItems: LazyPagingItems<Artist>,
+    imageSize: Dp = ArtistsDefaults.imageSize,
+    navigator: Navigator = LocalNavigator.current
+) {
     LogCompositions(tag = "ArtistList")
-    if (pagingItems.itemCount > 0)
-        SearchListLabel(stringResource(R.string.search_artists), pagingItems.loadState)
+
+    val isLoading = pagingItems.loadState.refresh == LoadState.Loading
+    val hasItems = pagingItems.itemCount > 0
+    if (hasItems || isLoading)
+        SearchListLabel(stringResource(R.string.search_artists), hasItems, pagingItems.loadState)
 
     LazyRow(Modifier.fillMaxWidth()) {
+        if (!hasItems && isLoading) {
+            val placeholders = (1..5).map { Artist() }
+            items(placeholders) { placeholder ->
+                ArtistColumn(placeholder, imageSize, isPlaceholder = true)
+            }
+        }
+
         items(pagingItems, key = { _, item -> item.id }) { it ->
             val artist = it ?: return@items
 
-            val navigator = LocalNavigator.current
-            val coroutine = rememberCoroutineScope()
             ArtistColumn(artist, imageSize) {
-                coroutine.launch { navigator.navigate(LeafScreen.ArtistDetails.buildRoute(it.id)) }
+                navigator.navigate(LeafScreen.ArtistDetails.buildRoute(it.id))
             }
         }
 
@@ -264,19 +282,31 @@ internal fun ArtistList(pagingItems: LazyPagingItems<Artist>, imageSize: Dp = Ar
 }
 
 @Composable
-internal fun AlbumList(pagingItems: LazyPagingItems<Album>, itemSize: Dp = AlbumsDefaults.imageSize, iconPadding: Dp = AlbumsDefaults.iconPadding) {
+internal fun AlbumList(
+    pagingItems: LazyPagingItems<Album>,
+    itemSize: Dp = AlbumsDefaults.imageSize,
+    iconPadding: Dp = AlbumsDefaults.iconPadding,
+    navigator: Navigator = LocalNavigator.current
+) {
     LogCompositions(tag = "AlbumList")
-    if (pagingItems.itemCount > 0)
-        SearchListLabel(stringResource(R.string.search_albums), pagingItems.loadState)
+    val isLoading = pagingItems.loadState.refresh == LoadState.Loading
+    val hasItems = pagingItems.itemCount > 0
+    if (hasItems || isLoading)
+        SearchListLabel(stringResource(R.string.search_albums), hasItems, pagingItems.loadState)
 
     LazyRow(Modifier.fillMaxWidth()) {
-        items(pagingItems, key = { _, item -> item.id }) {
-            val album = it ?: return@items
+        if (!hasItems && isLoading) {
+            val placeholders = (1..5).map { Album() }
+            items(placeholders) { placeholder ->
+                AlbumColumn(placeholder, itemSize, iconPadding, isPlaceholder = true)
+            }
+        }
 
-            val navigator = LocalNavigator.current
-            val coroutine = rememberCoroutineScope()
-            AlbumColumn(album, itemSize, iconPadding) {
-                coroutine.launch { navigator.navigate(LeafScreen.AlbumDetails.buildRoute(it)) }
+        items(pagingItems, key = { _, item -> item.id }) {
+            val album = it ?: Album()
+
+            AlbumColumn(album, itemSize, iconPadding, isPlaceholder = it == null) { clickedAlbum ->
+                navigator.navigate(LeafScreen.AlbumDetails.buildRoute(clickedAlbum))
             }
         }
 
@@ -285,14 +315,23 @@ internal fun AlbumList(pagingItems: LazyPagingItems<Album>, itemSize: Dp = Album
 }
 
 internal fun LazyListScope.audioList(pagingItems: LazyPagingItems<Audio>) {
-    if (pagingItems.itemCount > 0)
+    val isLoading = pagingItems.loadState.refresh == LoadState.Loading
+    val hasItems = pagingItems.itemCount > 0
+    if (hasItems || isLoading)
         item {
-            SearchListLabel(stringResource(R.string.search_audios), pagingItems.loadState)
+            SearchListLabel(stringResource(R.string.search_audios), hasItems, pagingItems.loadState)
         }
 
+    if (!hasItems && isLoading) {
+        val placeholders = (1..20).map { Audio() }
+        items(placeholders) {
+            AudioRow(it, isPlaceholder = true)
+        }
+    }
+
     items(pagingItems, key = { _, item -> item.id }) {
-        val audio = it ?: return@items
-        AudioRow(audio)
+        val audio = it ?: Audio()
+        AudioRow(audio, isPlaceholder = it == null)
     }
 
     loadingMore(pagingItems)
@@ -320,7 +359,7 @@ private fun <T : Any> LazyListScope.loadingMore(pagingItems: LazyPagingItems<T>,
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-private fun SearchListLabel(label: String, loadState: CombinedLoadStates) {
+private fun SearchListLabel(label: String, hasItems: Boolean, loadState: CombinedLoadStates) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
@@ -328,12 +367,10 @@ private fun SearchListLabel(label: String, loadState: CombinedLoadStates) {
             .padding(horizontal = AppTheme.specs.padding, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            label, style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold)
-        )
+        Text(label, style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold))
 
         AnimatedVisibility(
-            visible = loadState.source.refresh == LoadState.Loading || loadState.mediator?.refresh == LoadState.Loading,
+            visible = (hasItems && loadState.mediator?.refresh == LoadState.Loading),
             enter = expandIn(Alignment.Center),
             exit = shrinkOut(Alignment.Center)
         ) {

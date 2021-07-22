@@ -2,7 +2,7 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.datmusic.ui
+package tm.alashow.datmusic.ui.albums
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -44,6 +44,7 @@ fun AlbumColumn(
     imageSize: Dp = AlbumsDefaults.imageSize,
     iconPadding: Dp = AlbumsDefaults.iconPadding,
     isPlaceholder: Boolean = false,
+    modifier: Modifier = Modifier,
     onClick: (Album) -> Unit = {},
 ) {
     val loadingModifier = Modifier.placeholder(
@@ -52,8 +53,8 @@ fun AlbumColumn(
     )
     Column(
         verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall),
-        modifier = Modifier
-            .clickable { onClick(album) }
+        modifier = modifier
+            .clickable { if (!isPlaceholder) onClick(album) }
             .fillMaxWidth()
             .padding(AppTheme.specs.padding)
     ) {

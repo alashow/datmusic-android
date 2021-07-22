@@ -5,10 +5,12 @@
 package tm.alashow.datmusic.di
 
 import android.app.Application
+import android.content.Context
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import java.util.concurrent.TimeUnit
 import javax.inject.Named
@@ -20,6 +22,8 @@ import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import okhttp3.logging.HttpLoggingInterceptor.*
+import okhttp3.logging.HttpLoggingInterceptor.Level as LogLevel
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import tm.alashow.Config
@@ -46,14 +50,14 @@ class NetworkModule {
     @Singleton
     fun httpLoggingInterceptor(): HttpLoggingInterceptor {
         val interceptor = HttpLoggingInterceptor()
-        interceptor.level = HttpLoggingInterceptor.Level.BODY
+        interceptor.level = LogLevel.BODY
         return interceptor
     }
 
     @Provides
     @Singleton
     @Named("AppHeadersInterceptor")
-    fun appHeadersInterceptor(): Interceptor = AppHeadersInterceptor()
+    fun appHeadersInterceptor(@ApplicationContext context: Context): Interceptor = AppHeadersInterceptor(context)
 
     @Provides
     @Singleton
@@ -71,6 +75,18 @@ class NetworkModule {
         .addInterceptor(appHeadersInterceptor)
         .addInterceptor(rewriteCachesInterceptor)
         .addInterceptor(loggingInterceptor)
+        .build()
+
+    @Provides
+    @Named("downloader")
+    fun downloaderOkHttp(
+        cache: Cache,
+        @Named("AppHeadersInterceptor") appHeadersInterceptor: Interceptor,
+    ) = getBaseBuilder(cache)
+        .readTimeout(Config.DOWNLOADER_TIMEOUT, TimeUnit.MILLISECONDS)
+        .writeTimeout(Config.DOWNLOADER_TIMEOUT, TimeUnit.MILLISECONDS)
+        .addInterceptor(appHeadersInterceptor)
+        .addInterceptor(HttpLoggingInterceptor().apply { level = LogLevel.HEADERS })
         .build()
 
     @Provides

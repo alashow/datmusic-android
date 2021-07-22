@@ -33,6 +33,7 @@ android {
 repositories {
 	mavenCentral()
 	maven { url "https://jitpack.io" }
+	jcenter()
 }
 
 dependencies {
@@ -40,6 +41,8 @@ dependencies {
 
 	testImplementation Deps.Utils.junit
 	testImplementation Deps.Utils.threeTen
+
+	api Deps.Utils.fetch
 
 	implementation project(":base")
 }

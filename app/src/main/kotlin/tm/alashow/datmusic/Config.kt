@@ -5,7 +5,7 @@
 package tm.alashow.datmusic
 
 object Config {
-    const val APP_USER_AGENT = "Android App/${BuildConfig.VERSION_NAME}-${BuildConfig.VERSION_CODE}"
+    const val APP_USER_AGENT = "Datmusic App/${BuildConfig.VERSION_NAME}-${BuildConfig.VERSION_CODE}"
 
     val IS_DEBUG = BuildConfig.DEBUG
 }
