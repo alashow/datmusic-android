@@ -38,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -48,6 +49,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
+import com.google.firebase.analytics.FirebaseAnalytics
+import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.common.compose.LocalScaffoldState
 import tm.alashow.datmusic.R
 import tm.alashow.datmusic.ui.AppNavigation
@@ -63,9 +66,13 @@ import tm.alashow.ui.theme.translucentSurfaceColor
 internal fun Home(
     navController: NavHostController = rememberNavController(),
     scaffoldState: ScaffoldState = rememberScaffoldState(),
+    analytics: FirebaseAnalytics = FirebaseAnalytics.getInstance(LocalContext.current),
     viewModel: HomeViewModel = viewModel()
 ) {
-    CompositionLocalProvider(LocalScaffoldState provides scaffoldState) {
+    CompositionLocalProvider(
+        LocalScaffoldState provides scaffoldState,
+        LocalAnalytics provides analytics,
+    ) {
         Scaffold(
             scaffoldState = scaffoldState,
             snackbarHost = { DismissableSnackbarHost(it) },

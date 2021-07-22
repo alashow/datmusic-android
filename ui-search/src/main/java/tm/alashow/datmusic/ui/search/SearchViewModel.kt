@@ -8,6 +8,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingConfig
+import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.FlowPreview
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import tm.alashow.base.ui.SnackbarManager
+import tm.alashow.base.util.event
 import tm.alashow.base.util.extensions.getStateFlow
 import tm.alashow.datmusic.data.observers.ObservePagedDatmusicSearch
 import tm.alashow.datmusic.data.repos.CaptchaSolution
@@ -42,6 +44,7 @@ internal class SearchViewModel @Inject constructor(
     private val artistsPager: ObservePagedDatmusicSearch<Artist>,
     private val albumsPager: ObservePagedDatmusicSearch<Album>,
     private val snackbarManager: SnackbarManager,
+    private val analytics: FirebaseAnalytics,
 ) : ViewModel() {
 
     private val searchQuery = MutableStateFlow("")
@@ -95,9 +98,11 @@ internal class SearchViewModel @Inject constructor(
 
     fun search(trigger: SearchTrigger, filter: SearchFilter) {
         val query = trigger.query
-
-        Timber.d("Searching with query=$query, backends=${filter.backends.joinToString { it.type }}")
         val searchParams = DatmusicSearchParams(query, trigger.captchaSolution)
+        val backends = filter.backends.joinToString { it.type }
+
+        Timber.d("Searching with query=$query, backends=$backends")
+        analytics.event("search", mapOf("query" to query, "backends" to backends))
 
         if (filter.hasAudios)
             audiosPager(ObservePagedDatmusicSearch.Params(searchParams))
@@ -124,6 +129,7 @@ internal class SearchViewModel @Inject constructor(
      * Sets search filter to only given backend if [action.selected] otherwise resets to [SearchFilter.DefaultBackends].
      */
     private fun selectBackendType(action: SearchAction.SelectBackendType) {
+        analytics.event("search.selectBackend", mapOf("type" to action.backendType))
         searchFilter.value = searchFilter.value?.copy(
             backends = when (action.selected) {
                 true -> setOf(action.backendType)

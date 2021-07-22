@@ -9,6 +9,8 @@ import kotlin.math.max
 
 typealias Callback = () -> Unit
 
+inline val <T : Any> T.simpleName: String get() = this.javaClass.kotlin.simpleName ?: "Unknown"
+
 fun now() = System.currentTimeMillis()
 fun nowNano() = System.nanoTime()
 

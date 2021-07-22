@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.util.Log
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import timber.log.Timber
 import tm.alashow.base.util.extensions.asString
 
 fun report(throwable: Throwable?) =
@@ -48,10 +49,12 @@ object RemoteLogger {
 
 typealias LogArgs = Map<String, Any?>?
 
-fun FirebaseAnalytics.event(event: String, args: LogArgs = null) =
-    logEvent(event.replace(".", "_"), Bundle().apply { args?.forEach { putString(it.key, it.value.toString()) } })
+fun FirebaseAnalytics.event(event: String, args: LogArgs = null) {
+    Timber.d("Logging event: $event, $args")
+    logEvent(event.replace(".", "_").lowercase(), Bundle().apply { args?.forEach { putString(it.key, it.value.toString()) } })
+}
 
-fun FirebaseAnalytics.logClick(event: String, args: LogArgs = null) = event("click.$event", args)
+fun FirebaseAnalytics.click(event: String, args: LogArgs = null) = event("click.$event", args)
 
 fun Context.event(event: String, args: LogArgs = null) = FirebaseAnalytics.getInstance(this).event(event, args)
-fun Context.logClick(event: String, args: LogArgs = null) = FirebaseAnalytics.getInstance(this).logClick(event, args)
+fun Context.click(event: String, args: LogArgs = null) = FirebaseAnalytics.getInstance(this).click(event, args)
