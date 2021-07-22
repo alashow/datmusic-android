@@ -7,6 +7,7 @@ package tm.alashow
 import org.threeten.bp.Duration
 
 object Config {
+    const val BASE_HOST = "datmusic.xyz"
     const val API_BASE_URL = "https://api.datmusic.xyz/"
 
     val API_TIMEOUT = Duration.ofSeconds(40).toMillis()

@@ -5,10 +5,12 @@
 package tm.alashow.datmusic.di
 
 import android.app.Application
+import android.content.Context
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import java.util.concurrent.TimeUnit
 import javax.inject.Named
@@ -55,7 +57,7 @@ class NetworkModule {
     @Provides
     @Singleton
     @Named("AppHeadersInterceptor")
-    fun appHeadersInterceptor(): Interceptor = AppHeadersInterceptor()
+    fun appHeadersInterceptor(@ApplicationContext context: Context): Interceptor = AppHeadersInterceptor(context)
 
     @Provides
     @Singleton
@@ -77,7 +79,7 @@ class NetworkModule {
 
     @Provides
     @Named("downloader")
-    fun downloaderokHttp(
+    fun downloaderOkHttp(
         cache: Cache,
         @Named("AppHeadersInterceptor") appHeadersInterceptor: Interceptor,
     ) = getBaseBuilder(cache)
