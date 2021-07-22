@@ -34,6 +34,7 @@ import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.domain.models.errors.ApiCaptchaError
+import tm.alashow.navigation.QUERY_KEY
 
 @OptIn(FlowPreview::class)
 @HiltViewModel
@@ -48,8 +49,8 @@ internal class SearchViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val searchQuery = MutableStateFlow("")
-    private val searchFilter = handle.getStateFlow("search_query", viewModelScope, SearchFilter())
-    private val searchTrigger = handle.getStateFlow("search_trigger", viewModelScope, SearchTrigger())
+    private val searchFilter = handle.getStateFlow("search_filter", viewModelScope, SearchFilter())
+    private val searchTrigger = handle.getStateFlow("search_trigger", viewModelScope, SearchTrigger(handle.get(QUERY_KEY) ?: ""))
 
     private val captchaError = MutableStateFlow<ApiCaptchaError?>(null)
 
