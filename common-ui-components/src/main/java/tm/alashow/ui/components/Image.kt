@@ -66,7 +66,7 @@ fun ImageWithPlaceholder(
 @Composable
 fun CoverImage(
     painter: LoadPainter<Any>,
-    size: Dp = 50.dp,
+    size: Dp = 48.dp,
     backgroundColor: Color = MaterialTheme.colors.surface,
     shape: Shape = MaterialTheme.shapes.small,
     icon: VectorPainter = rememberVectorPainter(Icons.Default.MusicNote),

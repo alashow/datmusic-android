@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import com.google.accompanist.coil.rememberCoilPainter
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
@@ -51,6 +52,7 @@ fun AudioRow(
 
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .clickable {
                 if (!isPlaceholder)
@@ -101,6 +103,7 @@ fun AudioRowItem(
     )
     Row(
         horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
+        verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
     ) {
         val image = rememberCoilPainter(audio.coverUrlSmall ?: audio.coverUrl, fadeIn = true)
@@ -112,7 +115,7 @@ fun AudioRowItem(
             )
         }
 
-        Column(verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall)) {
+        Column(verticalArrangement = Arrangement.spacedBy(if (isPlaceholder) AppTheme.specs.paddingTiny else 0.dp)) {
             Text(
                 audio.title,
                 style = MaterialTheme.typography.body1,
