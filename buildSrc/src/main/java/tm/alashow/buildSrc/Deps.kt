@@ -42,7 +42,7 @@ object Deps {
         const val documentFile = "androidx.documentfile:documentfile:1.0.1"
 
         object Compose {
-            const val version = "1.0.0-rc01"
+            const val version = "1.0.0-rc02"
 
             const val ui = "androidx.compose.ui:ui:$version"
             const val uiTooling = "androidx.compose.ui:ui-tooling:$version"
@@ -56,7 +56,7 @@ object Deps {
             const val viewModels = "androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha06"
             const val paging = "androidx.paging:paging-compose:1.0.0-alpha10"
 
-            private const val lottieVersion = "1.0.0-rc01-1-SNAPSHOT"
+            private const val lottieVersion = "1.0.0-rc02-1-SNAPSHOT"
             const val lottie = "com.airbnb.android:lottie-compose:$lottieVersion"
         }
 
