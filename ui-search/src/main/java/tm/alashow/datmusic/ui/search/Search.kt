@@ -112,21 +112,18 @@ private fun Search(
     OffsetNotifyingBox(headerHeight = searchBarHeight) { _, progress ->
         Scaffold(
             topBar = {
-                LaunchedEffect(progress.value) {
-                    // rounding is important here because we don't searchBar to be stuck in between transitions
-                    searchBarOffset.animateTo(round(progress.value))
+                LaunchedEffect(progress.value, listState.firstVisibleItemIndex) {
+                    if (listState.firstVisibleItemIndex > searchBarHideThreshold) {
+                        // rounding is important here because we don't searchBar to be stuck in between transitions
+                        searchBarOffset.animateTo(round(progress.value))
+                    } else searchBarOffset.animateTo(0f)
                 }
 
                 SearchAppBar(
                     modifier = Modifier
                         .graphicsLayer {
-                            if (listState.firstVisibleItemIndex > searchBarHideThreshold) {
-                                alpha = 1 - searchBarOffset.value
-                                translationY = searchBarHeight.value * (-searchBarOffset.value)
-                            } else {
-                                alpha = 1f
-                                translationY = 0f
-                            }
+                            alpha = 1 - searchBarOffset.value
+                            translationY = searchBarHeight.value * (-searchBarOffset.value)
                         },
                     state = viewState,
                     onQueryChange = { actioner(SearchAction.QueryChange(it)) },

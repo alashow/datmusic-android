@@ -54,10 +54,22 @@
     <string name="downloads.download.remove">Remove</string>
     <string name="downloads.download.delete">Delete file</string>
 
-
     <string name="settings.title">Settings</string>
+    <string name="settings.theme">Theme</string>
     <string name="settings.darkMode">Dark mode</string>
     <string name="settings.colorPalette">Color palette</string>
+
+    <string name="settings.about">About</string>
+
+    <string name="settings.about.author">Author</string>
+    <string name="settings.about.author.text">Alashov Berkeli</string>
+    <string name="settings.about.author.link">https://alashov.com</string>
+
+    <string name="settings.about.community">Community</string>
+    <string name="settings.about.community.text">t.me/datmusictesters</string>
+    <string name="settings.about.community.link">https://t.me/datmusictesters</string>
+
+    <string name="settings.about.version">Version</string>
 
     <string name="captcha.title">Captcha error</string>
     <string name="captcha.hint">Type letters above</string>

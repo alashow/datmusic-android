@@ -52,9 +52,11 @@ import com.google.accompanist.insets.ui.Scaffold
 import com.google.firebase.analytics.FirebaseAnalytics
 import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.common.compose.LocalScaffoldState
+import tm.alashow.datmusic.BuildConfig
 import tm.alashow.datmusic.R
 import tm.alashow.datmusic.ui.AppNavigation
 import tm.alashow.datmusic.ui.downloader.DownloaderHost
+import tm.alashow.datmusic.ui.settings.LocalAppVersion
 import tm.alashow.navigation.RootScreen
 import tm.alashow.navigation.RootScreen.Downloads as DownloadsTab
 import tm.alashow.navigation.RootScreen.Search as SearchTab
@@ -72,6 +74,7 @@ internal fun Home(
     CompositionLocalProvider(
         LocalScaffoldState provides scaffoldState,
         LocalAnalytics provides analytics,
+        LocalAppVersion provides BuildConfig.VERSION_NAME
     ) {
         Scaffold(
             scaffoldState = scaffoldState,
