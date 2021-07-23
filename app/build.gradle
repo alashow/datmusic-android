@@ -102,7 +102,7 @@ android {
 	// app bundling configuration
 	bundle {
 		language {
-			enableSplit = false // don"t split language resources, as the app supports locale changing
+			enableSplit = false // don't split language resources, as the app supports locale changing
 		}
 	}
 	kotlinOptions {
