@@ -29,6 +29,9 @@ import com.google.accompanist.coil.rememberCoilPainter
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
+import com.google.firebase.analytics.FirebaseAnalytics
+import tm.alashow.base.util.click
+import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.theme.AppTheme
@@ -44,6 +47,7 @@ fun ArtistColumn(
     imageSize: Dp = ArtistsDefaults.imageSize,
     nameWidth: Dp = ArtistsDefaults.nameWidth,
     isPlaceholder: Boolean = false,
+    analytics: FirebaseAnalytics = LocalAnalytics.current,
     onClick: (Artist) -> Unit = {},
 ) {
     val loadingModifier = Modifier.placeholder(
@@ -54,7 +58,10 @@ fun ArtistColumn(
         verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall),
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .clickable { onClick(artist) }
+            .clickable {
+                analytics.click("artist", mapOf("id" to artist.id))
+                if (!isPlaceholder) onClick(artist)
+            }
             .fillMaxWidth()
             .padding(AppTheme.specs.paddingTiny)
     ) {

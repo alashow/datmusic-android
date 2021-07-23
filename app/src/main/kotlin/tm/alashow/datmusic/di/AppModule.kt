@@ -20,6 +20,7 @@ import tm.alashow.base.inititializer.ThreeTenAbpInitializer
 import tm.alashow.base.inititializer.TimberInitializer
 import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.base.util.LocalConfig
+import tm.alashow.datmusic.notifications.NotificationsInitializer
 
 @InstallIn(SingletonComponent::class)
 @Module
@@ -48,11 +49,12 @@ class AppModule {
 
     @Provides
     fun appInitializers(
+        notifications: NotificationsInitializer,
         timberManager: TimberInitializer,
         threeTen: ThreeTenAbpInitializer,
         coilAppInitializer: CoilAppInitializer
     ): AppInitializers {
-        return AppInitializers(timberManager, threeTen, coilAppInitializer)
+        return AppInitializers(notifications, timberManager, threeTen, coilAppInitializer)
     }
 
     @Provides

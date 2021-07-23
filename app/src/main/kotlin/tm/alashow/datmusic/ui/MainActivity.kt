@@ -10,7 +10,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.core.view.WindowCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.ProvideWindowInsets
 import dagger.hilt.android.AndroidEntryPoint
 import tm.alashow.common.compose.rememberFlowWithLifecycle
@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
-            val themeViewModel = viewModel<ThemeViewModel>()
+            val themeViewModel = hiltViewModel<ThemeViewModel>()
             val themeState by rememberFlowWithLifecycle(themeViewModel.themeState).collectAsState(DefaultTheme)
 
             AppTheme(themeState) {

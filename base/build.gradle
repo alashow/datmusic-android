@@ -58,6 +58,8 @@ dependencies {
 	api Deps.Android.Paging.runtime
 	api Deps.Android.Paging.common
 
+	api platform(Deps.Firebase.bom)
+	api Deps.Firebase.messaging
 	api Deps.Firebase.analytics
 	api Deps.Firebase.crashlytics
 

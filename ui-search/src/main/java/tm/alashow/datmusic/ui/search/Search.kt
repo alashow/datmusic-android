@@ -37,7 +37,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -60,7 +59,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
+import com.google.firebase.analytics.FirebaseAnalytics
 import kotlin.math.round
+import tm.alashow.base.util.click
+import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
 import tm.alashow.ui.OffsetNotifyingBox
@@ -106,7 +108,6 @@ private fun Search(
     val searchBarHideThreshold = 4
     val searchBarHeight = 200.dp
     val searchBarOffset = Animatable(0f)
-    val coroutine = rememberCoroutineScope()
 
     OffsetNotifyingBox(headerHeight = searchBarHeight) { _, progress ->
         Scaffold(
@@ -258,6 +259,7 @@ fun SearchTextField(
     modifier: Modifier = Modifier,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search, keyboardType = KeyboardType.Text),
     keyboardActions: KeyboardActions = KeyboardActions(onSearch = { onSearch() }),
+    analytics: FirebaseAnalytics = LocalAnalytics.current
 ) {
     OutlinedTextField(
         value = value,
@@ -270,7 +272,10 @@ fun SearchTextField(
                 exit = shrinkOut(Alignment.Center)
             ) {
                 IconButton(
-                    onClick = { onValueChange(TextFieldValue()) },
+                    onClick = {
+                        onValueChange(TextFieldValue())
+                        analytics.click("search.clear")
+                    },
                 ) {
                     Icon(
                         tint = MaterialTheme.colors.secondary,

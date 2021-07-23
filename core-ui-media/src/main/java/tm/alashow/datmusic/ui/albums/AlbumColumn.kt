@@ -29,6 +29,9 @@ import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
 import com.google.accompanist.placeholder.shimmer
+import com.google.firebase.analytics.FirebaseAnalytics
+import tm.alashow.base.util.click
+import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.theme.AppTheme
@@ -45,6 +48,7 @@ fun AlbumColumn(
     iconPadding: Dp = AlbumsDefaults.iconPadding,
     isPlaceholder: Boolean = false,
     modifier: Modifier = Modifier,
+    analytics: FirebaseAnalytics = LocalAnalytics.current,
     onClick: (Album) -> Unit = {},
 ) {
     val loadingModifier = Modifier.placeholder(
@@ -54,7 +58,10 @@ fun AlbumColumn(
     Column(
         verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall),
         modifier = modifier
-            .clickable { if (!isPlaceholder) onClick(album) }
+            .clickable {
+                analytics.click("album", mapOf("id" to album.id))
+                if (!isPlaceholder) onClick(album)
+            }
             .fillMaxWidth()
             .padding(AppTheme.specs.padding)
     ) {

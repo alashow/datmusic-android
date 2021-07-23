@@ -154,9 +154,10 @@ object Deps {
 
     object Firebase {
 
-        const val core = "com.google.firebase:firebase-core:19.0.0"
-        const val analytics = "com.google.firebase:firebase-analytics:19.0.0"
-        const val crashlytics = "com.google.firebase:firebase-crashlytics:18.1.0"
+        const val bom = "com.google.firebase:firebase-bom:28.2.1"
+        const val messaging = "com.google.firebase:firebase-messaging-ktx"
+        const val analytics = "com.google.firebase:firebase-analytics-ktx"
+        const val crashlytics = "com.google.firebase:firebase-crashlytics-ktx"
         const val crashlyticsGradle = "com.google.firebase:firebase-crashlytics-gradle:2.7.0"
     }
 }

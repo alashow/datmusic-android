@@ -5,6 +5,7 @@
 package tm.alashow.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavBackStackEntry
@@ -15,6 +16,8 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NamedNavArgument
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navArgument
+import androidx.navigation.navDeepLink
+import tm.alashow.Config
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.ArtistId
 
@@ -51,9 +54,15 @@ sealed class LeafScreen(
                 type = NavType.StringType
                 nullable = true
             }
+        ),
+        deepLinks = listOf(
+            navDeepLink {
+                uriPattern = "${Config.BASE_URL}search?q={$QUERY_KEY}"
+            }
         )
     ) {
         fun buildRoute(query: String) = "search/?$QUERY_KEY=$query"
+        fun buildUri(query: String) = "${Config.BASE_URL}search?q=$query".toUri()
     }
 
     object Downloads : LeafScreen("downloads")
@@ -66,9 +75,15 @@ sealed class LeafScreen(
             navArgument(ARTIST_ID_KEY) {
                 type = NavType.StringType
             }
+        ),
+        deepLinks = listOf(
+            navDeepLink {
+                uriPattern = "${Config.BASE_URL}artists/{$ARTIST_ID_KEY}"
+            }
         )
     ) {
         fun buildRoute(id: ArtistId) = "artists/$id"
+        fun buildUri(id: ArtistId) = "${Config.BASE_URL}artists/$id".toUri()
     }
 
     object AlbumDetails : LeafScreen(

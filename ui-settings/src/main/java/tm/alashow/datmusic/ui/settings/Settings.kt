@@ -35,9 +35,10 @@ import tm.alashow.ui.theme.DefaultThemeDark
 @Composable
 fun Settings() {
     val themeViewModel = hiltViewModel<ThemeViewModel>()
-    val themeState by rememberFlowWithLifecycle(themeViewModel.themeState).collectAsState(DefaultTheme)
-
-    Settings(themeState, themeViewModel::applyThemeState)
+    val themeState by rememberFlowWithLifecycle(themeViewModel.themeState).collectAsState(initial = null)
+    themeState?.let { theme ->
+        Settings(theme, themeViewModel::applyThemeState)
+    }
 }
 
 @Composable
