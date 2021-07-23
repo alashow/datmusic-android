@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   Copyright (C) 2021, Alashov Berkeli
   All rights reserved.
   -->
@@ -68,4 +67,9 @@
 
     <string name="error.keyError">Key error, update app or contact developer</string>
     <string name="error.unavailable">You\'re doing that too fast</string>
+
+    <string name="license.retry">Retry</string>
+    <string name="license.goToPlayStore">Go to Play Store</string>
+    <string name="license.error" translatable="false">App license check failed. Download the app from Play Store. Add your Google account if not added.\nContact help@datmusic.xyz if you think it\'s a mistake.</string>
+    <string name="license.error.network" translatable="false">Network unavailable, cannot check app license</string>
 </resources>

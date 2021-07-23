@@ -133,6 +133,8 @@ dependencies {
 	implementation project(":ui-album")
 	implementation project(":ui-downloads")
 
+	implementation project(":play-licensing")
+
 	implementation Deps.Kotlin.coroutinesAndroid
 
 	// utils

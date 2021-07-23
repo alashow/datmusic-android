@@ -1,0 +1,11 @@
+import tm.alashow.buildSrc.App
+
+apply plugin: 'com.android.library'
+
+android {
+	compileSdkVersion App.compileSdkVersion
+
+	defaultConfig {
+		minSdkVersion App.minSdkVersion
+	}
+}
