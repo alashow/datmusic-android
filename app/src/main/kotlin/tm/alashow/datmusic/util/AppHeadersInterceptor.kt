@@ -4,18 +4,16 @@
  */
 package tm.alashow.datmusic.util
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.provider.Settings
 import java.util.Locale
 import okhttp3.Interceptor
 import okhttp3.Response
 import tm.alashow.Config as BaseConfig
+import tm.alashow.base.ui.utils.extensions.androidId
 import tm.alashow.datmusic.Config
 
 internal class AppHeadersInterceptor(context: Context) : Interceptor {
-    @SuppressLint("HardwareIds")
-    private val clientId = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+    private val clientId = context.androidId()
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request().newBuilder()
