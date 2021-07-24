@@ -6,19 +6,22 @@ package tm.alashow.datmusic.ui.settings
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,11 +32,14 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.ui.Scaffold
+import kotlinx.coroutines.launch
 import tm.alashow.base.ui.ColorPalettePreference
 import tm.alashow.base.ui.DarkModePreference
 import tm.alashow.base.ui.ThemeState
 import tm.alashow.base.util.IntentUtils
 import tm.alashow.common.compose.rememberFlowWithLifecycle
+import tm.alashow.datmusic.domain.DownloadsSongsGrouping
+import tm.alashow.datmusic.ui.downloader.LocalDownloader
 import tm.alashow.ui.ThemeViewModel
 import tm.alashow.ui.components.AppTopBar
 import tm.alashow.ui.components.SelectableDropdownMenu
@@ -66,30 +72,79 @@ private fun Settings(themeState: ThemeState, setThemeState: (ThemeState) -> Unit
 @Composable
 fun SettingsList(themeState: ThemeState, setThemeState: (ThemeState) -> Unit, paddings: PaddingValues) {
     LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
         modifier = Modifier.fillMaxWidth(),
         contentPadding = paddings
     ) {
-        item {
-            SettingsSectionLabel(stringResource(R.string.settings_theme))
-            SettingsItem(stringResource(R.string.settings_darkMode)) {
+        settingsDownloadsSection()
+        settingsThemeSection(themeState, setThemeState)
+        settingsAboutSection()
+    }
+}
+
+fun LazyListScope.settingsDownloadsSection() {
+    item {
+        val downloader = LocalDownloader.current
+        val coroutine = rememberCoroutineScope()
+        val downloadsLocationSelected by rememberFlowWithLifecycle(downloader.hasDownloadsLocation).collectAsState(initial = null)
+        val downloadsSongsGrouping by rememberFlowWithLifecycle(downloader.downloadsSongsGrouping).collectAsState(initial = null)
+
+        SettingsSectionLabel(stringResource(R.string.settings_downloads))
+        Column(verticalArrangement = Arrangement.spacedBy(AppTheme.specs.padding)) {
+            SettingsItem(stringResource(R.string.settings_downloads_location)) {
+                OutlinedButton(
+                    onClick = { downloader.requestNewDownloadsLocations() },
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.onSurface)
+                ) {
+                    if (downloadsLocationSelected != null) {
+                        Text(
+                            stringResource(
+                                if (downloadsLocationSelected == true) R.string.settings_downloads_location_change
+                                else R.string.settings_downloads_location_select
+                            )
+                        )
+                    }
+                }
+            }
+
+            SettingsItem(stringResource(R.string.settings_downloads_songsGrouping)) {
                 SelectableDropdownMenu(
-                    items = DarkModePreference.values().toList(),
-                    selectedItem = themeState.darkModePreference,
-                    onItemSelect = { setThemeState(themeState.copy(darkModePreference = it)) }
+                    items = DownloadsSongsGrouping.values().toList(),
+                    labelMapper = { stringResource(it.labelRes) },
+                    subtitles = DownloadsSongsGrouping.values().map { stringResource(it.exampleRes) },
+                    selectedItem = downloadsSongsGrouping,
+                    onItemSelect = { coroutine.launch { downloader.setDownloadsSongsGrouping(it) } }
                 )
             }
-            SettingsItem(stringResource(R.string.settings_colorPalette)) {
-                SelectableDropdownMenu(
-                    items = ColorPalettePreference.values().toList(),
-                    selectedItem = themeState.colorPalettePreference,
-                    onItemSelect = { setThemeState(themeState.copy(colorPalettePreference = it)) }
-                )
-            }
+        }
+    }
+}
 
-            Spacer(Modifier.height(AppTheme.specs.padding))
+fun LazyListScope.settingsThemeSection(themeState: ThemeState, setThemeState: (ThemeState) -> Unit) {
+    item {
+        SettingsSectionLabel(stringResource(R.string.settings_theme))
+        SettingsItem(stringResource(R.string.settings_theme_darkMode)) {
+            SelectableDropdownMenu(
+                items = DarkModePreference.values().toList(),
+                selectedItem = themeState.darkModePreference,
+                onItemSelect = { setThemeState(themeState.copy(darkModePreference = it)) }
+            )
+        }
+        SettingsItem(stringResource(R.string.settings_theme_colorPalette)) {
+            SelectableDropdownMenu(
+                items = ColorPalettePreference.values().toList(),
+                selectedItem = themeState.colorPalettePreference,
+                onItemSelect = { setThemeState(themeState.copy(colorPalettePreference = it)) }
+            )
+        }
+    }
+}
 
-            SettingsSectionLabel(stringResource(R.string.settings_about))
+fun LazyListScope.settingsAboutSection() {
+    item {
+        SettingsSectionLabel(stringResource(R.string.settings_about))
 
+        Column(verticalArrangement = Arrangement.spacedBy(AppTheme.specs.padding)) {
             SettingsLinkItem(
                 labelRes = R.string.settings_about_author,
                 textRes = R.string.settings_about_author_text,
@@ -146,7 +201,7 @@ private fun SettingsItem(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .padding(horizontal = AppTheme.specs.padding, vertical = AppTheme.specs.paddingTiny)
+            .padding(horizontal = AppTheme.specs.padding)
             .fillMaxWidth()
     ) {
         Text(label, style = MaterialTheme.typography.subtitle1)

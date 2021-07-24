@@ -84,5 +84,5 @@ object AppTypeConverters {
 
     @TypeConverter
     @JvmStatic
-    fun fromDownloadType(value: DownloadRequest.Type): String = value.type
+    fun fromDownloadType(value: DownloadRequest.Type): String = value.name
 }

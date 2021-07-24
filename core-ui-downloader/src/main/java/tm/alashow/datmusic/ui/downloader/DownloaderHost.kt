@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.AlertDialog
+import androidx.compose.material.LocalAbsoluteElevation
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +25,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
@@ -53,7 +55,7 @@ fun DownloaderHost(
 
     collectEvent(viewModel.downloader.downloaderEvents) { event ->
         when (event) {
-            DownloaderEvent.ChooseDownloadsLocation, DownloaderEvent.DownloadsLocationPermissionError -> {
+            DownloaderEvent.ChooseDownloadsLocation -> {
                 downloadsLocationDialogShown = true
             }
             is DownloaderEvent.DownloaderMessage -> {
@@ -89,27 +91,30 @@ private fun DownloadsLocationDialog(
     }
 
     if (dialogShown) {
-        AlertDialog(
-            properties = DialogProperties(usePlatformDefaultWidth = true),
-            onDismissRequest = { onDismiss() },
-            title = { Text(stringResource(R.string.downloader_downloadsLocationSelect_title)) },
-            text = { Text(stringResource(R.string.downloader_downloadsLocationSelect_text)) },
-            buttons = {
-                Row(
-                    horizontalArrangement = Arrangement.End,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(AppTheme.specs.padding)
-                ) {
-                    TextRoundedButton(
-                        onClick = {
-                            onDismiss()
-                            documentTreeLauncher.launch(null)
-                        },
-                        text = stringResource(R.string.downloader_downloadsLocationSelect_next)
-                    )
-                }
-            },
-        )
+        // [ColorPalettePreference.Black] theme needs at least 1.dp dialog surfaces
+        CompositionLocalProvider(LocalAbsoluteElevation provides 1.dp) {
+            AlertDialog(
+                properties = DialogProperties(usePlatformDefaultWidth = true),
+                onDismissRequest = { onDismiss() },
+                title = { Text(stringResource(R.string.downloader_downloadsLocationSelect_title)) },
+                text = { Text(stringResource(R.string.downloader_downloadsLocationSelect_text)) },
+                buttons = {
+                    Row(
+                        horizontalArrangement = Arrangement.End,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(AppTheme.specs.padding)
+                    ) {
+                        TextRoundedButton(
+                            onClick = {
+                                onDismiss()
+                                documentTreeLauncher.launch(null)
+                            },
+                            text = stringResource(R.string.downloader_downloadsLocationSelect_next)
+                        )
+                    }
+                },
+            )
+        }
     }
 }

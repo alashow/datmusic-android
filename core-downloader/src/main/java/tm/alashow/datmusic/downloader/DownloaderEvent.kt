@@ -8,6 +8,5 @@ import tm.alashow.base.util.UiMessage
 
 sealed class DownloaderEvent {
     object ChooseDownloadsLocation : DownloaderEvent()
-    object DownloadsLocationPermissionError : DownloaderEvent()
     data class DownloaderMessage(val message: UiMessage<*>) : DownloaderEvent()
 }

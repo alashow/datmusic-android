@@ -24,12 +24,14 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import timber.log.Timber
 import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.base.util.UiMessage
 import tm.alashow.data.PreferencesStore
 import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
+import tm.alashow.datmusic.domain.DownloadsSongsGrouping
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.domain.entities.DownloadItem
@@ -52,6 +54,7 @@ class Downloader @Inject constructor(
     companion object {
         const val DOWNLOADS_STATUS_REFRESH_INTERVAL = 1500L
         val DOWNLOADS_LOCATION = stringPreferencesKey("downloads_location")
+        val DOWNLOADS_SONGS_GROUPING = stringPreferencesKey("downloads_songs_grouping")
     }
 
     private val downloaderEventsChannel = Channel<DownloaderEvent>(Channel.CONFLATED)
@@ -102,9 +105,11 @@ class Downloader @Inject constructor(
             return
         }
 
+        val songsGrouping = downloadsSongsGrouping.first()
+
         val file = try {
             val documents = DocumentFile.fromTreeUri(appContext, downloadsLocation) ?: error("Couldn't resolve downloads location folder")
-            audio.documentFile(documents)
+            audio.documentFile(documents, songsGrouping)
         } catch (e: Exception) {
             Timber.e(e, "Error while creating new audio file")
             if (e is FileNotFoundException) {
@@ -250,6 +255,23 @@ class Downloader @Inject constructor(
         }
     }
 
+    private val downloadsLocationUri = preferences.get(DOWNLOADS_LOCATION, "").map {
+        when {
+            it.isEmpty() -> None
+            else -> some(Uri.parse(it))
+        }
+    }
+
+    val hasDownloadsLocation = downloadsLocationUri.map { it.isSome() }
+
+    val downloadsSongsGrouping = preferences.get(DOWNLOADS_SONGS_GROUPING, "").map { DownloadsSongsGrouping.from(it) }
+
+    suspend fun setDownloadsSongsGrouping(songsGrouping: DownloadsSongsGrouping) {
+        preferences.save(DOWNLOADS_SONGS_GROUPING, songsGrouping.name)
+    }
+
+    fun requestNewDownloadsLocations() = downloaderEvent(DownloaderEvent.ChooseDownloadsLocation)
+
     suspend fun setDownloadsLocation(uri: Uri) {
         Timber.i("Setting new downloads location: $uri")
         val takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
@@ -262,23 +284,15 @@ class Downloader @Inject constructor(
         }
     }
 
-    private suspend fun getDownloadsLocationUri(): Optional<Uri> {
-        val downloadLocation = preferences.get(DOWNLOADS_LOCATION, "").first()
-        if (downloadLocation.isEmpty()) {
-            return None
-        }
-        return some(Uri.parse(downloadLocation))
-    }
-
     private suspend fun verifyAndGetDownloadsLocationUri(): Uri? {
-        when (val downloadLocation = getDownloadsLocationUri()) {
-            is None -> downloaderEvent(DownloaderEvent.ChooseDownloadsLocation)
+        when (val downloadLocation = downloadsLocationUri.first()) {
+            is None -> requestNewDownloadsLocations()
             is Optional.Some -> {
                 val uri = downloadLocation()
                 val writeableAndReadable =
                     appContext.contentResolver.persistedUriPermissions.firstOrNull { it.uri == uri && it.isWritePermission && it.isReadPermission } != null
                 if (!writeableAndReadable) {
-                    downloaderEvent(DownloaderEvent.DownloadsLocationPermissionError)
+                    requestNewDownloadsLocations()
                 } else return uri
             }
         }
