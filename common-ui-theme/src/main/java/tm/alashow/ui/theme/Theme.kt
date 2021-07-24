@@ -29,9 +29,10 @@ fun AppTheme(
         DarkModePreference.OFF -> false
     }
     val colors = when (themeState.colorPalettePreference) {
-        ColorPalettePreference.Default -> if (isDarkTheme) DarkAppColors else LightAppColors
         ColorPalettePreference.Asphalt -> if (isDarkTheme) appDarkColors(Asphalt, Orange) else appLightColors(Asphalt, Orange)
+        ColorPalettePreference.Black -> if (isDarkTheme) appDarkColors(Color.Black, Secondary) else appLightColors(Primary, Secondary)
         ColorPalettePreference.Orange -> if (isDarkTheme) appDarkColors(Orange, Color.Black) else appLightColors(Orange, Orange)
+        else -> if (isDarkTheme) DarkAppColors else LightAppColors
     }
 
     val systemUiController = rememberSystemUiController()
