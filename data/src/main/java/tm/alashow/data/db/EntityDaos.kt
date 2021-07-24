@@ -11,6 +11,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Transaction
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import tm.alashow.domain.models.Entity
 import tm.alashow.domain.models.PaginatedEntity
@@ -97,9 +98,7 @@ abstract class PaginatedEntryDao<Params : Any, E : PaginatedEntity> : EntityDao<
      */
     @Transaction
     open suspend fun insertMissing(entities: List<E>) {
-        entriesById(entities.map { it.id }).map { existing ->
-            val existingIds = existing.map { it.id }.toSet()
-            insertAll(entities.filterNot { entity -> existingIds.contains(entity.id) })
-        }
+        val existingIds = entriesById(entities.map { it.id }).first().map { it.id }.toSet()
+        insertAll(entities.filterNot { entity -> existingIds.contains(entity.id) })
     }
 }
