@@ -120,7 +120,7 @@ internal fun SearchList(
 
     val hasMultiplePagers = pagers.size > 1
 
-    LaunchedEffect(*pagers.map { it.itemCount }.toTypedArray()) {
+    LaunchedEffect(*pagerRefreshStates) {
         listState.animateScrollToItem(0)
     }
 
