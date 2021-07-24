@@ -15,7 +15,10 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import tm.alashow.base.util.RemoteLogger
+import tm.alashow.domain.models.None
 import tm.alashow.domain.models.Optional
 import tm.alashow.domain.models.some
 
@@ -51,7 +54,13 @@ class PreferencesStore @Inject constructor(@ApplicationContext private val conte
         val key = stringPreferencesKey(name)
         return optional(key).map {
             when (it) {
-                is Optional.Some<String> -> some(Json.decodeFromString(serializer, it.value))
+                is Optional.Some<String> ->
+                    try {
+                        some(Json.decodeFromString(serializer, it.value))
+                    } catch (e: SerializationException) {
+                        RemoteLogger.exception(e)
+                        None
+                    }
                 else -> Optional.None
             }
         }

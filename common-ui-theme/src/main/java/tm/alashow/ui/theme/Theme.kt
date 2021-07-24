@@ -30,8 +30,9 @@ fun AppTheme(
     }
     val colors = when (themeState.colorPalettePreference) {
         ColorPalettePreference.Asphalt -> if (isDarkTheme) appDarkColors(Asphalt, Orange) else appLightColors(Asphalt, Orange)
-        ColorPalettePreference.Black -> if (isDarkTheme) appDarkColors(Color.Black, Secondary) else appLightColors(Primary, Secondary)
         ColorPalettePreference.Orange -> if (isDarkTheme) appDarkColors(Orange, Color.Black) else appLightColors(Orange, Orange)
+        ColorPalettePreference.Black -> if (isDarkTheme) appDarkColors(Color.Black, Secondary) else appLightColors(Primary, Secondary)
+        ColorPalettePreference.Black_Yellow -> if (isDarkTheme) appDarkColors(Color.Black, Yellow) else appLightColors(Primary, Yellow)
         else -> if (isDarkTheme) DarkAppColors else LightAppColors
     }
 
@@ -39,7 +40,7 @@ fun AppTheme(
     SideEffect {
         systemUiController.setSystemBarsColor(
             color = Color.Transparent,
-            darkIcons = !isDarkTheme
+            darkIcons = colors.materialColors.isLight
         )
     }
 

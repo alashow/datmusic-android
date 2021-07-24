@@ -36,7 +36,7 @@ fun <T> SelectableDropdownMenu(
     items: List<T>,
     selectedItem: T?,
     onItemSelect: (T) -> Unit,
-    labelMapper: @Composable (T) -> String = { it.toString() },
+    labelMapper: @Composable (T) -> String = { it.toString().replace("_", " ") },
     subtitles: List<String?>? = null,
     modifier: Modifier = Modifier
 ) {
