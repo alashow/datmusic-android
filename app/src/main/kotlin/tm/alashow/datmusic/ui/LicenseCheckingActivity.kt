@@ -9,7 +9,6 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
@@ -33,7 +32,9 @@ import com.google.android.vending.licensing.LicenseCheckerCallback
 import com.google.android.vending.licensing.Policy
 import com.google.android.vending.licensing.ServerManagedPolicy
 import timber.log.Timber
+import tm.alashow.base.ui.utils.extensions.androidId
 import tm.alashow.base.util.IntentUtils
+import tm.alashow.base.util.RemoteLogger
 import tm.alashow.datmusic.R
 import tm.alashow.ui.components.TextRoundedButton
 import tm.alashow.ui.theme.AppTheme
@@ -62,13 +63,14 @@ open class LicenseCheckingActivity : ComponentActivity() {
             Timber.d("LicenseChecker.dontAllow, reason = $reason")
             if (isFinishing) return
             if (reason == Policy.RETRY) {
-                checkLicense()
+                checkLicense(true)
             } else {
                 onFail()
             }
         }
 
         override fun applicationError(errorCode: Int) {
+            RemoteLogger.log("LicenceChecker.appError, error = $errorCode")
             Timber.d("LicenceChecker.appError, error = $errorCode")
             onFail()
         }
@@ -84,12 +86,13 @@ open class LicenseCheckingActivity : ComponentActivity() {
                 this,
                 AESObfuscator(
                     SALT, packageName,
-                    Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
+                    androidId()
                 )
             )
             licenseChecker = LicenseChecker(this, policy, BASE64_PUBLIC_KEY)
             checkLicense()
         } catch (e: Exception) {
+            RemoteLogger.exception(e)
             Timber.e(e, "Error while checking license")
             onFail()
         }
@@ -105,13 +108,13 @@ open class LicenseCheckingActivity : ComponentActivity() {
         licenseChecker.onDestroy()
     }
 
-    private fun checkLicense() {
-        if (!isNetworkAvailable(this)) {
+    private fun checkLicense(requireNetwork: Boolean = false) {
+        if (requireNetwork && !isNetworkAvailable(this)) {
             setContent {
                 LicenseErrorScreen(
                     errorMessage = R.string.license_error_network,
                     buttonText = R.string.license_retry,
-                    onButtonClick = ::checkLicense
+                    onButtonClick = { recreate() }
                 )
             }
         } else licenseChecker.checkAccess(licenseCheckerCallback)

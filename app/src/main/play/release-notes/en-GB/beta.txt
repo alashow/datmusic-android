@@ -1,6 +1,9 @@
 Hey! Thanks for using datmusic app!
 Please review the app if you like it!
 
+v2.0.0-beta03
+- Bug fix
+
 v2.0.0-beta02
 - Downloads settings to change downloads locations and songs folder grouping
 - Added Black color palettes
