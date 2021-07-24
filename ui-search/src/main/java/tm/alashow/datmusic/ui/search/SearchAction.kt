@@ -14,5 +14,5 @@ internal sealed class SearchAction {
 
     data class AddError(val error: Throwable) : SearchAction()
     object ClearError : SearchAction()
-    data class SolveCaptcha(val captchaError: ApiCaptchaError, val key: String) : SearchAction()
+    data class SubmitCaptcha(val captchaError: ApiCaptchaError, val solution: String) : SearchAction()
 }

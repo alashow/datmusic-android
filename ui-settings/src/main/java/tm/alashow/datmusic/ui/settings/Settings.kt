@@ -32,11 +32,14 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.ui.Scaffold
+import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.coroutines.launch
 import tm.alashow.base.ui.ColorPalettePreference
 import tm.alashow.base.ui.DarkModePreference
 import tm.alashow.base.ui.ThemeState
 import tm.alashow.base.util.IntentUtils
+import tm.alashow.base.util.event
+import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.DownloadsSongsGrouping
 import tm.alashow.datmusic.ui.downloader.LocalDownloader
@@ -174,7 +177,12 @@ private fun SettingsSectionLabel(text: String) {
 }
 
 @Composable
-private fun SettingsLinkItem(@StringRes labelRes: Int, @StringRes textRes: Int, @StringRes linkRes: Int) {
+private fun SettingsLinkItem(
+    @StringRes labelRes: Int,
+    @StringRes textRes: Int,
+    @StringRes linkRes: Int,
+    analytics: FirebaseAnalytics = LocalAnalytics.current
+) {
     SettingsItem(stringResource(labelRes)) {
         val context = LocalContext.current
 
@@ -185,6 +193,7 @@ private fun SettingsLinkItem(@StringRes labelRes: Int, @StringRes textRes: Int, 
                 color = MaterialTheme.colors.onBackground,
             ),
             onClick = {
+                analytics.event("settings.linkClick", mapOf("link" to link))
                 IntentUtils.openUrl(context, link)
             }
         )

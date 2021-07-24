@@ -9,6 +9,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.documentfile.provider.DocumentFile
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.tonyodev.fetch2.Fetch
 import com.tonyodev.fetch2.Request
 import com.tonyodev.fetch2.Status
@@ -29,6 +30,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import timber.log.Timber
 import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.base.util.UiMessage
+import tm.alashow.base.util.event
 import tm.alashow.data.PreferencesStore
 import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
 import tm.alashow.datmusic.domain.DownloadsSongsGrouping
@@ -48,7 +50,8 @@ class Downloader @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val preferences: PreferencesStore,
     private val dao: DownloadRequestsDao,
-    private val fetcher: Fetch
+    private val fetcher: Fetch,
+    private val analytics: FirebaseAnalytics,
 ) {
 
     companion object {
@@ -267,13 +270,14 @@ class Downloader @Inject constructor(
     val downloadsSongsGrouping = preferences.get(DOWNLOADS_SONGS_GROUPING, "").map { DownloadsSongsGrouping.from(it) }
 
     suspend fun setDownloadsSongsGrouping(songsGrouping: DownloadsSongsGrouping) {
+        analytics.event("downloads.setSongsGrouping", mapOf("type" to songsGrouping.name))
         preferences.save(DOWNLOADS_SONGS_GROUPING, songsGrouping.name)
     }
 
     fun requestNewDownloadsLocations() = downloaderEvent(DownloaderEvent.ChooseDownloadsLocation)
 
     suspend fun setDownloadsLocation(uri: Uri) {
-        Timber.i("Setting new downloads location: $uri")
+        analytics.event("downloads.setDownloadsLocation", mapOf("uri" to uri))
         val takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
         appContext.contentResolver.takePersistableUriPermission(uri, takeFlags)
         preferences.save(DOWNLOADS_LOCATION, uri.toString())

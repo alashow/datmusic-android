@@ -18,6 +18,7 @@ import tm.alashow.base.imageloading.CoilAppInitializer
 import tm.alashow.base.inititializer.AppInitializers
 import tm.alashow.base.inititializer.ThreeTenAbpInitializer
 import tm.alashow.base.inititializer.TimberInitializer
+import tm.alashow.base.ui.utils.extensions.androidId
 import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.base.util.LocalConfig
 import tm.alashow.datmusic.notifications.NotificationsInitializer
@@ -44,7 +45,9 @@ class AppModule {
     @Singleton
     @Provides
     fun provideFirebaseAnalytics(app: Application): FirebaseAnalytics {
-        return FirebaseAnalytics.getInstance(app)
+        return FirebaseAnalytics.getInstance(app).apply {
+            setUserId(app.androidId())
+        }
     }
 
     @Provides

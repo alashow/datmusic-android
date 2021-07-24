@@ -77,7 +77,7 @@ internal class SearchViewModel @Inject constructor(
                     }
                     is SearchAction.Search -> searchTrigger.value = SearchTrigger(searchQuery.value)
                     is SearchAction.SelectBackendType -> selectBackendType(action)
-                    is SearchAction.SolveCaptcha -> solveCaptcha(action)
+                    is SearchAction.SubmitCaptcha -> submitCaptcha(action)
                     is SearchAction.AddError -> snackbarManager.addError(action.error)
                     is SearchAction.ClearError -> snackbarManager.removeCurrentError()
                 }
@@ -142,14 +142,14 @@ internal class SearchViewModel @Inject constructor(
     /**
      * Resets captcha error and triggers search with given captcha solution.
      */
-    private fun solveCaptcha(action: SearchAction.SolveCaptcha) {
+    private fun submitCaptcha(action: SearchAction.SubmitCaptcha) {
         captchaError.value = null
         searchTrigger.value = SearchTrigger(
             query = searchQuery.value,
             captchaSolution = CaptchaSolution(
                 action.captchaError.error.captchaId,
                 action.captchaError.error.captchaIndex,
-                action.key
+                action.solution
             )
         )
     }
