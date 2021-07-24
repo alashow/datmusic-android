@@ -1,5 +1,0 @@
-Hey! Thanks for using datmusic app!
-Please review the app if you like it!
-
-v2.0.0
-- Initial alpha release!
