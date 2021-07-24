@@ -73,10 +73,10 @@ android {
 		}
 
 		release {
-			storeFile rootProject.file("signing/alashov-release.jks")
-			storePassword prop("ALASHOV_RELEASE_KEYSTORE_PWD", "")
-			keyPassword prop("ALASHOV_RELEASE_KEY_PWD", "")
-			keyAlias "alashov"
+			storeFile rootProject.file("signing/datmusic-release.jks")
+			storePassword prop("DATMUSIC_RELEASE_KEYSTORE_PWD", "datmusic")
+			keyPassword prop("DATMUSIC_RELEASE_KEY_PWD", "datmusic")
+			keyAlias prop("DATMUSIC_RELEASE_KEY_ALIAS", "datmusic")
 		}
 	}
 
@@ -102,7 +102,7 @@ android {
 	// app bundling configuration
 	bundle {
 		language {
-			enableSplit = false // don"t split language resources, as the app supports locale changing
+			enableSplit = false // don't split language resources, as the app supports locale changing
 		}
 	}
 	kotlinOptions {

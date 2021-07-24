@@ -46,7 +46,10 @@ import com.google.accompanist.imageloading.LoadPainter
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
+import com.google.firebase.analytics.FirebaseAnalytics
 import kotlin.random.Random
+import tm.alashow.base.util.event
+import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.domain.models.errors.ApiCaptchaError
 import tm.alashow.ui.components.TextRoundedButton
 import tm.alashow.ui.theme.AppTheme
@@ -60,7 +63,8 @@ internal fun CaptchaErrorDialog(
     captchaErrorShown: Boolean,
     setCaptchaErrorShown: (Boolean) -> Unit,
     captchaError: ApiCaptchaError,
-    onCaptchaSolve: (String) -> Unit,
+    analytics: FirebaseAnalytics = LocalAnalytics.current,
+    onCaptchaSubmit: (String) -> Unit,
 ) {
     var captchaVersion by remember(captchaError) { mutableStateOf(Random.nextInt()) }
     val (captchaKey, setCaptchaKey) = remember(captchaError) { mutableStateOf(TextFieldValue()) }
@@ -108,7 +112,8 @@ internal fun CaptchaErrorDialog(
                         enabled = captchaKey.text.isNotBlank(),
                         onClick = {
                             setCaptchaErrorShown(false)
-                            onCaptchaSolve(captchaKey.text)
+                            analytics.event("captcha.submit", mapOf("key" to captchaKey))
+                            onCaptchaSubmit(captchaKey.text)
                         },
                         modifier = Modifier.align(Alignment.End)
                     )

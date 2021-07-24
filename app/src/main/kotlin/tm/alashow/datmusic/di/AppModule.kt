@@ -18,8 +18,10 @@ import tm.alashow.base.imageloading.CoilAppInitializer
 import tm.alashow.base.inititializer.AppInitializers
 import tm.alashow.base.inititializer.ThreeTenAbpInitializer
 import tm.alashow.base.inititializer.TimberInitializer
+import tm.alashow.base.ui.utils.extensions.androidId
 import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.base.util.LocalConfig
+import tm.alashow.datmusic.fcm.FcmTokenRegistrator
 import tm.alashow.datmusic.notifications.NotificationsInitializer
 
 @InstallIn(SingletonComponent::class)
@@ -44,7 +46,9 @@ class AppModule {
     @Singleton
     @Provides
     fun provideFirebaseAnalytics(app: Application): FirebaseAnalytics {
-        return FirebaseAnalytics.getInstance(app)
+        return FirebaseAnalytics.getInstance(app).apply {
+            setUserId(app.androidId())
+        }
     }
 
     @Provides
@@ -52,9 +56,10 @@ class AppModule {
         notifications: NotificationsInitializer,
         timberManager: TimberInitializer,
         threeTen: ThreeTenAbpInitializer,
-        coilAppInitializer: CoilAppInitializer
+        coilAppInitializer: CoilAppInitializer,
+        fcmTokenRegistrator: FcmTokenRegistrator
     ): AppInitializers {
-        return AppInitializers(notifications, timberManager, threeTen, coilAppInitializer)
+        return AppInitializers(notifications, timberManager, threeTen, coilAppInitializer, fcmTokenRegistrator)
     }
 
     @Provides

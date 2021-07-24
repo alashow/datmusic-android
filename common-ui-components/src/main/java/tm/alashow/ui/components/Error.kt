@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -64,15 +63,15 @@ fun ErrorBox(
     modifier: Modifier = Modifier,
 ) {
     ErrorBox(maxHeight, maxHeightPercent) {
-        val loadingYOffset = (-70).dp
+        val loadingYOffset = (-130).dp
         val wavesComposition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.waves))
 
         Zoomable {
             LottieAnimation(
                 wavesComposition,
+                speed = 0.5f,
                 iterations = LottieConstants.IterateForever,
                 modifier = Modifier
-                    .size(1000.dp)
                     .offset(y = loadingYOffset)
             )
         }

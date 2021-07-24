@@ -9,9 +9,11 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
+import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -20,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,8 +34,10 @@ import tm.alashow.ui.theme.AppTheme
 @Composable
 fun <T> SelectableDropdownMenu(
     items: List<T>,
-    selectedItem: T,
+    selectedItem: T?,
     onItemSelect: (T) -> Unit,
+    labelMapper: @Composable (T) -> String = { it.toString().replace("_", " ") },
+    subtitles: List<String?>? = null,
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -43,7 +48,7 @@ fun <T> SelectableDropdownMenu(
             onClick = { expanded = !expanded },
             colors = ButtonDefaults.textButtonColors(contentColor = LocalContentColor.current)
         ) {
-            Text(text = selectedItem.toString())
+            Text(text = if (selectedItem != null) labelMapper(selectedItem) else "    ")
             Spacer(Modifier.width(AppTheme.specs.paddingSmall))
             Icon(painter = rememberVectorPainter(dropIcon), contentDescription = "")
         }
@@ -52,15 +57,27 @@ fun <T> SelectableDropdownMenu(
             onDismissRequest = { expanded = false },
             modifier = Modifier.width(IntrinsicSize.Min)
         ) {
-            items.forEach { item ->
-                val label = item.toString()
+            items.forEachIndexed { index, item ->
                 DropdownMenuItem(
                     onClick = {
                         expanded = !expanded
                         onItemSelect(item)
                     }
                 ) {
-                    Text(text = label, color = if (selectedItem == item) MaterialTheme.colors.secondary else MaterialTheme.colors.onBackground)
+                    Column {
+                        Text(
+                            text = labelMapper(item),
+                            color = if (selectedItem == item) MaterialTheme.colors.secondary else MaterialTheme.colors.onBackground
+                        )
+
+                        if (subtitles != null) {
+                            val subtitle = subtitles[index]
+                            if (subtitle != null)
+                                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                                    Text(text = subtitle, style = MaterialTheme.typography.caption)
+                                }
+                        }
+                    }
                 }
             }
         }

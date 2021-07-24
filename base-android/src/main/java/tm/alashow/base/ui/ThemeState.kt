@@ -10,7 +10,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 enum class DarkModePreference { ON, OFF, AUTO }
-enum class ColorPalettePreference { Default, Asphalt, Orange }
+enum class ColorPalettePreference { Default, Asphalt, Black, Black_Yellow, Orange }
 
 /**
  * This should be located in app module, but for some ungodly reason kotlinx-serialization plugin isn't working for app module.

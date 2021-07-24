@@ -14,6 +14,7 @@ import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import tm.alashow.datmusic.domain.DownloadsSongsGrouping
 import tm.alashow.domain.models.BasePaginatedEntity
 
 @Parcelize
@@ -98,12 +99,16 @@ data class Audio(
     private fun createDocumentFile(parent: DocumentFile) =
         parent.createFile(fileMimeType(), fileDisplayName()) ?: error("Couldn't create document file")
 
-    fun documentFile(parent: DocumentFile, flatStructure: Boolean = false): DocumentFile {
+    fun documentFile(parent: DocumentFile, songsGrouping: DownloadsSongsGrouping): DocumentFile {
         if (!parent.exists())
             throw FileNotFoundException("Parent folder doesn't exist")
-        return when (flatStructure) {
-            true -> createDocumentFile(parent)
-            false -> {
+        return when (songsGrouping) {
+            DownloadsSongsGrouping.Flat -> createDocumentFile(parent)
+            DownloadsSongsGrouping.ByArtist -> {
+                val artistFolder = parent.findFile(artist) ?: parent.createDirectory(artist) ?: error("Couldn't create artist folder: $artist")
+                createDocumentFile(artistFolder)
+            }
+            DownloadsSongsGrouping.ByAlbum -> {
                 val artistFolder = parent.findFile(artist) ?: parent.createDirectory(artist) ?: error("Couldn't create artist folder: $artist")
                 if (album.isNullOrBlank()) {
                     createDocumentFile(artistFolder)

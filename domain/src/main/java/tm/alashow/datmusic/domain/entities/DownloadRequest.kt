@@ -34,13 +34,13 @@ data class DownloadRequest(
 
     @ColumnInfo(name = "params")
     override var params: String = "",
-
 ) : BaseEntity {
 
-    val audio get() = run {
-        assert(entityType == Type.Audio)
-        Json.decodeFromString(Audio.serializer(), entity)
-    }
+    val audio
+        get() = run {
+            assert(entityType == Type.Audio)
+            Json.decodeFromString(Audio.serializer(), entity)
+        }
 
     companion object {
         const val REQUEST_NOT_SET = 0
@@ -52,13 +52,13 @@ data class DownloadRequest(
         )
     }
 
-    enum class Type(val type: String) {
-        Audio("audio");
+    enum class Type {
+        Audio;
 
         companion object {
-            private val map = values().associateBy { it.toString() }
+            private val map = values().associateBy { it.name }
 
-            fun from(value: String) = map[value.lowercase()] ?: Audio
+            fun from(value: String) = map[value] ?: Audio
         }
     }
 }
