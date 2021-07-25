@@ -29,6 +29,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import tm.alashow.ui.Zoomable
+import tm.alashow.ui.colorFilterDynamicProperty
 import tm.alashow.ui.theme.AppTheme
 
 @Composable
@@ -71,6 +72,7 @@ fun ErrorBox(
                 wavesComposition,
                 speed = 0.5f,
                 iterations = LottieConstants.IterateForever,
+                dynamicProperties = colorFilterDynamicProperty(MaterialTheme.colors.secondary.copy(alpha = 0.1f)),
                 modifier = Modifier
                     .offset(y = loadingYOffset)
             )

@@ -34,6 +34,7 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,10 +45,20 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.tonyodev.fetch2.Download
 import com.tonyodev.fetch2.Status
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.downloader.Downloader
+import tm.alashow.datmusic.downloader.isPausable
+import tm.alashow.datmusic.downloader.isResumable
+import tm.alashow.datmusic.downloader.isRetriable
+import tm.alashow.datmusic.downloader.progressVisible
 import tm.alashow.datmusic.ui.audios.AudioRowItem
+import tm.alashow.ui.TimedVisibility
+import tm.alashow.ui.colorFilterDynamicProperty
 import tm.alashow.ui.components.ProgressIndicator
 import tm.alashow.ui.theme.AppTheme
 
@@ -70,30 +81,19 @@ internal fun AudioDownload(audioDownloadItem: AudioDownloadItem) {
             modifier = Modifier.fillMaxWidth()
         ) {
             AudioRowItem(audio = audioDownloadItem.audio, maxLines = 1, modifier = Modifier.weight(16f))
-            val isPaused = downloadInfo.status == Status.PAUSED
-            val isQueued = downloadInfo.status == Status.QUEUED
-            val isRetriable = downloadInfo.status == Status.FAILED || downloadInfo.status == Status.CANCELLED
-            when (downloadInfo.status) {
-                Status.DOWNLOADING, Status.PAUSED, Status.FAILED, Status.CANCELLED, Status.QUEUED -> {
-                    DownloadRequestProgress(
-                        paused = isPaused,
-                        queued = isQueued,
-                        retriable = isRetriable,
-                        onClick = {
-                            actionHandler(
-                                when {
-                                    isRetriable -> AudioDownloadItemAction.Retry(audioDownloadItem)
-                                    isPaused -> AudioDownloadItemAction.Resume(audioDownloadItem)
-                                    else -> AudioDownloadItemAction.Pause(audioDownloadItem)
-                                }
-                            )
-                        },
-                        progress = downloadInfo.progress / 100f,
-                        modifier = Modifier.weight(4f)
-                    )
-                }
-                else -> Unit
-            }
+            DownloadRequestProgress(
+                downloadInfo = downloadInfo,
+                onClick = {
+                    when {
+                        downloadInfo.isRetriable() -> AudioDownloadItemAction.Retry(audioDownloadItem)
+                        downloadInfo.isResumable() -> AudioDownloadItemAction.Resume(audioDownloadItem)
+                        downloadInfo.isPausable() -> AudioDownloadItemAction.Pause(audioDownloadItem)
+                        else -> null
+                    }?.run(actionHandler)
+                },
+                progress = downloadInfo.progress / 100f,
+                modifier = Modifier.weight(4f)
+            )
         }
 
         Row(
@@ -129,15 +129,24 @@ internal fun AudioDownload(audioDownloadItem: AudioDownloadItem) {
 
 @Composable
 private fun DownloadRequestProgress(
-    paused: Boolean,
-    queued: Boolean,
-    retriable: Boolean,
+    downloadInfo: Download,
     onClick: () -> Unit,
     progress: Float = 0f,
     size: Dp = 36.dp,
-    strokeWidth: Dp = 2.dp,
+    strokeWidth: Dp = 1.dp,
     modifier: Modifier = Modifier
 ) {
+    val paused = downloadInfo.isResumable()
+    val queued = downloadInfo.status == Status.QUEUED
+    val retriable = downloadInfo.isRetriable()
+    val previousStatus by remember { mutableStateOf(downloadInfo.status) }
+
+    val justCompleted by remember(downloadInfo) {
+        derivedStateOf {
+            (previousStatus == Status.DOWNLOADING || previousStatus == Status.QUEUED) && downloadInfo.status == Status.COMPLETED
+        }
+    }
+
     val progressAnimated by animateFloatAsState(
         progress.coerceIn(0f, 1f),
         animationSpec = tween(Downloader.DOWNLOADS_STATUS_REFRESH_INTERVAL.toInt(), easing = LinearEasing)
@@ -151,11 +160,13 @@ private fun DownloadRequestProgress(
     ) {
         if (queued) {
             ProgressIndicator(
+                size = size,
+                strokeWidth = strokeWidth,
                 modifier = Modifier
                     .size(size)
                     .padding(AppTheme.specs.paddingTiny)
             )
-        } else {
+        } else if (downloadInfo.progressVisible()) {
             CircularProgressIndicator(
                 progress = progressAnimated,
                 color = MaterialTheme.colors.secondary,
@@ -188,6 +199,16 @@ private fun DownloadRequestProgress(
                             .padding(AppTheme.specs.paddingSmall)
                     )
                 }
+            }
+        }
+        if (justCompleted) {
+            TimedVisibility {
+                val completeComposition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.complete))
+                LottieAnimation(
+                    completeComposition,
+                    modifier = Modifier.size(size + AppTheme.specs.paddingTiny),
+                    dynamicProperties = colorFilterDynamicProperty()
+                )
             }
         }
     }
