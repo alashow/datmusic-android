@@ -63,8 +63,10 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import kotlin.math.round
 import tm.alashow.base.util.click
 import tm.alashow.common.compose.LocalAnalytics
+import tm.alashow.common.compose.getNavArgument
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
+import tm.alashow.navigation.QUERY_KEY
 import tm.alashow.ui.OffsetNotifyingBox
 import tm.alashow.ui.components.ChipsRow
 import tm.alashow.ui.theme.AppTheme
@@ -151,6 +153,8 @@ private fun SearchAppBar(
     onSearch: () -> Unit = {},
     onBackendTypeSelect: (SearchAction.SelectBackendType) -> Unit = {}
 ) {
+    val initialQuery = (getNavArgument(QUERY_KEY) ?: "").toString()
+
     Box(
         modifier = modifier
             .translucentSurface()
@@ -184,7 +188,7 @@ private fun SearchAppBar(
                 modifier = titleModifier.padding(start = AppTheme.specs.padding, top = AppTheme.specs.padding),
             )
 
-            var query by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue()) }
+            var query by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue(initialQuery)) }
 
             SearchTextField(
                 value = query,
