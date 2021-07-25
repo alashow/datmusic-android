@@ -21,16 +21,24 @@ import kotlinx.coroutines.launch
 /**
  * Delays visibility of given [content] for [delayMillis].
  */
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun Delayed(delayMillis: Long = 200, content: @Composable () -> Unit) {
-    var visible by remember { mutableStateOf(false) }
+    TimedVisibility(delayMillis = delayMillis, visibility = false, content = content)
+}
+
+/**
+ * Changes visibility of given [content] after [delayMillis] to opposite of initial [visibility].
+ */
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+fun TimedVisibility(delayMillis: Long = 4000, visibility: Boolean = true, content: @Composable () -> Unit) {
+    var visible by remember { mutableStateOf(visibility) }
     val coroutine = rememberCoroutineScope()
 
     DisposableEffect(Unit) {
         val job = coroutine.launch {
             delay(delayMillis)
-            visible = true
+            visible = !visible
         }
 
         onDispose {

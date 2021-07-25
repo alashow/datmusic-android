@@ -9,12 +9,18 @@ import com.tonyodev.fetch2.Download
 import com.tonyodev.fetch2.Error
 import com.tonyodev.fetch2.Fetch
 import com.tonyodev.fetch2.Request
+import com.tonyodev.fetch2.Status
 import com.tonyodev.fetch2.database.DownloadInfo
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+
+fun Download.isRetriable() = status in listOf(Status.FAILED, Status.CANCELLED)
+fun Download.isResumable() = status in listOf(Status.PAUSED)
+fun Download.isPausable() = status in listOf(Status.DOWNLOADING, Status.QUEUED)
+fun Download.progressVisible() = status in listOf(Status.DOWNLOADING, Status.PAUSED, Status.FAILED, Status.CANCELLED, Status.QUEUED)
 
 sealed class FetchEnqueueResult
 data class FetchEnqueueSuccessful(val updatedRequest: Request) : FetchEnqueueResult()
