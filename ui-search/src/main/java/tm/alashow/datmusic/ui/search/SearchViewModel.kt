@@ -8,6 +8,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -56,10 +57,10 @@ internal class SearchViewModel @Inject constructor(
 
     private val pendingActions = MutableSharedFlow<SearchAction>()
 
-    val pagedAudioList get() = audiosPager.observe()
-    val pagedMinervaList get() = minervaPager.observe()
-    val pagedArtistsList get() = artistsPager.observe()
-    val pagedAlbumsList get() = albumsPager.observe()
+    val pagedAudioList get() = audiosPager.observe().cachedIn(viewModelScope)
+    val pagedMinervaList get() = minervaPager.observe().cachedIn(viewModelScope)
+    val pagedArtistsList get() = artistsPager.observe().cachedIn(viewModelScope)
+    val pagedAlbumsList get() = albumsPager.observe().cachedIn(viewModelScope)
 
     val state = combine(searchFilter.filterNotNull(), snackbarManager.errors, captchaError, ::SearchViewState)
 
