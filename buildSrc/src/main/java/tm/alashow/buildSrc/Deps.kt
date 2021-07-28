@@ -13,7 +13,7 @@ object Deps {
         const val stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$version"
         const val gradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:$version"
         const val serialization = "org.jetbrains.kotlin:kotlin-serialization:$version"
-        const val serializationRuntime = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1"
+        const val serializationRuntime = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2"
 
         const val coroutinesVersion = "1.5.0"
         const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
@@ -21,28 +21,29 @@ object Deps {
     }
 
     object Android {
-        private const val gradleVersion = "7.1.0-alpha02"
+        private const val gradleVersion = "7.0.0"
 
         const val gradle = "com.android.tools.build:gradle:$gradleVersion"
 
         const val multiDex = "androidx.multidex:multidex:2.0.1"
 
-        const val activityVersion = "1.3.0-beta02"
+        const val activityVersion = "1.3.0"
         const val activityKtx = "androidx.activity:activity-ktx:$activityVersion"
         const val fragmentKtx = "androidx.fragment:fragment-ktx:1.4.0-alpha02"
 
-        private const val navigationVersion = "2.4.0-alpha02"
+        private const val navigationVersion = "2.4.0-alpha05"
         const val navigationFragment = "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
         const val navigationUi = "androidx.navigation:navigation-ui-ktx:$navigationVersion"
         const val navigationSafeArgs = "androidx.navigation:navigation-safe-args-gradle-plugin:$navigationVersion"
-        const val navigationHilt = "androidx.hilt:hilt-navigation-compose:1.0.0-alpha02"
+        const val navigationCompose = "androidx.navigation:navigation-compose:$navigationVersion"
+        const val navigationHiltCompose = "androidx.hilt:hilt-navigation-compose:1.0.0-alpha03"
 
-        const val dataStore = "androidx.datastore:datastore-preferences:1.0.0-beta02"
+        const val dataStore = "androidx.datastore:datastore-preferences:1.0.0-rc02"
 
         const val documentFile = "androidx.documentfile:documentfile:1.0.1"
 
         object Compose {
-            const val version = "1.0.0-rc02"
+            const val version = "1.0.0"
 
             const val ui = "androidx.compose.ui:ui:$version"
             const val uiTooling = "androidx.compose.ui:ui-tooling:$version"
@@ -50,18 +51,18 @@ object Deps {
             const val materialDesign = "androidx.compose.material:material:$version"
             const val materialDesignIcons = "androidx.compose.material:material-icons-core:$version"
             const val materialDesignIconsExtended = "androidx.compose.material:material-icons-extended:$version"
-            const val constraintLayout = "androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha08"
+            const val constraintLayout = "androidx.constraintlayout:constraintlayout-compose:1.0.0-beta01"
             const val liveData = "androidx.compose.runtime:runtime-livedata:$version"
             const val activity = "androidx.activity:activity-compose:$activityVersion"
-            const val viewModels = "androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha06"
-            const val paging = "androidx.paging:paging-compose:1.0.0-alpha10"
+            const val viewModels = "androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha07"
+            const val paging = "androidx.paging:paging-compose:1.0.0-alpha12"
 
             private const val lottieVersion = "1.0.0-rc02-1-SNAPSHOT"
             const val lottie = "com.airbnb.android:lottie-compose:$lottieVersion"
         }
 
         object Accompanist {
-            private const val version = "0.12.0"
+            private const val version = "0.15.0"
 
             const val coil = "com.google.accompanist:accompanist-coil:$version"
             const val insets = "com.google.accompanist:accompanist-insets:$version"
@@ -73,8 +74,8 @@ object Deps {
         }
 
         object Lifecycle {
-            private const val version = "2.4.0-alpha01"
-            private const val vmSavedStateVersion = "2.4.0-alpha01"
+            private const val version = "2.4.0-alpha02"
+            private const val vmSavedStateVersion = "2.4.0-alpha02"
 
             const val runtime = "androidx.lifecycle:lifecycle-runtime:$version"
             const val runtimeKtx = "androidx.lifecycle:lifecycle-runtime-ktx:$version"
@@ -85,7 +86,7 @@ object Deps {
         }
 
         object Room {
-            private const val roomVersion = "2.4.0-alpha02"
+            private const val roomVersion = "2.4.0-alpha04"
 
             const val compiler = "androidx.room:room-compiler:$roomVersion"
             const val runtime = "androidx.room:room-runtime:$roomVersion"
@@ -93,7 +94,7 @@ object Deps {
         }
 
         object Paging {
-            private const val version = "3.0.0"
+            private const val version = "3.1.0-alpha03"
 
             const val common = "androidx.paging:paging-common-ktx:$version"
             const val runtime = "androidx.paging:paging-runtime-ktx:$version"
@@ -135,12 +136,12 @@ object Deps {
     }
 
     object Dagger {
-        private const val version = "2.36"
+        private const val version = "2.38.1"
 
         const val dagger = "com.google.dagger:dagger:$version"
         const val compiler = "com.google.dagger:dagger-compiler:$version"
 
-        const val hiltVersion = "2.36"
+        const val hiltVersion = "2.38.1"
         const val hilt = "com.google.dagger:hilt-android:$hiltVersion"
         const val hiltCompiler = "com.google.dagger:hilt-compiler:$hiltVersion"
         const val hiltGradle = "com.google.dagger:hilt-android-gradle-plugin:$hiltVersion"
@@ -154,7 +155,7 @@ object Deps {
 
     object Firebase {
 
-        const val bom = "com.google.firebase:firebase-bom:28.2.1"
+        const val bom = "com.google.firebase:firebase-bom:28.3.0"
         const val messaging = "com.google.firebase:firebase-messaging-ktx"
         const val analytics = "com.google.firebase:firebase-analytics-ktx"
         const val crashlytics = "com.google.firebase:firebase-crashlytics-ktx"
