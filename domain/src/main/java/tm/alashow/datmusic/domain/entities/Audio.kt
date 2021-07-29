@@ -53,6 +53,10 @@ data class Audio(
     @ColumnInfo(name = "album")
     val album: String? = null,
 
+    @SerialName("is_explicit")
+    @ColumnInfo(name = "explicit", defaultValue = "0")
+    val explicit: Boolean = false,
+
     @SerialName("cover_url")
     @ColumnInfo(name = "cover_url")
     val coverUrl: String? = null,

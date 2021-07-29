@@ -131,10 +131,10 @@ internal fun AudioDownload(audioDownloadItem: AudioDownloadItem) {
 private fun DownloadRequestProgress(
     downloadInfo: Download,
     onClick: () -> Unit,
-    progress: Float = 0f,
+    progress: Float,
+    modifier: Modifier = Modifier,
     size: Dp = 36.dp,
     strokeWidth: Dp = 1.dp,
-    modifier: Modifier = Modifier
 ) {
     val paused = downloadInfo.isResumable()
     val queued = downloadInfo.status == Status.QUEUED
@@ -149,67 +149,68 @@ private fun DownloadRequestProgress(
 
     val progressAnimated by animateFloatAsState(
         progress.coerceIn(0f, 1f),
-        animationSpec = tween(Downloader.DOWNLOADS_STATUS_REFRESH_INTERVAL.toInt(), easing = LinearEasing)
+        animationSpec = tween((Downloader.DOWNLOADS_STATUS_REFRESH_INTERVAL * 1.3).toInt(), easing = LinearEasing)
     )
 
-    Box(
-        modifier = modifier
-            .width(size)
-            .clip(CircleShape),
-        contentAlignment = Alignment.CenterEnd
-    ) {
-        if (queued) {
-            ProgressIndicator(
-                size = size,
-                strokeWidth = strokeWidth,
-                modifier = Modifier
-                    .size(size)
-                    .padding(AppTheme.specs.paddingTiny)
-            )
-        } else if (downloadInfo.progressVisible()) {
-            CircularProgressIndicator(
-                progress = progressAnimated,
-                color = MaterialTheme.colors.secondary,
-                strokeWidth = strokeWidth,
-                modifier = Modifier
-                    .size(size)
-                    .clip(CircleShape),
-            )
-            Box(
-                Modifier
-                    .clip(CircleShape)
-                    .clickable(
-                        onClick = onClick,
-                        indication = rememberRipple(color = MaterialTheme.colors.secondary),
-                        interactionSource = remember { MutableInteractionSource() }
-                    )
-                    .background(MaterialTheme.colors.secondary.copy(alpha = 0.1f))
-            ) {
-                val icon = when {
-                    retriable -> Icons.Filled.Refresh
-                    paused -> Icons.Filled.PlayArrow
-                    else -> Icons.Filled.Pause
-                }
-                Crossfade(icon) {
-                    Icon(
-                        painter = rememberVectorPainter(it),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(size)
-                            .padding(AppTheme.specs.paddingSmall)
-                    )
-                }
-            }
-        }
-        if (justCompleted) {
-            TimedVisibility {
-                val completeComposition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.complete))
-                LottieAnimation(
-                    completeComposition,
-                    modifier = Modifier.size(size + AppTheme.specs.paddingTiny),
-                    dynamicProperties = colorFilterDynamicProperty()
+    if (downloadInfo.progressVisible() || justCompleted)
+        Box(
+            modifier = modifier
+                .width(size)
+                .clip(CircleShape),
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            if (queued) {
+                ProgressIndicator(
+                    size = size,
+                    strokeWidth = strokeWidth,
+                    modifier = Modifier
+                        .size(size)
+                        .padding(AppTheme.specs.paddingTiny)
                 )
+            } else if (downloadInfo.progressVisible()) {
+                CircularProgressIndicator(
+                    progress = progressAnimated,
+                    color = MaterialTheme.colors.secondary,
+                    strokeWidth = strokeWidth,
+                    modifier = Modifier
+                        .size(size)
+                        .clip(CircleShape),
+                )
+                Box(
+                    Modifier
+                        .clip(CircleShape)
+                        .clickable(
+                            onClick = onClick,
+                            indication = rememberRipple(color = MaterialTheme.colors.secondary),
+                            interactionSource = remember { MutableInteractionSource() }
+                        )
+                        .background(MaterialTheme.colors.secondary.copy(alpha = 0.1f))
+                ) {
+                    val icon = when {
+                        retriable -> Icons.Filled.Refresh
+                        paused -> Icons.Filled.PlayArrow
+                        else -> Icons.Filled.Pause
+                    }
+                    Crossfade(icon) {
+                        Icon(
+                            painter = rememberVectorPainter(it),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(size)
+                                .padding(AppTheme.specs.paddingSmall)
+                        )
+                    }
+                }
+            }
+            if (justCompleted) {
+                TimedVisibility {
+                    val completeComposition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.complete))
+                    LottieAnimation(
+                        completeComposition,
+                        modifier = Modifier.size(size + AppTheme.specs.paddingTiny),
+                        dynamicProperties = colorFilterDynamicProperty()
+                    )
+                }
             }
         }
-    }
 }

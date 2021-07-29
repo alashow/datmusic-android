@@ -47,6 +47,9 @@ dependencies {
 	api project(":base-android")
 
 	// Android
+	api Deps.Android.navigationCompose
+	api Deps.Android.navigationHiltCompose
+
 	api Deps.Android.Compose.ui
 	api Deps.Android.Compose.uiTooling
 	api Deps.Android.Compose.foundation

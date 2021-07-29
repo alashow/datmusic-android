@@ -53,7 +53,6 @@ dependencies {
 
 	api Deps.Android.navigationFragment
 	api Deps.Android.navigationUi
-	api Deps.Android.navigationHilt
 
 	api Deps.Android.Lifecycle.runtime
 	api Deps.Android.Lifecycle.runtimeKtx

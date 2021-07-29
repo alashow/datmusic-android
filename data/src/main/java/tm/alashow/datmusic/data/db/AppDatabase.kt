@@ -4,6 +4,7 @@
  */
 package tm.alashow.datmusic.data.db
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -18,13 +19,16 @@ import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.DownloadRequest
 
 @Database(
+    version = 2,
     entities = [
         Audio::class,
         Artist::class,
         Album::class,
         DownloadRequest::class,
     ],
-    version = 1
+    autoMigrations = [
+        AutoMigration(from = 1, to = 2)
+    ]
 )
 @TypeConverters(BaseTypeConverters::class, AppTypeConverters::class)
 abstract class AppDatabase : RoomDatabase() {

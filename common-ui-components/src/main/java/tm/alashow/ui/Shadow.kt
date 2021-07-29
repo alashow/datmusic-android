@@ -5,7 +5,6 @@
 package tm.alashow.ui
 
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
@@ -21,13 +20,11 @@ fun Modifier.coloredShadow(
     shadowRadius: Dp = 16.dp,
     offsetY: Dp = 0.dp,
     offsetX: Dp = 0.dp
-) = composed {
-
+) = apply {
     val shadowColor = color.copy(alpha = alpha).toArgb()
     val transparent = color.copy(alpha = 0f).toArgb()
 
     this.drawBehind {
-
         this.drawIntoCanvas {
             val paint = Paint()
             val frameworkPaint = paint.asFrameworkPaint()
