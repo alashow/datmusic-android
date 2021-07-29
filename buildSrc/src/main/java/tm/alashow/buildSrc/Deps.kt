@@ -31,7 +31,7 @@ object Deps {
         const val activityKtx = "androidx.activity:activity-ktx:$activityVersion"
         const val fragmentKtx = "androidx.fragment:fragment-ktx:1.4.0-alpha02"
 
-        private const val navigationVersion = "2.4.0-alpha05"
+        private const val navigationVersion = "2.4.0-alpha04"
         const val navigationFragment = "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
         const val navigationUi = "androidx.navigation:navigation-ui-ktx:$navigationVersion"
         const val navigationSafeArgs = "androidx.navigation:navigation-safe-args-gradle-plugin:$navigationVersion"
