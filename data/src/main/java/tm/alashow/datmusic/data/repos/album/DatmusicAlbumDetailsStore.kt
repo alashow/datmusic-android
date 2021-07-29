@@ -63,7 +63,7 @@ object DatmusicAlbumDetailsStoreModule {
             writer = { params, response ->
                 dao.withTransaction {
                     val entry = dao.entry(params.id.toString()).firstOrNull() ?: Album(id = params.id.toString())
-                    dao.update(params.id.toString(), entry.copy(audios = response, detailsFetched = true))
+                    dao.updateOrInsert(entry.copy(audios = response, detailsFetched = true))
                 }
             },
             delete = { error("This store doesn't manage deletes") },

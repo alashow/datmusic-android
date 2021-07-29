@@ -65,7 +65,7 @@ object DatmusicArtistDetailsStoreModule {
             writer = { params, response ->
                 dao.withTransaction {
                     val entry = dao.entry(params.id).firstOrNull() ?: response
-                    dao.update(params.id, entry.copy(audios = response.audios, albums = response.albums, detailsFetched = true))
+                    dao.updateOrInsert(entry.copy(audios = response.audios, albums = response.albums, detailsFetched = true))
 
                     // insert all missing albums in database so AlbumDetailsStore can access it
                     albumsDao.insertMissing(response.albums.mapIndexed { index, it -> it.copy(primaryKey = it.id, searchIndex = index) })

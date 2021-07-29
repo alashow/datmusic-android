@@ -1,6 +1,9 @@
 Hey! Thanks for using datmusic app!
 Please review the app if you like it!
 
+v2.0.0-beta05
+- Artist/album details fetching bug fix
+
 v2.0.0-beta04
 - Added explicit album/song indicators
 
