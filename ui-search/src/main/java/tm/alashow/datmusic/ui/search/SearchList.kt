@@ -188,12 +188,12 @@ private fun SearchListErrors(
 
     // add snackbar error if there's an error state in any of the active pagers (except empty result errors)
     // and some of the pagers is not empty (in which case full screen error will be shown)
-    remember(refreshErrorState, pagersAreEmpty) {
+    LaunchedEffect(refreshErrorState, pagersAreEmpty) {
         if (refreshErrorState is LoadState.Error && !pagersAreEmpty) {
             // we don't wanna show empty results error snackbar when there's multiple pagers and one of the pagers gets empty result error (but we have some results if we are here)
             val emptyResultsButHasMultiplePagers = refreshErrorState.error is EmptyResultException && hasMultiplePagers
             if (emptyResultsButHasMultiplePagers)
-                return@remember
+                return@LaunchedEffect
             viewModel.submitAction(SearchAction.AddError(refreshErrorState.error))
         }
     }
@@ -298,14 +298,14 @@ internal fun AlbumList(
         if (!hasItems && isLoading) {
             val placeholders = (1..5).map { Album() }
             items(placeholders) { placeholder ->
-                AlbumColumn(placeholder, itemSize, iconPadding, isPlaceholder = true)
+                AlbumColumn(placeholder, imageSize = itemSize, iconPadding = iconPadding, isPlaceholder = true)
             }
         }
 
         items(pagingItems, key = { _, item -> item.id }) {
             val album = it ?: Album()
 
-            AlbumColumn(album, itemSize, iconPadding, isPlaceholder = it == null) { clickedAlbum ->
+            AlbumColumn(album, imageSize = itemSize, iconPadding = iconPadding, isPlaceholder = it == null) { clickedAlbum ->
                 navigator.navigate(LeafScreen.AlbumDetails.buildRoute(clickedAlbum))
             }
         }

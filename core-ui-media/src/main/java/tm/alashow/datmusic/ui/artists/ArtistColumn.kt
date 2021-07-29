@@ -18,7 +18,6 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
@@ -76,7 +75,7 @@ fun ArtistColumn(
                 painter = image,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                modifier = modifier.composed { loadingModifier }
+                modifier = modifier.then(loadingModifier)
             )
         }
 
@@ -87,7 +86,7 @@ fun ArtistColumn(
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .width(nameWidth)
-                .composed { loadingModifier }
+                .then(loadingModifier)
         )
     }
 }
