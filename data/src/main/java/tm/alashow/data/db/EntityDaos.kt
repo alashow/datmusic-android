@@ -12,7 +12,7 @@ import androidx.room.Transaction
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.firstOrNull
 import tm.alashow.domain.models.Entity
 import tm.alashow.domain.models.PaginatedEntity
 
@@ -28,6 +28,14 @@ abstract class BaseDao<E : Entity> {
 
     @Update
     abstract suspend fun update(entity: E)
+
+    @Update
+    suspend fun updateOrInsert(entity: E) {
+        val entry = entry(entity.id).firstOrNull()
+        if (entry == null) {
+            insert(entity)
+        } else update(entity)
+    }
 
     @Delete
     abstract suspend fun delete(entity: E)
