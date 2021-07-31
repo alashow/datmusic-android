@@ -57,14 +57,15 @@ object Deps {
             const val viewModels = "androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha07"
             const val paging = "androidx.paging:paging-compose:1.0.0-alpha12"
 
-            private const val lottieVersion = "1.0.0-rc02-1-SNAPSHOT"
+            private const val lottieVersion = "4.0.0"
             const val lottie = "com.airbnb.android:lottie-compose:$lottieVersion"
+
+            const val coil = "io.coil-kt:coil-compose:${Utils.coilVersion}"
         }
 
         object Accompanist {
             private const val version = "0.15.0"
 
-            const val coil = "com.google.accompanist:accompanist-coil:$version"
             const val insets = "com.google.accompanist:accompanist-insets:$version"
             const val insetsUi = "com.google.accompanist:accompanist-insets-ui:$version"
             const val permissions = "com.google.accompanist:accompanist-permissions:$version"
@@ -110,7 +111,7 @@ object Deps {
         const val junit = "junit:junit:4.13.2"
         const val threeTen = "org.threeten:threetenbp:1.5.1"
 
-        const val coilVersion = "1.2.1"
+        const val coilVersion = "1.3.1"
         const val coil = "io.coil-kt:coil:$coilVersion"
         const val store = "com.dropbox.mobile.store:store4:4.0.2-KT15"
 

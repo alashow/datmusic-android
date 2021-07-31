@@ -40,14 +40,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.google.accompanist.coil.rememberCoilPainter
-import com.google.accompanist.imageloading.ImageLoadState
-import com.google.accompanist.imageloading.LoadPainter
+import coil.compose.ImagePainter
+import coil.compose.rememberImagePainter
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
 import com.google.firebase.analytics.FirebaseAnalytics
 import kotlin.random.Random
+import tm.alashow.base.imageloading.ImageLoading
 import tm.alashow.base.util.event
 import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.domain.models.errors.ApiCaptchaError
@@ -75,7 +75,7 @@ internal fun CaptchaErrorDialog(
             properties = DialogProperties(usePlatformDefaultWidth = true),
         ) {
             val imageUri = Uri.parse(captchaError.error.captchaImageUrl).buildUpon().appendQueryParameter("v", captchaVersion.toString()).build()
-            val image = rememberCoilPainter(imageUri)
+            val image = rememberImagePainter(imageUri, builder = ImageLoading.defaultConfig)
 
             Surface(
                 shape = MaterialTheme.shapes.medium,
@@ -125,7 +125,7 @@ internal fun CaptchaErrorDialog(
 
 @Composable
 private fun CaptchaErrorImage(
-    image: LoadPainter<Any>,
+    image: ImagePainter,
     onReload: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -140,7 +140,7 @@ private fun CaptchaErrorImage(
                 .aspectRatio(130f / 50f) // source captcha original ratio
                 .align(Alignment.Center)
                 .placeholder(
-                    visible = image.loadState is ImageLoadState.Loading,
+                    visible = image.state is ImagePainter.State.Loading,
                     highlight = PlaceholderHighlight.shimmer(),
                 )
         )

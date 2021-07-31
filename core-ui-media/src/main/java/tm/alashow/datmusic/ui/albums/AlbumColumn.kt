@@ -29,12 +29,13 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.coil.rememberCoilPainter
+import coil.compose.rememberImagePainter
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
 import com.google.accompanist.placeholder.shimmer
 import com.google.firebase.analytics.FirebaseAnalytics
+import tm.alashow.base.imageloading.ImageLoading
 import tm.alashow.base.util.click
 import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.datmusic.domain.entities.Album
@@ -70,7 +71,7 @@ fun AlbumColumn(
             .fillMaxWidth()
             .padding(AppTheme.specs.padding)
     ) {
-        val image = rememberCoilPainter(album.photo.mediumUrl, fadeIn = true)
+        val image = rememberImagePainter(album.photo.mediumUrl, builder = ImageLoading.defaultConfig)
         CoverImage(
             image, size = imageSize,
             icon = rememberVectorPainter(Icons.Default.Album),

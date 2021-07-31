@@ -24,8 +24,7 @@ import androidx.compose.ui.graphics.vector.VectorPainter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.imageloading.ImageLoadState
-import com.google.accompanist.imageloading.LoadPainter
+import coil.compose.ImagePainter
 import com.google.accompanist.placeholder.PlaceholderDefaults
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.fade
@@ -35,7 +34,7 @@ import tm.alashow.ui.theme.AppTheme
 
 @Composable
 fun ImageWithPlaceholder(
-    painter: LoadPainter<Any>,
+    painter: ImagePainter,
     modifier: Modifier = Modifier,
     shape: Shape = RectangleShape,
     errorOrEmpty: @Composable () -> Unit = {},
@@ -48,14 +47,14 @@ fun ImageWithPlaceholder(
             Modifier
                 .fillMaxSize()
                 .placeholder(
-                    visible = painter.loadState is ImageLoadState.Loading,
+                    visible = painter.state is ImagePainter.State.Loading,
                     shape = shape,
                     highlight = PlaceholderHighlight.fade()
                 )
         )
 
-        when (painter.loadState) {
-            is ImageLoadState.Error, ImageLoadState.Empty -> {
+        when (painter.state) {
+            is ImagePainter.State.Error, ImagePainter.State.Empty -> {
                 errorOrEmpty()
             }
             else -> Unit
@@ -65,7 +64,7 @@ fun ImageWithPlaceholder(
 
 @Composable
 fun CoverImage(
-    painter: LoadPainter<Any>,
+    painter: ImagePainter,
     size: Dp = 48.dp,
     backgroundColor: Color = MaterialTheme.colors.surface,
     shape: Shape = MaterialTheme.shapes.small,
@@ -85,7 +84,7 @@ fun CoverImage(
                 .fillMaxSize()
                 .clip(shape)
                 .placeholder(
-                    visible = painter.loadState is ImageLoadState.Loading,
+                    visible = painter.state is ImagePainter.State.Loading,
                     highlight = PlaceholderHighlight.shimmer(
                         highlightColor = MaterialTheme.colors.secondary.copy(0.15f),
                         animationSpec = PlaceholderDefaults.shimmerAnimationSpec
@@ -93,8 +92,8 @@ fun CoverImage(
                 )
         )
 
-        when (painter.loadState) {
-            is ImageLoadState.Error, ImageLoadState.Empty -> {
+        when (painter.state) {
+            is ImagePainter.State.Error, ImagePainter.State.Empty -> {
                 Icon(
                     painter = icon,
                     tint = MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),

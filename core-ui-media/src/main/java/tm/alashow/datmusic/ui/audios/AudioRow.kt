@@ -32,10 +32,11 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.coil.rememberCoilPainter
+import coil.compose.rememberImagePainter
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
+import tm.alashow.base.imageloading.ImageLoading
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.theme.AppTheme
@@ -110,7 +111,7 @@ fun AudioRowItem(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
     ) {
-        val image = rememberCoilPainter(audio.coverUrlSmall ?: audio.coverUrl, fadeIn = true)
+        val image = rememberImagePainter(audio.coverUrlSmall ?: audio.coverUrl, builder = ImageLoading.defaultConfig)
         CoverImage(image) { imageMod ->
             Image(
                 painter = image,

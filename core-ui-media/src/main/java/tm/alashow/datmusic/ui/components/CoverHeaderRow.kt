@@ -20,7 +20,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.coil.rememberCoilPainter
+import coil.compose.rememberImagePainter
+import tm.alashow.base.imageloading.ImageLoading
 import tm.alashow.ui.components.ImageWithPlaceholder
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.textShadow
@@ -38,7 +39,7 @@ fun CoverHeaderRow(
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxWidth()) {
-        val painter = rememberCoilPainter(imageRequest, fadeIn = true)
+        val painter = rememberImagePainter(imageRequest, builder = ImageLoading.defaultConfig)
         ImageWithPlaceholder(
             painter = painter,
             modifier = Modifier.height(height),

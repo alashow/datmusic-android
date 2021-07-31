@@ -63,7 +63,6 @@ dependencies {
 	api Deps.Android.Compose.paging
 
 	// Accompanist
-	api Deps.Android.Accompanist.coil
 	api Deps.Android.Accompanist.insets
 	api Deps.Android.Accompanist.insetsUi
 	api Deps.Android.Accompanist.permissions
@@ -73,4 +72,5 @@ dependencies {
 
 	// 3rd party
 	api Deps.Android.Compose.lottie
+	api Deps.Android.Compose.coil
 }
