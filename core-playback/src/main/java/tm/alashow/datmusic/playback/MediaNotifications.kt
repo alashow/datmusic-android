@@ -37,6 +37,7 @@ const val CHANNEl_ID = "audio-player"
 const val REMOVE_SONG = "action_remove_song"
 const val PREVIOUS = "action_previous"
 const val NEXT = "action_next"
+const val STOP_PLAYBACK = "action_stop"
 const val PLAY_PAUSE = "action_play_or_pause"
 const val REPEAT_ONE = "action_repeat_one"
 const val REPEAT_ALL = "action_repeat_all"
@@ -78,6 +79,7 @@ class MediaNotificationsImpl @Inject constructor(
         val trackName = mediaSession.controller.metadata.title
         val artwork = mediaSession.controller.metadata.artwork
         val isPlaying = mediaSession.isPlaying()
+        val isBuffering = mediaSession.isBuffering()
         val description = mediaSession.controller.metadata.displayDescription
 
         val pm: PackageManager = context.packageManager
@@ -105,8 +107,12 @@ class MediaNotificationsImpl @Inject constructor(
             setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             setDeleteIntent(buildMediaButtonPendingIntent(context, ACTION_STOP))
             addAction(getPreviousAction(context))
-            addAction(getPlayPauseAction(context, if (isPlaying) R.drawable.ic_pause else R.drawable.ic_play_arrow))
+            if (isBuffering)
+                addAction(getBufferingAction(context))
+            else
+                addAction(getPlayPauseAction(context, if (isPlaying) R.drawable.ic_pause else R.drawable.ic_play_arrow))
             addAction(getNextAction(context))
+            addAction(getStopAction(context))
         }
 
         if (artwork != null) {
@@ -120,6 +126,16 @@ class MediaNotificationsImpl @Inject constructor(
 
     override fun clearNotifications() {
         notificationManager.cancel(NOTIFICATION_ID)
+    }
+
+    private fun getBufferingAction(context: Context): NotificationCompat.Action {
+        return NotificationCompat.Action(R.drawable.ic_hourglass_empty, "", null)
+    }
+
+    private fun getStopAction(context: Context): NotificationCompat.Action {
+        val actionIntent = Intent(context, PlayerService::class.java).apply { action = STOP_PLAYBACK }
+        val pendingIntent = PendingIntent.getService(context, 0, actionIntent, FLAG_IMMUTABLE)
+        return NotificationCompat.Action(R.drawable.ic_stop, "", pendingIntent)
     }
 
     private fun getPreviousAction(context: Context): NotificationCompat.Action {

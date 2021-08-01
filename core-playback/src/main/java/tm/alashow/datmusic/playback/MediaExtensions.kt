@@ -17,6 +17,10 @@ fun MediaSessionCompat.isPlaying(): Boolean {
     return controller.playbackState.state == PlaybackStateCompat.STATE_PLAYING
 }
 
+fun MediaSessionCompat.isBuffering(): Boolean {
+    return controller.playbackState.state == PlaybackStateCompat.STATE_BUFFERING
+}
+
 inline val MediaSessionCompat.repeatMode
     get() = controller.repeatMode
 
@@ -29,8 +33,13 @@ inline val PlaybackStateCompat.isPrepared
         (state == PlaybackStateCompat.STATE_PAUSED)
 
 inline val PlaybackStateCompat.isPlaying
-    get() = (state == PlaybackStateCompat.STATE_BUFFERING) ||
-        (state == PlaybackStateCompat.STATE_PLAYING)
+    get() = (state == PlaybackStateCompat.STATE_PLAYING) || isBuffering
+
+inline val PlaybackStateCompat.isBuffering
+    get() = (state == PlaybackStateCompat.STATE_BUFFERING)
+
+inline val PlaybackStateCompat.isStopped
+    get() = (state == PlaybackStateCompat.STATE_STOPPED)
 
 inline val PlaybackStateCompat.isPlayEnabled
     get() = (actions and PlaybackStateCompat.ACTION_PLAY != 0L) ||

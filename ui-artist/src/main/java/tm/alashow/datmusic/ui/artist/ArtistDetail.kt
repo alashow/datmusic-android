@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -23,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
@@ -31,6 +33,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.ui.Scaffold
 import kotlin.math.round
+import kotlinx.coroutines.launch
 import tm.alashow.base.util.extensions.localizedMessage
 import tm.alashow.base.util.extensions.localizedTitle
 import tm.alashow.common.compose.rememberFlowWithLifecycle
@@ -41,6 +44,7 @@ import tm.alashow.datmusic.ui.albums.AlbumColumn
 import tm.alashow.datmusic.ui.audios.AudioRow
 import tm.alashow.datmusic.ui.components.CoverHeaderDefaults
 import tm.alashow.datmusic.ui.components.CoverHeaderRow
+import tm.alashow.datmusic.ui.playback.LocalPlaybackConnection
 import tm.alashow.domain.models.Async
 import tm.alashow.domain.models.Fail
 import tm.alashow.domain.models.Incomplete
@@ -95,12 +99,11 @@ private fun ArtistDetailList(
     onRetry: () -> Unit,
     padding: PaddingValues = PaddingValues(),
     listState: LazyListState,
-    modifier: Modifier = Modifier
 ) {
     BoxWithConstraints {
         LazyColumn(
             state = listState,
-            modifier = modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(bottom = padding.calculateTopPadding() + padding.calculateBottomPadding())
         ) {
             val artist = viewState.artist
@@ -184,8 +187,13 @@ private fun LazyListScope.artistDetails(
             )
         }
 
-        items(artistAudios) { audio ->
-            AudioRow(audio, isPlaceholder = detailsLoading, modifier = Modifier.background(MaterialTheme.colors.background))
+        itemsIndexed(artistAudios) { index, audio ->
+            val playbackConnection = LocalPlaybackConnection.current
+            val coroutine = rememberCoroutineScope()
+            AudioRow(audio, isPlaceholder = detailsLoading, modifier = Modifier.background(MaterialTheme.colors.background)) {
+                if (details is Success)
+                    coroutine.launch { playbackConnection.playArtist(details(), index) }
+            }
         }
     }
     return Pair(artistAlbums, artistAudios)

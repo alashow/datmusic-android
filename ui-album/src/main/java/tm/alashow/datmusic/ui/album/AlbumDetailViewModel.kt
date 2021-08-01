@@ -9,7 +9,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import tm.alashow.datmusic.data.interactors.GetAlbumDetails
 import tm.alashow.datmusic.data.observers.ObserveAlbum
@@ -32,7 +34,7 @@ class AlbumDetailViewModel @Inject constructor(
         requireNotNull(handle.get<String>(ALBUM_ACCESS_KEY))
     )
 
-    val state = combine(albumObserver.observe(), albumDetails.observe(), ::AlbumDetailViewState)
+    val state = combine(albumObserver.observe(), albumDetails.observe(), ::AlbumDetailViewState).shareIn(viewModelScope, SharingStarted.Lazily, 1)
 
     init {
         load()

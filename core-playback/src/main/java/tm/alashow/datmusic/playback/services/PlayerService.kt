@@ -31,8 +31,10 @@ import tm.alashow.datmusic.playback.PAUSE_ACTION
 import tm.alashow.datmusic.playback.PLAY_ACTION
 import tm.alashow.datmusic.playback.PLAY_PAUSE
 import tm.alashow.datmusic.playback.PREVIOUS
+import tm.alashow.datmusic.playback.STOP_PLAYBACK
 import tm.alashow.datmusic.playback.isPlayEnabled
 import tm.alashow.datmusic.playback.isPlaying
+import tm.alashow.datmusic.playback.isStopped
 import tm.alashow.datmusic.playback.players.DatmusicPlayerImpl
 import tm.alashow.datmusic.playback.receivers.BecomingNoisyReceiver
 import tm.alashow.datmusic.playback.toAudioList
@@ -73,14 +75,19 @@ class PlayerService : MediaBrowserServiceCompat(), CoroutineScope by MainScope()
         becomingNoisyReceiver = BecomingNoisyReceiver(this, sessionToken!!)
 
         datmusicPlayer.onPlayingState { isPlaying, byUi ->
+
             if (isPlaying) {
                 startForeground(NOTIFICATION_ID, mediaNotifications.buildNotification(getSession()))
                 becomingNoisyReceiver.register()
             } else {
                 becomingNoisyReceiver.unregister()
                 stopForeground(byUi)
-                mediaNotifications.updateNotification(getSession())
                 launch { datmusicPlayer.saveQueueState() }
+
+                if (datmusicPlayer.getSession().controller.playbackState.isStopped)
+                    mediaNotifications.clearNotifications()
+                else
+                    mediaNotifications.updateNotification(getSession())
             }
             IS_RUNNING = isPlaying
         }
@@ -115,6 +122,7 @@ class PlayerService : MediaBrowserServiceCompat(), CoroutineScope by MainScope()
             }
             NEXT -> controller.transportControls.skipToNext()
             PREVIOUS -> controller.transportControls.skipToPrevious()
+            STOP_PLAYBACK -> controller.transportControls.stop()
         }
 
         MediaButtonReceiver.handleIntent(mediaSession, intent)
@@ -137,13 +145,23 @@ class PlayerService : MediaBrowserServiceCompat(), CoroutineScope by MainScope()
         }
     }
 
-    private fun loadChildren(parentId: String): MutableList<MediaBrowserCompat.MediaItem> {
+    private suspend fun loadChildren(parentId: String): MutableList<MediaBrowserCompat.MediaItem> {
         val list = mutableListOf<MediaBrowserCompat.MediaItem>()
         val mediaId = parentId.toMediaId()
-
-        launch {
-            list.addAll(mediaId.toAudioList(audiosDao, artistsDao, albumsDao).toMediaItems())
-        }
+        list.addAll(mediaId.toAudioList(audiosDao, artistsDao, albumsDao).toMediaItems())
         return list
+    }
+
+    override fun onTaskRemoved(rootIntent: Intent) {
+        launch {
+            datmusicPlayer.pause()
+            datmusicPlayer.saveQueueState()
+            datmusicPlayer.stop(false)
+        }
+        super.onTaskRemoved(rootIntent)
+    }
+
+    override fun onDestroy() {
+        datmusicPlayer.release()
     }
 }

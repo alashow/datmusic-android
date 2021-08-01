@@ -20,7 +20,7 @@ class GetAlbumDetails @Inject constructor(
 
     data class Params(val albumParams: DatmusicAlbumParams, val forceRefresh: Boolean = false)
 
-    override suspend fun doWork(params: Params) = withContext(dispatchers.network) {
+    override suspend fun doWork(params: Params) = withContext(dispatchers.io) {
         albumDetailsStore.fetch(params.albumParams, params.forceRefresh)
     }
 }

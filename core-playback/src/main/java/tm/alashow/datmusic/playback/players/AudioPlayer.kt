@@ -37,6 +37,8 @@ interface AudioPlayer {
     fun release()
     fun onPrepared(prepared: OnPrepared<AudioPlayer>)
     fun onError(error: OnError<AudioPlayer>)
+    fun onBuffering(buffering: OnBuffering<AudioPlayer>)
+    fun onReady(ready: OnReady<AudioPlayer>)
     fun onCompletion(completion: OnCompletion<AudioPlayer>)
 }
 
@@ -55,8 +57,11 @@ class AudioPlayerImpl @Inject constructor(
         }
 
     private var isPrepared = false
+    private var isBuffering = true
     private var onPrepared: OnPrepared<AudioPlayer> = {}
     private var onError: OnError<AudioPlayer> = {}
+    private var onBuffering: OnBuffering<AudioPlayer> = {}
+    private var onReady: OnReady<AudioPlayer> = {}
     private var onCompletion: OnCompletion<AudioPlayer> = {}
 
     override fun play(startAtPosition: Long?) {
@@ -118,14 +123,25 @@ class AudioPlayerImpl @Inject constructor(
         this.onError = error
     }
 
+    override fun onBuffering(buffering: OnBuffering<AudioPlayer>) {
+        this.onBuffering = buffering
+    }
+
+    override fun onReady(ready: OnReady<AudioPlayer>) {
+        this.onReady = ready
+    }
+
     override fun onCompletion(completion: OnCompletion<AudioPlayer>) {
         this.onCompletion = completion
     }
 
     override fun onPlaybackStateChanged(state: Int) {
         super.onPlaybackStateChanged(state)
-        if (state == Player.STATE_ENDED) {
-            onCompletion(this)
+        when (state) {
+            Player.STATE_BUFFERING -> onBuffering(this)
+            Player.STATE_READY -> onReady(this)
+            Player.STATE_ENDED -> onCompletion(this)
+            else -> Unit
         }
     }
 

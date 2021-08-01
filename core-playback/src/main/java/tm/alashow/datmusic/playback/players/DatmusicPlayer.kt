@@ -36,7 +36,7 @@ import tm.alashow.datmusic.data.db.daos.AlbumsDao
 import tm.alashow.datmusic.data.db.daos.ArtistsDao
 import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.domain.entities.Audio
-import tm.alashow.datmusic.playback.AudioFocusHelperImplementation
+import tm.alashow.datmusic.playback.AudioFocusHelperImpl
 import tm.alashow.datmusic.playback.AudioQueueManagerImpl
 import tm.alashow.datmusic.playback.BY_UI_KEY
 import tm.alashow.datmusic.playback.QueueState
@@ -53,6 +53,8 @@ import tm.alashow.datmusic.playback.toMediaIdList
 typealias OnPrepared<T> = T.() -> Unit
 typealias OnError<T> = T.(error: Throwable) -> Unit
 typealias OnCompletion<T> = T.() -> Unit
+typealias OnBuffering<T> = T.() -> Unit
+typealias OnReady<T> = T.() -> Unit
 typealias OnMetaDataChanged = DatmusicPlayer.() -> Unit
 typealias OnIsPlaying = DatmusicPlayer.(playing: Boolean, byUi: Boolean) -> Unit
 
@@ -77,7 +79,7 @@ interface DatmusicPlayer {
     fun playNext(id: String)
     fun swapQueueAudios(from: Int, to: Int)
     fun removeFromQueue(id: String)
-    fun stop()
+    fun stop(fromUi: Boolean = true)
     fun release()
     fun onPlayingState(playing: OnIsPlaying)
     fun onPrepared(prepared: OnPrepared<DatmusicPlayer>)
@@ -99,7 +101,7 @@ class DatmusicPlayerImpl @Inject constructor(
     @ApplicationContext private val context: Context,
     private val audioPlayer: AudioPlayerImpl,
     private val queueManager: AudioQueueManagerImpl,
-    private val audioFocusHelper: AudioFocusHelperImplementation,
+    private val audioFocusHelper: AudioFocusHelperImpl,
     private val audiosDao: AudiosDao,
     private val artistDao: ArtistsDao,
     private val albumsDao: AlbumsDao,
@@ -124,7 +126,7 @@ class DatmusicPlayerImpl @Inject constructor(
 
     private val pendingIntent = PendingIntent.getBroadcast(context, 0, Intent(Intent.ACTION_MEDIA_BUTTON), FLAG_IMMUTABLE)
 
-    private var mediaSession = MediaSessionCompat(context, context.getString(R.string.app_name), null, pendingIntent).apply {
+    private val mediaSession = MediaSessionCompat(context, context.getString(R.string.app_name), null, pendingIntent).apply {
         setCallback(
             MediaSessionCallback(this, this@DatmusicPlayerImpl, audioFocusHelper, audiosDao, artistDao, albumsDao)
         )
@@ -153,6 +155,16 @@ class DatmusicPlayerImpl @Inject constructor(
                 REPEAT_MODE_ONE -> controller.transportControls.sendCustomAction(REPEAT_ONE, null)
                 REPEAT_MODE_ALL -> controller.transportControls.sendCustomAction(REPEAT_ALL, null)
                 else -> launch { if (nextAudio() == null) goToStart() }
+            }
+        }
+        audioPlayer.onBuffering {
+            updatePlaybackState {
+                setState(STATE_BUFFERING, mediaSession.position(), 1F)
+            }
+        }
+        audioPlayer.onReady {
+            updatePlaybackState {
+                setState(STATE_PLAYING, mediaSession.position(), 1F)
             }
         }
     }
@@ -301,10 +313,10 @@ class DatmusicPlayerImpl @Inject constructor(
         queueManager.remove(id)
     }
 
-    override fun stop() {
+    override fun stop(fromUi: Boolean) {
         audioPlayer.stop()
         updatePlaybackState {
-            setState(STATE_NONE, 0, 1F)
+            setState(if (fromUi) STATE_STOPPED else STATE_NONE, 0, 1F)
         }
     }
 
@@ -351,11 +363,7 @@ class DatmusicPlayerImpl @Inject constructor(
             mediaSession.setRepeatMode(bundle.getInt(REPEAT_MODE))
             mediaSession.setShuffleMode(bundle.getInt(SHUFFLE_MODE))
         }
-        if (state.isPlaying) {
-            isPlayingCallback(this, true, state.extras?.getBoolean(BY_UI_KEY) ?: false)
-        } else {
-            isPlayingCallback(this, false, state.extras?.getBoolean(BY_UI_KEY) ?: false)
-        }
+        isPlayingCallback(state.isPlaying, state.extras?.getBoolean(BY_UI_KEY) ?: false)
     }
 
     override fun updateData(list: List<String>, title: String) {
@@ -373,6 +381,7 @@ class DatmusicPlayerImpl @Inject constructor(
     }
 
     override suspend fun saveQueueState() {
+        Timber.d("Saving queue state")
         val mediaSession = getSession()
         val controller = mediaSession.controller
         if (controller == null ||
@@ -398,6 +407,7 @@ class DatmusicPlayerImpl @Inject constructor(
     }
 
     override suspend fun restoreQueueState() {
+        Timber.d("Restoring queue state")
         val queueState = preferences.get(queueStateKey, QueueState.serializer(), QueueState(emptyList())).first()
 
         queueManager.currentAudioId = queueState.currentId

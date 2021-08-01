@@ -14,14 +14,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
@@ -30,6 +32,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.ui.Scaffold
 import kotlin.math.round
+import kotlinx.coroutines.launch
 import tm.alashow.base.util.extensions.localizedMessage
 import tm.alashow.base.util.extensions.localizedTitle
 import tm.alashow.common.compose.rememberFlowWithLifecycle
@@ -38,6 +41,7 @@ import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.ui.audios.AudioRow
 import tm.alashow.datmusic.ui.components.CoverHeaderDefaults
 import tm.alashow.datmusic.ui.components.CoverHeaderRow
+import tm.alashow.datmusic.ui.playback.LocalPlaybackConnection
 import tm.alashow.domain.models.Async
 import tm.alashow.domain.models.Fail
 import tm.alashow.domain.models.Incomplete
@@ -115,10 +119,10 @@ private fun AlbumDetailList(
                     )
                 }
 
-                val details = viewState.albumDetails
+                val details by derivedStateOf { viewState.albumDetails }
                 val detailsLoading = details is Incomplete
 
-                val albumAudios = albumDetails(album, details, detailsLoading)
+                val albumAudios = albumAudios(album, details, detailsLoading)
 
                 albumDetailsFail(details, onRetry, maxHeight)
                 albumDetailsEmpty(details, albumAudios.isEmpty(), onRetry, maxHeight)
@@ -131,10 +135,10 @@ private fun AlbumDetailList(
     }
 }
 
-private fun LazyListScope.albumDetails(
+private fun LazyListScope.albumAudios(
     album: Album,
     details: Async<List<Audio>>,
-    detailsLoading: Boolean
+    detailsLoading: Boolean,
 ): List<Audio> {
     val albumAudios = when (details) {
         is Success -> details()
@@ -153,8 +157,13 @@ private fun LazyListScope.albumDetails(
             )
         }
 
-        items(albumAudios) { audio ->
-            AudioRow(audio, isPlaceholder = detailsLoading, modifier = Modifier.background(MaterialTheme.colors.background))
+        itemsIndexed(albumAudios) { index, audio ->
+            val playbackConnection = LocalPlaybackConnection.current
+            val coroutine = rememberCoroutineScope()
+            AudioRow(audio, isPlaceholder = detailsLoading, modifier = Modifier.background(MaterialTheme.colors.background)) {
+                if (details is Success)
+                    coroutine.launch { playbackConnection.playAlbum(album, index) }
+            }
         }
     }
     return albumAudios

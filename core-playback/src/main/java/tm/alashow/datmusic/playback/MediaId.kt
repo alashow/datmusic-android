@@ -5,6 +5,7 @@
 package tm.alashow.datmusic.playback
 
 import kotlinx.coroutines.flow.firstOrNull
+import timber.log.Timber
 import tm.alashow.datmusic.data.db.daos.AlbumsDao
 import tm.alashow.datmusic.data.db.daos.ArtistsDao
 import tm.alashow.datmusic.data.db.daos.AudiosDao
@@ -35,8 +36,15 @@ data class MediaId(
 
 fun String.toMediaId(): MediaId {
     val parts = split("|")
+    val type = parts[0].trim()
+
+    if (type !in listOf(MEDIA_TYPE_AUDIO, MEDIA_TYPE_ARTIST, MEDIA_TYPE_ALBUM)) {
+        Timber.e("Unknown media type: $type")
+        return MediaId()
+    }
+
     return if (parts.size > 1)
-        MediaId(parts[0].trim(), parts[1].trim(), parts[2].trim().toInt(), parts[3].trim())
+        MediaId(type, parts[1].trim(), parts[2].trim().toInt(), parts[3].trim())
     else MediaId()
 }
 

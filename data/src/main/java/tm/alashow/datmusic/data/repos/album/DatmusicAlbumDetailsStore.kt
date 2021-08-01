@@ -59,9 +59,7 @@ object DatmusicAlbumDetailsStoreModule {
             albums(params).map { it.data.audios }.fetcherDefaults(lastRequests, params)
         },
         sourceOfTruth = SourceOfTruth.of(
-            reader = { params: DatmusicAlbumParams ->
-                dao.entry(params.id.toString()).sourceReaderFilter(lastRequests, params)
-            },
+            reader = { params: DatmusicAlbumParams -> dao.entry(params.id.toString()).sourceReaderFilter(lastRequests, params) },
             writer = { params, response ->
                 dao.withTransaction {
                     val entry = dao.entry(params.id.toString()).firstOrNull() ?: Album(id = params.id.toString())

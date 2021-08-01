@@ -49,7 +49,7 @@ const val QUEUE_LIST_KEY = "queue_list_key"
 
 class MediaSessionCallback(
     private val mediaSession: MediaSessionCompat,
-    private val musicPlayer: DatmusicPlayer,
+    private val datmusicPlayer: DatmusicPlayer,
     private val audioFocusHelper: AudioFocusHelper,
     private val audiosDao: AudiosDao,
     private val artistsDao: ArtistsDao,
@@ -59,8 +59,8 @@ class MediaSessionCallback(
     init {
         audioFocusHelper.onAudioFocusGain {
             Timber.d("GAIN")
-            if (isAudioFocusGranted && !musicPlayer.getSession().isPlaying()) {
-                musicPlayer.playAudio()
+            if (isAudioFocusGranted && !datmusicPlayer.getSession().isPlaying()) {
+                datmusicPlayer.playAudio()
             } else audioFocusHelper.setVolume(AudioManager.ADJUST_RAISE)
             isAudioFocusGranted = false
         }
@@ -68,14 +68,14 @@ class MediaSessionCallback(
             Timber.d("LOSS")
             abandonPlayback()
             isAudioFocusGranted = false
-            musicPlayer.pause()
+            datmusicPlayer.pause()
         }
 
         audioFocusHelper.onAudioFocusLossTransient {
             Timber.d("TRANSIENT")
-            if (musicPlayer.getSession().isPlaying()) {
+            if (datmusicPlayer.getSession().isPlaying()) {
                 isAudioFocusGranted = true
-                musicPlayer.pause()
+                datmusicPlayer.pause()
             }
         }
 
@@ -87,7 +87,7 @@ class MediaSessionCallback(
 
     override fun onPause() {
         Timber.d("onPause()")
-        musicPlayer.pause()
+        datmusicPlayer.pause()
     }
 
     override fun onPlay() {
@@ -109,12 +109,12 @@ class MediaSessionCallback(
 
     override fun onFastForward() {
         Timber.d("onFastForward()")
-        musicPlayer.fastForward()
+        datmusicPlayer.fastForward()
     }
 
     override fun onRewind() {
         Timber.d("onRewind()")
-        musicPlayer.rewind()
+        datmusicPlayer.rewind()
     }
 
     override fun onPlayFromMediaId(_mediaId: String, extras: Bundle?) {
@@ -126,9 +126,7 @@ class MediaSessionCallback(
             var queueTitle = extras?.getString(QUEUE_TITLE_KEY)
             val seekTo = extras?.getLong(SEEK_TO) ?: 0
 
-            if (seekTo > 0) {
-                musicPlayer.seekTo(seekTo)
-            }
+            if (seekTo > 0) datmusicPlayer.seekTo(seekTo)
 
             if (queue == null) {
                 queue = mediaId.toAudioList(audiosDao, artistsDao, albumsDao)?.map { it.id }?.apply {
@@ -139,9 +137,9 @@ class MediaSessionCallback(
             }
 
             if (queue != null && queue.isNotEmpty()) {
-                musicPlayer.setCurrentAudioId(audioId)
-                musicPlayer.setData(queue, queueTitle.orNA())
-                musicPlayer.playAudio(audioId)
+                datmusicPlayer.setCurrentAudioId(audioId)
+                datmusicPlayer.setData(queue, queueTitle.orNA())
+                datmusicPlayer.playAudio(audioId)
             } else {
                 Timber.e("Queue is null or empty: $mediaId")
             }
@@ -150,28 +148,28 @@ class MediaSessionCallback(
 
     override fun onSeekTo(pos: Long) {
         Timber.d("onSeekTo()")
-        musicPlayer.seekTo(pos)
+        datmusicPlayer.seekTo(pos)
     }
 
     override fun onSkipToNext() {
         Timber.d("onSkipToNext()")
-        launch { musicPlayer.nextAudio() }
+        launch { datmusicPlayer.nextAudio() }
     }
 
     override fun onSkipToPrevious() {
         Timber.d("onSkipToPrevious()")
-        launch { musicPlayer.previousAudio() }
+        launch { datmusicPlayer.previousAudio() }
     }
 
     override fun onStop() {
         Timber.d("onStop()")
-        musicPlayer.stop()
+        datmusicPlayer.stop()
     }
 
     override fun onSetRepeatMode(repeatMode: Int) {
         super.onSetRepeatMode(repeatMode)
         val bundle = mediaSession.controller.playbackState.extras ?: Bundle()
-        musicPlayer.setPlaybackState(
+        datmusicPlayer.setPlaybackState(
             Builder(mediaSession.controller.playbackState)
                 .setExtras(
                     bundle.apply {
@@ -184,7 +182,7 @@ class MediaSessionCallback(
     override fun onSetShuffleMode(shuffleMode: Int) {
         super.onSetShuffleMode(shuffleMode)
         val bundle = mediaSession.controller.playbackState.extras ?: Bundle()
-        musicPlayer.setPlaybackState(
+        datmusicPlayer.setPlaybackState(
             Builder(mediaSession.controller.playbackState)
                 .setExtras(
                     bundle.apply {
@@ -192,15 +190,15 @@ class MediaSessionCallback(
                     }
                 ).build()
         )
-        musicPlayer.shuffleQueue(shuffleMode != SHUFFLE_MODE_NONE)
+        datmusicPlayer.shuffleQueue(shuffleMode != SHUFFLE_MODE_NONE)
     }
 
     override fun onCustomAction(action: String?, extras: Bundle?) {
         when (action) {
             SET_MEDIA_STATE -> launch { setSavedMediaSessionState() }
-            REPEAT_ONE -> launch { musicPlayer.repeatAudio() }
-            REPEAT_ALL -> launch { musicPlayer.repeatQueue() }
-            PAUSE_ACTION -> musicPlayer.pause(extras ?: bundleOf(BY_UI_KEY to true))
+            REPEAT_ONE -> launch { datmusicPlayer.repeatAudio() }
+            REPEAT_ALL -> launch { datmusicPlayer.repeatQueue() }
+            PAUSE_ACTION -> datmusicPlayer.pause(extras ?: bundleOf(BY_UI_KEY to true))
             PLAY_ACTION -> playOnFocus(extras ?: bundleOf(BY_UI_KEY to true))
             UPDATE_QUEUE -> {
                 extras ?: return
@@ -208,7 +206,7 @@ class MediaSessionCallback(
                 val queue = extras.getStringArray(QUEUE_LIST_KEY)?.toList() ?: emptyList()
                 val queueTitle = extras.getString(QUEUE_TITLE_KEY).orNA()
 
-                musicPlayer.updateData(queue, queueTitle)
+                datmusicPlayer.updateData(queue, queueTitle)
             }
             PLAY_ALL_SHUFFLED -> {
                 extras ?: return
@@ -217,12 +215,12 @@ class MediaSessionCallback(
 
                 val queue = extras.getStringArray(QUEUE_LIST_KEY)?.toList() ?: emptyList()
                 val queueTitle = extras.getString(QUEUE_TITLE_KEY).orNA()
-                musicPlayer.setData(queue, queueTitle)
+                datmusicPlayer.setData(queue, queueTitle)
 
                 controller.transportControls.setShuffleMode(SHUFFLE_MODE_ALL)
 
                 launch {
-                    musicPlayer.nextAudio()
+                    datmusicPlayer.nextAudio()
                 }
             }
             SWAP_ACTION -> {
@@ -230,15 +228,16 @@ class MediaSessionCallback(
                 val from = extras.getInt(FROM_POSITION_KEY)
                 val to = extras.getInt(TO_POSITION_KEY)
 
-                musicPlayer.swapQueueAudios(from, to)
+                datmusicPlayer.swapQueueAudios(from, to)
             }
         }
     }
 
     private suspend fun setSavedMediaSessionState() {
         val controller = mediaSession.controller ?: return
+        Timber.d(controller.playbackState.toString())
         if (controller.playbackState == null || controller.playbackState.state == STATE_NONE) {
-            musicPlayer.restoreQueueState()
+            datmusicPlayer.restoreQueueState()
         } else {
             restoreMediaSession()
         }
@@ -246,8 +245,8 @@ class MediaSessionCallback(
 
     private fun restoreMediaSession() {
         mediaSession.setMetadata(mediaSession.controller.metadata)
-        musicPlayer.setPlaybackState(mediaSession.controller.playbackState)
-        musicPlayer.setData(
+        datmusicPlayer.setPlaybackState(mediaSession.controller.playbackState)
+        datmusicPlayer.setData(
             mediaSession.controller.queue.toMediaIdList(),
             mediaSession.controller.queueTitle.toString()
         )
@@ -255,6 +254,6 @@ class MediaSessionCallback(
 
     private fun playOnFocus(extras: Bundle = bundleOf(BY_UI_KEY to true)) {
         if (audioFocusHelper.requestPlayback())
-            musicPlayer.playAudio(extras)
+            datmusicPlayer.playAudio(extras)
     }
 }

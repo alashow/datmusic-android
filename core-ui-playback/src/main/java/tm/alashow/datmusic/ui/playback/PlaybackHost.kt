@@ -4,6 +4,8 @@
  */
 package tm.alashow.datmusic.ui.playback
 
+import android.support.v4.media.session.PlaybackStateCompat.STATE_BUFFERING
+import android.support.v4.media.session.PlaybackStateCompat.STATE_PAUSED
 import android.support.v4.media.session.PlaybackStateCompat.STATE_PLAYING
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -64,7 +66,7 @@ fun PlaybackMiniControls() {
     val playbackState by rememberFlowWithLifecycle(LocalPlaybackConnection.current.playbackState).collectAsState(NONE_PLAYBACK_STATE)
     val nowPlaying by rememberFlowWithLifecycle(LocalPlaybackConnection.current.nowPlaying).collectAsState(NONE_PLAYING)
 
-    val visible = playbackState.state == STATE_PLAYING
+    val visible = playbackState.state in listOf(STATE_PLAYING, STATE_BUFFERING, STATE_PAUSED)
     AnimatedVisibility(visible = visible) {
         Row(
             Modifier
@@ -74,7 +76,7 @@ fun PlaybackMiniControls() {
                 .horizontalScroll(rememberScrollState())
                 .padding(AppTheme.specs.paddingTiny)
         ) {
-            Text("${nowPlaying.artist} - ${nowPlaying.title}")
+            Text("${playbackState.state}, ${nowPlaying.artist} - ${nowPlaying.title}")
         }
     }
 }

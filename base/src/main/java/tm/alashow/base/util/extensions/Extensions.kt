@@ -52,7 +52,7 @@ fun whenApiLevel(api: Int, block: () -> Unit) {
 
 infix fun Float.muteUntil(that: Float) = max(this - that, 0.0f) * (1 / (1 - that))
 
-fun isOreo() = SDK_INT > VERSION_CODES.O
+fun isOreo() = SDK_INT >= VERSION_CODES.O
 
 operator fun Bundle.plus(other: Bundle) = this.apply { putAll(other) }
 

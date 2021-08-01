@@ -14,6 +14,8 @@ import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import kotlinx.coroutines.flow.MutableStateFlow
 import timber.log.Timber
+import tm.alashow.datmusic.domain.entities.Album
+import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.playback.players.QUEUE_LIST_KEY
 import tm.alashow.datmusic.playback.players.QUEUE_TITLE_KEY
@@ -36,6 +38,8 @@ interface PlaybackConnection {
     var mediaController: MediaControllerCompat?
 
     fun playAudio(vararg audios: Audio, index: Int = 0)
+    suspend fun playArtist(artist: Artist, index: Int = 0)
+    suspend fun playAlbum(album: Album, index: Int = 0)
 }
 
 class PlaybackConnectionImpl(
@@ -69,6 +73,14 @@ class PlaybackConnectionImpl(
                 putString(QUEUE_TITLE_KEY, audio.title)
             }
         )
+    }
+
+    override suspend fun playArtist(artist: Artist, index: Int) {
+        transportControls?.playFromMediaId(MediaId(MEDIA_TYPE_ARTIST, artist.id, index).toString(), Bundle())
+    }
+
+    override suspend fun playAlbum(album: Album, index: Int) {
+        transportControls?.playFromMediaId(MediaId(MEDIA_TYPE_ALBUM, album.id, index).toString(), Bundle())
     }
 
     private inner class MediaBrowserConnectionCallback(private val context: Context) :
