@@ -38,6 +38,7 @@ import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
 import tm.alashow.base.imageloading.ImageLoading
 import tm.alashow.datmusic.domain.entities.Audio
+import tm.alashow.datmusic.ui.playback.LocalPlaybackConnection
 import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.theme.AppTheme
 
@@ -55,6 +56,8 @@ fun AudioRow(
     var menuVisible by remember { mutableStateOf(false) }
     val contentScaleOnMenuVisible = animateFloatAsState((if (menuVisible) 0.97f else 1f))
 
+    val playbackConnection = LocalPlaybackConnection.current
+
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -62,7 +65,8 @@ fun AudioRow(
             .clickable {
                 if (!isPlaceholder)
                     if (onClick != null) onClick(audio)
-                    else menuVisible = true
+                    // else menuVisible = true
+                    else playbackConnection.playAudio(audio)
             }
             .fillMaxWidth()
             .padding(AppTheme.specs.inputPaddings)

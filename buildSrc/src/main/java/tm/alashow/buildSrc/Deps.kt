@@ -42,6 +42,9 @@ object Deps {
 
         const val documentFile = "androidx.documentfile:documentfile:1.0.1"
 
+        const val palette = "androidx.palette:palette-ktx:1.0.0"
+        const val media ="androidx.media:media:1.4.0"
+
         object Compose {
             const val version = "1.0.0"
 
@@ -117,6 +120,9 @@ object Deps {
 
         const val fetch = "androidx.tonyodev.fetch2:xfetch2:3.1.6"
         const val fetchOkhttp = "androidx.tonyodev.fetch2okhttp:xfetch2okhttp:3.1.6"
+
+        const val exoPlayer = "com.google.android.exoplayer:exoplayer-core:2.14.2"
+        const val exoPlayerOkhttp = "com.google.android.exoplayer:extension-okhttp:2.14.2"
     }
 
     object OkHttp {

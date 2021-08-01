@@ -4,6 +4,7 @@
  */
 package tm.alashow.datmusic.domain.entities
 
+import android.net.Uri
 import android.os.Parcelable
 import androidx.documentfile.provider.DocumentFile
 import androidx.room.ColumnInfo
@@ -96,6 +97,10 @@ data class Audio(
     @ColumnInfo(name = "search_index")
     val searchIndex: Int = 0,
 ) : BasePaginatedEntity(), Parcelable {
+
+    fun coverUri(): Uri = Uri.parse(coverUrlSmall ?: "")
+
+    fun durationMillis() = (duration * 1000).toLong()
 
     private fun fileDisplayName() = "$artist - $title"
     fun fileMimeType() = "audio/mpeg"

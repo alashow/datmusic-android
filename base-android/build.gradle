@@ -62,6 +62,11 @@ dependencies {
 
 	api Deps.Android.Paging.runtime
 
+	api Deps.Android.palette
+	api Deps.Android.media
+	api Deps.Utils.exoPlayer
+	api Deps.Utils.exoPlayerOkhttp
+
 	api project(":base")
 	api project(":data")
 }

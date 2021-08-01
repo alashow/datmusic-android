@@ -7,6 +7,7 @@ package tm.alashow.datmusic.ui.home
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,9 +27,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
@@ -38,7 +37,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -49,14 +47,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
-import com.google.firebase.analytics.FirebaseAnalytics
-import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.common.compose.LocalScaffoldState
-import tm.alashow.datmusic.BuildConfig
 import tm.alashow.datmusic.R
 import tm.alashow.datmusic.ui.AppNavigation
 import tm.alashow.datmusic.ui.downloader.DownloaderHost
-import tm.alashow.datmusic.ui.settings.LocalAppVersion
+import tm.alashow.datmusic.ui.playback.PlaybackMiniControls
 import tm.alashow.navigation.RootScreen
 import tm.alashow.navigation.RootScreen.Downloads as DownloadsTab
 import tm.alashow.navigation.RootScreen.Search as SearchTab
@@ -66,22 +61,17 @@ import tm.alashow.ui.theme.translucentSurfaceColor
 
 @Composable
 internal fun Home(
+    scaffoldState: ScaffoldState = LocalScaffoldState.current,
     navController: NavHostController = rememberNavController(),
-    scaffoldState: ScaffoldState = rememberScaffoldState(),
-    analytics: FirebaseAnalytics = FirebaseAnalytics.getInstance(LocalContext.current),
     viewModel: HomeViewModel = viewModel()
 ) {
-    CompositionLocalProvider(
-        LocalScaffoldState provides scaffoldState,
-        LocalAnalytics provides analytics,
-        LocalAppVersion provides BuildConfig.VERSION_NAME
-    ) {
-        Scaffold(
-            scaffoldState = scaffoldState,
-            snackbarHost = { DismissableSnackbarHost(it) },
-            bottomBar = {
-                val currentSelectedItem by navController.currentScreenAsState()
-
+    Scaffold(
+        scaffoldState = scaffoldState,
+        snackbarHost = { DismissableSnackbarHost(it) },
+        bottomBar = {
+            val currentSelectedItem by navController.currentScreenAsState()
+            Column {
+                PlaybackMiniControls()
                 HomeBottomNavigation(
                     selectedNavigation = currentSelectedItem,
                     onNavigationSelected = { selected ->
@@ -97,11 +87,11 @@ internal fun Home(
                     modifier = Modifier.fillMaxWidth()
                 )
             }
-        ) {
-            DownloaderHost {
-                Box(Modifier.fillMaxSize()) {
-                    AppNavigation(navController, viewModel.navigator)
-                }
+        }
+    ) {
+        DownloaderHost {
+            Box(Modifier.fillMaxSize()) {
+                AppNavigation(navController, viewModel.navigator)
             }
         }
     }

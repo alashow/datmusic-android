@@ -21,6 +21,7 @@ import tm.alashow.data.LastRequests
 import tm.alashow.data.PreferencesStore
 import tm.alashow.datmusic.data.db.daos.AlbumsDao
 import tm.alashow.datmusic.data.db.daos.ArtistsDao
+import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.domain.entities.Artist
 
 typealias DatmusicArtistDetailsStore = Store<DatmusicArtistParams, Artist>
@@ -52,6 +53,7 @@ object DatmusicArtistDetailsStoreModule {
     fun datmusicArtistDetailsStore(
         artists: DatmusicArtistDataSource,
         dao: ArtistsDao,
+        audiosDao: AudiosDao,
         albumsDao: AlbumsDao,
         @Named("artist_details") lastRequests: LastRequests
     ): DatmusicArtistDetailsStore = StoreBuilder.from(
@@ -67,8 +69,8 @@ object DatmusicArtistDetailsStoreModule {
                     val entry = dao.entry(params.id).firstOrNull() ?: response
                     dao.updateOrInsert(entry.copy(audios = response.audios, albums = response.albums, detailsFetched = true))
 
-                    // insert all missing albums in database so AlbumDetailsStore can access it
-                    albumsDao.insertMissing(response.albums.mapIndexed { index, it -> it.copy(primaryKey = it.id, searchIndex = index) })
+                    audiosDao.insertMissing(response.audios.mapIndexed { index, audio -> audio.copy(primaryKey = audio.id, searchIndex = index) })
+                    albumsDao.insertMissing(response.albums.mapIndexed { index, album -> album.copy(primaryKey = album.id, searchIndex = index) })
                 }
             },
             delete = { error("This store doesn't manage deletes") },

@@ -13,4 +13,6 @@ object Config {
 
     val API_TIMEOUT = Duration.ofSeconds(40).toMillis()
     val DOWNLOADER_TIMEOUT = Duration.ofMinutes(3).toMillis()
+    val PLAYER_TIMEOUT = Duration.ofMinutes(2).toMillis()
+    val PLAYER_TIMEOUT_CONNECT = Duration.ofSeconds(30).toMillis()
 }

@@ -9,8 +9,10 @@ import tm.alashow.buildSrc.Deps
 
 plugins {
 	id "com.android.library"
+	id "dagger.hilt.android.plugin"
 	id "kotlin-android"
 	id "kotlin-kapt"
+	id "org.jetbrains.kotlin.plugin.serialization"
 }
 
 android {
@@ -24,14 +26,6 @@ android {
 		sourceCompatibility JavaVersion.VERSION_1_8
 		targetCompatibility JavaVersion.VERSION_1_8
 	}
-
-	buildFeatures {
-		compose = true
-	}
-
-	composeOptions {
-		kotlinCompilerExtensionVersion Deps.Android.Compose.version
-	}
 }
 
 repositories {
@@ -39,9 +33,9 @@ repositories {
 }
 
 dependencies {
-	api project(":common-ui-compose")
-	api project(":common-ui-theme")
-	api project(":common-ui-components")
-	api project(":core-ui-downloader")
-	api project(":core-ui-playback")
+	api project(":base-android")
+
+	implementation Deps.Dagger.hilt
+	kapt Deps.Dagger.compiler
+	kapt Deps.Dagger.hiltCompiler
 }

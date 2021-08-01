@@ -4,6 +4,9 @@
  */
 package tm.alashow.base.util.extensions
 
+import android.os.Build.VERSION.SDK_INT
+import android.os.Build.VERSION_CODES
+import android.os.Bundle
 import java.util.*
 import kotlin.math.max
 
@@ -48,3 +51,14 @@ fun whenApiLevel(api: Int, block: () -> Unit) {
 }
 
 infix fun Float.muteUntil(that: Float) = max(this - that, 0.0f) * (1 / (1 - that))
+
+fun isOreo() = SDK_INT > VERSION_CODES.O
+
+operator fun Bundle.plus(other: Bundle) = this.apply { putAll(other) }
+
+@OptIn(ExperimentalStdlibApi::class)
+fun Bundle.readable() = buildList {
+    keySet().forEach {
+        add("key=$it, value=${get(it)}")
+    }
+}.joinToString()

@@ -28,3 +28,10 @@ fun <T> Stack<T>.popOrNull() = when (isEmpty()) {
     true -> null
     else -> pop()
 }
+
+fun <T> List<T>.swap(from: Int, to: Int): List<T> {
+    val new = toMutableList()
+    val element = new.removeAt(from)
+    new.add(to, element)
+    return new
+}
