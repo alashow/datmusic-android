@@ -6,6 +6,7 @@ package tm.alashow.datmusic.playback
 
 import android.support.v4.media.session.MediaSessionCompat
 import androidx.datastore.preferences.core.stringSetPreferencesKey
+import com.tonyodev.fetch2.Status
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
@@ -16,6 +17,8 @@ import tm.alashow.base.util.extensions.swap
 import tm.alashow.data.PreferencesStore
 import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.domain.entities.Audio
+import tm.alashow.datmusic.downloader.Downloader
+import tm.alashow.domain.models.orNull
 
 interface AudioQueueManager {
     var currentAudioId: String
@@ -27,7 +30,7 @@ interface AudioQueueManager {
     val previousAudioId: String?
     val nextAudioId: String?
 
-    suspend fun currentAudio(): Audio?
+    suspend fun refreshCurrentAudio(): Audio?
 
     fun setMediaSession(session: MediaSessionCompat)
     fun playNext(id: String)
@@ -42,6 +45,7 @@ interface AudioQueueManager {
 class AudioQueueManagerImpl @Inject constructor(
     private val audiosDao: AudiosDao,
     private val preferences: PreferencesStore,
+    private val downloader: Downloader,
 ) : AudioQueueManager, CoroutineScope by MainScope() {
 
     companion object {
@@ -58,8 +62,10 @@ class AudioQueueManagerImpl @Inject constructor(
     override var currentAudioId: String = ""
     override var currentAudio: Audio? = null
 
-    override suspend fun currentAudio(): Audio? {
-        currentAudio = audiosDao.entry(currentAudioId).firstOrNull()
+    override suspend fun refreshCurrentAudio(): Audio? {
+        currentAudio = audiosDao.entry(currentAudioId).firstOrNull()?.apply {
+            audioDownloadItem = downloader.getAudioDownload(id, Status.COMPLETED).orNull()
+        }
         return currentAudio
     }
 

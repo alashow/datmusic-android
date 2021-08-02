@@ -34,6 +34,7 @@ repositories {
 
 dependencies {
 	api project(":base-android")
+	implementation project(":core-downloader")
 
 	implementation Deps.Dagger.hilt
 	kapt Deps.Dagger.compiler

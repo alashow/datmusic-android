@@ -258,6 +258,22 @@ class Downloader @Inject constructor(
         }
     }
 
+    /**
+     * Builds [AudioDownloadItem] from given audio id if it exists and satisfies [allowedStatuses].
+     */
+    suspend fun getAudioDownload(audioId: String, vararg allowedStatuses: Status): Optional<AudioDownloadItem> {
+        val existingRequest = dao.has(audioId) > 0
+        if (existingRequest) {
+            val request = dao.entry(audioId).first()
+            val downloadInfo = fetcher.downloadInfo(request.requestId)
+            if (downloadInfo != null) {
+                if (downloadInfo.status in allowedStatuses)
+                    return some(AudioDownloadItem.from(request, request.audio, downloadInfo))
+            }
+        }
+        return None
+    }
+
     private val downloadsLocationUri = preferences.get(DOWNLOADS_LOCATION, "").map {
         when {
             it.isEmpty() -> None

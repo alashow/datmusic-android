@@ -9,6 +9,7 @@ import android.os.Parcelable
 import androidx.documentfile.provider.DocumentFile
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import java.io.FileNotFoundException
 import kotlinx.parcelize.Parcelize
@@ -97,6 +98,10 @@ data class Audio(
     @ColumnInfo(name = "search_index")
     val searchIndex: Int = 0,
 ) : BasePaginatedEntity(), Parcelable {
+
+    @Ignore
+    @Transient
+    var audioDownloadItem: AudioDownloadItem? = null
 
     fun coverUri(): Uri = Uri.parse(coverUrlSmall ?: "")
 

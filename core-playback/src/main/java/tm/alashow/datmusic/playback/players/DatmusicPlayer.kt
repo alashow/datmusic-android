@@ -35,6 +35,8 @@ import tm.alashow.datmusic.data.db.daos.AlbumsDao
 import tm.alashow.datmusic.data.db.daos.ArtistsDao
 import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.domain.entities.Audio
+import tm.alashow.datmusic.domain.entities.AudioDownloadItem
+import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.playback.AudioFocusHelperImpl
 import tm.alashow.datmusic.playback.AudioQueueManagerImpl
 import tm.alashow.datmusic.playback.BY_UI_KEY
@@ -67,7 +69,7 @@ interface DatmusicPlayer {
     fun getSession(): MediaSessionCompat
     fun playAudio(extras: Bundle = bundleOf(BY_UI_KEY to true))
     suspend fun playAudio(id: String)
-    fun playAudio(audio: Audio)
+    suspend fun playAudio(audio: Audio)
     fun seekTo(position: Long)
     fun fastForward()
     fun rewind()
@@ -105,6 +107,7 @@ class DatmusicPlayerImpl @Inject constructor(
     private val audiosDao: AudiosDao,
     private val artistDao: ArtistsDao,
     private val albumsDao: AlbumsDao,
+    private val downloader: Downloader,
     private val preferences: PreferencesStore,
 ) : DatmusicPlayer, CoroutineScope by MainScope() {
 
@@ -190,7 +193,12 @@ class DatmusicPlayerImpl @Inject constructor(
         }
 
         val isSourceSet = when (val audio = queueManager.currentAudio) {
-            is Audio -> audioPlayer.setSource(Uri.parse(audio.streamUrl))
+            is Audio -> {
+                when (val downloadItem = audio.audioDownloadItem) {
+                    is AudioDownloadItem -> audioPlayer.setSource(downloadItem.downloadInfo.fileUri, true)
+                    else -> audioPlayer.setSource(Uri.parse(audio.streamUrl))
+                }
+            }
             else -> false
         }
 
@@ -205,18 +213,17 @@ class DatmusicPlayerImpl @Inject constructor(
     override suspend fun playAudio(id: String) {
         if (audioFocusHelper.requestPlayback()) {
             val audio = audiosDao.entry(id).firstOrNull()
-            if (audio != null) {
-                playAudio(audio)
-            } else {
+            if (audio != null) playAudio(audio)
+            else {
                 Timber.e("Audio by id: $id not found")
                 nextAudio()
             }
         }
     }
 
-    override fun playAudio(audio: Audio) {
+    override suspend fun playAudio(audio: Audio) {
         queueManager.currentAudioId = audio.id
-        queueManager.currentAudio = audio
+        queueManager.refreshCurrentAudio()
         isInitialized = false
 
         updatePlaybackState {
@@ -426,8 +433,8 @@ class DatmusicPlayerImpl @Inject constructor(
 
         setData(queueState.queue, queueState.name)
 
-        queueManager.currentAudio()?.apply {
-            Timber.d("Setting metadata from saved state: $id")
+        queueManager.refreshCurrentAudio()?.apply {
+            Timber.d("Setting metadata from saved state: currentAudio=$id")
             setMetaData(this)
         }
 
@@ -464,7 +471,7 @@ class DatmusicPlayerImpl @Inject constructor(
 
         launch {
             queueManager.currentAudioId = queueManager.queue.first()
-            queueManager.currentAudio()?.apply { setMetaData(this) }
+            queueManager.refreshCurrentAudio()?.apply { setMetaData(this) }
         }
     }
 

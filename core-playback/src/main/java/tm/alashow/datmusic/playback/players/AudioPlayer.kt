@@ -18,14 +18,14 @@ import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.util.PriorityTaskManager
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.io.File
 import javax.inject.Inject
 import javax.inject.Named
 import okhttp3.OkHttpClient
+import timber.log.Timber
 
 interface AudioPlayer {
     fun play(startAtPosition: Long? = null)
-    fun setSource(uri: Uri? = null, path: String? = null): Boolean
+    fun setSource(uri: Uri, local: Boolean = false): Boolean
     fun prepare()
     fun seekTo(position: Long)
     fun duration(): Long
@@ -69,15 +69,16 @@ class AudioPlayerImpl @Inject constructor(
         player.play()
     }
 
-    override fun setSource(uri: Uri?, path: String?): Boolean {
+    override fun setSource(uri: Uri, local: Boolean): Boolean {
+        Timber.d("Setting source: local=$local, uri=$uri")
         return try {
             uri?.let {
-                val mediaSource: MediaSource = ProgressiveMediaSource.Factory(OkHttpDataSource.Factory(okHttpClient))
-                    .createMediaSource(MediaItem.fromUri(it))
-                player.setMediaSource(mediaSource, true)
-            }
-            path?.let {
-                player.setMediaItem(MediaItem.fromUri(Uri.fromFile(File(it))), true)
+                if (local) player.setMediaItem(MediaItem.fromUri(uri), true)
+                else {
+                    val mediaSource: MediaSource = ProgressiveMediaSource.Factory(OkHttpDataSource.Factory(okHttpClient))
+                        .createMediaSource(MediaItem.fromUri(it))
+                    player.setMediaSource(mediaSource, true)
+                }
             }
             true
         } catch (ex: Exception) {
