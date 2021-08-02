@@ -20,15 +20,6 @@ import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.playback.players.QUEUE_LIST_KEY
 import tm.alashow.datmusic.playback.players.QUEUE_TITLE_KEY
 
-val NONE_PLAYBACK_STATE: PlaybackStateCompat = PlaybackStateCompat.Builder()
-    .setState(PlaybackStateCompat.STATE_NONE, 0, 0f)
-    .build()
-
-val NONE_PLAYING: MediaMetadataCompat = MediaMetadataCompat.Builder()
-    .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, "")
-    .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, 0)
-    .build()
-
 interface PlaybackConnection {
     val isConnected: MutableStateFlow<Boolean>
     val playbackState: MutableStateFlow<PlaybackStateCompat>
@@ -112,9 +103,10 @@ class PlaybackConnectionImpl(
         }
 
         override fun onQueueChanged(queue: MutableList<MediaSessionCompat.QueueItem>?) {
-            Timber.d("onQueueChanged: $queue")
-            this@PlaybackConnectionImpl.playbackQueue.value = fromMediaController(mediaController ?: return) ?: return
-            Timber.d("Queue set")
+            Timber.d("onQueueChanged: $queue, mediaController=${mediaController != null}")
+            val newQueue = fromMediaController(mediaController ?: return)
+            this@PlaybackConnectionImpl.playbackQueue.value = newQueue ?: return
+            Timber.d("Queue set: $newQueue")
         }
 
         override fun onSessionDestroyed() {

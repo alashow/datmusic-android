@@ -6,8 +6,45 @@ package tm.alashow.datmusic.playback
 
 import android.graphics.Bitmap
 import android.support.v4.media.MediaMetadataCompat
+import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import androidx.core.os.bundleOf
+import timber.log.Timber
+
+val NONE_PLAYBACK_STATE: PlaybackStateCompat = PlaybackStateCompat.Builder()
+    .setState(PlaybackStateCompat.STATE_NONE, 0, 0f)
+    .build()
+
+val NONE_PLAYING: MediaMetadataCompat = MediaMetadataCompat.Builder()
+    .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, "")
+    .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, 0)
+    .build()
+
+fun MediaControllerCompat.playPause() {
+    playbackState?.let {
+        when {
+            it.isPlaying -> transportControls?.sendCustomAction(PAUSE_ACTION, bundleOf(BY_UI_KEY to false))
+            it.isPlayEnabled -> transportControls?.sendCustomAction(PLAY_ACTION, bundleOf(BY_UI_KEY to false))
+            else -> Timber.d("Couldn't play or pause the media controller")
+        }
+    }
+}
+
+fun createDefaultPlaybackState(): PlaybackStateCompat.Builder {
+    return PlaybackStateCompat.Builder().setActions(
+        PlaybackStateCompat.ACTION_PLAY
+            or PlaybackStateCompat.ACTION_PAUSE
+            or PlaybackStateCompat.ACTION_PLAY_FROM_SEARCH
+            or PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID
+            or PlaybackStateCompat.ACTION_PLAY_PAUSE
+            or PlaybackStateCompat.ACTION_SKIP_TO_NEXT
+            or PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+            or PlaybackStateCompat.ACTION_SET_SHUFFLE_MODE
+            or PlaybackStateCompat.ACTION_SET_REPEAT_MODE
+            or PlaybackStateCompat.ACTION_SEEK_TO
+    )
+}
 
 fun MediaSessionCompat.position(): Long {
     return controller.playbackState.position

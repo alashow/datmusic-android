@@ -7,7 +7,6 @@ package tm.alashow.datmusic.playback.services
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
-import androidx.core.os.bundleOf
 import androidx.media.MediaBrowserServiceCompat
 import androidx.media.session.MediaButtonReceiver
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,21 +19,17 @@ import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.datmusic.data.db.daos.AlbumsDao
 import tm.alashow.datmusic.data.db.daos.ArtistsDao
 import tm.alashow.datmusic.data.db.daos.AudiosDao
-import tm.alashow.datmusic.playback.BY_UI_KEY
 import tm.alashow.datmusic.playback.MediaId
 import tm.alashow.datmusic.playback.MediaId.Companion.CALLER_OTHER
 import tm.alashow.datmusic.playback.MediaId.Companion.CALLER_SELF
 import tm.alashow.datmusic.playback.MediaNotificationsImpl
 import tm.alashow.datmusic.playback.NEXT
 import tm.alashow.datmusic.playback.NOTIFICATION_ID
-import tm.alashow.datmusic.playback.PAUSE_ACTION
-import tm.alashow.datmusic.playback.PLAY_ACTION
 import tm.alashow.datmusic.playback.PLAY_PAUSE
 import tm.alashow.datmusic.playback.PREVIOUS
 import tm.alashow.datmusic.playback.STOP_PLAYBACK
-import tm.alashow.datmusic.playback.isPlayEnabled
-import tm.alashow.datmusic.playback.isPlaying
 import tm.alashow.datmusic.playback.isStopped
+import tm.alashow.datmusic.playback.playPause
 import tm.alashow.datmusic.playback.players.DatmusicPlayerImpl
 import tm.alashow.datmusic.playback.receivers.BecomingNoisyReceiver
 import tm.alashow.datmusic.playback.toAudioList
@@ -84,9 +79,9 @@ class PlayerService : MediaBrowserServiceCompat(), CoroutineScope by MainScope()
                 stopForeground(byUi)
                 launch { datmusicPlayer.saveQueueState() }
 
-                if (datmusicPlayer.getSession().controller.playbackState.isStopped)
+                if (datmusicPlayer.getSession().controller.playbackState.isStopped) {
                     mediaNotifications.clearNotifications()
-                else
+                } else
                     mediaNotifications.updateNotification(getSession())
             }
             IS_RUNNING = isPlaying
@@ -106,20 +101,7 @@ class PlayerService : MediaBrowserServiceCompat(), CoroutineScope by MainScope()
         val controller = mediaSession.controller
 
         when (intent.action) {
-            PLAY_PAUSE -> {
-                controller.playbackState?.let { playbackState ->
-                    when {
-                        playbackState.isPlaying -> controller.transportControls.sendCustomAction(
-                            PAUSE_ACTION,
-                            bundleOf(BY_UI_KEY to false)
-                        )
-                        playbackState.isPlayEnabled -> controller.transportControls.sendCustomAction(
-                            PLAY_ACTION,
-                            bundleOf(BY_UI_KEY to false)
-                        )
-                    }
-                }
-            }
+            PLAY_PAUSE -> controller.playPause()
             NEXT -> controller.transportControls.skipToNext()
             PREVIOUS -> controller.transportControls.skipToPrevious()
             STOP_PLAYBACK -> controller.transportControls.stop()
@@ -162,6 +144,9 @@ class PlayerService : MediaBrowserServiceCompat(), CoroutineScope by MainScope()
     }
 
     override fun onDestroy() {
-        datmusicPlayer.release()
+        launch {
+            datmusicPlayer.saveQueueState()
+            datmusicPlayer.release()
+        }
     }
 }

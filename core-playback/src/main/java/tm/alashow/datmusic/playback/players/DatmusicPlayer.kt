@@ -29,7 +29,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.base.util.extensions.plus
 import tm.alashow.data.PreferencesStore
 import tm.alashow.datmusic.data.db.daos.AlbumsDao
@@ -43,6 +42,7 @@ import tm.alashow.datmusic.playback.QueueState
 import tm.alashow.datmusic.playback.R
 import tm.alashow.datmusic.playback.REPEAT_ALL
 import tm.alashow.datmusic.playback.REPEAT_ONE
+import tm.alashow.datmusic.playback.createDefaultPlaybackState
 import tm.alashow.datmusic.playback.id
 import tm.alashow.datmusic.playback.isPlaying
 import tm.alashow.datmusic.playback.position
@@ -79,7 +79,7 @@ interface DatmusicPlayer {
     fun playNext(id: String)
     fun swapQueueAudios(from: Int, to: Int)
     fun removeFromQueue(id: String)
-    fun stop(fromUi: Boolean = true)
+    fun stop(fromUser: Boolean = true)
     fun release()
     fun onPlayingState(playing: OnIsPlaying)
     fun onPrepared(prepared: OnPrepared<DatmusicPlayer>)
@@ -106,7 +106,6 @@ class DatmusicPlayerImpl @Inject constructor(
     private val artistDao: ArtistsDao,
     private val albumsDao: AlbumsDao,
     private val preferences: PreferencesStore,
-    private val dispatchers: CoroutineDispatchers
 ) : DatmusicPlayer, CoroutineScope by MainScope() {
 
     companion object {
@@ -163,6 +162,10 @@ class DatmusicPlayerImpl @Inject constructor(
             }
         }
         audioPlayer.onReady {
+            if (!audioPlayer.isPlaying()) {
+                Timber.d("Player ready but not currently playing, requesting to play")
+                audioPlayer.play()
+            }
             updatePlaybackState {
                 setState(STATE_PLAYING, mediaSession.position(), 1F)
             }
@@ -194,14 +197,16 @@ class DatmusicPlayerImpl @Inject constructor(
         if (isSourceSet) {
             isInitialized = true
             audioPlayer.prepare()
+        } else {
+            Timber.e("Couldn't set new source")
         }
     }
 
     override suspend fun playAudio(id: String) {
         if (audioFocusHelper.requestPlayback()) {
-            val song = audiosDao.entry(id).firstOrNull()
-            if (song != null) {
-                playAudio(song)
+            val audio = audiosDao.entry(id).firstOrNull()
+            if (audio != null) {
+                playAudio(audio)
             } else {
                 Timber.e("Audio by id: $id not found")
                 nextAudio()
@@ -273,6 +278,8 @@ class DatmusicPlayerImpl @Inject constructor(
                     )
                 )
             }
+        } else {
+            Timber.d("Couldn't pause player: ${audioPlayer.isPlaying()}, $isInitialized")
         }
     }
 
@@ -313,11 +320,13 @@ class DatmusicPlayerImpl @Inject constructor(
         queueManager.remove(id)
     }
 
-    override fun stop(fromUi: Boolean) {
+    override fun stop(byUser: Boolean) {
         audioPlayer.stop()
         updatePlaybackState {
-            setState(if (fromUi) STATE_STOPPED else STATE_NONE, 0, 1F)
+            setState(if (byUser) STATE_NONE else STATE_STOPPED, 0, 1F)
         }
+        isInitialized = false
+        launch { saveQueueState() }
     }
 
     override fun release() {
@@ -340,6 +349,7 @@ class DatmusicPlayerImpl @Inject constructor(
     override fun onError(error: OnError<DatmusicPlayer>) {
         this.errorCallback = error
         audioPlayer.onError { throwable ->
+            Timber.e(throwable, "AudioPlayer error")
             errorCallback(this@DatmusicPlayerImpl, throwable)
         }
     }
@@ -381,19 +391,16 @@ class DatmusicPlayerImpl @Inject constructor(
     }
 
     override suspend fun saveQueueState() {
-        Timber.d("Saving queue state")
         val mediaSession = getSession()
         val controller = mediaSession.controller
-        if (controller == null ||
-            controller.playbackState == null ||
-            controller.playbackState.state == PlaybackState.STATE_NONE
-        ) {
+        if (controller == null || controller.playbackState == null) {
+            Timber.d("Not saving queue state")
             return
         }
 
         val id = controller.metadata?.id ?: return
 
-        val queueData = QueueState(
+        val queueState = QueueState(
             queue = mediaSession.controller.queue.toMediaIdList(),
             currentId = id,
             seekPosition = controller.playbackState?.position ?: 0,
@@ -403,18 +410,26 @@ class DatmusicPlayerImpl @Inject constructor(
             name = controller.queueTitle?.toString() ?: "All"
         )
 
-        preferences.save(queueStateKey, queueData, QueueState.serializer())
+        Timber.d("Saving queue state: ${queueState.currentId}, size=${queueState.queue.size}")
+        preferences.save(queueStateKey, queueState, QueueState.serializer())
     }
 
     override suspend fun restoreQueueState() {
         Timber.d("Restoring queue state")
-        val queueState = preferences.get(queueStateKey, QueueState.serializer(), QueueState(emptyList())).first()
+        var queueState = preferences.get(queueStateKey, QueueState.serializer(), QueueState(emptyList())).first()
+        Timber.d("Saved state: ${queueState.currentId}, size=${queueState.queue.size}")
+        if (queueState.state in listOf(STATE_PLAYING, STATE_BUFFERING, STATE_BUFFERING)) {
+            queueState = queueState.copy(state = STATE_PAUSED)
+        }
 
         queueManager.currentAudioId = queueState.currentId
 
         setData(queueState.queue, queueState.name)
 
-        queueManager.currentAudio()?.apply { setMetaData(this) }
+        queueManager.currentAudio()?.apply {
+            Timber.d("Setting metadata from saved state: $id")
+            setMetaData(this)
+        }
 
         val extras = bundleOf(
             REPEAT_MODE to queueState.repeatMode,
@@ -480,19 +495,4 @@ class DatmusicPlayerImpl @Inject constructor(
             metaDataChangedCallback(player)
         }
     }
-}
-
-private fun createDefaultPlaybackState(): PlaybackStateCompat.Builder {
-    return PlaybackStateCompat.Builder().setActions(
-        ACTION_PLAY
-            or ACTION_PAUSE
-            or ACTION_PLAY_FROM_SEARCH
-            or ACTION_PLAY_FROM_MEDIA_ID
-            or ACTION_PLAY_PAUSE
-            or ACTION_SKIP_TO_NEXT
-            or ACTION_SKIP_TO_PREVIOUS
-            or ACTION_SET_SHUFFLE_MODE
-            or ACTION_SET_REPEAT_MODE
-            or ACTION_SEEK_TO
-    )
 }

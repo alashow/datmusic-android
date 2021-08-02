@@ -9,6 +9,7 @@ import android.support.v4.media.session.PlaybackStateCompat.STATE_PAUSED
 import android.support.v4.media.session.PlaybackStateCompat.STATE_PLAYING
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,6 +35,7 @@ import tm.alashow.datmusic.playback.NONE_PLAYBACK_STATE
 import tm.alashow.datmusic.playback.NONE_PLAYING
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.artist
+import tm.alashow.datmusic.playback.playPause
 import tm.alashow.datmusic.playback.title
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.translucentSurface
@@ -62,9 +64,9 @@ fun PlaybackHost(
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun PlaybackMiniControls() {
-    val playbackState by rememberFlowWithLifecycle(LocalPlaybackConnection.current.playbackState).collectAsState(NONE_PLAYBACK_STATE)
-    val nowPlaying by rememberFlowWithLifecycle(LocalPlaybackConnection.current.nowPlaying).collectAsState(NONE_PLAYING)
+fun PlaybackMiniControls(playbackConnection: PlaybackConnection = LocalPlaybackConnection.current) {
+    val playbackState by rememberFlowWithLifecycle(playbackConnection.playbackState).collectAsState(NONE_PLAYBACK_STATE)
+    val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying).collectAsState(NONE_PLAYING)
 
     val visible = playbackState.state in listOf(STATE_PLAYING, STATE_BUFFERING, STATE_PAUSED)
     AnimatedVisibility(visible = visible) {
@@ -75,6 +77,7 @@ fun PlaybackMiniControls() {
                 .translucentSurface()
                 .horizontalScroll(rememberScrollState())
                 .padding(AppTheme.specs.paddingTiny)
+                .clickable { playbackConnection.mediaController?.playPause() }
         ) {
             Text("${playbackState.state}, ${nowPlaying.artist} - ${nowPlaying.title}")
         }

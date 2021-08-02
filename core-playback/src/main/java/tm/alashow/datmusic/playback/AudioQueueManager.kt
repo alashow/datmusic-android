@@ -50,7 +50,7 @@ class AudioQueueManagerImpl @Inject constructor(
 
     private lateinit var mediaSession: MediaSessionCompat
     private val playedAudios = mutableListOf<String>()
-    private val auxQueue = mutableListOf<String>()
+    private val audiosQueue = mutableListOf<String>()
 
     private val currentAudioIndex
         get() = queue.indexOf(currentAudioId)
@@ -69,8 +69,8 @@ class AudioQueueManagerImpl @Inject constructor(
             if (value.isNotEmpty()) {
                 launch {
                     mediaSession.setQueue(audiosDao.entriesById(value).firstOrNull()?.toQueue())
-                    auxQueue.clear()
-                    auxQueue.addAll(preferences.get(originalQueueKey, setOf()).first().toList())
+                    audiosQueue.clear()
+                    audiosQueue.addAll(preferences.get(originalQueueKey, setOf()).first().toList())
                 }
             }
         }
@@ -141,19 +141,19 @@ class AudioQueueManagerImpl @Inject constructor(
     }
 
     private fun shuffleQueue(): List<MediaSessionCompat.QueueItem> {
-        val sQueue = mediaSession.controller.queue.shuffled()
-        val realQueue = sQueue.swap(sQueue.indexOfFirst { it.description.mediaId == currentAudioId }, 0)
+        val shuffled = mediaSession.controller.queue.shuffled()
+        val realQueue = shuffled.swap(shuffled.indexOfFirst { it.description.mediaId == currentAudioId }, 0)
 
-        auxQueue.clear()
-        auxQueue.addAll(queue.toList())
-        launch { preferences.save(originalQueueKey, auxQueue.toSet()) }
+        audiosQueue.clear()
+        audiosQueue.addAll(queue.toList())
+        launch { preferences.save(originalQueueKey, audiosQueue.toSet()) }
         queue = realQueue.toMediaIdList()
 
-        return sQueue
+        return shuffled
     }
 
     private fun restoreQueueOrder() {
-        queue = auxQueue
-        auxQueue.clear()
+        queue = audiosQueue
+        audiosQueue.clear()
     }
 }

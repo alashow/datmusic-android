@@ -57,7 +57,6 @@ class AudioPlayerImpl @Inject constructor(
         }
 
     private var isPrepared = false
-    private var isBuffering = true
     private var onPrepared: OnPrepared<AudioPlayer> = {}
     private var onError: OnError<AudioPlayer> = {}
     private var onBuffering: OnBuffering<AudioPlayer> = {}

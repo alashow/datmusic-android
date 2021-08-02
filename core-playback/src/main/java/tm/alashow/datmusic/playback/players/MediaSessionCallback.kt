@@ -14,6 +14,7 @@ import android.support.v4.media.session.PlaybackStateCompat.STATE_NONE
 import androidx.core.os.bundleOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import tm.alashow.base.util.extensions.orNA
@@ -86,17 +87,17 @@ class MediaSessionCallback(
     }
 
     override fun onPause() {
-        Timber.d("onPause()")
+        Timber.d("onPause")
         datmusicPlayer.pause()
     }
 
     override fun onPlay() {
-        Timber.d("onPlay()")
+        Timber.d("onPlay")
         playOnFocus()
     }
 
     override fun onPlayFromSearch(query: String?, extras: Bundle?) {
-        Timber.d("onPlayFromSearch(), query = $query, ${extras?.readable()}")
+        Timber.d("onPlayFromSearch, query = $query, ${extras?.readable()}")
         query?.let {
             // val audio = findAudioForQuery(query)
             // if (audio != null) {
@@ -108,18 +109,18 @@ class MediaSessionCallback(
     }
 
     override fun onFastForward() {
-        Timber.d("onFastForward()")
+        Timber.d("onFastForward")
         datmusicPlayer.fastForward()
     }
 
     override fun onRewind() {
-        Timber.d("onRewind()")
+        Timber.d("onRewind")
         datmusicPlayer.rewind()
     }
 
     override fun onPlayFromMediaId(_mediaId: String, extras: Bundle?) {
         val mediaId = _mediaId.toMediaId()
-        Timber.d("onPlayFromMediaId(), $mediaId, ${extras?.readable()}")
+        Timber.d("onPlayFromMediaId, $mediaId, ${extras?.readable()}")
         launch {
             var audioId = mediaId.id
             var queue = extras?.getStringArray(QUEUE_LIST_KEY)?.toList()
@@ -139,6 +140,11 @@ class MediaSessionCallback(
             if (queue != null && queue.isNotEmpty()) {
                 datmusicPlayer.setCurrentAudioId(audioId)
                 datmusicPlayer.setData(queue, queueTitle.orNA())
+                launch {
+                    // delay for new queue to apply first
+                    delay(2500)
+                    datmusicPlayer.saveQueueState()
+                }
                 datmusicPlayer.playAudio(audioId)
             } else {
                 Timber.e("Queue is null or empty: $mediaId")
