@@ -23,6 +23,7 @@ import com.tonyodev.fetch2.Status
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 
 sealed class AudioDownloadItemAction(open val audio: AudioDownloadItem) {
+    data class Play(override val audio: AudioDownloadItem) : AudioDownloadItemAction(audio)
     data class Resume(override val audio: AudioDownloadItem) : AudioDownloadItemAction(audio)
     data class Pause(override val audio: AudioDownloadItem) : AudioDownloadItemAction(audio)
     data class Cancel(override val audio: AudioDownloadItem) : AudioDownloadItemAction(audio)
@@ -33,6 +34,7 @@ sealed class AudioDownloadItemAction(open val audio: AudioDownloadItem) {
 
     companion object {
         fun from(actionLabelRes: Int, audio: AudioDownloadItem) = when (actionLabelRes) {
+            R.string.downloads_download_play -> Play(audio)
             R.string.downloads_download_pause -> Pause(audio)
             R.string.downloads_download_resume -> Resume(audio)
             R.string.downloads_download_cancel -> Cancel(audio)
@@ -56,6 +58,7 @@ internal fun AudioDownloadDropdownMenu(
 ) {
     val items = buildList {
         val downloadInfo = audioDownload.downloadInfo
+        add(R.string.downloads_download_play)
         when (downloadInfo.status) {
             Status.DOWNLOADING, Status.QUEUED, Status.PAUSED -> add(R.string.downloads_download_cancel)
             Status.CANCELLED, Status.FAILED -> add(R.string.downloads_download_delete)

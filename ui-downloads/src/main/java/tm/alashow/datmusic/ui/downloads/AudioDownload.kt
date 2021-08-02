@@ -63,7 +63,7 @@ import tm.alashow.ui.components.ProgressIndicator
 import tm.alashow.ui.theme.AppTheme
 
 @Composable
-internal fun AudioDownload(audioDownloadItem: AudioDownloadItem) {
+internal fun AudioDownload(audioDownloadItem: AudioDownloadItem, onAudioPlay: (AudioDownloadItem) -> Unit) {
     var menuVisible by remember { mutableStateOf(false) }
     val actionHandler = AudioDownloadItemActionHandler()
 
@@ -121,7 +121,9 @@ internal fun AudioDownload(audioDownloadItem: AudioDownloadItem) {
                     .weight(1f)
                     .height(20.dp)
             ) {
-                actionHandler(AudioDownloadItemAction.from(it, audioDownloadItem))
+                val action = AudioDownloadItemAction.from(it, audioDownloadItem)
+                if (action is AudioDownloadItemAction.Play) onAudioPlay(action.audio)
+                else actionHandler(action)
             }
         }
     }

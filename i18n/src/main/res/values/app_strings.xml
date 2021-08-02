@@ -46,6 +46,7 @@
     <string name="downloads.download.status.failed">Failed</string>
     <string name="downloads.download.status.cancelled">Cancelled</string>
 
+    <string name="downloads.download.play">Play</string>
     <string name="downloads.download.pause">Pause</string>
     <string name="downloads.download.resume">Resume</string>
     <string name="downloads.download.cancel">Cancel</string>

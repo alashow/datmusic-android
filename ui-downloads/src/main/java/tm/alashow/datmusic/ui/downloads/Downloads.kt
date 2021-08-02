@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.ui.Scaffold
 import tm.alashow.common.compose.rememberFlowWithLifecycle
+import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.domain.entities.DownloadRequest
 import tm.alashow.datmusic.downloader.AudioDownloadItems
 import tm.alashow.datmusic.downloader.DownloadItems
@@ -51,7 +52,8 @@ private fun Downloads(viewModel: DownloadsViewModel) {
                     DownloadsList(
                         downloads = downloads(),
                         listState = listState,
-                        paddingValues = padding
+                        paddingValues = padding,
+                        onAudioPlay = viewModel::playAudioDownload
                     )
                 }
                 is Incomplete -> {
@@ -66,8 +68,9 @@ private fun Downloads(viewModel: DownloadsViewModel) {
 fun DownloadsList(
     downloads: DownloadItems,
     listState: LazyListState,
+    modifier: Modifier = Modifier,
     paddingValues: PaddingValues = PaddingValues(),
-    modifier: Modifier = Modifier
+    onAudioPlay: (AudioDownloadItem) -> Unit,
 ) {
     BoxWithConstraints {
         LazyColumn(
@@ -94,7 +97,7 @@ fun DownloadsList(
                         val audioDownloads = items as AudioDownloadItems
                         itemsIndexed(audioDownloads, { _, it -> it.downloadRequest.id }) { index, it ->
                             if (index != 0) Divider()
-                            AudioDownload(it)
+                            AudioDownload(it, onAudioPlay)
                         }
                     }
                 }
