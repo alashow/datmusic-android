@@ -5,6 +5,7 @@
 package tm.alashow.datmusic.ui.search
 
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
+import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.domain.models.errors.ApiCaptchaError
 
 internal sealed class SearchAction {
@@ -15,4 +16,6 @@ internal sealed class SearchAction {
     data class AddError(val error: Throwable) : SearchAction()
     object ClearError : SearchAction()
     data class SubmitCaptcha(val captchaError: ApiCaptchaError, val solution: String) : SearchAction()
+
+    data class PlayAudio(val audio: Audio) : SearchAction()
 }

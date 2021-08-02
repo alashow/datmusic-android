@@ -12,12 +12,14 @@ import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import androidx.core.os.bundleOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import timber.log.Timber
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.playback.players.QUEUE_LIST_KEY
+import tm.alashow.datmusic.playback.players.QUEUE_MEDIA_ID_KEY
 import tm.alashow.datmusic.playback.players.QUEUE_TITLE_KEY
 
 interface PlaybackConnection {
@@ -29,8 +31,10 @@ interface PlaybackConnection {
     var mediaController: MediaControllerCompat?
 
     fun playAudio(vararg audios: Audio, index: Int = 0)
-    suspend fun playArtist(artist: Artist, index: Int = 0)
-    suspend fun playAlbum(album: Album, index: Int = 0)
+    fun playArtist(artist: Artist, index: Int = 0)
+    fun playAlbum(album: Album, index: Int = 0)
+    fun playWithQuery(query: String, audioId: String)
+    fun playWithMinervaQuery(query: String, audioId: String)
 }
 
 class PlaybackConnectionImpl(
@@ -66,12 +70,30 @@ class PlaybackConnectionImpl(
         )
     }
 
-    override suspend fun playArtist(artist: Artist, index: Int) {
-        transportControls?.playFromMediaId(MediaId(MEDIA_TYPE_ARTIST, artist.id, index).toString(), Bundle())
+    override fun playArtist(artist: Artist, index: Int) {
+        transportControls?.playFromMediaId(MediaId(MEDIA_TYPE_ARTIST, artist.id, index).toString(), null)
     }
 
-    override suspend fun playAlbum(album: Album, index: Int) {
-        transportControls?.playFromMediaId(MediaId(MEDIA_TYPE_ALBUM, album.id, index).toString(), Bundle())
+    override fun playAlbum(album: Album, index: Int) {
+        transportControls?.playFromMediaId(MediaId(MEDIA_TYPE_ALBUM, album.id, index).toString(), null)
+    }
+
+    override fun playWithQuery(query: String, audioId: String) {
+        transportControls?.playFromMediaId(
+            MediaId(MEDIA_TYPE_AUDIO_QUERY, query, -1).toString(),
+            bundleOf(
+                QUEUE_MEDIA_ID_KEY to audioId
+            )
+        )
+    }
+
+    override fun playWithMinervaQuery(query: String, audioId: String) {
+        transportControls?.playFromMediaId(
+            MediaId(MEDIA_TYPE_AUDIO_MINERVA_QUERY, query, -1).toString(),
+            bundleOf(
+                QUEUE_MEDIA_ID_KEY to audioId
+            )
+        )
     }
 
     private inner class MediaBrowserConnectionCallback(private val context: Context) :

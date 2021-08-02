@@ -24,7 +24,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
@@ -33,7 +32,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.ui.Scaffold
 import kotlin.math.round
-import kotlinx.coroutines.launch
 import tm.alashow.base.util.extensions.localizedMessage
 import tm.alashow.base.util.extensions.localizedTitle
 import tm.alashow.common.compose.rememberFlowWithLifecycle
@@ -189,10 +187,9 @@ private fun LazyListScope.artistDetails(
 
         itemsIndexed(artistAudios) { index, audio ->
             val playbackConnection = LocalPlaybackConnection.current
-            val coroutine = rememberCoroutineScope()
             AudioRow(audio, isPlaceholder = detailsLoading, modifier = Modifier.background(MaterialTheme.colors.background)) {
                 if (details is Success)
-                    coroutine.launch { playbackConnection.playArtist(details(), index) }
+                    playbackConnection.playArtist(details(), index)
             }
         }
     }

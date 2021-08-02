@@ -79,7 +79,7 @@ interface DatmusicPlayer {
     fun playNext(id: String)
     fun swapQueueAudios(from: Int, to: Int)
     fun removeFromQueue(id: String)
-    fun stop(fromUser: Boolean = true)
+    fun stop(byUser: Boolean = true)
     fun release()
     fun onPlayingState(playing: OnIsPlaying)
     fun onPrepared(prepared: OnPrepared<DatmusicPlayer>)

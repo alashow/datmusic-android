@@ -34,6 +34,7 @@ import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams.Companion.with
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
+import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.domain.models.errors.ApiCaptchaError
 import tm.alashow.navigation.QUERY_KEY
 
@@ -47,6 +48,7 @@ internal class SearchViewModel @Inject constructor(
     private val albumsPager: ObservePagedDatmusicSearch<Album>,
     private val snackbarManager: SnackbarManager,
     private val analytics: FirebaseAnalytics,
+    private val playbackConnection: PlaybackConnection,
 ) : ViewModel() {
 
     private val searchQuery = MutableStateFlow("")
@@ -81,6 +83,7 @@ internal class SearchViewModel @Inject constructor(
                     is SearchAction.SubmitCaptcha -> submitCaptcha(action)
                     is SearchAction.AddError -> snackbarManager.addError(action.error)
                     is SearchAction.ClearError -> snackbarManager.removeCurrentError()
+                    is SearchAction.PlayAudio -> playAudio(action.audio)
                 }
             }
         }
@@ -125,6 +128,16 @@ internal class SearchViewModel @Inject constructor(
         viewModelScope.launch {
             pendingActions.emit(action)
         }
+    }
+
+    /**
+     * Queue given audio to play with current query as the queue.
+     */
+    private fun playAudio(audio: Audio) {
+        val query = searchTrigger.value?.query ?: searchQuery.value
+        val isMinerva = searchFilter.value?.hasMinervaOnly == true
+        if (isMinerva) playbackConnection.playWithMinervaQuery(query, audio.id)
+        else playbackConnection.playWithQuery(query, audio.id)
     }
 
     /**

@@ -38,13 +38,12 @@ import tm.alashow.datmusic.playback.toMediaId
 import tm.alashow.datmusic.playback.toMediaIdList
 import tm.alashow.datmusic.playback.toQueueTitle
 
-const val SEEK_TO_POS = "seek_to_pos"
 const val SEEK_TO = "action_seek_to"
-const val SONG_LIST_NAME = "song_list_name"
 
 const val FROM_POSITION_KEY = "from_position_key"
 const val TO_POSITION_KEY = "to_position_key"
 
+const val QUEUE_MEDIA_ID_KEY = "queue_media_id_key"
 const val QUEUE_TITLE_KEY = "queue_info_key"
 const val QUEUE_LIST_KEY = "queue_list_key"
 
@@ -122,7 +121,7 @@ class MediaSessionCallback(
         val mediaId = _mediaId.toMediaId()
         Timber.d("onPlayFromMediaId, $mediaId, ${extras?.readable()}")
         launch {
-            var audioId = mediaId.id
+            var audioId = extras?.getString(QUEUE_MEDIA_ID_KEY) ?: mediaId.value
             var queue = extras?.getStringArray(QUEUE_LIST_KEY)?.toList()
             var queueTitle = extras?.getString(QUEUE_TITLE_KEY)
             val seekTo = extras?.getLong(SEEK_TO) ?: 0
@@ -131,7 +130,7 @@ class MediaSessionCallback(
 
             if (queue == null) {
                 queue = mediaId.toAudioList(audiosDao, artistsDao, albumsDao)?.map { it.id }?.apply {
-                    if (isNotEmpty())
+                    if (mediaId.index > 0 && isNotEmpty())
                         audioId = if (mediaId.index < size) get(mediaId.index) else first()
                 }
                 queueTitle = mediaId.toQueueTitle(audiosDao, artistsDao, albumsDao)

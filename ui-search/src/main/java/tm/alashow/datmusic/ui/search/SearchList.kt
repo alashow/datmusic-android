@@ -151,6 +151,7 @@ internal fun SearchList(
             retryPagers,
             refreshErrorState,
             padding,
+            { viewModel.submitAction(SearchAction.PlayAudio(it)) }
         )
     }
 }
@@ -210,7 +211,8 @@ private fun SearchListContent(
     pagersAreEmpty: Boolean,
     retryPagers: () -> Unit,
     refreshErrorState: LoadState?,
-    padding: PaddingValues
+    padding: PaddingValues,
+    onAudioClick: (Audio) -> Unit
 ) {
     LogCompositions(tag = "SearchListContent")
     BoxWithConstraints {
@@ -240,10 +242,10 @@ private fun SearchListContent(
             }
 
             if (searchFilter.hasAudios)
-                audioList(audiosLazyPagingItems)
+                audioList(audiosLazyPagingItems, onAudioClick)
 
             if (searchFilter.hasMinerva)
-                audioList(minervaAudiosLazyPagingItems)
+                audioList(minervaAudiosLazyPagingItems, onAudioClick)
         }
     }
 }
@@ -314,7 +316,7 @@ internal fun AlbumList(
     }
 }
 
-internal fun LazyListScope.audioList(pagingItems: LazyPagingItems<Audio>) {
+internal fun LazyListScope.audioList(pagingItems: LazyPagingItems<Audio>, onAudioClick: (Audio) -> Unit) {
     val isLoading = pagingItems.loadState.refresh == LoadState.Loading
     val hasItems = pagingItems.itemCount > 0
     if (hasItems || isLoading)
@@ -331,7 +333,7 @@ internal fun LazyListScope.audioList(pagingItems: LazyPagingItems<Audio>) {
 
     items(pagingItems, key = { _, item -> item.id }) {
         val audio = it ?: Audio()
-        AudioRow(audio, isPlaceholder = it == null)
+        AudioRow(audio, isPlaceholder = it == null, onClick = onAudioClick)
     }
 
     loadingMore(pagingItems)
