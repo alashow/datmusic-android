@@ -65,12 +65,12 @@ fun ImageWithPlaceholder(
 @Composable
 fun CoverImage(
     painter: ImagePainter,
+    modifier: Modifier = Modifier,
     size: Dp = 48.dp,
     backgroundColor: Color = MaterialTheme.colors.surface,
     shape: Shape = MaterialTheme.shapes.small,
     icon: VectorPainter = rememberVectorPainter(Icons.Default.MusicNote),
     iconPadding: Dp = AppTheme.specs.padding,
-    modifier: Modifier = Modifier,
     image: @Composable (Modifier) -> Unit
 ) {
     Surface(
@@ -85,6 +85,7 @@ fun CoverImage(
                 .clip(shape)
                 .placeholder(
                     visible = painter.state is ImagePainter.State.Loading,
+                    shape = shape,
                     highlight = PlaceholderHighlight.shimmer(
                         highlightColor = MaterialTheme.colors.secondary.copy(0.15f),
                         animationSpec = PlaceholderDefaults.shimmerAnimationSpec

@@ -13,14 +13,23 @@ import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.core.os.bundleOf
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import timber.log.Timber
+import tm.alashow.base.util.extensions.flowInterval
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.playback.players.QUEUE_LIST_KEY
 import tm.alashow.datmusic.playback.players.QUEUE_MEDIA_ID_KEY
 import tm.alashow.datmusic.playback.players.QUEUE_TITLE_KEY
+
+const val PLAYBACK_PROGRESS_INTERVAL = 400L
 
 interface PlaybackConnection {
     val isConnected: MutableStateFlow<Boolean>
@@ -29,6 +38,8 @@ interface PlaybackConnection {
     val playbackQueue: MutableStateFlow<PlaybackQueue>
     val transportControls: MediaControllerCompat.TransportControls?
     var mediaController: MediaControllerCompat?
+
+    val playbackProgress: MutableStateFlow<Float>
 
     fun playAudio(vararg audios: Audio, index: Int = 0)
     fun playArtist(artist: Artist, index: Int = 0)
@@ -58,6 +69,31 @@ class PlaybackConnectionImpl(
         serviceComponent,
         mediaBrowserConnectionCallback, null
     ).apply { connect() }
+
+    override val playbackProgress = MutableStateFlow(0f)
+
+    private var playbackInterval: Job = Job()
+
+    init {
+        MainScope().launch {
+            combine(playbackState, nowPlaying, ::Pair).collect { (state, current) ->
+                playbackInterval.cancel()
+                val startMillis = state.position.toFloat()
+                val duration = current.duration.toFloat() + 1
+                val initial = (startMillis / duration).coerceIn(0f, 1f)
+                playbackProgress.value = initial
+
+                if (state.isPlaying)
+                    playbackInterval = launch {
+                        flowInterval(PLAYBACK_PROGRESS_INTERVAL).map {
+                            (((it + 1) * PLAYBACK_PROGRESS_INTERVAL + startMillis) / duration).coerceIn(0f, 1f)
+                        }.collect {
+                            playbackProgress.value = it
+                        }
+                    }
+            }
+        }
+    }
 
     override fun playAudio(vararg audios: Audio, index: Int) {
         val audio = audios[index]

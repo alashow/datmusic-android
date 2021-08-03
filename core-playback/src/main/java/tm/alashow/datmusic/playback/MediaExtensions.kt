@@ -5,10 +5,12 @@
 package tm.alashow.datmusic.playback
 
 import android.graphics.Bitmap
+import android.net.Uri
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import timber.log.Timber
 
@@ -98,3 +100,4 @@ inline val MediaMetadataCompat.album: String? get() = getString(MediaMetadataCom
 inline val MediaMetadataCompat.displayDescription: String? get() = getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION)
 
 inline val MediaMetadataCompat.artwork: Bitmap? get() = getBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART)
+inline val MediaMetadataCompat.artworkUri: Uri get() = (getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI) ?: "").toUri()

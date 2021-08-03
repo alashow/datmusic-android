@@ -7,6 +7,7 @@ package tm.alashow.datmusic.downloader
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.core.net.toUri
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.documentfile.provider.DocumentFile
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -277,7 +278,7 @@ class Downloader @Inject constructor(
     private val downloadsLocationUri = preferences.get(DOWNLOADS_LOCATION, "").map {
         when {
             it.isEmpty() -> None
-            else -> some(Uri.parse(it))
+            else -> some(it.toUri())
         }
     }
 

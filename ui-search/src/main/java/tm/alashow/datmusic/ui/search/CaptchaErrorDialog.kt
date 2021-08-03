@@ -4,7 +4,6 @@
  */
 package tm.alashow.datmusic.ui.search
 
-import android.net.Uri
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -40,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.core.net.toUri
 import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
 import com.google.accompanist.placeholder.PlaceholderHighlight
@@ -74,7 +74,7 @@ internal fun CaptchaErrorDialog(
             onDismissRequest = { setCaptchaErrorShown(false) },
             properties = DialogProperties(usePlatformDefaultWidth = true),
         ) {
-            val imageUri = Uri.parse(captchaError.error.captchaImageUrl).buildUpon().appendQueryParameter("v", captchaVersion.toString()).build()
+            val imageUri = captchaError.error.captchaImageUrl.toUri().buildUpon().appendQueryParameter("v", captchaVersion.toString()).build()
             val image = rememberImagePainter(imageUri, builder = ImageLoading.defaultConfig)
 
             Surface(

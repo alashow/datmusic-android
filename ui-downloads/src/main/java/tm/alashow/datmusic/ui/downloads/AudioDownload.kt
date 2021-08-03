@@ -10,7 +10,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,7 +30,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.derivedStateOf
@@ -59,6 +57,7 @@ import tm.alashow.datmusic.downloader.progressVisible
 import tm.alashow.datmusic.ui.audios.AudioRowItem
 import tm.alashow.ui.TimedVisibility
 import tm.alashow.ui.colorFilterDynamicProperty
+import tm.alashow.ui.coloredRippleClickable
 import tm.alashow.ui.components.ProgressIndicator
 import tm.alashow.ui.theme.AppTheme
 
@@ -181,11 +180,7 @@ private fun DownloadRequestProgress(
                 Box(
                     Modifier
                         .clip(CircleShape)
-                        .clickable(
-                            onClick = onClick,
-                            indication = rememberRipple(color = MaterialTheme.colors.secondary),
-                            interactionSource = remember { MutableInteractionSource() }
-                        )
+                        .coloredRippleClickable(onClick)
                         .background(MaterialTheme.colors.secondary.copy(alpha = 0.1f))
                 ) {
                     val icon = when {

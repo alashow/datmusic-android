@@ -4,8 +4,10 @@
  */
 package tm.alashow.base.util.extensions
 
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
@@ -22,4 +24,16 @@ fun <T, R> Flow<T?>.mapNullable(transform: suspend (value: T) -> R): Flow<R?> {
 fun <T> delayFlow(timeout: Long, value: T): Flow<T> = flow {
     delay(timeout)
     emit(value)
+}
+
+fun flowInterval(interval: Long, timeUnit: TimeUnit = TimeUnit.MILLISECONDS): Flow<Int> {
+    val delayMillis = timeUnit.toMillis(interval)
+    return channelFlow {
+        var tick = 0
+        send(tick)
+        while (true) {
+            delay(delayMillis)
+            send(++tick)
+        }
+    }
 }

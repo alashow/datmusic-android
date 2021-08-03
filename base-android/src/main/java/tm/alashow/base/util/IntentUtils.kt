@@ -9,12 +9,13 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import androidx.core.net.toUri
 
 object IntentUtils {
 
     fun openUrl(context: Context, url: String) {
         try {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            val intent = Intent(Intent.ACTION_VIEW, url.toUri())
             startActivity(context, intent)
         } catch (e: ActivityNotFoundException) {
             RemoteLogger.exception(e)

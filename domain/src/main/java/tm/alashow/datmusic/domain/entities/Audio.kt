@@ -6,12 +6,14 @@ package tm.alashow.datmusic.domain.entities
 
 import android.net.Uri
 import android.os.Parcelable
+import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import java.io.FileNotFoundException
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -101,9 +103,16 @@ data class Audio(
 
     @Ignore
     @Transient
+    @IgnoredOnParcel
     var audioDownloadItem: AudioDownloadItem? = null
 
-    fun coverUri(): Uri = Uri.parse(coverUrlSmall ?: "")
+    fun coverUri(size: CoverImageSize = CoverImageSize.LARGE, allowAlternate: Boolean = false): Uri = (
+        when (size) {
+            CoverImageSize.LARGE -> coverUrl
+            CoverImageSize.MEDIUM -> coverUrlMedium
+            CoverImageSize.SMALL -> coverUrlSmall
+        } ?: coverUrl ?: (if (allowAlternate) coverAlternate else "")
+        ).toUri()
 
     fun durationMillis() = (duration * 1000).toLong()
 

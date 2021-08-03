@@ -10,17 +10,18 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
 import android.media.session.PlaybackState
-import android.net.Uri
 import android.os.Bundle
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.MediaMetadataCompat.*
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.support.v4.media.session.PlaybackStateCompat.*
+import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
+import coil.size.Precision
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
@@ -36,6 +37,7 @@ import tm.alashow.datmusic.data.db.daos.ArtistsDao
 import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
+import tm.alashow.datmusic.domain.entities.CoverImageSize
 import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.playback.AudioFocusHelperImpl
 import tm.alashow.datmusic.playback.AudioQueueManagerImpl
@@ -196,7 +198,12 @@ class DatmusicPlayerImpl @Inject constructor(
             is Audio -> {
                 when (val downloadItem = audio.audioDownloadItem) {
                     is AudioDownloadItem -> audioPlayer.setSource(downloadItem.downloadInfo.fileUri, true)
-                    else -> audioPlayer.setSource(Uri.parse(audio.streamUrl))
+                    else -> {
+                        val uri = audio.streamUrl?.toUri()
+                        if (uri != null)
+                            audioPlayer.setSource(uri, false)
+                        else false
+                    }
                 }
             }
             else -> false
@@ -274,7 +281,7 @@ class DatmusicPlayerImpl @Inject constructor(
     }
 
     override fun pause(extras: Bundle) {
-        if (audioPlayer.isPlaying() && isInitialized) {
+        if (isInitialized && (audioPlayer.isPlaying() || audioPlayer.isBuffering())) {
             audioPlayer.pause()
             updatePlaybackState {
                 setState(STATE_PAUSED, mediaSession.position(), 1F)
@@ -480,7 +487,9 @@ class DatmusicPlayerImpl @Inject constructor(
         launch {
             val loader = ImageLoader(context)
             val request = ImageRequest.Builder(context)
-                .data(audio.coverUri())
+                .data(audio.coverUri(size = CoverImageSize.SMALL))
+                .size(500)
+                .precision(Precision.INEXACT)
                 .allowHardware(false)
                 .build()
 

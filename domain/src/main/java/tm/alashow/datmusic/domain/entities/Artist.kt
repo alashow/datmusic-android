@@ -4,8 +4,8 @@
  */
 package tm.alashow.datmusic.domain.entities
 
-import android.net.Uri
 import android.os.Parcelable
+import androidx.core.net.toUri
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -72,7 +72,7 @@ data class Artist(
     fun largePhoto() = buildAlternatePhotoUrl("large")
 
     private fun buildAlternatePhotoUrl(size: String) =
-        Uri.parse(Config.API_BASE_URL).buildUpon().encodedPath("cover/artists").appendPath(name).appendPath(size).build().toString()
+        Config.API_BASE_URL.toUri().buildUpon().encodedPath("cover/artists").appendPath(name).appendPath(size).build().toString()
 
     @Serializable
     @Parcelize

@@ -30,6 +30,7 @@ interface AudioPlayer {
     fun seekTo(position: Long)
     fun duration(): Long
     fun isPrepared(): Boolean
+    fun isBuffering(): Boolean
     fun isPlaying(): Boolean
     fun position(): Long
     fun pause()
@@ -57,6 +58,7 @@ class AudioPlayerImpl @Inject constructor(
         }
 
     private var isPrepared = false
+    private var isBuffering = false
     private var onPrepared: OnPrepared<AudioPlayer> = {}
     private var onError: OnError<AudioPlayer> = {}
     private var onBuffering: OnBuffering<AudioPlayer> = {}
@@ -64,9 +66,12 @@ class AudioPlayerImpl @Inject constructor(
     private var onCompletion: OnCompletion<AudioPlayer> = {}
 
     override fun play(startAtPosition: Long?) {
-        startAtPosition ?: return player.play()
+        if (startAtPosition == null) {
+            player.playWhenReady = true
+            return
+        }
         player.seekTo(startAtPosition)
-        player.play()
+        player.playWhenReady = true
     }
 
     override fun setSource(uri: Uri, local: Boolean): Boolean {
@@ -99,12 +104,14 @@ class AudioPlayerImpl @Inject constructor(
 
     override fun isPrepared() = isPrepared
 
+    override fun isBuffering() = isBuffering
+
     override fun isPlaying() = player.isPlaying
 
     override fun position() = player.currentPosition
 
     override fun pause() {
-        player.pause()
+        player.playWhenReady = false
     }
 
     override fun stop() {
@@ -138,9 +145,19 @@ class AudioPlayerImpl @Inject constructor(
     override fun onPlaybackStateChanged(state: Int) {
         super.onPlaybackStateChanged(state)
         when (state) {
-            Player.STATE_BUFFERING -> onBuffering(this)
-            Player.STATE_READY -> onReady(this)
-            Player.STATE_ENDED -> onCompletion(this)
+            Player.STATE_IDLE -> isBuffering = false
+            Player.STATE_BUFFERING -> {
+                isBuffering = true
+                onBuffering(this)
+            }
+            Player.STATE_READY -> {
+                isBuffering = false
+                onReady(this)
+            }
+            Player.STATE_ENDED -> {
+                isBuffering = false
+                onCompletion(this)
+            }
             else -> Unit
         }
     }
