@@ -67,6 +67,8 @@ class AudioPlayerImpl @Inject constructor(
     private var onCompletion: OnCompletion<AudioPlayer> = {}
 
     override fun play(startAtPosition: Long?) {
+        if (isBuffering) onBuffering()
+
         if (startAtPosition == null) {
             player.playWhenReady = true
             return
