@@ -26,6 +26,7 @@ internal fun AudioDropdownMenu(
     expanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    actionLabels: List<Int> = listOf(R.string.audio_menu_play, R.string.audio_menu_download, R.string.audio_menu_copyLink),
     onDropdownSelect: (Int) -> Unit = {}
 ) {
     IconButton(
@@ -38,8 +39,6 @@ internal fun AudioDropdownMenu(
         )
     }
 
-    val items = listOf(R.string.audio_menu_download, R.string.audio_menu_copyLink)
-
     Box {
         DropdownMenu(
             expanded = expanded,
@@ -48,7 +47,7 @@ internal fun AudioDropdownMenu(
                 .width(IntrinsicSize.Min)
                 .align(Alignment.Center)
         ) {
-            items.forEach { item ->
+            actionLabels.forEach { item ->
                 val label = stringResource(item)
                 DropdownMenuItem(
                     onClick = {

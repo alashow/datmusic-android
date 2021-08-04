@@ -4,6 +4,10 @@
  */
 package tm.alashow.datmusic.ui.playback
 
+import androidx.compose.material.BottomSheetState
+import androidx.compose.material.BottomSheetValue
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -21,6 +25,12 @@ val LocalPlaybackConnection = staticCompositionLocalOf<PlaybackConnection> {
     error("No LocalPlaybackConnection provided")
 }
 
+@OptIn(ExperimentalMaterialApi::class)
+val LocalPlaybackSheetState = staticCompositionLocalOf<BottomSheetState> {
+    error("No LocalPlaybackSheetState provided")
+}
+
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun PlaybackHost(
     viewModel: PlaybackViewModel = hiltViewModel(),
@@ -33,7 +43,14 @@ fun PlaybackHost(
         playbackState.errorMessage?.apply { context.toast("Playback error: ${playbackState.errorMessage}") }
     }
 
-    CompositionLocalProvider(LocalPlaybackConnection provides viewModel.playbackConnection) {
-        content()
+    val playbackBottomSheetState = rememberBottomSheetState(BottomSheetValue.Expanded)
+
+    CompositionLocalProvider(
+        LocalPlaybackConnection provides viewModel.playbackConnection,
+        LocalPlaybackSheetState provides playbackBottomSheetState,
+    ) {
+        PlaybackSheet {
+            content()
+        }
     }
 }

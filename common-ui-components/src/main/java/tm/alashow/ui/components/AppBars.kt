@@ -56,9 +56,9 @@ fun AppTopBar(title: String, modifier: Modifier = Modifier) {
 @Composable
 fun CollapsingTopBar(
     title: String,
+    modifier: Modifier = Modifier,
     collapsed: Boolean = true,
     onNavigationClick: () -> Unit = {},
-    modifier: Modifier = Modifier
 ) {
     val appBarColor = translucentSurfaceColor()
     val backgroundColor = animateColorAsState(if (collapsed) appBarColor.copy(alpha = 0f) else appBarColor).value

@@ -4,7 +4,10 @@
  */
 package tm.alashow.ui.components
 
+import android.graphics.Bitmap
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -22,15 +25,17 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.VectorPainter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.ImagePainter
+import coil.compose.rememberImagePainter
 import com.google.accompanist.placeholder.PlaceholderDefaults
 import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.color
 import com.google.accompanist.placeholder.material.fade
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.shimmer
-import tm.alashow.ui.theme.AppTheme
 
 @Composable
 fun ImageWithPlaceholder(
@@ -65,19 +70,24 @@ fun ImageWithPlaceholder(
 @Composable
 fun CoverImage(
     painter: ImagePainter,
+    size: Dp,
     modifier: Modifier = Modifier,
-    size: Dp = 48.dp,
-    backgroundColor: Color = MaterialTheme.colors.surface,
+    backgroundColor: Color = PlaceholderDefaults.color(),
+    contentColor: Color = MaterialTheme.colors.secondary,
+    contentScale: ContentScale = ContentScale.FillBounds,
     shape: Shape = MaterialTheme.shapes.small,
     icon: VectorPainter = rememberVectorPainter(Icons.Default.MusicNote),
-    iconPadding: Dp = AppTheme.specs.padding,
+    iconPadding: Dp = size * 0.25f,
+    bitmapPlaceholder: Bitmap? = null,
     image: @Composable (Modifier) -> Unit
 ) {
     Surface(
         elevation = 2.dp,
         shape = shape,
         color = backgroundColor,
-        modifier = modifier.size(size)
+        modifier = modifier
+            .size(size)
+            .aspectRatio(1f)
     ) {
         image(
             Modifier
@@ -85,24 +95,37 @@ fun CoverImage(
                 .clip(shape)
                 .placeholder(
                     visible = painter.state is ImagePainter.State.Loading,
+                    color = backgroundColor,
                     shape = shape,
                     highlight = PlaceholderHighlight.shimmer(
-                        highlightColor = MaterialTheme.colors.secondary.copy(0.15f),
+                        highlightColor = contentColor.copy(alpha = 0.15f),
                         animationSpec = PlaceholderDefaults.shimmerAnimationSpec
                     ),
                 )
         )
 
         when (painter.state) {
-            is ImagePainter.State.Error, ImagePainter.State.Empty -> {
+            is ImagePainter.State.Error, ImagePainter.State.Empty, is ImagePainter.State.Loading -> {
                 Icon(
                     painter = icon,
-                    tint = MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
-                    contentDescription = "",
-                    modifier = Modifier.padding(iconPadding)
+                    tint = contentColor.copy(alpha = ContentAlpha.disabled),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(iconPadding)
                 )
             }
-            else -> Unit
+        }
+
+        if (bitmapPlaceholder != null && painter.state !is ImagePainter.State.Success) {
+            Image(
+                painter = rememberImagePainter(bitmapPlaceholder),
+                contentDescription = null,
+                contentScale = contentScale,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(shape)
+            )
         }
     }
 }

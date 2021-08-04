@@ -11,4 +11,8 @@ object ImageLoading {
     val defaultConfig: ImageRequest.Builder.() -> Unit = {
         crossfade(200)
     }
+
+    fun ImageRequest.Builder.applyDefault() {
+        crossfade(200)
+    }
 }

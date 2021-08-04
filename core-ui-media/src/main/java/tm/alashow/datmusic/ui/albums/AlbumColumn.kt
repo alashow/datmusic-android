@@ -44,7 +44,6 @@ import tm.alashow.ui.theme.AppTheme
 
 object AlbumsDefaults {
     val imageSize = 150.dp
-    val iconPadding = 36.dp
 }
 
 @Composable
@@ -52,7 +51,6 @@ fun AlbumColumn(
     album: Album,
     modifier: Modifier = Modifier,
     imageSize: Dp = AlbumsDefaults.imageSize,
-    iconPadding: Dp = AlbumsDefaults.iconPadding,
     isPlaceholder: Boolean = false,
     analytics: FirebaseAnalytics = LocalAnalytics.current,
     onClick: (Album) -> Unit = {},
@@ -73,9 +71,9 @@ fun AlbumColumn(
     ) {
         val image = rememberImagePainter(album.photo.mediumUrl, builder = ImageLoading.defaultConfig)
         CoverImage(
-            image, size = imageSize,
+            painter = image,
+            size = imageSize,
             icon = rememberVectorPainter(Icons.Default.Album),
-            iconPadding = iconPadding
         ) { modifier ->
             Image(
                 painter = image,

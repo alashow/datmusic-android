@@ -21,6 +21,7 @@
     <string name="albums.detail.title">Album</string>
 
     <string name="audio.menu.cd">Audio menu</string>
+    <string name="audio.menu.play">Play</string>
     <string name="audio.menu.download">Download</string>
     <string name="audio.menu.copyLink">Copy link</string>
 

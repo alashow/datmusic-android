@@ -17,16 +17,19 @@ import tm.alashow.base.util.extensions.simpleName
 import tm.alashow.base.util.toast
 import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.datmusic.downloader.Downloader
+import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.ui.downloader.LocalDownloader
 import tm.alashow.datmusic.ui.media.R
+import tm.alashow.datmusic.ui.playback.LocalPlaybackConnection
 
 typealias AudioActionHandler = (AudioItemAction) -> Unit
 
 @Composable
-internal fun AudioActionHandler(
+internal fun audioActionHandler(
     downloader: Downloader = LocalDownloader.current,
+    playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
     clipboardManager: ClipboardManager = LocalClipboardManager.current,
-    analytics: FirebaseAnalytics = LocalAnalytics.current
+    analytics: FirebaseAnalytics = LocalAnalytics.current,
 ): AudioActionHandler {
     val context = LocalContext.current
     val coroutine = rememberCoroutineScope()
@@ -34,6 +37,7 @@ internal fun AudioActionHandler(
     return { action ->
         analytics.event("audio.${action.simpleName}", mapOf("id" to action.audio.id))
         when (action) {
+            is AudioItemAction.Play -> playbackConnection.playAudio(action.audio)
             is AudioItemAction.Download -> coroutine.launch { downloader.enqueueAudio(action.audio) }
             is AudioItemAction.CopyLink -> {
                 clipboardManager.setText(AnnotatedString(action.audio.downloadUrl ?: ""))

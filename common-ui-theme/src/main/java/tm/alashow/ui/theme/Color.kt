@@ -15,10 +15,12 @@ import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 import kotlin.random.Random
 
 fun parseColor(hexColor: String) = Color(AndroidColor.parseColor(hexColor))
+fun Int.toColor() = Color(this)
 
 val Primary = Color(0xFF16053D)
 val PrimaryVariant = Color(0xFF221652)
@@ -38,7 +40,6 @@ val Purple = Color(0xFF5856D6)
 val Asphalt = Color(0xFF2c3e50)
 
 internal val DarkAppColors = appDarkColors(Primary, Secondary, PrimaryVariant, SecondaryVariant)
-
 internal val LightAppColors = appLightColors(Primary, Secondary, PrimaryVariant, SecondaryVariant)
 
 fun appDarkColors(
@@ -84,6 +85,12 @@ fun appLightColors(
 )
 
 @Composable
+fun Colors.plainBackground() = if (MaterialTheme.colors.isLight) Color.White else Color.Black
+
+@Composable
+fun Colors.plainGrayBackground() = if (MaterialTheme.colors.isLight) Color.LightGray else Color.DarkGray
+
+@Composable
 internal fun animate(colors: Colors): Colors {
     val animationSpec = remember { spring<Color>() }
 
@@ -110,8 +117,7 @@ internal fun animate(colors: Colors): Colors {
 @Composable
 fun translucentSurfaceColor() = MaterialTheme.colors.surface.copy(alpha = AppBarAlphas.translucentBarAlpha())
 
-@Composable
-fun Modifier.translucentSurface() = background(translucentSurfaceColor())
+fun Modifier.translucentSurface() = composed { background(translucentSurfaceColor()) }
 
 @Composable
 fun Modifier.randomBackground(memoize: Boolean = true) = background(if (memoize) remember { randomColor() } else randomColor())

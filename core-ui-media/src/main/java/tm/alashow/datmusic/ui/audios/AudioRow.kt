@@ -7,6 +7,7 @@ package tm.alashow.datmusic.ui.audios
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.google.accompanist.placeholder.PlaceholderHighlight
@@ -38,11 +40,11 @@ import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
 import tm.alashow.base.imageloading.ImageLoading
 import tm.alashow.datmusic.domain.entities.Audio
-import tm.alashow.datmusic.ui.playback.LocalPlaybackConnection
 import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.theme.AppTheme
 
 object AudiosDefaults {
+    val imageSize = 48.dp
     const val maxLines = 2
 }
 
@@ -52,11 +54,10 @@ fun AudioRow(
     modifier: Modifier = Modifier,
     isPlaceholder: Boolean = false,
     onClick: ((Audio) -> Unit)? = null,
+    onPlayAudio: ((Audio) -> Unit)? = null,
 ) {
     var menuVisible by remember { mutableStateOf(false) }
     val contentScaleOnMenuVisible = animateFloatAsState((if (menuVisible) 0.97f else 1f))
-
-    val playbackConnection = LocalPlaybackConnection.current
 
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -65,15 +66,19 @@ fun AudioRow(
             .clickable {
                 if (!isPlaceholder)
                     if (onClick != null) onClick(audio)
-                    // else menuVisible = true
-                    else playbackConnection.playAudio(audio)
+                    else menuVisible = true
             }
             .fillMaxWidth()
             .padding(AppTheme.specs.inputPaddings)
     ) {
+        val actionHandler = audioActionHandler()
         AudioRowItem(
             audio = audio,
             isPlaceholder = isPlaceholder,
+            onCoverClick = {
+                if (onPlayAudio != null) onPlayAudio(audio)
+                else actionHandler(AudioItemAction.Play(audio))
+            },
             modifier = Modifier
                 .weight(19f)
                 .graphicsLayer {
@@ -83,8 +88,6 @@ fun AudioRow(
         )
 
         if (!isPlaceholder) {
-            val actionHandler = AudioActionHandler()
-
             AudioDropdownMenu(
                 expanded = menuVisible,
                 onExpandedChange = { menuVisible = it },
@@ -92,7 +95,11 @@ fun AudioRow(
                     .align(Alignment.CenterVertically)
                     .weight(1f),
                 onDropdownSelect = {
-                    actionHandler(AudioItemAction.from(it, audio))
+                    val action = AudioItemAction.from(it, audio)
+                    when {
+                        action is AudioItemAction.Play && onPlayAudio != null -> onPlayAudio(audio)
+                        else -> actionHandler(action)
+                    }
                 },
             )
         }
@@ -102,7 +109,9 @@ fun AudioRow(
 @Composable
 fun AudioRowItem(
     audio: Audio,
-    modifier: Modifier = Modifier.fillMaxWidth(),
+    modifier: Modifier = Modifier,
+    imageSize: Dp = AudiosDefaults.imageSize,
+    onCoverClick: (Audio) -> Unit = {},
     isPlaceholder: Boolean = false,
     maxLines: Int = AudiosDefaults.maxLines,
 ) {
@@ -113,14 +122,23 @@ fun AudioRowItem(
     Row(
         horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
+        modifier = modifier.fillMaxWidth()
     ) {
         val image = rememberImagePainter(audio.coverUrlSmall ?: audio.coverUrl, builder = ImageLoading.defaultConfig)
-        CoverImage(image) { imageMod ->
+        CoverImage(
+            painter = image,
+            size = imageSize,
+        ) { imageMod ->
             Image(
                 painter = image,
                 contentDescription = null,
-                modifier = imageMod.then(loadingModifier)
+                modifier = imageMod
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = { onCoverClick(audio) },
+                    )
+                    .then(loadingModifier)
             )
         }
 

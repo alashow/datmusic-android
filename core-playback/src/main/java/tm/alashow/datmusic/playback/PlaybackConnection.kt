@@ -18,7 +18,6 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import tm.alashow.base.util.extensions.flowInterval
@@ -79,16 +78,19 @@ class PlaybackConnectionImpl(
             combine(playbackState, nowPlaying, ::Pair).collect { (state, current) ->
                 playbackInterval.cancel()
                 val startMillis = state.position.toFloat()
-                val duration = current.duration.toFloat() + 1
+                val duration = current.duration.toFloat()
+
+                if (duration < 1) return@collect
+
                 val initial = (startMillis / duration).coerceIn(0f, 1f)
                 playbackProgress.value = initial
 
                 if (state.isPlaying)
                     playbackInterval = launch {
-                        flowInterval(PLAYBACK_PROGRESS_INTERVAL).map {
-                            (((it + 1) * PLAYBACK_PROGRESS_INTERVAL + startMillis) / duration).coerceIn(0f, 1f)
-                        }.collect {
-                            playbackProgress.value = it
+                        flowInterval(PLAYBACK_PROGRESS_INTERVAL).collect { ticks ->
+                            val elapsed = (startMillis + PLAYBACK_PROGRESS_INTERVAL * (ticks + 1))
+                            val progress = (elapsed / duration).coerceIn(0f, 1f)
+                            playbackProgress.value = progress
                         }
                     }
             }

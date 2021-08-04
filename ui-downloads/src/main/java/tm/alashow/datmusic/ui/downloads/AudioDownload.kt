@@ -79,7 +79,12 @@ internal fun AudioDownload(audioDownloadItem: AudioDownloadItem, onAudioPlay: (A
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            AudioRowItem(audio = audioDownloadItem.audio, maxLines = 1, modifier = Modifier.weight(16f))
+            AudioRowItem(
+                audio = audioDownloadItem.audio,
+                maxLines = 1,
+                modifier = Modifier.weight(16f),
+                onCoverClick = { onAudioPlay(audioDownloadItem) }
+            )
             DownloadRequestProgress(
                 downloadInfo = downloadInfo,
                 onClick = {
@@ -120,9 +125,10 @@ internal fun AudioDownload(audioDownloadItem: AudioDownloadItem, onAudioPlay: (A
                     .weight(1f)
                     .height(20.dp)
             ) {
-                val action = AudioDownloadItemAction.from(it, audioDownloadItem)
-                if (action is AudioDownloadItemAction.Play) onAudioPlay(action.audio)
-                else actionHandler(action)
+                when (val action = AudioDownloadItemAction.from(it, audioDownloadItem)) {
+                    is AudioDownloadItemAction.Play -> onAudioPlay(action.audio)
+                    else -> actionHandler(action)
+                }
             }
         }
     }

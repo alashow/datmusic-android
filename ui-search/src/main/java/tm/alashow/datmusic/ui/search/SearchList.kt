@@ -151,7 +151,9 @@ internal fun SearchList(
             retryPagers,
             refreshErrorState,
             padding,
-            { viewModel.submitAction(SearchAction.PlayAudio(it)) }
+            onPlayAudio = {
+                viewModel.submitAction(SearchAction.PlayAudio(it))
+            }
         )
     }
 }
@@ -212,7 +214,7 @@ private fun SearchListContent(
     retryPagers: () -> Unit,
     refreshErrorState: LoadState?,
     padding: PaddingValues,
-    onAudioClick: (Audio) -> Unit
+    onPlayAudio: (Audio) -> Unit
 ) {
     LogCompositions(tag = "SearchListContent")
     BoxWithConstraints {
@@ -242,10 +244,10 @@ private fun SearchListContent(
             }
 
             if (searchFilter.hasAudios)
-                audioList(audiosLazyPagingItems, onAudioClick)
+                audioList(audiosLazyPagingItems, onPlayAudio)
 
             if (searchFilter.hasMinerva)
-                audioList(minervaAudiosLazyPagingItems, onAudioClick)
+                audioList(minervaAudiosLazyPagingItems, onPlayAudio)
         }
     }
 }
@@ -287,7 +289,6 @@ internal fun ArtistList(
 internal fun AlbumList(
     pagingItems: LazyPagingItems<Album>,
     itemSize: Dp = AlbumsDefaults.imageSize,
-    iconPadding: Dp = AlbumsDefaults.iconPadding,
     navigator: Navigator = LocalNavigator.current
 ) {
     LogCompositions(tag = "AlbumList")
@@ -300,14 +301,14 @@ internal fun AlbumList(
         if (!hasItems && isLoading) {
             val placeholders = (1..5).map { Album() }
             items(placeholders) { placeholder ->
-                AlbumColumn(placeholder, imageSize = itemSize, iconPadding = iconPadding, isPlaceholder = true)
+                AlbumColumn(placeholder, imageSize = itemSize, isPlaceholder = true)
             }
         }
 
         items(pagingItems, key = { _, item -> item.id }) {
             val album = it ?: Album()
 
-            AlbumColumn(album, imageSize = itemSize, iconPadding = iconPadding, isPlaceholder = it == null) { clickedAlbum ->
+            AlbumColumn(album, imageSize = itemSize, isPlaceholder = it == null) { clickedAlbum ->
                 navigator.navigate(LeafScreen.AlbumDetails.buildRoute(clickedAlbum))
             }
         }
@@ -316,7 +317,7 @@ internal fun AlbumList(
     }
 }
 
-internal fun LazyListScope.audioList(pagingItems: LazyPagingItems<Audio>, onAudioClick: (Audio) -> Unit) {
+internal fun LazyListScope.audioList(pagingItems: LazyPagingItems<Audio>, onPlayAudio: (Audio) -> Unit) {
     val isLoading = pagingItems.loadState.refresh == LoadState.Loading
     val hasItems = pagingItems.itemCount > 0
     if (hasItems || isLoading)
@@ -333,7 +334,7 @@ internal fun LazyListScope.audioList(pagingItems: LazyPagingItems<Audio>, onAudi
 
     items(pagingItems, key = { _, item -> item.id }) {
         val audio = it ?: Audio()
-        AudioRow(audio, isPlaceholder = it == null, onClick = onAudioClick)
+        AudioRow(audio, isPlaceholder = it == null, onPlayAudio = onPlayAudio)
     }
 
     loadingMore(pagingItems)
