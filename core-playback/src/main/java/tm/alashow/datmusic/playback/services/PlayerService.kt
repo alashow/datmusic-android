@@ -70,14 +70,12 @@ class PlayerService : MediaBrowserServiceCompat(), CoroutineScope by MainScope()
         becomingNoisyReceiver = BecomingNoisyReceiver(this, sessionToken!!)
 
         datmusicPlayer.onPlayingState { isPlaying, byUi ->
-
             if (isPlaying) {
                 startForeground(NOTIFICATION_ID, mediaNotifications.buildNotification(getSession()))
                 becomingNoisyReceiver.register()
             } else {
                 becomingNoisyReceiver.unregister()
                 stopForeground(byUi)
-                launch { datmusicPlayer.saveQueueState() }
 
                 if (datmusicPlayer.getSession().controller.playbackState.isStopped) {
                     mediaNotifications.clearNotifications()

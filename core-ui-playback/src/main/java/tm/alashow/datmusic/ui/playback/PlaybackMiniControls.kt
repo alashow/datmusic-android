@@ -6,9 +6,7 @@ package tm.alashow.datmusic.ui.playback
 
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import android.support.v4.media.session.PlaybackStateCompat.STATE_BUFFERING
-import android.support.v4.media.session.PlaybackStateCompat.STATE_PAUSED
-import android.support.v4.media.session.PlaybackStateCompat.STATE_PLAYING
+import android.support.v4.media.session.PlaybackStateCompat.STATE_NONE
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.LinearEasing
@@ -40,6 +38,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.HourglassBottom
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
@@ -70,6 +69,7 @@ import tm.alashow.datmusic.playback.artist
 import tm.alashow.datmusic.playback.artwork
 import tm.alashow.datmusic.playback.artworkUri
 import tm.alashow.datmusic.playback.isBuffering
+import tm.alashow.datmusic.playback.isError
 import tm.alashow.datmusic.playback.isPlayEnabled
 import tm.alashow.datmusic.playback.isPlaying
 import tm.alashow.datmusic.playback.playPause
@@ -86,7 +86,7 @@ fun PlaybackMiniControls(playbackConnection: PlaybackConnection = LocalPlaybackC
     val playbackState by rememberFlowWithLifecycle(playbackConnection.playbackState).collectAsState(NONE_PLAYBACK_STATE)
     val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying).collectAsState(NONE_PLAYING)
 
-    val visible = playbackState.state in listOf(STATE_PLAYING, STATE_BUFFERING, STATE_PAUSED)
+    val visible = playbackState.state != STATE_NONE
     AnimatedVisibility(visible = visible, enter = slideInVertically({ it / 2 }), exit = slideOutVertically({ it / 2 })) {
         PlaybackMiniControls(
             playbackState = playbackState,
@@ -210,6 +210,7 @@ private fun RowScope.PlaybackPlayPause(onPlayPause: () -> Unit, playbackState: P
         Icon(
             painter = rememberVectorPainter(
                 when {
+                    playbackState.isError -> Icons.Filled.ErrorOutline
                     playbackState.isPlaying -> Icons.Filled.Pause
                     playbackState.isPlayEnabled -> Icons.Filled.PlayArrow
                     else -> Icons.Filled.HourglassBottom

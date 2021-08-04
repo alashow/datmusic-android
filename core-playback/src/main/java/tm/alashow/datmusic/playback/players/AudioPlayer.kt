@@ -14,7 +14,6 @@ import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.okhttp.OkHttpDataSource
-import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.util.PriorityTaskManager
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -39,6 +38,7 @@ interface AudioPlayer {
     fun onPrepared(prepared: OnPrepared<AudioPlayer>)
     fun onError(error: OnError<AudioPlayer>)
     fun onBuffering(buffering: OnBuffering<AudioPlayer>)
+    fun onIsPlaying(playing: OnIsPlaying<AudioPlayer>)
     fun onReady(ready: OnReady<AudioPlayer>)
     fun onCompletion(completion: OnCompletion<AudioPlayer>)
 }
@@ -62,6 +62,7 @@ class AudioPlayerImpl @Inject constructor(
     private var onPrepared: OnPrepared<AudioPlayer> = {}
     private var onError: OnError<AudioPlayer> = {}
     private var onBuffering: OnBuffering<AudioPlayer> = {}
+    private var onIsPlaying: OnIsPlaying<AudioPlayer> = { _, _ -> }
     private var onReady: OnReady<AudioPlayer> = {}
     private var onCompletion: OnCompletion<AudioPlayer> = {}
 
@@ -77,13 +78,11 @@ class AudioPlayerImpl @Inject constructor(
     override fun setSource(uri: Uri, local: Boolean): Boolean {
         Timber.d("Setting source: local=$local, uri=$uri")
         return try {
-            uri?.let {
-                if (local) player.setMediaItem(MediaItem.fromUri(uri), true)
-                else {
-                    val mediaSource: MediaSource = ProgressiveMediaSource.Factory(OkHttpDataSource.Factory(okHttpClient))
-                        .createMediaSource(MediaItem.fromUri(it))
-                    player.setMediaSource(mediaSource, true)
-                }
+            if (local) player.setMediaItem(MediaItem.fromUri(uri), true)
+            else {
+                val mediaSource = ProgressiveMediaSource.Factory(OkHttpDataSource.Factory(okHttpClient))
+                    .createMediaSource(MediaItem.fromUri(uri))
+                player.setMediaSource(mediaSource, true)
             }
             true
         } catch (ex: Exception) {
@@ -134,6 +133,10 @@ class AudioPlayerImpl @Inject constructor(
         this.onBuffering = buffering
     }
 
+    override fun onIsPlaying(playing: OnIsPlaying<AudioPlayer>) {
+        this.onIsPlaying = playing
+    }
+
     override fun onReady(ready: OnReady<AudioPlayer>) {
         this.onReady = ready
     }
@@ -160,6 +163,10 @@ class AudioPlayerImpl @Inject constructor(
             }
             else -> Unit
         }
+    }
+
+    override fun onIsPlayingChanged(isPlaying: Boolean) {
+        onIsPlaying(isPlaying, false)
     }
 
     override fun onPrepared() {

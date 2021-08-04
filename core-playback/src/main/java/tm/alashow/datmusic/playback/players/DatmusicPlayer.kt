@@ -48,6 +48,7 @@ import tm.alashow.datmusic.playback.REPEAT_ALL
 import tm.alashow.datmusic.playback.REPEAT_ONE
 import tm.alashow.datmusic.playback.createDefaultPlaybackState
 import tm.alashow.datmusic.playback.id
+import tm.alashow.datmusic.playback.isBuffering
 import tm.alashow.datmusic.playback.isPlaying
 import tm.alashow.datmusic.playback.position
 import tm.alashow.datmusic.playback.repeatMode
@@ -60,7 +61,7 @@ typealias OnCompletion<T> = T.() -> Unit
 typealias OnBuffering<T> = T.() -> Unit
 typealias OnReady<T> = T.() -> Unit
 typealias OnMetaDataChanged = DatmusicPlayer.() -> Unit
-typealias OnIsPlaying = DatmusicPlayer.(playing: Boolean, byUi: Boolean) -> Unit
+typealias OnIsPlaying<T> = T.(playing: Boolean, byUi: Boolean) -> Unit
 
 const val REPEAT_MODE = "repeat_mode"
 const val SHUFFLE_MODE = "shuffle_mode"
@@ -85,7 +86,7 @@ interface DatmusicPlayer {
     fun removeFromQueue(id: String)
     fun stop(byUser: Boolean = true)
     fun release()
-    fun onPlayingState(playing: OnIsPlaying)
+    fun onPlayingState(playing: OnIsPlaying<DatmusicPlayer>)
     fun onPrepared(prepared: OnPrepared<DatmusicPlayer>)
     fun onError(error: OnError<DatmusicPlayer>)
     fun onCompletion(completion: OnCompletion<DatmusicPlayer>)
@@ -119,7 +120,7 @@ class DatmusicPlayerImpl @Inject constructor(
 
     private var isInitialized: Boolean = false
 
-    private var isPlayingCallback: OnIsPlaying = { _, _ -> }
+    private var isPlayingCallback: OnIsPlaying<DatmusicPlayer> = { _, _ -> }
     private var preparedCallback: OnPrepared<DatmusicPlayer> = {}
     private var errorCallback: OnError<DatmusicPlayer> = {}
     private var completionCallback: OnCompletion<DatmusicPlayer> = {}
@@ -166,6 +167,19 @@ class DatmusicPlayerImpl @Inject constructor(
                 setState(STATE_BUFFERING, mediaSession.position(), 1F)
             }
         }
+        audioPlayer.onIsPlaying { playing, byUi ->
+            if (playing)
+                updatePlaybackState {
+                    setState(STATE_PLAYING, mediaSession.position(), 1F)
+                    setExtras(
+                        bundleOf(
+                            REPEAT_MODE to getSession().repeatMode,
+                            SHUFFLE_MODE to getSession().shuffleMode
+                        )
+                    )
+                }
+            isPlayingCallback(playing, byUi)
+        }
         audioPlayer.onReady {
             if (!audioPlayer.isPlaying()) {
                 Timber.d("Player ready but not currently playing, requesting to play")
@@ -175,14 +189,23 @@ class DatmusicPlayerImpl @Inject constructor(
                 setState(STATE_PLAYING, mediaSession.position(), 1F)
             }
         }
+        audioPlayer.onError { throwable ->
+            Timber.e(throwable, "AudioPlayer error")
+            errorCallback(this@DatmusicPlayerImpl, throwable)
+            isInitialized = false
+            updatePlaybackState {
+                setState(STATE_ERROR, 0, 1F)
+            }
+        }
     }
 
     override fun getSession(): MediaSessionCompat = mediaSession
 
-    override fun playAudio(extras: Bundle) {
-        if (isInitialized) {
+    override fun pause(extras: Bundle) {
+        if (isInitialized && (audioPlayer.isPlaying() || audioPlayer.isBuffering())) {
+            audioPlayer.pause()
             updatePlaybackState {
-                setState(STATE_PLAYING, mediaSession.position(), 1F)
+                setState(STATE_PAUSED, mediaSession.position(), 1F)
                 setExtras(
                     extras + bundleOf(
                         REPEAT_MODE to getSession().repeatMode,
@@ -190,6 +213,13 @@ class DatmusicPlayerImpl @Inject constructor(
                     )
                 )
             }
+        } else {
+            Timber.d("Couldn't pause player: ${audioPlayer.isPlaying()}, $isInitialized")
+        }
+    }
+
+    override fun playAudio(extras: Bundle) {
+        if (isInitialized) {
             audioPlayer.play()
             return
         }
@@ -280,23 +310,6 @@ class DatmusicPlayerImpl @Inject constructor(
         }
     }
 
-    override fun pause(extras: Bundle) {
-        if (isInitialized && (audioPlayer.isPlaying() || audioPlayer.isBuffering())) {
-            audioPlayer.pause()
-            updatePlaybackState {
-                setState(STATE_PAUSED, mediaSession.position(), 1F)
-                setExtras(
-                    extras + bundleOf(
-                        REPEAT_MODE to getSession().repeatMode,
-                        SHUFFLE_MODE to getSession().shuffleMode
-                    )
-                )
-            }
-        } else {
-            Timber.d("Couldn't pause player: ${audioPlayer.isPlaying()}, $isInitialized")
-        }
-    }
-
     override suspend fun nextAudio(): String? {
         val id = queueManager.nextAudioId
         id?.let { playAudio(it) }
@@ -352,7 +365,7 @@ class DatmusicPlayerImpl @Inject constructor(
         queueManager.clear()
     }
 
-    override fun onPlayingState(playing: OnIsPlaying) {
+    override fun onPlayingState(playing: OnIsPlaying<DatmusicPlayer>) {
         this.isPlayingCallback = playing
     }
 
@@ -362,10 +375,6 @@ class DatmusicPlayerImpl @Inject constructor(
 
     override fun onError(error: OnError<DatmusicPlayer>) {
         this.errorCallback = error
-        audioPlayer.onError { throwable ->
-            Timber.e(throwable, "AudioPlayer error")
-            errorCallback(this@DatmusicPlayerImpl, throwable)
-        }
     }
 
     override fun onCompletion(completion: OnCompletion<DatmusicPlayer>) {
@@ -387,7 +396,6 @@ class DatmusicPlayerImpl @Inject constructor(
             mediaSession.setRepeatMode(bundle.getInt(REPEAT_MODE))
             mediaSession.setShuffleMode(bundle.getInt(SHUFFLE_MODE))
         }
-        isPlayingCallback(state.isPlaying, state.extras?.getBoolean(BY_UI_KEY) ?: false)
     }
 
     override fun updateData(list: List<String>, title: String) {
@@ -424,15 +432,16 @@ class DatmusicPlayerImpl @Inject constructor(
             name = controller.queueTitle?.toString() ?: "All"
         )
 
-        Timber.d("Saving queue state: ${queueState.currentId}, size=${queueState.queue.size}")
+        Timber.d("Saving queue state: cid=${queueState.currentId}, size=${queueState.queue.size}")
         preferences.save(queueStateKey, queueState, QueueState.serializer())
     }
 
     override suspend fun restoreQueueState() {
         Timber.d("Restoring queue state")
         var queueState = preferences.get(queueStateKey, QueueState.serializer(), QueueState(emptyList())).first()
-        Timber.d("Saved state: ${queueState.currentId}, size=${queueState.queue.size}")
-        if (queueState.state in listOf(STATE_PLAYING, STATE_BUFFERING, STATE_BUFFERING)) {
+        Timber.d("Restoring state: ${queueState.currentId}, size=${queueState.queue.size}")
+
+        if (queueState.state in listOf(STATE_PLAYING, STATE_BUFFERING, STATE_BUFFERING, STATE_ERROR)) {
             queueState = queueState.copy(state = STATE_PAUSED)
         }
 
