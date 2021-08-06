@@ -6,19 +6,19 @@ package tm.alashow.datmusic.ui.playback
 
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import android.support.v4.media.session.PlaybackStateCompat.STATE_NONE
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -29,12 +29,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.BottomSheetState
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.LocalContentAlpha
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ProgressIndicatorDefaults
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -50,7 +51,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -69,6 +69,7 @@ import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.artist
 import tm.alashow.datmusic.playback.artwork
 import tm.alashow.datmusic.playback.artworkUri
+import tm.alashow.datmusic.playback.isActive
 import tm.alashow.datmusic.playback.isBuffering
 import tm.alashow.datmusic.playback.isError
 import tm.alashow.datmusic.playback.isPlayEnabled
@@ -77,10 +78,10 @@ import tm.alashow.datmusic.playback.models.PlaybackProgressState
 import tm.alashow.datmusic.playback.playPause
 import tm.alashow.datmusic.playback.title
 import tm.alashow.ui.Dismissable
+import tm.alashow.ui.adaptiveColor
 import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.components.IconButton
 import tm.alashow.ui.theme.AppTheme
-import tm.alashow.ui.theme.translucentSurface
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -88,7 +89,7 @@ fun PlaybackMiniControls(playbackConnection: PlaybackConnection = LocalPlaybackC
     val playbackState by rememberFlowWithLifecycle(playbackConnection.playbackState).collectAsState(NONE_PLAYBACK_STATE)
     val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying).collectAsState(NONE_PLAYING)
 
-    val visible = playbackState.state != STATE_NONE
+    val visible = (playbackState to nowPlaying).isActive
     AnimatedVisibility(visible = visible, enter = slideInVertically({ it / 2 }), exit = slideOutVertically({ it / 2 })) {
         PlaybackMiniControls(
             playbackState = playbackState,
@@ -105,31 +106,43 @@ fun PlaybackMiniControls(
     nowPlaying: MediaMetadataCompat,
     modifier: Modifier = Modifier,
     onPlayPause: () -> Unit,
-    height: Dp = 60.dp,
+    height: Dp = 56.dp,
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
     playbackSheetState: BottomSheetState = LocalPlaybackSheetState.current,
 ) {
     val coroutine = rememberCoroutineScope()
     val expand = { coroutine.launch { playbackSheetState.expand() } }
+
+    val adaptiveColor = adaptiveColor(nowPlaying.artwork)
+    val backgroundColor by animateColorAsState(adaptiveColor.color)
+    val contentColor by animateColorAsState(adaptiveColor.contentColor)
+
     Dismissable(onDismiss = { playbackConnection.transportControls?.stop() }) {
-        Surface(color = Color.Transparent, modifier = Modifier.clickable { expand() }) {
+        Surface(
+            color = Color.Transparent,
+            shape = MaterialTheme.shapes.small,
+            modifier = modifier
+                .padding(horizontal = AppTheme.specs.paddingSmall)
+                .clickable { expand() }
+        ) {
             Column {
-                PlaybackProgress(playbackState)
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = modifier
+                    modifier = Modifier
                         .height(height)
                         .fillMaxWidth()
-                        .translucentSurface()
+                        .background(backgroundColor)
                 ) {
-                    PlaybackNowPlaying(nowPlaying, height)
-                    PlaybackPlayPause(playbackState, onPlayPause)
+                    CompositionLocalProvider(LocalContentColor provides contentColor) {
+                        PlaybackNowPlaying(nowPlaying, height)
+                        PlaybackPlayPause(playbackState, onPlayPause)
+                    }
                 }
-
-                Box(Modifier.translucentSurface()) {
-                    Divider(thickness = 0.2.dp)
-                }
+                PlaybackProgress(
+                    playbackState = playbackState,
+                    color = MaterialTheme.colors.onBackground
+                )
             }
         }
     }
@@ -138,12 +151,12 @@ fun PlaybackMiniControls(
 @Composable
 private fun PlaybackProgress(
     playbackState: PlaybackStateCompat,
-    color: Color = MaterialTheme.colors.secondary,
+    color: Color,
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
 ) {
     val progressState by rememberFlowWithLifecycle(playbackConnection.playbackProgress).collectAsState(PlaybackProgressState())
     val sizeModifier = Modifier
-        .height(1.dp)
+        .height(2.dp)
         .fillMaxWidth()
     when {
         playbackState.isBuffering -> {
@@ -156,6 +169,7 @@ private fun PlaybackProgress(
             LinearProgressIndicator(
                 progress = animateFloatAsState(progressState.progress, tween(PLAYBACK_PROGRESS_INTERVAL.toInt(), easing = LinearEasing)).value,
                 color = color,
+                backgroundColor = color.copy(ProgressIndicatorDefaults.IndicatorBackgroundOpacity),
                 modifier = sizeModifier
             )
         }
@@ -169,7 +183,11 @@ private fun RowScope.PlaybackNowPlaying(nowPlaying: MediaMetadataCompat, height:
         modifier = Modifier.weight(7f),
     ) {
         val artwork = rememberImagePainter(nowPlaying.artwork ?: nowPlaying.artworkUri, builder = ImageLoading.defaultConfig)
-        CoverImage(painter = artwork, size = height, shape = RectangleShape) { imageMod ->
+        CoverImage(
+            painter = artwork,
+            size = height - 16.dp,
+            modifier = Modifier.padding(AppTheme.specs.paddingSmall)
+        ) { imageMod ->
             Image(
                 painter = artwork,
                 contentDescription = null,
@@ -204,7 +222,7 @@ private fun RowScope.PlaybackNowPlaying(nowPlaying: MediaMetadataCompat, height:
 private fun RowScope.PlaybackPlayPause(playbackState: PlaybackStateCompat, onPlayPause: () -> Unit) {
     IconButton(
         onClick = onPlayPause,
-        rippleColor = MaterialTheme.colors.secondary,
+        rippleColor = LocalContentColor.current,
         modifier = Modifier.weight(1f)
     ) {
         Icon(

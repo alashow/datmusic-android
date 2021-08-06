@@ -41,7 +41,7 @@ fun PlaybackHost(
         playbackState.errorMessage?.apply { context.toast("Playback error: ${playbackState.errorMessage}") }
     }
 
-    val playbackBottomSheetState = rememberBottomSheetState(BottomSheetValue.Expanded)
+    val playbackBottomSheetState = rememberBottomSheetState(BottomSheetValue.Collapsed)
 
     CompositionLocalProvider(
         LocalPlaybackConnection provides viewModel.playbackConnection,

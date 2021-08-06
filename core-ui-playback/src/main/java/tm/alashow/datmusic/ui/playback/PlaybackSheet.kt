@@ -8,6 +8,7 @@ import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.DragInteraction
@@ -124,7 +125,7 @@ import tm.alashow.datmusic.ui.audios.AudioItemAction
 import tm.alashow.datmusic.ui.audios.LocalAudioActionHandler
 import tm.alashow.datmusic.ui.media.R
 import tm.alashow.ui.DismissableSnackbarHost
-import tm.alashow.ui.adaptiveGradient
+import tm.alashow.ui.adaptiveColor
 import tm.alashow.ui.coloredRippleClickable
 import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.components.IconButton
@@ -132,7 +133,6 @@ import tm.alashow.ui.material.Slider
 import tm.alashow.ui.material.SliderDefaults
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.LocalThemeState
-import tm.alashow.ui.theme.contrastComposite
 import tm.alashow.ui.theme.disabledAlpha
 import tm.alashow.ui.theme.plainBackground
 
@@ -185,13 +185,13 @@ fun PlaybackSheetContent(
     val playbackState by rememberFlowWithLifecycle(playbackConnection.playbackState).collectAsState(NONE_PLAYBACK_STATE)
     val playbackQueue by rememberFlowWithLifecycle(playbackConnection.playbackQueue).collectAsState(PlaybackQueue())
     val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying).collectAsState(NONE_PLAYING)
-    val adaptiveGradient = adaptiveGradient(nowPlaying.artwork)
 
-    val contentColor = adaptiveGradient.color.value.contrastComposite()
+    val adaptiveColor = adaptiveColor(nowPlaying.artwork)
+    val contentColor by animateColorAsState(adaptiveColor.color)
 
     Scaffold(
         backgroundColor = Color.Transparent,
-        modifier = Modifier.background(adaptiveGradient.gradient),
+        modifier = Modifier.background(adaptiveColor.gradient),
         scaffoldState = scaffoldState,
         snackbarHost = {
             DismissableSnackbarHost(it, modifier = Modifier.navigationBarsPadding())

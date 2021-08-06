@@ -91,6 +91,9 @@ inline val MediaSessionCompat.repeatMode
 inline val MediaSessionCompat.shuffleMode
     get() = controller.shuffleMode
 
+inline val Pair<PlaybackStateCompat, MediaMetadataCompat>.isActive
+    get() = (first.state != PlaybackStateCompat.STATE_NONE && second != NONE_PLAYING)
+
 inline val PlaybackStateCompat.isPrepared
     get() = (state == PlaybackStateCompat.STATE_BUFFERING) ||
         (state == PlaybackStateCompat.STATE_PLAYING) ||

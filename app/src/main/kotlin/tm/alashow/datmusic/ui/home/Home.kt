@@ -5,6 +5,7 @@
 package tm.alashow.datmusic.ui.home
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,10 +32,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
@@ -47,9 +51,15 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
+import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.common.compose.LocalScaffoldState
 import tm.alashow.common.compose.LogCompositions
+import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.R
+import tm.alashow.datmusic.playback.NONE_PLAYBACK_STATE
+import tm.alashow.datmusic.playback.NONE_PLAYING
+import tm.alashow.datmusic.playback.PlaybackConnection
+import tm.alashow.datmusic.playback.isActive
 import tm.alashow.datmusic.ui.AppNavigation
 import tm.alashow.datmusic.ui.playback.PlaybackMiniControls
 import tm.alashow.navigation.RootScreen
@@ -134,13 +144,23 @@ private fun NavController.currentScreenAsState(): State<RootScreen> {
 internal fun HomeBottomNavigation(
     selectedNavigation: RootScreen,
     onNavigationSelected: (RootScreen) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    playbackConnection: PlaybackConnection = LocalPlaybackConnection.current
 ) {
+    val playbackState by rememberFlowWithLifecycle(playbackConnection.playbackState).collectAsState(NONE_PLAYBACK_STATE)
+    val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying).collectAsState(NONE_PLAYING)
+
+    // gradient bg when playback is active, normal bar bg color otherwise
+    val playerActive = (playbackState to nowPlaying).isActive
+    val surfaceElevation = if (playerActive) 0.dp else 8.dp
+    val surfaceColor = if (playerActive) Color.Transparent else translucentSurfaceColor()
+    val surfaceMod = if (playerActive) Modifier.background(homeBottomNavigationGradient()) else Modifier
+
     Surface(
-        color = translucentSurfaceColor(),
+        elevation = surfaceElevation,
+        color = surfaceColor,
         contentColor = contentColorFor(MaterialTheme.colors.surface),
-        elevation = 8.dp,
-        modifier = modifier
+        modifier = modifier.then(surfaceMod)
     ) {
         Row(
             Modifier
@@ -176,6 +196,20 @@ internal fun HomeBottomNavigation(
         }
     }
 }
+
+@Composable
+private fun homeBottomNavigationGradient() = Brush.verticalGradient(
+    listOf(
+        MaterialTheme.colors.surface.copy(0.01f),
+        MaterialTheme.colors.surface.copy(0.6f),
+        MaterialTheme.colors.surface.copy(0.7f),
+        MaterialTheme.colors.surface.copy(0.8f),
+        MaterialTheme.colors.surface.copy(0.9f),
+        MaterialTheme.colors.surface.copy(0.95f),
+        MaterialTheme.colors.surface.copy(1f),
+        MaterialTheme.colors.surface
+    )
+)
 
 @Composable
 private fun RowScope.HomeBottomNavigationItem(

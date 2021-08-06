@@ -8,11 +8,10 @@ import android.graphics.Bitmap
 import android.graphics.Color as AColor
 import androidx.annotation.ColorInt
 import androidx.annotation.FloatRange
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,22 +24,24 @@ import androidx.core.math.MathUtils
 import androidx.palette.graphics.Palette
 import tm.alashow.ui.theme.toColor
 
-data class AdaptiveGradientResult(val color: State<Color>, val gradient: Brush)
+data class AdaptiveColorResult(val color: Color, val contentColor: Color, val gradient: Brush)
 
 @Composable
-fun adaptiveGradient(image: Bitmap? = null, initial: Color = MaterialTheme.colors.secondary): AdaptiveGradientResult {
+fun adaptiveColor(image: Bitmap? = null, initial: Color = MaterialTheme.colors.secondary): AdaptiveColorResult {
     var accent by remember { mutableStateOf(initial) }
-    val accentAnimated = animateColorAsState(accent)
+    val contentColor by derivedStateOf { accent.contentColor() }
+
     val isDarkTheme = !MaterialTheme.colors.isLight
-    LaunchedEffect(image) {
+
+    LaunchedEffect(image, isDarkTheme) {
         if (image != null)
             Palette.from(image)
                 .generate().apply {
-                    accent = getAccentColor(initial.toArgb(), this).toColor()
+                    accent = getAccentColor(isDarkTheme, initial.toArgb(), this).toColor()
                 }
     }
 
-    return AdaptiveGradientResult(accentAnimated, backgroundGradient(accentAnimated.value))
+    return AdaptiveColorResult(accent, contentColor, backgroundGradient(accent))
 }
 
 @Composable
@@ -55,14 +56,37 @@ fun backgroundGradient(
     return Brush.verticalGradient(listOf(first, second, endColor))
 }
 
-fun getAccentColor(accent: Int, palette: Palette): Int {
-    val mutedColor = palette.getMutedColor(accent)
-    val lightVibrant = palette.getLightVibrantColor(mutedColor)
-    return palette.getVibrantColor(lightVibrant)
+fun getAccentColor(isDark: Boolean, default: Int, palette: Palette): Int {
+    when (isDark) {
+        true -> {
+            val darkMutedColor = palette.getDarkMutedColor(default)
+            val lightMutedColor = palette.getLightMutedColor(darkMutedColor)
+            val darkVibrant = palette.getDarkVibrantColor(lightMutedColor)
+            val lightVibrant = palette.getLightVibrantColor(darkVibrant)
+            val mutedColor = palette.getMutedColor(lightVibrant)
+            return palette.getVibrantColor(mutedColor)
+        }
+        false -> {
+            val lightMutedColor = palette.getLightMutedColor(default)
+            val lightVibrant = palette.getLightVibrantColor(lightMutedColor)
+            val mutedColor = palette.getMutedColor(lightVibrant)
+            val darkMutedColor = palette.getDarkMutedColor(mutedColor)
+            val vibrant = palette.getVibrantColor(darkMutedColor)
+            return palette.getDarkVibrantColor(vibrant)
+        }
+    }
 }
 
 private fun gradientShift(isDarkMode: Boolean, color: Int, shift: Float, alpha: Int): Color {
     return Color(if (isDarkMode) shiftColor(color, shift) else ColorUtils.setAlphaComponent(shiftColor(color, 2f), alpha))
+}
+
+fun Color.contentColor() = getContrastColor(toArgb()).toColor()
+
+fun getContrastColor(@ColorInt color: Int): Int {
+    // Counting the perceptive luminance - human eye favors green color...
+    val a: Double = 1 - (0.299 * AColor.red(color) + 0.587 * AColor.green(color) + 0.114 * AColor.blue(color)) / 255
+    return if (a < 0.5) AColor.BLACK else AColor.WHITE
 }
 
 private fun desaturate(isDarkMode: Boolean, color: Int): Int {
