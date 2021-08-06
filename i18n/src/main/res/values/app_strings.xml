@@ -23,6 +23,7 @@
     <string name="audio.menu.cd">Audio menu</string>
     <string name="audio.menu.play">Play</string>
     <string name="audio.menu.download">Download</string>
+    <string name="audio.menu.downloadById">Download</string>
     <string name="audio.menu.copyLink">Copy link</string>
 
     <string name="downloader.downloadsLocationSelect.title">Downloads location</string>
@@ -55,6 +56,12 @@
     <string name="downloads.download.open">Open file</string>
     <string name="downloads.download.remove">Remove</string>
     <string name="downloads.download.delete">Delete file</string>
+
+    <string name="playback.queueTitle.downloads">Playing from downloads</string>
+    <string name="playback.queueTitle.artist">Playing from artist</string>
+    <string name="playback.queueTitle.artist.value">Playing from artist</string>
+    <string name="playback.queueTitle.album">Playing from album</string>
+    <string name="playback.queueTitle.search">Playing from search</string>
 
     <string name="settings.title">Settings</string>
 

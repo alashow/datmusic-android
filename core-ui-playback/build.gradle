@@ -44,6 +44,7 @@ dependencies {
 	api project(":common-ui-compose")
 	api project(":common-ui-theme")
 	api project(":common-ui-components")
+	api project(":core-ui-media")
 
 	implementation Deps.Dagger.hilt
 	kapt Deps.Dagger.compiler

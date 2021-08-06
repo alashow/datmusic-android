@@ -17,13 +17,11 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import tm.alashow.base.util.toast
+import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.playback.NONE_PLAYBACK_STATE
-import tm.alashow.datmusic.playback.PlaybackConnection
-
-val LocalPlaybackConnection = staticCompositionLocalOf<PlaybackConnection> {
-    error("No LocalPlaybackConnection provided")
-}
+import tm.alashow.datmusic.ui.audios.LocalAudioActionHandler
+import tm.alashow.datmusic.ui.audios.audioActionHandler
 
 @OptIn(ExperimentalMaterialApi::class)
 val LocalPlaybackSheetState = staticCompositionLocalOf<BottomSheetState> {
@@ -43,14 +41,20 @@ fun PlaybackHost(
         playbackState.errorMessage?.apply { context.toast("Playback error: ${playbackState.errorMessage}") }
     }
 
-    val playbackBottomSheetState = rememberBottomSheetState(BottomSheetValue.Collapsed)
+    val playbackBottomSheetState = rememberBottomSheetState(BottomSheetValue.Expanded)
 
     CompositionLocalProvider(
         LocalPlaybackConnection provides viewModel.playbackConnection,
         LocalPlaybackSheetState provides playbackBottomSheetState,
     ) {
-        PlaybackSheet {
-            content()
-        }
+        PlaybackSheet(
+            sheetContentWrapper = { sheetContent ->
+                val audioActionHandler = audioActionHandler()
+                CompositionLocalProvider(LocalAudioActionHandler provides audioActionHandler) {
+                    sheetContent()
+                }
+            },
+            content = content
+        )
     }
 }

@@ -55,6 +55,7 @@ fun AudioRow(
     isPlaceholder: Boolean = false,
     onClick: ((Audio) -> Unit)? = null,
     onPlayAudio: ((Audio) -> Unit)? = null,
+    actionHandler: AudioActionHandler = LocalAudioActionHandler.current
 ) {
     var menuVisible by remember { mutableStateOf(false) }
     val contentScaleOnMenuVisible = animateFloatAsState((if (menuVisible) 0.97f else 1f))
@@ -71,7 +72,6 @@ fun AudioRow(
             .fillMaxWidth()
             .padding(AppTheme.specs.inputPaddings)
     ) {
-        val actionHandler = audioActionHandler()
         AudioRowItem(
             audio = audio,
             isPlaceholder = isPlaceholder,

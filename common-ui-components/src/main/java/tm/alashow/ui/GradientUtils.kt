@@ -25,8 +25,10 @@ import androidx.core.math.MathUtils
 import androidx.palette.graphics.Palette
 import tm.alashow.ui.theme.toColor
 
+data class AdaptiveGradientResult(val color: State<Color>, val gradient: Brush)
+
 @Composable
-fun adaptiveGradient(image: Bitmap? = null, initial: Color = MaterialTheme.colors.secondary): Pair<State<Color>, Brush> {
+fun adaptiveGradient(image: Bitmap? = null, initial: Color = MaterialTheme.colors.secondary): AdaptiveGradientResult {
     var accent by remember { mutableStateOf(initial) }
     val accentAnimated = animateColorAsState(accent)
     val isDarkTheme = !MaterialTheme.colors.isLight
@@ -38,7 +40,7 @@ fun adaptiveGradient(image: Bitmap? = null, initial: Color = MaterialTheme.color
                 }
     }
 
-    return accentAnimated to backgroundGradient(accentAnimated.value)
+    return AdaptiveGradientResult(accentAnimated, backgroundGradient(accentAnimated.value))
 }
 
 @Composable

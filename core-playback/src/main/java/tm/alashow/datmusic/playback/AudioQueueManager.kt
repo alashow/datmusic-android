@@ -5,19 +5,19 @@
 package tm.alashow.datmusic.playback
 
 import android.support.v4.media.session.MediaSessionCompat
-import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.tonyodev.fetch2.Status
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import tm.alashow.base.util.extensions.swap
-import tm.alashow.data.PreferencesStore
 import tm.alashow.datmusic.data.db.daos.AudiosDao
+import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.downloader.Downloader
+import tm.alashow.datmusic.playback.models.toQueueItems
 import tm.alashow.domain.models.orNull
 
 interface AudioQueueManager {
@@ -44,17 +44,13 @@ interface AudioQueueManager {
 
 class AudioQueueManagerImpl @Inject constructor(
     private val audiosDao: AudiosDao,
-    private val preferences: PreferencesStore,
+    private val downloadRequestsDao: DownloadRequestsDao,
     private val downloader: Downloader,
 ) : AudioQueueManager, CoroutineScope by MainScope() {
 
-    companion object {
-        val originalQueueKey = stringSetPreferencesKey("player_audio_queue_original")
-    }
-
     private lateinit var mediaSession: MediaSessionCompat
     private val playedAudios = mutableListOf<String>()
-    private val audiosQueue = mutableListOf<String>()
+    private var originalQueue = listOf<String>()
 
     private val currentAudioIndex
         get() = queue.indexOf(currentAudioId)
@@ -69,14 +65,12 @@ class AudioQueueManagerImpl @Inject constructor(
         return currentAudio
     }
 
-    override var queue: List<String> = emptyList()
+    override var queue: List<String> = listOf()
         set(value) {
             field = value
             if (value.isNotEmpty()) {
                 launch {
-                    mediaSession.setQueue(audiosDao.entriesById(value).firstOrNull()?.toQueue())
-                    audiosQueue.clear()
-                    audiosQueue.addAll(preferences.get(originalQueueKey, setOf()).first().toList())
+                    mediaSession.setQueue(audiosDao.entriesById(value).firstOrNull()?.toQueueItems())
                 }
             }
         }
@@ -142,24 +136,35 @@ class AudioQueueManagerImpl @Inject constructor(
     }
 
     override fun shuffleQueue(isShuffle: Boolean) {
-        if (isShuffle) mediaSession.setQueue(shuffleQueue())
-        else restoreQueueOrder()
+        launch {
+            if (isShuffle) mediaSession.setQueue(shuffleQueue())
+            else restoreQueueOrder()
+        }
     }
 
-    private fun shuffleQueue(): List<MediaSessionCompat.QueueItem> {
-        val shuffled = mediaSession.controller.queue.shuffled()
-        val realQueue = shuffled.swap(shuffled.indexOfFirst { it.description.mediaId == currentAudioId }, 0)
+    private suspend fun shuffleQueue(): List<MediaSessionCompat.QueueItem> {
+        val shuffled = queue.let { original ->
+            original.shuffled().let { shuffled ->
+                val currentIdIndex = shuffled.indexOfFirst { id -> id == currentAudioId }
+                if (currentIdIndex >= 0)
+                    shuffled.swap(currentIdIndex, 0)
+                else {
+                    Timber.e("CurrentIdIndex is not found found")
+                    return emptyList()
+                }
+            }
+        }
 
-        audiosQueue.clear()
-        audiosQueue.addAll(queue.toList())
-        launch { preferences.save(originalQueueKey, audiosQueue.toSet()) }
-        queue = realQueue.toMediaIdList()
+        Timber.d("Saving shuffled queue: ${shuffled.size}")
 
-        return shuffled
+        // save non-shuffled original queue
+        originalQueue = queue
+        // set and return shuffled queue
+        queue = shuffled
+        return audiosDao.entriesById(queue).firstOrNull()?.toQueueItems() ?: error("Null entries")
     }
 
     private fun restoreQueueOrder() {
-        queue = audiosQueue
-        audiosQueue.clear()
+        queue = originalQueue
     }
 }

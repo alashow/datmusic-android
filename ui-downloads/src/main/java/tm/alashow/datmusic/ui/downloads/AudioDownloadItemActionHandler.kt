@@ -6,9 +6,11 @@ package tm.alashow.datmusic.ui.downloads
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalContext
 import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import tm.alashow.base.util.IntentUtils
 import tm.alashow.base.util.event
 import tm.alashow.base.util.extensions.simpleName
@@ -16,10 +18,14 @@ import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.ui.downloader.LocalDownloader
 
+val LocalAudioDownloadItemActionHandler = staticCompositionLocalOf<AudioDownloadItemActionHandler> {
+    error("No AudioDownloadItemActionHandler provided")
+}
+
 typealias AudioDownloadItemActionHandler = (AudioDownloadItemAction) -> Unit
 
 @Composable
-internal fun AudioDownloadItemActionHandler(
+fun audioDownloadItemActionHandler(
     downloader: Downloader = LocalDownloader.current,
     analytics: FirebaseAnalytics = LocalAnalytics.current
 ): AudioDownloadItemActionHandler {
@@ -36,6 +42,7 @@ internal fun AudioDownloadItemActionHandler(
             is AudioDownloadItemAction.Remove -> coroutine.launch { downloader.remove(action.audio) }
             is AudioDownloadItemAction.Delete -> coroutine.launch { downloader.delete(action.audio) }
             is AudioDownloadItemAction.Open -> IntentUtils.openFile(context, action.audio.downloadInfo.fileUri, action.audio.audio.fileMimeType())
+            is AudioDownloadItemAction.Play -> Timber.e("Play is not handled here")
         }
     }
 }

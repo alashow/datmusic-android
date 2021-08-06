@@ -60,6 +60,7 @@ import coil.compose.rememberImagePainter
 import kotlinx.coroutines.launch
 import tm.alashow.base.imageloading.ImageLoading
 import tm.alashow.base.util.extensions.orNA
+import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.playback.NONE_PLAYBACK_STATE
 import tm.alashow.datmusic.playback.NONE_PLAYING
@@ -72,11 +73,12 @@ import tm.alashow.datmusic.playback.isBuffering
 import tm.alashow.datmusic.playback.isError
 import tm.alashow.datmusic.playback.isPlayEnabled
 import tm.alashow.datmusic.playback.isPlaying
+import tm.alashow.datmusic.playback.models.PlaybackProgressState
 import tm.alashow.datmusic.playback.playPause
 import tm.alashow.datmusic.playback.title
 import tm.alashow.ui.Dismissable
-import tm.alashow.ui.coloredRippleClickable
 import tm.alashow.ui.components.CoverImage
+import tm.alashow.ui.components.IconButton
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.translucentSurface
 
@@ -122,7 +124,7 @@ fun PlaybackMiniControls(
                         .translucentSurface()
                 ) {
                     PlaybackNowPlaying(nowPlaying, height)
-                    PlaybackPlayPause(onPlayPause, playbackState)
+                    PlaybackPlayPause(playbackState, onPlayPause)
                 }
 
                 Box(Modifier.translucentSurface()) {
@@ -136,26 +138,25 @@ fun PlaybackMiniControls(
 @Composable
 private fun PlaybackProgress(
     playbackState: PlaybackStateCompat,
-    modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colors.secondary,
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
 ) {
+    val progressState by rememberFlowWithLifecycle(playbackConnection.playbackProgress).collectAsState(PlaybackProgressState())
     val sizeModifier = Modifier
         .height(1.dp)
         .fillMaxWidth()
-    val playbackProgress by rememberFlowWithLifecycle(playbackConnection.playbackProgress).collectAsState(0f)
     when {
         playbackState.isBuffering -> {
             LinearProgressIndicator(
                 color = color,
-                modifier = modifier.then(sizeModifier)
+                modifier = sizeModifier
             )
         }
         else -> {
             LinearProgressIndicator(
-                progress = animateFloatAsState(playbackProgress, tween(PLAYBACK_PROGRESS_INTERVAL.toInt(), easing = LinearEasing)).value,
+                progress = animateFloatAsState(progressState.progress, tween(PLAYBACK_PROGRESS_INTERVAL.toInt(), easing = LinearEasing)).value,
                 color = color,
-                modifier = modifier.then(sizeModifier)
+                modifier = sizeModifier
             )
         }
     }
@@ -200,12 +201,11 @@ private fun RowScope.PlaybackNowPlaying(nowPlaying: MediaMetadataCompat, height:
 }
 
 @Composable
-private fun RowScope.PlaybackPlayPause(onPlayPause: () -> Unit, playbackState: PlaybackStateCompat) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier.Companion
-            .weight(1f)
-            .coloredRippleClickable(onPlayPause),
+private fun RowScope.PlaybackPlayPause(playbackState: PlaybackStateCompat, onPlayPause: () -> Unit) {
+    IconButton(
+        onClick = onPlayPause,
+        rippleColor = MaterialTheme.colors.secondary,
+        modifier = Modifier.weight(1f)
     ) {
         Icon(
             painter = rememberVectorPainter(

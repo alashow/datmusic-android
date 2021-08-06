@@ -57,14 +57,17 @@ import tm.alashow.datmusic.downloader.progressVisible
 import tm.alashow.datmusic.ui.audios.AudioRowItem
 import tm.alashow.ui.TimedVisibility
 import tm.alashow.ui.colorFilterDynamicProperty
-import tm.alashow.ui.coloredRippleClickable
+import tm.alashow.ui.components.IconButton
 import tm.alashow.ui.components.ProgressIndicator
 import tm.alashow.ui.theme.AppTheme
 
 @Composable
-internal fun AudioDownload(audioDownloadItem: AudioDownloadItem, onAudioPlay: (AudioDownloadItem) -> Unit) {
+internal fun AudioDownload(
+    audioDownloadItem: AudioDownloadItem,
+    onAudioPlay: (AudioDownloadItem) -> Unit,
+    actionHandler: AudioDownloadItemActionHandler = LocalAudioDownloadItemActionHandler.current
+) {
     var menuVisible by remember { mutableStateOf(false) }
-    val actionHandler = AudioDownloadItemActionHandler()
 
     Column(
         verticalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
@@ -183,10 +186,12 @@ private fun DownloadRequestProgress(
                         .size(size)
                         .clip(CircleShape),
                 )
-                Box(
-                    Modifier
+                IconButton(
+                    onClick = onClick,
+                    rippleColor = MaterialTheme.colors.secondary,
+                    modifier = Modifier
                         .clip(CircleShape)
-                        .coloredRippleClickable(onClick)
+                        .size(size)
                         .background(MaterialTheme.colors.secondary.copy(alpha = 0.1f))
                 ) {
                     val icon = when {
@@ -199,7 +204,6 @@ private fun DownloadRequestProgress(
                             painter = rememberVectorPainter(it),
                             contentDescription = null,
                             modifier = Modifier
-                                .size(size)
                                 .padding(AppTheme.specs.paddingSmall)
                         )
                     }

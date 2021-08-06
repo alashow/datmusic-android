@@ -19,6 +19,7 @@ import tm.alashow.datmusic.domain.entities.DownloadRequest
 import tm.alashow.datmusic.downloader.AudioDownloadItems
 import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.playback.PlaybackConnection
+import tm.alashow.datmusic.playback.models.QueueTitle
 import tm.alashow.domain.models.Success
 import tm.alashow.domain.models.Uninitialized
 
@@ -45,6 +46,18 @@ class DownloadsViewModel @Inject constructor(
             return@launch
         }
 
-        playbackConnection.playAudio(audios = downloads.map { it.audio }.toTypedArray(), index = downloads.indexOf(audioDownloadItem))
+        val downloadIndex = downloads.indexOfFirst { it.audio.id == audioDownloadItem.audio.id }
+        if (downloadIndex < 0) {
+            Timber.d("Audio not found in downloads: ${audioDownloadItem.audio.id}")
+            Timber.d(downloads.map { it.audio.id }.joinToString())
+            return@launch
+        } else {
+            Timber.d("Audio download index found: $downloadIndex")
+        }
+        playbackConnection.playAudio(
+            audios = downloads.map { it.audio }.toTypedArray(),
+            index = downloadIndex,
+            title = QueueTitle(QueueTitle.Type.DOWNLOADS)
+        )
     }
 }

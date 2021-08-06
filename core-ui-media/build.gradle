@@ -43,5 +43,4 @@ dependencies {
 	api project(":common-ui-theme")
 	api project(":common-ui-components")
 	api project(":core-ui-downloader")
-	api project(":core-ui-playback")
 }

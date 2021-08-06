@@ -22,7 +22,7 @@ import androidx.compose.ui.res.stringResource
 import tm.alashow.datmusic.ui.media.R
 
 @Composable
-internal fun AudioDropdownMenu(
+fun AudioDropdownMenu(
     expanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,

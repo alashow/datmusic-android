@@ -13,6 +13,8 @@ import android.support.v4.media.session.PlaybackStateCompat
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import timber.log.Timber
+import tm.alashow.datmusic.playback.players.QUEUE_HAS_NEXT
+import tm.alashow.datmusic.playback.players.QUEUE_HAS_PREVIOUS
 
 val NONE_PLAYBACK_STATE: PlaybackStateCompat = PlaybackStateCompat.Builder()
     .setState(PlaybackStateCompat.STATE_NONE, 0, 0f)
@@ -31,6 +33,29 @@ fun MediaControllerCompat.playPause() {
             else -> Timber.d("Couldn't play or pause the media controller")
         }
     }
+}
+
+fun MediaControllerCompat.toggleShuffleMode() {
+    val new = when (shuffleMode) {
+        PlaybackStateCompat.SHUFFLE_MODE_NONE -> PlaybackStateCompat.SHUFFLE_MODE_ALL
+        PlaybackStateCompat.SHUFFLE_MODE_ALL -> PlaybackStateCompat.SHUFFLE_MODE_NONE
+        else -> {
+            Timber.e("Unknown shuffle mode $shuffleMode")
+            return
+        }
+    }
+    Timber.i("Toggling shuffle mode from=$shuffleMode, to=$new")
+    transportControls.setShuffleMode(new)
+}
+
+fun MediaControllerCompat.toggleRepeatMode() {
+    transportControls.setRepeatMode(
+        when (repeatMode) {
+            PlaybackStateCompat.REPEAT_MODE_NONE -> PlaybackStateCompat.REPEAT_MODE_ALL
+            PlaybackStateCompat.REPEAT_MODE_ALL -> PlaybackStateCompat.REPEAT_MODE_ONE
+            else -> PlaybackStateCompat.REPEAT_MODE_NONE
+        }
+    )
 }
 
 fun createDefaultPlaybackState(): PlaybackStateCompat.Builder {
@@ -89,6 +114,12 @@ inline val PlaybackStateCompat.isPlayEnabled
             (actions and PlaybackStateCompat.ACTION_PLAY_PAUSE != 0L) &&
                 (state == PlaybackStateCompat.STATE_PAUSED)
             )
+
+inline val PlaybackStateCompat.hasPrevious
+    get() = (extras?.getBoolean(QUEUE_HAS_PREVIOUS) ?: false)
+
+inline val PlaybackStateCompat.hasNext
+    get() = (extras?.getBoolean(QUEUE_HAS_NEXT) ?: true)
 
 inline val MediaMetadataCompat.id: String get() = getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)
 

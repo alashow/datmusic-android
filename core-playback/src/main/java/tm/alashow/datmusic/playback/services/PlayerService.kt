@@ -19,9 +19,6 @@ import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.datmusic.data.db.daos.AlbumsDao
 import tm.alashow.datmusic.data.db.daos.ArtistsDao
 import tm.alashow.datmusic.data.db.daos.AudiosDao
-import tm.alashow.datmusic.playback.MediaId
-import tm.alashow.datmusic.playback.MediaId.Companion.CALLER_OTHER
-import tm.alashow.datmusic.playback.MediaId.Companion.CALLER_SELF
 import tm.alashow.datmusic.playback.MediaNotificationsImpl
 import tm.alashow.datmusic.playback.NEXT
 import tm.alashow.datmusic.playback.NOTIFICATION_ID
@@ -29,12 +26,15 @@ import tm.alashow.datmusic.playback.PLAY_PAUSE
 import tm.alashow.datmusic.playback.PREVIOUS
 import tm.alashow.datmusic.playback.STOP_PLAYBACK
 import tm.alashow.datmusic.playback.isStopped
+import tm.alashow.datmusic.playback.models.MediaId
+import tm.alashow.datmusic.playback.models.MediaId.Companion.CALLER_OTHER
+import tm.alashow.datmusic.playback.models.MediaId.Companion.CALLER_SELF
+import tm.alashow.datmusic.playback.models.toAudioList
+import tm.alashow.datmusic.playback.models.toMediaId
+import tm.alashow.datmusic.playback.models.toMediaItems
 import tm.alashow.datmusic.playback.playPause
 import tm.alashow.datmusic.playback.players.DatmusicPlayerImpl
 import tm.alashow.datmusic.playback.receivers.BecomingNoisyReceiver
-import tm.alashow.datmusic.playback.toAudioList
-import tm.alashow.datmusic.playback.toMediaId
-import tm.alashow.datmusic.playback.toMediaItems
 
 @AndroidEntryPoint
 class PlayerService : MediaBrowserServiceCompat(), CoroutineScope by MainScope() {

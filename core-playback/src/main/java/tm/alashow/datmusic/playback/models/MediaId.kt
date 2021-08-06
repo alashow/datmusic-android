@@ -2,7 +2,7 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.datmusic.playback
+package tm.alashow.datmusic.playback.models
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
@@ -20,6 +20,8 @@ const val MEDIA_TYPE_ALBUM = "Media.Album"
 const val MEDIA_TYPE_AUDIO_QUERY = "Media.AudioQuery"
 const val MEDIA_TYPE_AUDIO_MINERVA_QUERY = "Media.AudioMinervaQuery"
 
+private const val MEDIA_ID_SEPARATOR = " | "
+
 data class MediaId(
     val type: String = MEDIA_TYPE_AUDIO,
     val value: String = "0",
@@ -32,16 +34,17 @@ data class MediaId(
         const val CALLER_OTHER = "other"
     }
 
-    // var mediaItem: MediaBrowserCompat.MediaItem? = null
-
     override fun toString(): String {
-        return "$type | $value | $index | $caller"
+        return type +
+            MEDIA_ID_SEPARATOR + value +
+            MEDIA_ID_SEPARATOR + index +
+            MEDIA_ID_SEPARATOR + caller
     }
 }
 
 fun String.toMediaId(): MediaId {
-    val parts = split("|")
-    val type = parts[0].trim()
+    val parts = split(MEDIA_ID_SEPARATOR)
+    val type = parts[0]
 
     if (type !in listOf(MEDIA_TYPE_AUDIO, MEDIA_TYPE_ARTIST, MEDIA_TYPE_ALBUM, MEDIA_TYPE_AUDIO_QUERY, MEDIA_TYPE_AUDIO_MINERVA_QUERY)) {
         Timber.e("Unknown media type: $type")
@@ -49,7 +52,7 @@ fun String.toMediaId(): MediaId {
     }
 
     return if (parts.size > 1)
-        MediaId(type, parts[1].trim(), parts[2].trim().toInt(), parts[3].trim())
+        MediaId(type, parts[1], parts[2].toInt(), parts[3])
     else MediaId()
 }
 
@@ -70,10 +73,10 @@ suspend fun MediaId.toAudioList(audiosDao: AudiosDao, artistsDao: ArtistsDao, al
     else -> emptyList()
 }
 
-suspend fun MediaId.toQueueTitle(audiosDao: AudiosDao, artistsDao: ArtistsDao, albumsDao: AlbumsDao): String? = when (type) {
-    MEDIA_TYPE_AUDIO -> audiosDao.entry(value).firstOrNull()?.title
-    MEDIA_TYPE_ALBUM -> albumsDao.entry(value).firstOrNull()?.title
-    MEDIA_TYPE_ARTIST -> artistsDao.entry(value).firstOrNull()?.name
-    MEDIA_TYPE_AUDIO_QUERY, MEDIA_TYPE_AUDIO_MINERVA_QUERY -> value
-    else -> null
+suspend fun MediaId.toQueueTitle(audiosDao: AudiosDao, artistsDao: ArtistsDao, albumsDao: AlbumsDao): QueueTitle = when (type) {
+    MEDIA_TYPE_AUDIO -> QueueTitle(QueueTitle.Type.AUDIO, audiosDao.entry(value).firstOrNull()?.title)
+    MEDIA_TYPE_ARTIST -> QueueTitle(QueueTitle.Type.ARTIST, artistsDao.entry(value).firstOrNull()?.name)
+    MEDIA_TYPE_ALBUM -> QueueTitle(QueueTitle.Type.ALBUM, albumsDao.entry(value).firstOrNull()?.title)
+    MEDIA_TYPE_AUDIO_QUERY, MEDIA_TYPE_AUDIO_MINERVA_QUERY -> QueueTitle(QueueTitle.Type.SEARCH, value)
+    else -> QueueTitle()
 }

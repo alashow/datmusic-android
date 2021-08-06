@@ -9,7 +9,9 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.material.Colors
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.contentColorFor
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
@@ -17,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import kotlin.random.Random
 
 fun parseColor(hexColor: String) = Color(AndroidColor.parseColor(hexColor))
@@ -33,6 +36,7 @@ val Red = Color(0xFFFF3B30)
 val Red700 = Color(0xFFC0392b)
 val Orange = Color(0xFFFF9500)
 val Yellow = Color(0xFFFFCC00)
+val Yellow500 = Color(0xFFFBBC04)
 val Green = Color(0xFF4CD964)
 val Blue300 = Color(0xFF5AC8FA)
 val Blue = Color(0xFF007AFF)
@@ -89,6 +93,12 @@ fun Colors.plainBackground() = if (MaterialTheme.colors.isLight) Color.White els
 
 @Composable
 fun Colors.plainGrayBackground() = if (MaterialTheme.colors.isLight) Color.LightGray else Color.DarkGray
+
+@Composable
+fun Color.disabledAlpha(condition: Boolean): Color = copy(alpha = if (condition) alpha else ContentAlpha.disabled)
+
+@Composable
+fun Color.contrastComposite(alpha: Float = 0.1f) = contentColorFor(this).copy(alpha = alpha).compositeOver(this)
 
 @Composable
 internal fun animate(colors: Colors): Colors {

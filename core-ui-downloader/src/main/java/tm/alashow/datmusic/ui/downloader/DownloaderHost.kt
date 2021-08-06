@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.LocalAbsoluteElevation
-import androidx.compose.material.ScaffoldState
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -45,14 +45,13 @@ val LocalDownloader = staticCompositionLocalOf<Downloader> {
 @Composable
 fun DownloaderHost(
     viewModel: DownloaderViewModel = hiltViewModel(),
-    scaffoldState: ScaffoldState = LocalScaffoldState.current,
+    snackbarHostState: SnackbarHostState = LocalScaffoldState.current.snackbarHostState,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
     val coroutine = rememberCoroutineScope()
 
     var downloadsLocationDialogShown by remember { mutableStateOf(false) }
-
     collectEvent(viewModel.downloader.downloaderEvents) { event ->
         when (event) {
             DownloaderEvent.ChooseDownloadsLocation -> {
@@ -60,7 +59,7 @@ fun DownloaderHost(
             }
             is DownloaderEvent.DownloaderMessage -> {
                 val message = event.message.asString(context)
-                coroutine.launch { scaffoldState.snackbarHostState.showSnackbar(message) }
+                coroutine.launch { snackbarHostState.showSnackbar(message) }
             }
             else -> Unit
         }

@@ -18,6 +18,11 @@ import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.common.compose.LocalScaffoldState
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.BuildConfig
+import tm.alashow.datmusic.ui.audios.LocalAudioActionHandler
+import tm.alashow.datmusic.ui.audios.audioActionHandler
+import tm.alashow.datmusic.ui.downloader.DownloaderHost
+import tm.alashow.datmusic.ui.downloads.LocalAudioDownloadItemActionHandler
+import tm.alashow.datmusic.ui.downloads.audioDownloadItemActionHandler
 import tm.alashow.datmusic.ui.home.Home
 import tm.alashow.datmusic.ui.playback.PlaybackHost
 import tm.alashow.datmusic.ui.settings.LocalAppVersion
@@ -30,6 +35,7 @@ fun DatmusicApp(
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     analytics: FirebaseAnalytics = FirebaseAnalytics.getInstance(LocalContext.current),
 ) {
+
     CompositionLocalProvider(
         LocalScaffoldState provides scaffoldState,
         LocalAnalytics provides analytics,
@@ -40,10 +46,33 @@ fun DatmusicApp(
 
         AppTheme(themeState) {
             ProvideWindowInsets(consumeWindowInsets = false) {
-                PlaybackHost {
+                DatmusicCore {
                     Home()
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun DatmusicCore(content: @Composable () -> Unit) {
+    DownloaderHost {
+        PlaybackHost {
+            DatmusicActionHandlers {
+                content()
+            }
+        }
+    }
+}
+
+@Composable
+private fun DatmusicActionHandlers(content: @Composable () -> Unit) {
+    val audioActionHandler = audioActionHandler()
+    val audioDownloadItemActionHandler = audioDownloadItemActionHandler()
+    CompositionLocalProvider(
+        LocalAudioActionHandler provides audioActionHandler,
+        LocalAudioDownloadItemActionHandler provides audioDownloadItemActionHandler
+    ) {
+        content()
     }
 }

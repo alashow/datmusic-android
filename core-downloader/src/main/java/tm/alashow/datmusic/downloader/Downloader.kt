@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -33,6 +34,7 @@ import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.base.util.UiMessage
 import tm.alashow.base.util.event
 import tm.alashow.data.PreferencesStore
+import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
 import tm.alashow.datmusic.domain.DownloadsSongsGrouping
 import tm.alashow.datmusic.domain.entities.Audio
@@ -51,6 +53,7 @@ class Downloader @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val preferences: PreferencesStore,
     private val dao: DownloadRequestsDao,
+    private val audiosDao: AudiosDao,
     private val fetcher: Fetch,
     private val analytics: FirebaseAnalytics,
 ) {
@@ -94,10 +97,18 @@ class Downloader @Inject constructor(
      */
     private var pendingEnqueableAudio: Audio? = null
 
+    suspend fun enqueueAudio(audioId: String) {
+        Timber.d("Enqueue requested for: $audioId")
+        audiosDao.entry(audioId).firstOrNull()?.apply {
+            enqueueAudio(this)
+        }
+    }
+
     /**
      * Tries to enqueue given audio or issues error events in case of failure.
      */
     suspend fun enqueueAudio(audio: Audio) {
+        Timber.d("Enqueue audio: $audio")
         val downloadsLocation = verifyAndGetDownloadsLocationUri()
         if (downloadsLocation == null) {
             pendingEnqueableAudio = audio
@@ -300,6 +311,7 @@ class Downloader @Inject constructor(
         preferences.save(DOWNLOADS_LOCATION, uri.toString())
 
         pendingEnqueableAudio?.apply {
+            Timber.d("Consuming pending enqueuable audio download")
             enqueueAudio(this)
             pendingEnqueableAudio = null
         }

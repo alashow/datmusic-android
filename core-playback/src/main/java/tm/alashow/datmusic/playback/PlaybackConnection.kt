@@ -24,23 +24,36 @@ import tm.alashow.base.util.extensions.flowInterval
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
+import tm.alashow.datmusic.playback.models.MEDIA_TYPE_ALBUM
+import tm.alashow.datmusic.playback.models.MEDIA_TYPE_ARTIST
+import tm.alashow.datmusic.playback.models.MEDIA_TYPE_AUDIO
+import tm.alashow.datmusic.playback.models.MEDIA_TYPE_AUDIO_MINERVA_QUERY
+import tm.alashow.datmusic.playback.models.MEDIA_TYPE_AUDIO_QUERY
+import tm.alashow.datmusic.playback.models.MediaId
+import tm.alashow.datmusic.playback.models.PlaybackModeState
+import tm.alashow.datmusic.playback.models.PlaybackProgressState
+import tm.alashow.datmusic.playback.models.PlaybackQueue
+import tm.alashow.datmusic.playback.models.QueueTitle
+import tm.alashow.datmusic.playback.models.fromMediaController
 import tm.alashow.datmusic.playback.players.QUEUE_LIST_KEY
 import tm.alashow.datmusic.playback.players.QUEUE_MEDIA_ID_KEY
 import tm.alashow.datmusic.playback.players.QUEUE_TITLE_KEY
 
-const val PLAYBACK_PROGRESS_INTERVAL = 400L
+const val PLAYBACK_PROGRESS_INTERVAL = 1000L
 
 interface PlaybackConnection {
     val isConnected: MutableStateFlow<Boolean>
     val playbackState: MutableStateFlow<PlaybackStateCompat>
     val nowPlaying: MutableStateFlow<MediaMetadataCompat>
     val playbackQueue: MutableStateFlow<PlaybackQueue>
+
+    val playbackProgress: MutableStateFlow<PlaybackProgressState>
+    val playbackMode: MutableStateFlow<PlaybackModeState>
+
     val transportControls: MediaControllerCompat.TransportControls?
     var mediaController: MediaControllerCompat?
 
-    val playbackProgress: MutableStateFlow<Float>
-
-    fun playAudio(vararg audios: Audio, index: Int = 0)
+    fun playAudio(vararg audios: Audio, index: Int = 0, title: QueueTitle = QueueTitle())
     fun playArtist(artist: Artist, index: Int = 0)
     fun playAlbum(album: Album, index: Int = 0)
     fun playWithQuery(query: String, audioId: String)
@@ -57,8 +70,10 @@ class PlaybackConnectionImpl(
     override val nowPlaying = MutableStateFlow(NONE_PLAYING)
     override val playbackQueue = MutableStateFlow(PlaybackQueue())
 
-    override var mediaController: MediaControllerCompat? = null
+    override val playbackProgress = MutableStateFlow(PlaybackProgressState())
+    override val playbackMode = MutableStateFlow(PlaybackModeState())
 
+    override var mediaController: MediaControllerCompat? = null
     override val transportControls: MediaControllerCompat.TransportControls?
         get() = mediaController?.transportControls
 
@@ -69,41 +84,37 @@ class PlaybackConnectionImpl(
         mediaBrowserConnectionCallback, null
     ).apply { connect() }
 
-    override val playbackProgress = MutableStateFlow(0f)
-
     private var playbackInterval: Job = Job()
 
     init {
         MainScope().launch {
             combine(playbackState, nowPlaying, ::Pair).collect { (state, current) ->
                 playbackInterval.cancel()
-                val startMillis = state.position.toFloat()
-                val duration = current.duration.toFloat()
+                val duration = current.duration
+                val position = state.position
 
                 if (duration < 1) return@collect
 
-                val initial = (startMillis / duration).coerceIn(0f, 1f)
+                val initial = PlaybackProgressState(duration, position)
                 playbackProgress.value = initial
 
-                if (state.isPlaying)
+                if (state.isPlaying && !state.isBuffering)
                     playbackInterval = launch {
                         flowInterval(PLAYBACK_PROGRESS_INTERVAL).collect { ticks ->
-                            val elapsed = (startMillis + PLAYBACK_PROGRESS_INTERVAL * (ticks + 1))
-                            val progress = (elapsed / duration).coerceIn(0f, 1f)
-                            playbackProgress.value = progress
+                            playbackProgress.value = initial.copy(elapsed = PLAYBACK_PROGRESS_INTERVAL * (ticks + 1))
                         }
                     }
             }
         }
     }
 
-    override fun playAudio(vararg audios: Audio, index: Int) {
+    override fun playAudio(vararg audios: Audio, index: Int, title: QueueTitle) {
         val audio = audios[index]
         transportControls?.playFromMediaId(
             MediaId(MEDIA_TYPE_AUDIO, audio.id).toString(),
             Bundle().apply {
                 putStringArray(QUEUE_LIST_KEY, audios.map { it.id }.toTypedArray())
-                putString(QUEUE_TITLE_KEY, audio.title)
+                putString(QUEUE_TITLE_KEY, title.toString())
             }
         )
     }
@@ -163,10 +174,17 @@ class PlaybackConnectionImpl(
         }
 
         override fun onQueueChanged(queue: MutableList<MediaSessionCompat.QueueItem>?) {
-            Timber.d("onQueueChanged: $queue, mediaController=${mediaController != null}")
+            Timber.d("New queue: size=${queue?.size}, $queue")
             val newQueue = fromMediaController(mediaController ?: return)
-            this@PlaybackConnectionImpl.playbackQueue.value = newQueue ?: return
-            Timber.d("Queue set: $newQueue")
+            this@PlaybackConnectionImpl.playbackQueue.value = newQueue
+        }
+
+        override fun onRepeatModeChanged(repeatMode: Int) {
+            playbackMode.value = playbackMode.value.copy(repeatMode = repeatMode)
+        }
+
+        override fun onShuffleModeChanged(shuffleMode: Int) {
+            playbackMode.value = playbackMode.value.copy(shuffleMode = shuffleMode)
         }
 
         override fun onSessionDestroyed() {

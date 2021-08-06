@@ -5,9 +5,7 @@
 package tm.alashow.base.util
 
 import android.content.res.Resources
-import android.widget.TextView
-import androidx.databinding.BindingAdapter
-import java.util.*
+import java.util.Locale
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
@@ -16,7 +14,6 @@ import org.threeten.bp.format.DateTimeFormatter
 import tm.alashow.base.util.date.HOUR_MINUTES_FORMAT
 import tm.alashow.base.util.date.apiDate
 import tm.alashow.base.util.date.toFormattedDateFromApi
-import tm.alashow.base.util.date.toTimeFromApi
 import tm.alashow.baseAndroid.R
 
 fun String?.toLocalizedDateFromApi(
@@ -94,18 +91,8 @@ fun Resources.getWeekDayShort(weekDay: DayOfWeek): String = getStringArray(R.arr
 fun Resources.getWeekDayShort(date: LocalDate) = getWeekDayShort(date.dayOfWeek)
 fun Resources.getWeekDayShort(date: LocalDateTime) = getWeekDayShort(date.dayOfWeek)
 
-@BindingAdapter(
-    "android:date",
-    "android:dateFormat",
-    "android:dateWithYear",
-    "android:dateWithMonth",
-    "android:dateWithTime",
-    "android:dateWithWeek",
-    "android:dateShortMonth",
-    requireAll = false
-)
-fun applyDate(
-    view: TextView?,
+fun formatDate(
+    resources: Resources,
     date: String?,
     dateFormat: String?,
     withYear: Boolean?,
@@ -113,26 +100,27 @@ fun applyDate(
     withTime: Boolean?,
     withWeek: Boolean?,
     shortMonth: Boolean?
-) {
-    view?.apply {
-        text = when {
-            dateFormat != null -> date.toFormattedDateFromApi(DateTimeFormatter.ofPattern(dateFormat, Locale.getDefault()))
-            else -> date.toLocalizedDateFromApi(
-                resources, (withYear ?: true), (withMonth ?: true), (withTime ?: false),
-                (withWeek ?: false), (shortMonth ?: false)
-            )
-        }
+): String = when {
+    dateFormat != null -> date.toFormattedDateFromApi(DateTimeFormatter.ofPattern(dateFormat, Locale.getDefault()))
+    else -> date.toLocalizedDateFromApi(
+        resources, (withYear ?: true), (withMonth ?: true), (withTime ?: false),
+        (withWeek ?: false), (shortMonth ?: false)
+    )
+}
+
+fun timeAddZeros(number: Int?, ifZero: String = ""): String {
+    return when (number) {
+        0 -> ifZero
+        1, 2, 3, 4, 5, 6, 7, 8, 9 -> "0$number"
+        else -> number.toString()
     }
 }
 
-@BindingAdapter("android:time")
-fun applyTime(view: TextView?, date: String?) {
-    view?.text = date.toTimeFromApi()
-}
-
-@BindingAdapter("android:duration")
-fun applyDuration(view: TextView?, duration: Long?) {
-    view?.apply {
-        text = resources.localizeDuration(duration ?: 0)
+fun Long.millisToDuration(): String {
+    val seconds = (this / 1000).toInt() % 60
+    val minutes = (this / (1000 * 60) % 60).toInt()
+    val hours = (this / (1000 * 60 * 60) % 24).toInt()
+    "${timeAddZeros(hours)}:${timeAddZeros(minutes, "0")}:${timeAddZeros(seconds, "00")}".apply {
+        return if (startsWith(":")) replaceFirst(":", "") else this
     }
 }

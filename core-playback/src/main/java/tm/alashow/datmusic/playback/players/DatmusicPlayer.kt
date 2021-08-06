@@ -8,8 +8,10 @@ import android.app.PendingIntent
 import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.media.session.PlaybackState
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.MediaMetadataCompat.*
@@ -26,10 +28,12 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.base.util.extensions.plus
 import tm.alashow.data.PreferencesStore
 import tm.alashow.datmusic.data.db.daos.AlbumsDao
@@ -42,18 +46,22 @@ import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.playback.AudioFocusHelperImpl
 import tm.alashow.datmusic.playback.AudioQueueManagerImpl
 import tm.alashow.datmusic.playback.BY_UI_KEY
-import tm.alashow.datmusic.playback.QueueState
 import tm.alashow.datmusic.playback.R
 import tm.alashow.datmusic.playback.REPEAT_ALL
 import tm.alashow.datmusic.playback.REPEAT_ONE
 import tm.alashow.datmusic.playback.createDefaultPlaybackState
 import tm.alashow.datmusic.playback.id
-import tm.alashow.datmusic.playback.isBuffering
 import tm.alashow.datmusic.playback.isPlaying
+import tm.alashow.datmusic.playback.models.MEDIA_TYPE_AUDIO
+import tm.alashow.datmusic.playback.models.MediaId
+import tm.alashow.datmusic.playback.models.QueueState
+import tm.alashow.datmusic.playback.models.toAudioList
+import tm.alashow.datmusic.playback.models.toMediaId
+import tm.alashow.datmusic.playback.models.toMediaIdList
+import tm.alashow.datmusic.playback.models.toQueueTitle
 import tm.alashow.datmusic.playback.position
 import tm.alashow.datmusic.playback.repeatMode
 import tm.alashow.datmusic.playback.shuffleMode
-import tm.alashow.datmusic.playback.toMediaIdList
 
 typealias OnPrepared<T> = T.() -> Unit
 typealias OnError<T> = T.(error: Throwable) -> Unit
@@ -65,6 +73,8 @@ typealias OnIsPlaying<T> = T.(playing: Boolean, byUi: Boolean) -> Unit
 
 const val REPEAT_MODE = "repeat_mode"
 const val SHUFFLE_MODE = "shuffle_mode"
+const val QUEUE_HAS_PREVIOUS = "queue_has_previous"
+const val QUEUE_HAS_NEXT = "queue_has_next"
 
 const val DEFAULT_FORWARD_REWIND = 10 * 1000
 
@@ -93,8 +103,9 @@ interface DatmusicPlayer {
     fun onMetaDataChanged(metaDataChanged: OnMetaDataChanged)
     fun updatePlaybackState(applier: PlaybackStateCompat.Builder.() -> Unit)
     fun setPlaybackState(state: PlaybackStateCompat)
-    fun updateData(list: List<String> = emptyList(), title: String = "")
-    fun setData(list: List<String> = emptyList(), title: String = "")
+    fun updateData(list: List<String> = emptyList(), title: String? = null)
+    fun setData(list: List<String> = emptyList(), title: String? = null)
+    suspend fun setDataFromMediaId(_mediaId: String, extras: Bundle = bundleOf())
     suspend fun saveQueueState()
     suspend fun restoreQueueState()
     fun clearRandomAudioPlayed()
@@ -104,11 +115,12 @@ interface DatmusicPlayer {
 
 class DatmusicPlayerImpl @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val dispatchers: CoroutineDispatchers,
     private val audioPlayer: AudioPlayerImpl,
     private val queueManager: AudioQueueManagerImpl,
     private val audioFocusHelper: AudioFocusHelperImpl,
     private val audiosDao: AudiosDao,
-    private val artistDao: ArtistsDao,
+    private val artistsDao: ArtistsDao,
     private val albumsDao: AlbumsDao,
     private val downloader: Downloader,
     private val preferences: PreferencesStore,
@@ -133,7 +145,7 @@ class DatmusicPlayerImpl @Inject constructor(
 
     private val mediaSession = MediaSessionCompat(context, context.getString(R.string.app_name), null, pendingIntent).apply {
         setCallback(
-            MediaSessionCallback(this, this@DatmusicPlayerImpl, audioFocusHelper, audiosDao, artistDao, albumsDao)
+            MediaSessionCallback(this, this@DatmusicPlayerImpl, audioFocusHelper, audiosDao, artistsDao, albumsDao)
         )
         setPlaybackState(stateBuilder.build())
 
@@ -253,7 +265,7 @@ class DatmusicPlayerImpl @Inject constructor(
             if (audio != null) playAudio(audio)
             else {
                 Timber.e("Audio by id: $id not found")
-                nextAudio()
+                // nextAudio()
             }
         }
     }
@@ -387,6 +399,13 @@ class DatmusicPlayerImpl @Inject constructor(
 
     override fun updatePlaybackState(applier: PlaybackStateCompat.Builder.() -> Unit) {
         applier(stateBuilder)
+
+        stateBuilder.setExtras(
+            stateBuilder.build().extras + bundleOf(
+                QUEUE_HAS_PREVIOUS to (queueManager.previousAudioId != null),
+                QUEUE_HAS_NEXT to (queueManager.nextAudioId != null)
+            )
+        )
         setPlaybackState(stateBuilder.build())
     }
 
@@ -398,7 +417,7 @@ class DatmusicPlayerImpl @Inject constructor(
         }
     }
 
-    override fun updateData(list: List<String>, title: String) {
+    override fun updateData(list: List<String>, title: String?) {
         if (mediaSession.shuffleMode == SHUFFLE_MODE_NONE)
             if (title == queueManager.queueTitle) {
                 queueManager.queue = list
@@ -407,9 +426,44 @@ class DatmusicPlayerImpl @Inject constructor(
             }
     }
 
-    override fun setData(list: List<String>, title: String) {
+    override fun setData(list: List<String>, title: String?) {
+        // reset shuffle mode on new data
+        getSession().setShuffleMode(SHUFFLE_MODE_NONE)
+        updatePlaybackState {
+            setExtras(bundleOf(SHUFFLE_MODE to SHUFFLE_MODE_NONE))
+        }
+
         queueManager.queue = list
-        queueManager.queueTitle = title
+        queueManager.queueTitle = title ?: ""
+    }
+
+    override suspend fun setDataFromMediaId(_mediaId: String, extras: Bundle) {
+        val mediaId = _mediaId.toMediaId()
+        var audioId = extras.getString(QUEUE_MEDIA_ID_KEY) ?: mediaId.value
+        var queue = extras.getStringArray(QUEUE_LIST_KEY)?.toList()
+        var queueTitle = extras.getString(QUEUE_TITLE_KEY)
+        val seekTo = extras.getLong(SEEK_TO)
+
+        if (seekTo > 0) seekTo(seekTo)
+
+        if (queue == null) {
+            queue = mediaId.toAudioList(audiosDao, artistsDao, albumsDao)?.map { it.id }?.apply {
+                if (mediaId.index >= 0 && isNotEmpty())
+                    audioId = if (mediaId.index < size) get(mediaId.index) else first()
+            }
+            queueTitle = mediaId.toQueueTitle(audiosDao, artistsDao, albumsDao).toString()
+        }
+
+        if (queue != null && queue.isNotEmpty()) {
+            setCurrentAudioId(audioId)
+            setData(queue, queueTitle)
+            playAudio(audioId)
+            // delay for new queue to apply first
+            delay(2000)
+            saveQueueState()
+        } else {
+            Timber.e("Queue is null or empty: $mediaId")
+        }
     }
 
     override suspend fun saveQueueState() {
@@ -420,19 +474,19 @@ class DatmusicPlayerImpl @Inject constructor(
             return
         }
 
-        val id = controller.metadata?.id ?: return
+        val id = controller.metadata?.id?.toMediaId() ?: MediaId()
 
         val queueState = QueueState(
-            queue = mediaSession.controller.queue.toMediaIdList(),
-            currentId = id,
+            queue = mediaSession.controller.queue.toMediaIdList().map { it.value },
+            currentId = id.value,
             seekPosition = controller.playbackState?.position ?: 0,
             repeatMode = controller.repeatMode,
             shuffleMode = controller.shuffleMode,
             state = controller.playbackState?.state ?: PlaybackState.STATE_NONE,
-            name = controller.queueTitle?.toString() ?: "All"
+            title = controller.queueTitle?.toString()
         )
 
-        Timber.d("Saving queue state: cid=${queueState.currentId}, size=${queueState.queue.size}")
+        Timber.d("Saving queue state: cid=${queueState.currentId}, size=${queueState.queue.size}, title=${queueState.title}")
         preferences.save(queueStateKey, queueState, QueueState.serializer())
     }
 
@@ -447,7 +501,7 @@ class DatmusicPlayerImpl @Inject constructor(
 
         queueManager.currentAudioId = queueState.currentId
 
-        setData(queueState.queue, queueState.name)
+        setData(queueState.queue, queueState.title ?: "")
 
         queueManager.refreshCurrentAudio()?.apply {
             Timber.d("Setting metadata from saved state: currentAudio=$id")
@@ -456,7 +510,7 @@ class DatmusicPlayerImpl @Inject constructor(
 
         val extras = bundleOf(
             REPEAT_MODE to queueState.repeatMode,
-            SHUFFLE_MODE to queueState.shuffleMode
+            SHUFFLE_MODE to SHUFFLE_MODE_NONE
         )
 
         updatePlaybackState {
@@ -494,30 +548,34 @@ class DatmusicPlayerImpl @Inject constructor(
     private fun setMetaData(audio: Audio) {
         val player = this
         launch {
-            val loader = ImageLoader(context)
-            val request = ImageRequest.Builder(context)
-                .data(audio.coverUri(size = CoverImageSize.SMALL))
-                .size(500)
-                .precision(Precision.INEXACT)
-                .allowHardware(false)
-                .build()
-
-            val bitmap = when (val result = loader.execute(request)) {
-                is SuccessResult -> (result.drawable as BitmapDrawable).bitmap
-                else -> null
-            }
-
+            val smallCoverBitmap = getBitmap(audio.coverUri(size = CoverImageSize.SMALL), CoverImageSize.SMALL.maxSize)
             val mediaMetadata = metadataBuilder.apply {
                 putString(METADATA_KEY_ALBUM, audio.album)
                 putString(METADATA_KEY_ARTIST, audio.artist)
                 putString(METADATA_KEY_TITLE, audio.title)
-                putString(METADATA_KEY_ALBUM_ART_URI, audio.coverUri().toString())
-                putString(METADATA_KEY_MEDIA_ID, audio.id)
+                putString(METADATA_KEY_MEDIA_ID, MediaId(MEDIA_TYPE_AUDIO, audio.id).toString())
                 putLong(METADATA_KEY_DURATION, audio.durationMillis())
-                putBitmap(METADATA_KEY_ALBUM_ART, bitmap)
-            }.build()
-            mediaSession.setMetadata(mediaMetadata)
+                putString(METADATA_KEY_ALBUM_ART_URI, audio.coverUri().toString())
+                putBitmap(METADATA_KEY_ALBUM_ART, smallCoverBitmap)
+            }
+
+            mediaSession.setMetadata(mediaMetadata.build())
             metaDataChangedCallback(player)
+        }
+    }
+
+    private suspend fun getBitmap(uri: Uri, size: Int): Bitmap? {
+        val loader = ImageLoader(context)
+        val request = ImageRequest.Builder(context)
+            .data(uri)
+            .size(size)
+            .precision(Precision.INEXACT)
+            .allowHardware(false)
+            .build()
+
+        return when (val result = loader.execute(request)) {
+            is SuccessResult -> (result.drawable as BitmapDrawable).bitmap
+            else -> null
         }
     }
 }

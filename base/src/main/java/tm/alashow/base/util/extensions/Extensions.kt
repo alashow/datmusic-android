@@ -50,11 +50,13 @@ fun whenApiLevel(api: Int, block: () -> Unit) {
     }
 }
 
+fun Boolean.toFloat() = if (this) 1f else 0f
+
 infix fun Float.muteUntil(that: Float) = max(this - that, 0.0f) * (1 / (1 - that))
 
 fun isOreo() = SDK_INT >= VERSION_CODES.O
 
-operator fun Bundle.plus(other: Bundle) = this.apply { putAll(other) }
+operator fun Bundle?.plus(other: Bundle?) = this.apply { (this ?: Bundle()).putAll(other ?: Bundle()) }
 
 @OptIn(ExperimentalStdlibApi::class)
 fun Bundle.readable() = buildList {

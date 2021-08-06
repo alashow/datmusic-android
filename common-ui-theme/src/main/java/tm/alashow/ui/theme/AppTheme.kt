@@ -14,15 +14,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+import tm.alashow.base.ui.ThemeState
 
+val LocalThemeState = staticCompositionLocalOf<ThemeState> {
+    error("No LocalThemeState provided")
+}
 private val LocalAppColors = staticCompositionLocalOf<AppColors> {
-    error("No AppColors provided")
+    error("No LocalAppColors provided")
 }
 private val LocalSpecs = staticCompositionLocalOf<Specs> {
     error("No LocalSpecs provided")
 }
 
 object AppTheme {
+    val state: ThemeState
+        @Composable
+        get() = LocalThemeState.current
+
     val colors: AppColors
         @Composable
         get() = LocalAppColors.current
@@ -31,17 +39,19 @@ object AppTheme {
         get() = LocalSpecs.current
 }
 
-// TODO: rename this to reflect other [CompositionLocal]s included in the tree.
 @Composable
-fun ProvideAppColors(
+fun ProvideAppTheme(
+    theme: ThemeState,
     colors: AppColors,
+    specs: Specs = DefaultSpecs,
     content: @Composable () -> Unit
 ) {
     val appColors = remember { colors.copy() }.apply { update(colors) }
 
     CompositionLocalProvider(
+        LocalThemeState provides theme,
         LocalAppColors provides appColors,
-        LocalSpecs provides DefaultSpecs,
+        LocalSpecs provides specs,
         content = content
     )
 }

@@ -48,9 +48,9 @@ import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
 import tm.alashow.common.compose.LocalScaffoldState
+import tm.alashow.common.compose.LogCompositions
 import tm.alashow.datmusic.R
 import tm.alashow.datmusic.ui.AppNavigation
-import tm.alashow.datmusic.ui.downloader.DownloaderHost
 import tm.alashow.datmusic.ui.playback.PlaybackMiniControls
 import tm.alashow.navigation.RootScreen
 import tm.alashow.navigation.RootScreen.Downloads as DownloadsTab
@@ -65,6 +65,7 @@ internal fun Home(
     navController: NavHostController = rememberNavController(),
     viewModel: HomeViewModel = viewModel()
 ) {
+    LogCompositions(tag = "Home")
     Scaffold(
         scaffoldState = scaffoldState,
         snackbarHost = { DismissableSnackbarHost(it) },
@@ -89,10 +90,9 @@ internal fun Home(
             }
         }
     ) {
-        DownloaderHost {
-            Box(Modifier.fillMaxSize()) {
-                AppNavigation(navController, viewModel.navigator)
-            }
+        LogCompositions(tag = "Home.AppNavigation")
+        Box(Modifier.fillMaxSize()) {
+            AppNavigation(navController, viewModel.navigator)
         }
     }
 }

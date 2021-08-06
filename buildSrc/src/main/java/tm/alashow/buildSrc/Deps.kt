@@ -8,14 +8,14 @@ object Deps {
     }
 
     object Kotlin {
-        const val version = "1.5.10"
+        const val version = "1.5.21"
 
         const val stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$version"
         const val gradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:$version"
         const val serialization = "org.jetbrains.kotlin:kotlin-serialization:$version"
         const val serializationRuntime = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2"
 
-        const val coroutinesVersion = "1.5.0"
+        const val coroutinesVersion = "1.5.1"
         const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
         const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
     }
@@ -38,7 +38,7 @@ object Deps {
         const val navigationCompose = "androidx.navigation:navigation-compose:$navigationVersion"
         const val navigationHiltCompose = "androidx.hilt:hilt-navigation-compose:1.0.0-alpha03"
 
-        const val dataStore = "androidx.datastore:datastore-preferences:1.0.0-rc02"
+        const val dataStore = "androidx.datastore:datastore-preferences:1.0.0"
 
         const val documentFile = "androidx.documentfile:documentfile:1.0.1"
 
@@ -46,9 +46,10 @@ object Deps {
         const val media ="androidx.media:media:1.4.0"
 
         object Compose {
-            const val version = "1.0.0"
+            const val version = "1.0.1"
 
             const val ui = "androidx.compose.ui:ui:$version"
+            const val uiUtil = "androidx.compose.ui:ui-util:$version"
             const val uiTooling = "androidx.compose.ui:ui-tooling:$version"
             const val foundation = "androidx.compose.foundation:foundation:$version"
             const val materialDesign = "androidx.compose.material:material:$version"

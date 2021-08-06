@@ -85,14 +85,11 @@ fun CoverImage(
         elevation = 2.dp,
         shape = shape,
         color = backgroundColor,
-        modifier = modifier
-            .size(size)
-            .aspectRatio(1f)
+        modifier = modifier.size(size).aspectRatio(1f)
     ) {
         image(
             Modifier
                 .fillMaxSize()
-                .clip(shape)
                 .placeholder(
                     visible = painter.state is ImagePainter.State.Loading,
                     color = backgroundColor,

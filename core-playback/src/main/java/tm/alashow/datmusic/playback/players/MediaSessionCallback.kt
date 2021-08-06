@@ -14,10 +14,8 @@ import android.support.v4.media.session.PlaybackStateCompat.STATE_NONE
 import androidx.core.os.bundleOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import tm.alashow.base.util.extensions.orNA
 import tm.alashow.base.util.extensions.readable
 import tm.alashow.datmusic.data.db.daos.AlbumsDao
 import tm.alashow.datmusic.data.db.daos.ArtistsDao
@@ -33,10 +31,7 @@ import tm.alashow.datmusic.playback.SET_MEDIA_STATE
 import tm.alashow.datmusic.playback.SWAP_ACTION
 import tm.alashow.datmusic.playback.UPDATE_QUEUE
 import tm.alashow.datmusic.playback.isPlaying
-import tm.alashow.datmusic.playback.toAudioList
-import tm.alashow.datmusic.playback.toMediaId
-import tm.alashow.datmusic.playback.toMediaIdList
-import tm.alashow.datmusic.playback.toQueueTitle
+import tm.alashow.datmusic.playback.models.toMediaIdList
 
 const val SEEK_TO = "action_seek_to"
 
@@ -44,7 +39,7 @@ const val FROM_POSITION_KEY = "from_position_key"
 const val TO_POSITION_KEY = "to_position_key"
 
 const val QUEUE_MEDIA_ID_KEY = "queue_media_id_key"
-const val QUEUE_TITLE_KEY = "queue_info_key"
+const val QUEUE_TITLE_KEY = "queue_title_key"
 const val QUEUE_LIST_KEY = "queue_list_key"
 
 class MediaSessionCallback(
@@ -117,43 +112,14 @@ class MediaSessionCallback(
         datmusicPlayer.rewind()
     }
 
-    override fun onPlayFromMediaId(_mediaId: String, extras: Bundle?) {
-        val mediaId = _mediaId.toMediaId()
+    override fun onPlayFromMediaId(mediaId: String, extras: Bundle?) {
         Timber.d("onPlayFromMediaId, $mediaId, ${extras?.readable()}")
-        launch {
-            var audioId = extras?.getString(QUEUE_MEDIA_ID_KEY) ?: mediaId.value
-            var queue = extras?.getStringArray(QUEUE_LIST_KEY)?.toList()
-            var queueTitle = extras?.getString(QUEUE_TITLE_KEY)
-            val seekTo = extras?.getLong(SEEK_TO) ?: 0
-
-            if (seekTo > 0) datmusicPlayer.seekTo(seekTo)
-
-            if (queue == null) {
-                queue = mediaId.toAudioList(audiosDao, artistsDao, albumsDao)?.map { it.id }?.apply {
-                    if (mediaId.index > 0 && isNotEmpty())
-                        audioId = if (mediaId.index < size) get(mediaId.index) else first()
-                }
-                queueTitle = mediaId.toQueueTitle(audiosDao, artistsDao, albumsDao)
-            }
-
-            if (queue != null && queue.isNotEmpty()) {
-                datmusicPlayer.setCurrentAudioId(audioId)
-                datmusicPlayer.setData(queue, queueTitle.orNA())
-                launch {
-                    // delay for new queue to apply first
-                    delay(2500)
-                    datmusicPlayer.saveQueueState()
-                }
-                datmusicPlayer.playAudio(audioId)
-            } else {
-                Timber.e("Queue is null or empty: $mediaId")
-            }
-        }
+        launch { datmusicPlayer.setDataFromMediaId(mediaId, extras ?: bundleOf()) }
     }
 
-    override fun onSeekTo(pos: Long) {
-        Timber.d("onSeekTo()")
-        datmusicPlayer.seekTo(pos)
+    override fun onSeekTo(position: Long) {
+        Timber.d("onSeekTo: position=$position")
+        datmusicPlayer.seekTo(position)
     }
 
     override fun onSkipToNext() {
@@ -209,7 +175,7 @@ class MediaSessionCallback(
                 extras ?: return
 
                 val queue = extras.getStringArray(QUEUE_LIST_KEY)?.toList() ?: emptyList()
-                val queueTitle = extras.getString(QUEUE_TITLE_KEY).orNA()
+                val queueTitle = extras.getString(QUEUE_TITLE_KEY)
 
                 datmusicPlayer.updateData(queue, queueTitle)
             }
@@ -219,7 +185,7 @@ class MediaSessionCallback(
                 val controller = mediaSession.controller ?: return
 
                 val queue = extras.getStringArray(QUEUE_LIST_KEY)?.toList() ?: emptyList()
-                val queueTitle = extras.getString(QUEUE_TITLE_KEY).orNA()
+                val queueTitle = extras.getString(QUEUE_TITLE_KEY)
                 datmusicPlayer.setData(queue, queueTitle)
 
                 controller.transportControls.setShuffleMode(SHUFFLE_MODE_ALL)
@@ -252,7 +218,7 @@ class MediaSessionCallback(
         mediaSession.setMetadata(mediaSession.controller.metadata)
         datmusicPlayer.setPlaybackState(mediaSession.controller.playbackState)
         datmusicPlayer.setData(
-            mediaSession.controller.queue.toMediaIdList(),
+            mediaSession.controller.queue.toMediaIdList().map { it.value },
             mediaSession.controller.queueTitle.toString()
         )
     }

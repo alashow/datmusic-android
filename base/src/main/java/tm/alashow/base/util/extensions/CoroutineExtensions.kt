@@ -5,6 +5,10 @@
 package tm.alashow.base.util.extensions
 
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
@@ -35,5 +39,11 @@ fun flowInterval(interval: Long, timeUnit: TimeUnit = TimeUnit.MILLISECONDS): Fl
             delay(delayMillis)
             send(++tick)
         }
+    }
+}
+
+fun <T> CoroutineScope.lazyAsync(block: suspend CoroutineScope.() -> T): Lazy<Deferred<T>> = lazy {
+    async(start = CoroutineStart.LAZY) {
+        block.invoke(this)
     }
 }
