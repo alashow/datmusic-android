@@ -14,7 +14,7 @@ fun String?.orBlank() = when (this == null) {
     else -> "N/A"
 }
 
-fun List<String?>.interpunctize(interpunct: String = " · ") = joinToString(interpunct)
+fun List<String?>.interpunctize(interpunct: String = " ꞏ ") = joinToString(interpunct)
 
 fun String?.isNotNullandNotBlank() = this != null && this.isNotBlank()
 
