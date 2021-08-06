@@ -39,10 +39,10 @@ import tm.alashow.data.PreferencesStore
 import tm.alashow.datmusic.data.db.daos.AlbumsDao
 import tm.alashow.datmusic.data.db.daos.ArtistsDao
 import tm.alashow.datmusic.data.db.daos.AudiosDao
+import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.domain.entities.CoverImageSize
-import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.playback.AudioFocusHelperImpl
 import tm.alashow.datmusic.playback.AudioQueueManagerImpl
 import tm.alashow.datmusic.playback.BY_UI_KEY
@@ -122,7 +122,7 @@ class DatmusicPlayerImpl @Inject constructor(
     private val audiosDao: AudiosDao,
     private val artistsDao: ArtistsDao,
     private val albumsDao: AlbumsDao,
-    private val downloader: Downloader,
+    private val downloadsDao: DownloadRequestsDao,
     private val preferences: PreferencesStore,
 ) : DatmusicPlayer, CoroutineScope by MainScope() {
 
@@ -261,11 +261,18 @@ class DatmusicPlayerImpl @Inject constructor(
 
     override suspend fun playAudio(id: String) {
         if (audioFocusHelper.requestPlayback()) {
-            val audio = audiosDao.entry(id).firstOrNull()
-            if (audio != null) playAudio(audio)
+            var audio = audiosDao.entry(id).firstOrNull()
+            if (audio == null) {
+                Timber.e("Audio by id: $id not found, checking downloads table")
+                audio = downloadsDao.entry(id).firstOrNull()?.audio
+            }
+            if (audio != null)
+                playAudio(audio)
             else {
                 Timber.e("Audio by id: $id not found")
-                // nextAudio()
+                updatePlaybackState {
+                    setState(STATE_ERROR, 0, 1F)
+                }
             }
         }
     }
