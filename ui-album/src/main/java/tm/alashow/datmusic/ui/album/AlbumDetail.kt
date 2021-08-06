@@ -157,10 +157,15 @@ private fun LazyListScope.albumAudios(
 
         itemsIndexed(albumAudios) { index, audio ->
             val playbackConnection = LocalPlaybackConnection.current
-            AudioRow(audio, isPlaceholder = detailsLoading, modifier = Modifier.background(MaterialTheme.colors.background)) {
-                if (details is Success)
-                    playbackConnection.playAlbum(album, index)
-            }
+            AudioRow(
+                audio = audio,
+                isPlaceholder = detailsLoading,
+                modifier = Modifier.background(MaterialTheme.colors.background),
+                onPlayAudio = {
+                    if (details is Success)
+                        playbackConnection.playAlbum(album, index)
+                }
+            )
         }
     }
     return albumAudios

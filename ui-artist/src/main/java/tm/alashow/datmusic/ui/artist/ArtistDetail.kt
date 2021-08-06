@@ -187,10 +187,15 @@ private fun LazyListScope.artistDetails(
 
         itemsIndexed(artistAudios) { index, audio ->
             val playbackConnection = LocalPlaybackConnection.current
-            AudioRow(audio, isPlaceholder = detailsLoading, modifier = Modifier.background(MaterialTheme.colors.background)) {
-                if (details is Success)
-                    playbackConnection.playArtist(details(), index)
-            }
+            AudioRow(
+                audio = audio,
+                isPlaceholder = detailsLoading,
+                modifier = Modifier.background(MaterialTheme.colors.background),
+                onPlayAudio = {
+                    if (details is Success)
+                        playbackConnection.playArtist(details(), index)
+                }
+            )
         }
     }
     return Pair(artistAlbums, artistAudios)
