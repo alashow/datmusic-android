@@ -102,7 +102,7 @@ fun AlbumColumn(
                         Icon(
                             painter = rememberVectorPainter(Icons.Filled.Explicit),
                             contentDescription = null,
-                            modifier = Modifier.size(14.dp),
+                            modifier = Modifier.size(16.dp),
                             tint = MaterialTheme.colors.onBackground.copy(alpha = ContentAlpha.medium),
                         )
                     Text(album.year.toString(), modifier = loadingModifier, style = MaterialTheme.typography.body2)

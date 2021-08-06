@@ -85,7 +85,6 @@ internal fun AudioDownload(
         ) {
             AudioRowItem(
                 audio = audioDownloadItem.audio,
-                maxLines = 1,
                 modifier = Modifier.weight(16f),
                 onCoverClick = { onAudioPlay(audioDownloadItem) }
             )

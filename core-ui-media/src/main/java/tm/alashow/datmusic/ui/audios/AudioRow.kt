@@ -47,7 +47,7 @@ import tm.alashow.ui.theme.AppTheme
 
 object AudiosDefaults {
     val imageSize = 48.dp
-    const val maxLines = 2
+    const val maxLines = 3
 }
 
 @Composable
@@ -155,21 +155,25 @@ fun AudioRowItem(
             CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingTiny),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     if (audio.explicit)
                         Icon(
                             painter = rememberVectorPainter(Icons.Filled.Explicit),
                             contentDescription = null,
-                            modifier = Modifier.size(14.dp),
+                            modifier = Modifier
+                                .size(18.dp)
+                                .alignByBaseline(),
                             tint = MaterialTheme.colors.onBackground.copy(alpha = ContentAlpha.medium),
                         )
                     Text(
                         listOf(audio.artist, audio.durationMillis().millisToDuration()).interpunctize(),
                         style = MaterialTheme.typography.body2,
-                        maxLines = 1,
+                        maxLines = maxLines,
                         overflow = TextOverflow.Ellipsis,
-                        modifier = loadingModifier
+                        modifier = Modifier
+                            .alignByBaseline()
+                            .then(loadingModifier)
                     )
                 }
             }

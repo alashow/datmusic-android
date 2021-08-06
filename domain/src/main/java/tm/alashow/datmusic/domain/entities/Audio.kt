@@ -39,7 +39,7 @@ data class Audio(
 
     @SerialName("artist")
     @ColumnInfo(name = "artist")
-    val artist: String = "Unknown",
+    val artist: String = "Unknown Artist",
 
     @SerialName("title")
     @ColumnInfo(name = "title")
