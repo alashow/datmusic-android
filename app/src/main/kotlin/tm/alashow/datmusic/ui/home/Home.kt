@@ -8,7 +8,6 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,12 +35,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -49,11 +51,11 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
 import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.common.compose.LocalScaffoldState
-import tm.alashow.common.compose.LogCompositions
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.R
 import tm.alashow.datmusic.playback.NONE_PLAYBACK_STATE
@@ -62,6 +64,7 @@ import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.isActive
 import tm.alashow.datmusic.ui.AppNavigation
 import tm.alashow.datmusic.ui.playback.PlaybackMiniControls
+import tm.alashow.datmusic.ui.playback.PlaybackMiniControlsHeight
 import tm.alashow.navigation.RootScreen
 import tm.alashow.navigation.RootScreen.Downloads as DownloadsTab
 import tm.alashow.navigation.RootScreen.Search as SearchTab
@@ -69,20 +72,22 @@ import tm.alashow.navigation.RootScreen.Settings as SettingsTab
 import tm.alashow.ui.DismissableSnackbarHost
 import tm.alashow.ui.theme.translucentSurfaceColor
 
+val HomeBottomNavigationHeight = 56.dp
+
 @Composable
 internal fun Home(
     scaffoldState: ScaffoldState = LocalScaffoldState.current,
     navController: NavHostController = rememberNavController(),
     viewModel: HomeViewModel = viewModel()
 ) {
-    LogCompositions(tag = "Home")
+    val insets = LocalWindowInsets.current
+    val navBottom = with(LocalDensity.current) { insets.navigationBars.bottom.toDp() }
     Scaffold(
         scaffoldState = scaffoldState,
         snackbarHost = { DismissableSnackbarHost(it) },
         bottomBar = {
             val currentSelectedItem by navController.currentScreenAsState()
-            Column {
-                PlaybackMiniControls()
+            Box(Modifier.height(HomeBottomNavigationHeight + PlaybackMiniControlsHeight + navBottom)) {
                 HomeBottomNavigation(
                     selectedNavigation = currentSelectedItem,
                     onNavigationSelected = { selected ->
@@ -95,12 +100,14 @@ internal fun Home(
                             }
                         }
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.BottomCenter)
                 )
+                PlaybackMiniControls(modifier = Modifier.align(Alignment.TopCenter))
             }
         }
     ) {
-        LogCompositions(tag = "Home.AppNavigation")
         Box(Modifier.fillMaxSize()) {
             AppNavigation(navController, viewModel.navigator)
         }
@@ -145,6 +152,7 @@ internal fun HomeBottomNavigation(
     selectedNavigation: RootScreen,
     onNavigationSelected: (RootScreen) -> Unit,
     modifier: Modifier = Modifier,
+    height: Dp = HomeBottomNavigationHeight,
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current
 ) {
     val playbackState by rememberFlowWithLifecycle(playbackConnection.playbackState).collectAsState(NONE_PLAYBACK_STATE)
@@ -166,7 +174,7 @@ internal fun HomeBottomNavigation(
             Modifier
                 .navigationBarsPadding()
                 .fillMaxWidth()
-                .height(56.dp),
+                .height(height),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             HomeBottomNavigationItem(
@@ -200,14 +208,10 @@ internal fun HomeBottomNavigation(
 @Composable
 private fun homeBottomNavigationGradient() = Brush.verticalGradient(
     listOf(
-        MaterialTheme.colors.surface.copy(0.01f),
         MaterialTheme.colors.surface.copy(0.6f),
-        MaterialTheme.colors.surface.copy(0.7f),
         MaterialTheme.colors.surface.copy(0.8f),
-        MaterialTheme.colors.surface.copy(0.9f),
-        MaterialTheme.colors.surface.copy(0.95f),
-        MaterialTheme.colors.surface.copy(1f),
-        MaterialTheme.colors.surface
+        MaterialTheme.colors.surface.copy(0.97f),
+        MaterialTheme.colors.surface,
     )
 )
 

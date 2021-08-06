@@ -83,9 +83,14 @@ import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.components.IconButton
 import tm.alashow.ui.theme.AppTheme
 
+val PlaybackMiniControlsHeight = 56.dp
+
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun PlaybackMiniControls(playbackConnection: PlaybackConnection = LocalPlaybackConnection.current) {
+fun PlaybackMiniControls(
+    modifier: Modifier = Modifier,
+    playbackConnection: PlaybackConnection = LocalPlaybackConnection.current
+) {
     val playbackState by rememberFlowWithLifecycle(playbackConnection.playbackState).collectAsState(NONE_PLAYBACK_STATE)
     val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying).collectAsState(NONE_PLAYING)
 
@@ -94,7 +99,8 @@ fun PlaybackMiniControls(playbackConnection: PlaybackConnection = LocalPlaybackC
         PlaybackMiniControls(
             playbackState = playbackState,
             nowPlaying = nowPlaying,
-            onPlayPause = { playbackConnection.mediaController?.playPause() }
+            onPlayPause = { playbackConnection.mediaController?.playPause() },
+            modifier = modifier
         )
     }
 }
@@ -106,7 +112,7 @@ fun PlaybackMiniControls(
     nowPlaying: MediaMetadataCompat,
     modifier: Modifier = Modifier,
     onPlayPause: () -> Unit,
-    height: Dp = 56.dp,
+    height: Dp = PlaybackMiniControlsHeight,
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
     playbackSheetState: BottomSheetState = LocalPlaybackSheetState.current,
 ) {
