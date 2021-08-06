@@ -14,6 +14,8 @@ fun String?.orBlank() = when (this == null) {
     else -> "N/A"
 }
 
+fun List<String?>.interpunctize(interpunct: String = " · ") = joinToString(interpunct)
+
 fun String?.isNotNullandNotBlank() = this != null && this.isNotBlank()
 
 fun CharSequence.truncate(limit: Int, ellipsize: String = "..."): CharSequence {

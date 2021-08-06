@@ -48,6 +48,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.tonyodev.fetch2.Download
 import com.tonyodev.fetch2.Status
+import tm.alashow.base.util.extensions.interpunctize
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.downloader.isPausable
@@ -116,7 +117,7 @@ internal fun AudioDownload(
                     }
                 }
 
-                val footer = listOf(fileSize, status).filter { it.isNotBlank() }.joinToString(" · ")
+                val footer = listOf(fileSize, status).filter { it.isNotBlank() }.interpunctize()
                 Text(text = footer, modifier = Modifier.weight(19f))
             }
 

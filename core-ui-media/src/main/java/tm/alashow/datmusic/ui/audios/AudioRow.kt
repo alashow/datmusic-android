@@ -39,6 +39,8 @@ import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
 import tm.alashow.base.imageloading.ImageLoading
+import tm.alashow.base.util.extensions.interpunctize
+import tm.alashow.base.util.millisToDuration
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.theme.AppTheme
@@ -163,7 +165,7 @@ fun AudioRowItem(
                             tint = MaterialTheme.colors.onBackground.copy(alpha = ContentAlpha.medium),
                         )
                     Text(
-                        audio.artist,
+                        listOf(audio.artist, audio.durationMillis().millisToDuration()).interpunctize(),
                         style = MaterialTheme.typography.body2,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
