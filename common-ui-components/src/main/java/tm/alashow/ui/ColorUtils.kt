@@ -22,22 +22,27 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.core.graphics.ColorUtils
 import androidx.core.math.MathUtils
 import androidx.palette.graphics.Palette
+import tm.alashow.ui.theme.contrastComposite
 import tm.alashow.ui.theme.toColor
 
 data class AdaptiveColorResult(val color: Color, val contentColor: Color, val gradient: Brush)
 
 @Composable
-fun adaptiveColor(image: Bitmap? = null, initial: Color = MaterialTheme.colors.secondary): AdaptiveColorResult {
+fun adaptiveColor(
+    image: Bitmap? = null,
+    initial: Color = MaterialTheme.colors.onSurface.contrastComposite(),
+    fallback: Color = MaterialTheme.colors.secondary,
+): AdaptiveColorResult {
     var accent by remember { mutableStateOf(initial) }
     val contentColor by derivedStateOf { accent.contentColor() }
 
-    val isDarkTheme = !MaterialTheme.colors.isLight
+    val isDarkColors = !MaterialTheme.colors.isLight
 
-    LaunchedEffect(image, isDarkTheme) {
+    LaunchedEffect(image, fallback, isDarkColors) {
         if (image != null)
             Palette.from(image)
                 .generate().apply {
-                    accent = getAccentColor(isDarkTheme, initial.toArgb(), this).toColor()
+                    accent = getAccentColor(isDarkColors, fallback.toArgb(), this).toColor()
                 }
     }
 

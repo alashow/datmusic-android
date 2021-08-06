@@ -34,6 +34,7 @@ object AppTheme {
     val colors: AppColors
         @Composable
         get() = LocalAppColors.current
+
     val specs: Specs
         @Composable
         get() = LocalSpecs.current
