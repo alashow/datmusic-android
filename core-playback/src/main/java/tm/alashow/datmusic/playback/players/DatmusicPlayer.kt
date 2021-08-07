@@ -146,7 +146,7 @@ class DatmusicPlayerImpl @Inject constructor(
 
     private val mediaSession = MediaSessionCompat(context, context.getString(R.string.app_name), null, pendingIntent).apply {
         setCallback(
-            MediaSessionCallback(this, this@DatmusicPlayerImpl, audioFocusHelper, audiosDao, artistsDao, albumsDao)
+            MediaSessionCallback(this, this@DatmusicPlayerImpl, audioFocusHelper)
         )
         setPlaybackState(stateBuilder.build())
 

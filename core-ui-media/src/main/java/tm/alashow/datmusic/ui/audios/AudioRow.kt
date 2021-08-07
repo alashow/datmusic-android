@@ -54,6 +54,7 @@ object AudiosDefaults {
 fun AudioRow(
     audio: Audio,
     modifier: Modifier = Modifier,
+    imageSize: Dp = AudiosDefaults.imageSize,
     isPlaceholder: Boolean = false,
     onClick: ((Audio) -> Unit)? = null,
     onPlayAudio: ((Audio) -> Unit)? = null,
@@ -77,6 +78,7 @@ fun AudioRow(
         AudioRowItem(
             audio = audio,
             isPlaceholder = isPlaceholder,
+            imageSize = imageSize,
             onCoverClick = {
                 if (onPlayAudio != null) onPlayAudio(audio)
                 else actionHandler(AudioItemAction.Play(audio))

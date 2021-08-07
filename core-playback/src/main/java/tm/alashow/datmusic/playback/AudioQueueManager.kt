@@ -11,7 +11,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
+import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.base.util.extensions.swap
 import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
@@ -48,17 +50,17 @@ class AudioQueueManagerImpl @Inject constructor(
     private val audiosDao: AudiosDao,
     private val downloadsDao: DownloadRequestsDao,
     private val downloader: Downloader,
+    private val dispatchers: CoroutineDispatchers,
 ) : AudioQueueManager, CoroutineScope by MainScope() {
 
     private lateinit var mediaSession: MediaSessionCompat
     private val playedAudios = mutableListOf<String>()
     private var originalQueue = listOf<String>()
 
-    private val currentAudioIndex
-        get() = queue.indexOf(currentAudioId)
-
     override var currentAudioId: String = ""
     override var currentAudio: Audio? = null
+
+    private val currentAudioIndex get() = queue.indexOf(currentAudioId)
 
     override suspend fun refreshCurrentAudio(): Audio? {
         currentAudio = audiosDao.entry(currentAudioId).firstOrNull()?.apply {
@@ -70,21 +72,12 @@ class AudioQueueManagerImpl @Inject constructor(
     override var queue: List<String> = listOf()
         set(value) {
             field = value
-            if (value.isNotEmpty()) {
-                val orderByIndex = value.withIndex().associate { it.value to it.index }
-                launch {
-                    val audios = (audiosDao to downloadsDao).findAudios(value).sortedBy { orderByIndex[it.id] }
-                    mediaSession.setQueue(audios.toQueueItems())
-                }
-            }
+            setQueueItems(value)
         }
 
     override var queueTitle: String = ""
         set(value) {
-            field = if (value.isNotEmpty()) {
-                value
-            } else "All"
-
+            field = value
             mediaSession.setQueueTitle(value)
         }
 
@@ -107,6 +100,18 @@ class AudioQueueManagerImpl @Inject constructor(
                 else -> null
             }
         }
+
+    private fun setQueueItems(ids: List<String>) {
+        if (ids.isNotEmpty()) {
+            launch {
+                withContext(dispatchers.computation) {
+                    val orderByIndex = ids.withIndex().associate { it.value to it.index }
+                    val audios = (audiosDao to downloadsDao).findAudios(ids).sortedBy { orderByIndex[it.id] }
+                    mediaSession.setQueue(audios.toQueueItems())
+                }
+            }
+        }
+    }
 
     override fun setMediaSession(session: MediaSessionCompat) {
         mediaSession = session
@@ -145,8 +150,10 @@ class AudioQueueManagerImpl @Inject constructor(
 
     override fun shuffleQueue(isShuffle: Boolean) {
         launch {
-            if (isShuffle) shuffleQueue()
-            else restoreQueueOrder()
+            withContext(dispatchers.computation) {
+                if (isShuffle) shuffleQueue()
+                else restoreQueueOrder()
+            }
         }
     }
 

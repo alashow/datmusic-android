@@ -70,22 +70,25 @@ fun ImageWithPlaceholder(
 @Composable
 fun CoverImage(
     painter: ImagePainter,
-    size: Dp,
     modifier: Modifier = Modifier,
+    size: Dp = Dp.Unspecified,
     backgroundColor: Color = PlaceholderDefaults.color(),
     contentColor: Color = MaterialTheme.colors.secondary,
     contentScale: ContentScale = ContentScale.FillBounds,
     shape: Shape = MaterialTheme.shapes.small,
     icon: VectorPainter = rememberVectorPainter(Icons.Default.MusicNote),
-    iconPadding: Dp = size * 0.25f,
+    iconPadding: Dp = if (size != Dp.Unspecified) size * 0.25f else 24.dp,
     bitmapPlaceholder: Bitmap? = null,
     image: @Composable (Modifier) -> Unit
 ) {
+    val sizeMod = if (size != Dp.Unspecified) Modifier.size(size) else Modifier
     Surface(
         elevation = 2.dp,
         shape = shape,
         color = backgroundColor,
-        modifier = modifier.size(size).aspectRatio(1f)
+        modifier = modifier
+            .then(sizeMod)
+            .aspectRatio(1f)
     ) {
         image(
             Modifier

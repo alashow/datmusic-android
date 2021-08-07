@@ -17,7 +17,6 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -47,9 +46,11 @@ import tm.alashow.datmusic.playback.models.PlaybackQueue
 import tm.alashow.datmusic.playback.models.QueueTitle
 import tm.alashow.datmusic.playback.models.fromMediaController
 import tm.alashow.datmusic.playback.models.toMediaAudioIds
+import tm.alashow.datmusic.playback.players.FROM_POSITION_KEY
 import tm.alashow.datmusic.playback.players.QUEUE_LIST_KEY
 import tm.alashow.datmusic.playback.players.QUEUE_MEDIA_ID_KEY
 import tm.alashow.datmusic.playback.players.QUEUE_TITLE_KEY
+import tm.alashow.datmusic.playback.players.TO_POSITION_KEY
 
 const val PLAYBACK_PROGRESS_INTERVAL = 1000L
 
@@ -63,8 +64,10 @@ interface PlaybackConnection {
     val playbackProgress: StateFlow<PlaybackProgressState>
     val playbackMode: StateFlow<PlaybackModeState>
 
-    val transportControls: MediaControllerCompat.TransportControls?
     var mediaController: MediaControllerCompat?
+    val transportControls: MediaControllerCompat.TransportControls?
+
+    fun swapQueue(from: Int, to: Int)
 
     fun playAudio(audio: Audio, title: QueueTitle = QueueTitle())
     fun playAudios(audios: List<Audio>, index: Int = 0, title: QueueTitle = QueueTitle())
@@ -96,8 +99,7 @@ class PlaybackConnectionImpl(
     override val playbackMode = MutableStateFlow(PlaybackModeState())
 
     override var mediaController: MediaControllerCompat? = null
-    override val transportControls: MediaControllerCompat.TransportControls?
-        get() = mediaController?.transportControls
+    override val transportControls get() = mediaController?.transportControls
 
     private val mediaBrowserConnectionCallback = MediaBrowserConnectionCallback(context)
     private val mediaBrowser = MediaBrowserCompat(
@@ -109,7 +111,7 @@ class PlaybackConnectionImpl(
     private var playbackInterval: Job = Job()
 
     init {
-        MainScope().launch {
+        launch {
             combine(playbackState, nowPlaying, ::Pair).collect { (state, current) ->
                 playbackInterval.cancel()
                 val duration = current.duration
@@ -128,6 +130,16 @@ class PlaybackConnectionImpl(
                     }
             }
         }
+    }
+
+    override fun swapQueue(from: Int, to: Int) {
+        transportControls?.sendCustomAction(
+            SWAP_ACTION,
+            bundleOf(
+                FROM_POSITION_KEY to from,
+                TO_POSITION_KEY to to,
+            )
+        )
     }
 
     override fun playAudio(audio: Audio, title: QueueTitle) = playAudios(audios = listOf(audio), index = 0, title = title)

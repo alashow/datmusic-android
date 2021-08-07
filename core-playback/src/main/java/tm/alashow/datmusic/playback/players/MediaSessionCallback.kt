@@ -17,9 +17,6 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import tm.alashow.base.util.extensions.readable
-import tm.alashow.datmusic.data.db.daos.AlbumsDao
-import tm.alashow.datmusic.data.db.daos.ArtistsDao
-import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.playback.AudioFocusHelper
 import tm.alashow.datmusic.playback.BY_UI_KEY
 import tm.alashow.datmusic.playback.PAUSE_ACTION
@@ -46,9 +43,6 @@ class MediaSessionCallback(
     private val mediaSession: MediaSessionCompat,
     private val datmusicPlayer: DatmusicPlayer,
     private val audioFocusHelper: AudioFocusHelper,
-    private val audiosDao: AudiosDao,
-    private val artistsDao: ArtistsDao,
-    private val albumsDao: AlbumsDao,
 ) : MediaSessionCompat.Callback(), CoroutineScope by MainScope() {
 
     init {
