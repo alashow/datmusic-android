@@ -182,7 +182,7 @@ class Downloader @Inject constructor(
                         downloaderMessage(AudioDownloadResumingExisting)
                         return false
                     }
-                    Status.NONE, Status.QUEUED -> {
+                    Status.NONE, Status.QUEUED, Status.DOWNLOADING -> {
                         Timber.i("File already queued, doing nothing")
                         downloaderMessage(AudioDownloadAlreadyQueued)
                         return false
