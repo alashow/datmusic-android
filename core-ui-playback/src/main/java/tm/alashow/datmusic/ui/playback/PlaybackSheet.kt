@@ -34,6 +34,7 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffold
 import androidx.compose.material.BottomSheetState
 import androidx.compose.material.ContentAlpha
@@ -72,6 +73,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
@@ -479,7 +481,10 @@ private fun PlaybackProgressSlider(
         activeTrackColor = contentColor,
         inactiveTrackColor = contentColor.copy(alpha = ContentAlpha.disabled)
     )
-    Box {
+    Box(
+        modifier = Modifier.height(44.dp),
+        contentAlignment = Alignment.Center
+    ) {
         val isBuffering = playbackState.isBuffering
         Slider(
             value = draggingProgress ?: progressState.progress,
@@ -492,15 +497,12 @@ private fun PlaybackProgressSlider(
             modifier = Modifier.alpha(isBuffering.not().toFloat())
         )
         if (isBuffering) {
-            Slider(
-                value = 0f,
-                onValueChange = {},
-                thumbRadius = thumbRadius,
-                colors = SliderDefaults.colors(
-                    thumbColor = contentColor,
-                    activeTrackColor = contentColor,
-                    inactiveTrackColor = contentColor.copy(alpha = ContentAlpha.disabled)
-                ),
+            LinearProgressIndicator(
+                progress = 0f,
+                color = contentColor,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(4.dp))
+                    .fillMaxWidth()
             )
             Delayed(
                 modifier = Modifier
@@ -509,7 +511,7 @@ private fun PlaybackProgressSlider(
             ) {
                 LinearProgressIndicator(
                     color = contentColor,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.clip(RoundedCornerShape(4.dp))
                 )
             }
         }
@@ -655,7 +657,6 @@ private fun PlaybackSheetTopBar(
     onClose: () -> Unit,
     iconSize: Dp = 36.dp,
     actionHandler: AudioActionHandler = LocalAudioActionHandler.current,
-    // actionHandler: AudioActionHandler = audioActionHandler(),
 ) {
     val (expanded, setExpanded) = remember { mutableStateOf(false) }
     LogCompositions(tag = "PlaybackSheetTopBar")
