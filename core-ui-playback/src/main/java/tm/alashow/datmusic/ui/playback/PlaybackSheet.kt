@@ -63,11 +63,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -75,6 +77,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.lerp
+import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.navigationBarsHeight
@@ -82,11 +86,16 @@ import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.ui.Scaffold
 import com.google.accompanist.insets.ui.TopAppBar
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.PagerScope
+import com.google.accompanist.pager.calculateCurrentOffsetForPage
+import com.google.accompanist.pager.rememberPagerState
+import kotlin.math.absoluteValue
 import kotlin.math.roundToLong
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import tm.alashow.base.imageloading.ImageLoading
 import tm.alashow.base.ui.ColorPalettePreference
 import tm.alashow.base.ui.ThemeState
 import tm.alashow.base.util.extensions.orNA
@@ -97,12 +106,12 @@ import tm.alashow.common.compose.LocalScaffoldState
 import tm.alashow.common.compose.LogCompositions
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.Audio
+import tm.alashow.datmusic.domain.entities.CoverImageSize
 import tm.alashow.datmusic.playback.NONE_PLAYBACK_STATE
 import tm.alashow.datmusic.playback.NONE_PLAYING
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.artist
 import tm.alashow.datmusic.playback.artwork
-import tm.alashow.datmusic.playback.artworkUri
 import tm.alashow.datmusic.playback.hasNext
 import tm.alashow.datmusic.playback.hasPrevious
 import tm.alashow.datmusic.playback.id
@@ -124,6 +133,7 @@ import tm.alashow.datmusic.ui.audios.AudioDropdownMenu
 import tm.alashow.datmusic.ui.audios.AudioItemAction
 import tm.alashow.datmusic.ui.audios.LocalAudioActionHandler
 import tm.alashow.datmusic.ui.media.R
+import tm.alashow.ui.Delayed
 import tm.alashow.ui.DismissableSnackbarHost
 import tm.alashow.ui.adaptiveColor
 import tm.alashow.ui.coloredRippleClickable
@@ -211,39 +221,45 @@ fun PlaybackSheetContent(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(AppTheme.specs.paddingLarge)
                     .padding(top = appBarHeight * 2)
                     .verticalScroll(rememberScrollState())
             ) {
-                PlaybackArtwork(
+                Spacer(Modifier.height(AppTheme.specs.paddingLarge))
+                PlaybackArtworkPager(
                     nowPlaying = nowPlaying,
                     maxHeight = this@BoxWithConstraints.maxHeight - appBarHeight,
                     contentColor = contentColor,
                 )
 
-                Spacer(Modifier.height(AppTheme.specs.paddingLarge))
-                PlaybackNowPlaying(nowPlaying = nowPlaying)
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.padding(AppTheme.specs.paddingLarge)
+                ) {
+                    Spacer(Modifier.height(AppTheme.specs.paddingLarge))
+                    PlaybackNowPlaying(nowPlaying = nowPlaying)
 
-                Spacer(Modifier.height(AppTheme.specs.padding))
-                PlaybackProgress(
-                    playbackState = playbackState,
-                    contentColor = contentColor
-                )
+                    Spacer(Modifier.height(AppTheme.specs.padding))
+                    PlaybackProgress(
+                        playbackState = playbackState,
+                        contentColor = contentColor
+                    )
 
-                Spacer(Modifier.height(AppTheme.specs.padding))
-                PlaybackControls(
-                    playbackState = playbackState,
-                    contentColor = contentColor,
-                )
+                    Spacer(Modifier.height(AppTheme.specs.padding))
+                    PlaybackControls(
+                        playbackState = playbackState,
+                        contentColor = contentColor,
+                    )
 
-                Spacer(Modifier.navigationBarsHeight())
+                    Spacer(Modifier.navigationBarsHeight())
+                }
             }
         }
     }
 }
 
+@OptIn(ExperimentalPagerApi::class)
 @Composable
-private fun PlaybackArtwork(
+private fun PlaybackArtworkPager(
     nowPlaying: MediaMetadataCompat,
     maxHeight: Dp,
     contentColor: Color,
@@ -251,17 +267,68 @@ private fun PlaybackArtwork(
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
 ) {
     val imageSize = maxHeight * artworkHeightRatio
-    val artwork = rememberImagePainter(nowPlaying.artworkUri, builder = ImageLoading.defaultConfig)
+    val playbackQueue by rememberFlowWithLifecycle(playbackConnection.playbackQueue).collectAsState(PlaybackQueue())
+    val playbackQueueCurrent = remember(playbackQueue, nowPlaying) { playbackQueue.findAudio(nowPlaying) } ?: return
+
+    val pagerState = rememberPagerState(
+        pageCount = playbackQueue.list.size,
+        initialPage = playbackQueueCurrent.first,
+        initialOffscreenLimit = 3
+    )
+
+    LaunchedEffect(playbackQueueCurrent, pagerState) {
+        if (playbackQueueCurrent.first != pagerState.currentPage) {
+            pagerState.scrollToPage(playbackQueueCurrent.first)
+        }
+        snapshotFlow { pagerState.currentPage }.collect { page ->
+            playbackConnection.transportControls?.skipToQueueItem(page.toLong())
+        }
+    }
+
+    HorizontalPager(state = pagerState) { page ->
+        val currentAudio = playbackQueue.audiosList.getOrNull(page) ?: Audio()
+        val currentArtwork = rememberImagePainter(currentAudio.coverUri(CoverImageSize.LARGE))
+        PlaybackArtwork(currentArtwork, imageSize, contentColor, nowPlaying, page)
+    }
+}
+
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+private fun PagerScope.PlaybackArtwork(
+    currentArtwork: ImagePainter,
+    imageSize: Dp,
+    contentColor: Color,
+    nowPlaying: MediaMetadataCompat,
+    page: Int,
+    playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
+) {
     CoverImage(
-        painter = artwork,
+        painter = currentArtwork,
         size = imageSize,
         shape = RectangleShape,
         backgroundColor = MaterialTheme.colors.plainBackground(),
         contentColor = contentColor,
         bitmapPlaceholder = nowPlaying.artwork,
+        modifier = Modifier.graphicsLayer {
+            val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
+            lerp(
+                start = 0.75f,
+                stop = 1f,
+                fraction = 1f - pageOffset.coerceIn(0f, 1f)
+            ).also { scale ->
+                scaleX = scale
+                scaleY = scale
+            }
+
+            alpha = lerp(
+                start = 0.5f,
+                stop = 1f,
+                fraction = 1f - pageOffset.coerceIn(0f, 1f)
+            )
+        }
     ) { imageMod ->
         Image(
-            painter = artwork,
+            painter = currentArtwork,
             contentDescription = null,
             modifier = Modifier
                 .coloredRippleClickable(
@@ -346,6 +413,11 @@ private fun PlaybackProgressSlider(
             }
         }
     }
+    val sliderColors = SliderDefaults.colors(
+        thumbColor = contentColor,
+        activeTrackColor = contentColor,
+        inactiveTrackColor = contentColor.copy(alpha = ContentAlpha.disabled)
+    )
     Box {
         val isBuffering = playbackState.isBuffering
         Slider(
@@ -354,21 +426,31 @@ private fun PlaybackProgressSlider(
                 if (!isBuffering) setDraggingProgress(it)
             },
             thumbRadius = thumbRadius,
-            colors = SliderDefaults.colors(
-                thumbColor = contentColor,
-                activeTrackColor = contentColor,
-                inactiveTrackColor = contentColor.copy(alpha = ContentAlpha.disabled)
-            ),
+            colors = sliderColors,
             interactionSource = sliderInteractor,
             modifier = Modifier.alpha(isBuffering.not().toFloat())
         )
         if (isBuffering) {
-            LinearProgressIndicator(
-                color = contentColor,
+            Slider(
+                value = 0f,
+                onValueChange = {},
+                thumbRadius = thumbRadius,
+                colors = SliderDefaults.colors(
+                    thumbColor = contentColor,
+                    activeTrackColor = contentColor,
+                    inactiveTrackColor = contentColor.copy(alpha = ContentAlpha.disabled)
+                ),
+            )
+            Delayed(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.Center)
-            )
+            ) {
+                LinearProgressIndicator(
+                    color = contentColor,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
     }
 }

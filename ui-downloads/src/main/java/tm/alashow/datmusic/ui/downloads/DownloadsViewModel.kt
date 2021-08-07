@@ -54,8 +54,8 @@ class DownloadsViewModel @Inject constructor(
         } else {
             Timber.d("Audio download index found: $downloadIndex")
         }
-        playbackConnection.playAudio(
-            audios = downloads.map { it.audio }.toTypedArray(),
+        playbackConnection.playAudios(
+            audios = downloads.map { it.audio },
             index = downloadIndex,
             title = QueueTitle(QueueTitle.Type.DOWNLOADS)
         )

@@ -132,6 +132,11 @@ class MediaSessionCallback(
         launch { datmusicPlayer.previousAudio() }
     }
 
+    override fun onSkipToQueueItem(id: Long) {
+        Timber.d("onSkipToQueueItem: $id")
+        launch { datmusicPlayer.skipTo(id.toInt()) }
+    }
+
     override fun onStop() {
         Timber.d("onStop()")
         datmusicPlayer.stop()

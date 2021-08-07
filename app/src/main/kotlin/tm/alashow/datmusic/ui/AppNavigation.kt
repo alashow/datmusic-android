@@ -6,7 +6,13 @@ package tm.alashow.datmusic.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -110,4 +116,37 @@ private fun NavGraphBuilder.addAlbumDetails(navController: NavController) {
     composableScreen(LeafScreen.AlbumDetails) {
         AlbumDetail()
     }
+}
+
+/**
+ * Adds an [NavController.OnDestinationChangedListener] to this [NavController] and updates the
+ * returned [State] which is updated as the destination changes.
+ */
+@Stable
+@Composable
+internal fun NavController.currentScreenAsState(): State<RootScreen> {
+    val selectedItem = remember { mutableStateOf<RootScreen>(RootScreen.Search) }
+
+    DisposableEffect(this) {
+        val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
+            when {
+                destination.hierarchy.any { it.route == RootScreen.Search.route } -> {
+                    selectedItem.value = RootScreen.Search
+                }
+                destination.hierarchy.any { it.route == RootScreen.Downloads.route } -> {
+                    selectedItem.value = RootScreen.Downloads
+                }
+                destination.hierarchy.any { it.route == RootScreen.Settings.route } -> {
+                    selectedItem.value = RootScreen.Settings
+                }
+            }
+        }
+        addOnDestinationChangedListener(listener)
+
+        onDispose {
+            removeOnDestinationChangedListener(listener)
+        }
+    }
+
+    return selectedItem
 }

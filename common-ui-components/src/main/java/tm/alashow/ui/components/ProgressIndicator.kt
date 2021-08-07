@@ -45,7 +45,7 @@ fun ProgressIndicator(
 
 @Composable
 fun BoxWithConstraintsScope.FullScreenLoading(delayMillis: Long = 100) {
-    Delayed(delayMillis) {
+    Delayed(delayMillis = delayMillis) {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier

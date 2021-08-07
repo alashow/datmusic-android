@@ -4,6 +4,8 @@
  */
 package tm.alashow.datmusic.ui.home
 
+import android.support.v4.media.MediaMetadataCompat
+import android.support.v4.media.session.PlaybackStateCompat
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -28,13 +30,8 @@ import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -46,8 +43,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -63,6 +58,7 @@ import tm.alashow.datmusic.playback.NONE_PLAYING
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.isActive
 import tm.alashow.datmusic.ui.AppNavigation
+import tm.alashow.datmusic.ui.currentScreenAsState
 import tm.alashow.datmusic.ui.playback.PlaybackMiniControls
 import tm.alashow.datmusic.ui.playback.PlaybackMiniControlsHeight
 import tm.alashow.navigation.RootScreen
@@ -78,16 +74,22 @@ val HomeBottomNavigationHeight = 56.dp
 internal fun Home(
     scaffoldState: ScaffoldState = LocalScaffoldState.current,
     navController: NavHostController = rememberNavController(),
-    viewModel: HomeViewModel = viewModel()
+    viewModel: HomeViewModel = viewModel(),
+    playbackConnection: PlaybackConnection = LocalPlaybackConnection.current
 ) {
-    val insets = LocalWindowInsets.current
-    val navBottom = with(LocalDensity.current) { insets.navigationBars.bottom.toDp() }
+    val playbackState by rememberFlowWithLifecycle(playbackConnection.playbackState).collectAsState(NONE_PLAYBACK_STATE)
+    val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying).collectAsState(NONE_PLAYING)
+    val playerActive = (playbackState to nowPlaying).isActive
+
+    val sysNavBarHeight = with(LocalDensity.current) { LocalWindowInsets.current.navigationBars.bottom.toDp() }
+    val bottomBarHeight = sysNavBarHeight + HomeBottomNavigationHeight + (if (playerActive) PlaybackMiniControlsHeight else 0.dp)
+
     Scaffold(
         scaffoldState = scaffoldState,
         snackbarHost = { DismissableSnackbarHost(it) },
         bottomBar = {
             val currentSelectedItem by navController.currentScreenAsState()
-            Box(Modifier.height(HomeBottomNavigationHeight + PlaybackMiniControlsHeight + navBottom)) {
+            Box(Modifier.height(bottomBarHeight)) {
                 HomeBottomNavigation(
                     selectedNavigation = currentSelectedItem,
                     onNavigationSelected = { selected ->
@@ -100,9 +102,11 @@ internal fun Home(
                             }
                         }
                     },
+                    nowPlaying = nowPlaying,
+                    playbackState = playbackState,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .align(Alignment.BottomCenter)
+                        .align(Alignment.BottomCenter),
                 )
                 PlaybackMiniControls(modifier = Modifier.align(Alignment.TopCenter))
             }
@@ -114,49 +118,15 @@ internal fun Home(
     }
 }
 
-/**
- * Adds an [NavController.OnDestinationChangedListener] to this [NavController] and updates the
- * returned [State] which is updated as the destination changes.
- */
-@Stable
-@Composable
-private fun NavController.currentScreenAsState(): State<RootScreen> {
-    val selectedItem = remember { mutableStateOf<RootScreen>(SearchTab) }
-
-    DisposableEffect(this) {
-        val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
-            when {
-                destination.hierarchy.any { it.route == SearchTab.route } -> {
-                    selectedItem.value = SearchTab
-                }
-                destination.hierarchy.any { it.route == DownloadsTab.route } -> {
-                    selectedItem.value = DownloadsTab
-                }
-                destination.hierarchy.any { it.route == SettingsTab.route } -> {
-                    selectedItem.value = SettingsTab
-                }
-            }
-        }
-        addOnDestinationChangedListener(listener)
-
-        onDispose {
-            removeOnDestinationChangedListener(listener)
-        }
-    }
-
-    return selectedItem
-}
-
 @Composable
 internal fun HomeBottomNavigation(
     selectedNavigation: RootScreen,
     onNavigationSelected: (RootScreen) -> Unit,
+    playbackState: PlaybackStateCompat,
+    nowPlaying: MediaMetadataCompat,
     modifier: Modifier = Modifier,
     height: Dp = HomeBottomNavigationHeight,
-    playbackConnection: PlaybackConnection = LocalPlaybackConnection.current
 ) {
-    val playbackState by rememberFlowWithLifecycle(playbackConnection.playbackState).collectAsState(NONE_PLAYBACK_STATE)
-    val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying).collectAsState(NONE_PLAYING)
 
     // gradient bg when playback is active, normal bar bg color otherwise
     val playerActive = (playbackState to nowPlaying).isActive

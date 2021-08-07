@@ -13,6 +13,14 @@ fun List<MediaSessionCompat.QueueItem>?.toMediaIdList(): List<MediaId> {
     return this?.map { it.description.mediaId?.toMediaId() ?: MediaId() } ?: emptyList()
 }
 
+fun List<String>.toMediaIds(): List<MediaId> {
+    return this.map { it.toMediaId() }
+}
+
+fun List<String>.toMediaAudioIds(): List<String> {
+    return this.map { it.toMediaId().value }
+}
+
 fun List<Audio?>.toQueueItems(): List<MediaSessionCompat.QueueItem> {
     return filterNotNull().mapIndexed { index, audio ->
         MediaSessionCompat.QueueItem(audio.toMediaDescription(), (audio.id + index).hashCode().toLong())

@@ -15,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -22,8 +23,8 @@ import kotlinx.coroutines.launch
  * Delays visibility of given [content] for [delayMillis].
  */
 @Composable
-fun Delayed(delayMillis: Long = 200, content: @Composable () -> Unit) {
-    TimedVisibility(delayMillis = delayMillis, visibility = false, content = content)
+fun Delayed(delayMillis: Long = 200, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    TimedVisibility(delayMillis = delayMillis, visibility = false, modifier = modifier, content = content)
 }
 
 /**
@@ -31,7 +32,7 @@ fun Delayed(delayMillis: Long = 200, content: @Composable () -> Unit) {
  */
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun TimedVisibility(delayMillis: Long = 4000, visibility: Boolean = true, content: @Composable () -> Unit) {
+fun TimedVisibility(delayMillis: Long = 4000, visibility: Boolean = true, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     var visible by remember { mutableStateOf(visibility) }
     val coroutine = rememberCoroutineScope()
 
@@ -45,7 +46,7 @@ fun TimedVisibility(delayMillis: Long = 4000, visibility: Boolean = true, conten
             job.cancel()
         }
     }
-    AnimatedVisibility(visible = visible, enter = fadeIn(), exit = fadeOut()) {
+    AnimatedVisibility(visible = visible, modifier = modifier, enter = fadeIn(), exit = fadeOut()) {
         content()
     }
 }

@@ -30,7 +30,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import tm.alashow.base.util.CoroutineDispatchers
@@ -40,6 +39,7 @@ import tm.alashow.datmusic.data.db.daos.AlbumsDao
 import tm.alashow.datmusic.data.db.daos.ArtistsDao
 import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
+import tm.alashow.datmusic.data.db.daos.findAudio
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.domain.entities.CoverImageSize
@@ -92,6 +92,7 @@ interface DatmusicPlayer {
     suspend fun repeatQueue()
     suspend fun previousAudio()
     fun playNext(id: String)
+    suspend fun skipTo(position: Int)
     fun swapQueueAudios(from: Int, to: Int)
     fun removeFromQueue(id: String)
     fun stop(byUser: Boolean = true)
@@ -261,13 +262,8 @@ class DatmusicPlayerImpl @Inject constructor(
 
     override suspend fun playAudio(id: String) {
         if (audioFocusHelper.requestPlayback()) {
-            var audio = audiosDao.entry(id).firstOrNull()
-            if (audio == null) {
-                Timber.e("Audio by id: $id not found, checking downloads table")
-                audio = downloadsDao.entry(id).firstOrNull()?.audio
-            }
-            if (audio != null)
-                playAudio(audio)
+            val audio = (audiosDao to downloadsDao).findAudio(id)
+            if (audio != null) playAudio(audio)
             else {
                 Timber.e("Audio by id: $id not found")
                 updatePlaybackState {
@@ -287,6 +283,17 @@ class DatmusicPlayerImpl @Inject constructor(
         }
         setMetaData(audio)
         playAudio()
+    }
+
+    override suspend fun skipTo(position: Int) {
+        val previousAudioId = queueManager.currentAudioId
+        queueManager.skipTo(position)
+
+        if (previousAudioId == queueManager.currentAudioId) {
+            return
+        }
+
+        playAudio(queueManager.currentAudioId)
     }
 
     override fun seekTo(position: Long) {

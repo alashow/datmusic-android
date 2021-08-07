@@ -72,6 +72,7 @@ object Deps {
 
             const val insets = "com.google.accompanist:accompanist-insets:$version"
             const val insetsUi = "com.google.accompanist:accompanist-insets-ui:$version"
+            const val pager = "com.google.accompanist:accompanist-pager:$version"
             const val permissions = "com.google.accompanist:accompanist-permissions:$version"
             const val placeholder = "com.google.accompanist:accompanist-placeholder-material:$version"
             const val swiperefresh = "com.google.accompanist:accompanist-swiperefresh:$version"

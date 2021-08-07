@@ -95,12 +95,16 @@ fun PlaybackMiniControls(
     val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying).collectAsState(NONE_PLAYING)
 
     val visible = (playbackState to nowPlaying).isActive
-    AnimatedVisibility(visible = visible, enter = slideInVertically({ it / 2 }), exit = slideOutVertically({ it / 2 })) {
+    AnimatedVisibility(
+        visible = visible,
+        modifier = modifier,
+        enter = slideInVertically({ it / 2 }),
+        exit = slideOutVertically({ it / 2 })
+    ) {
         PlaybackMiniControls(
             playbackState = playbackState,
             nowPlaying = nowPlaying,
             onPlayPause = { playbackConnection.mediaController?.playPause() },
-            modifier = modifier
         )
     }
 }

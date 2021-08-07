@@ -12,6 +12,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
+import tm.alashow.datmusic.data.db.daos.AudiosDao
+import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
 import tm.alashow.datmusic.playback.services.PlayerService
 
 @InstallIn(SingletonComponent::class)
@@ -20,6 +22,14 @@ class PlaybackModule {
 
     @Provides
     @Singleton
-    fun playbackConnection(@ApplicationContext context: Context): PlaybackConnection =
-        PlaybackConnectionImpl(context, ComponentName(context, PlayerService::class.java))
+    fun playbackConnection(
+        @ApplicationContext context: Context,
+        audiosDao: AudiosDao,
+        downloadsRequestsDao: DownloadRequestsDao
+    ): PlaybackConnection = PlaybackConnectionImpl(
+        context = context,
+        serviceComponent = ComponentName(context, PlayerService::class.java),
+        audiosDao = audiosDao,
+        downloadsDao = downloadsRequestsDao
+    )
 }

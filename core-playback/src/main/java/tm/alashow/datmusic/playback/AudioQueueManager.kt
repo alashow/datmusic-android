@@ -15,6 +15,7 @@ import timber.log.Timber
 import tm.alashow.base.util.extensions.swap
 import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
+import tm.alashow.datmusic.data.db.daos.findAudios
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.playback.models.toQueueItems
@@ -34,6 +35,7 @@ interface AudioQueueManager {
 
     fun setMediaSession(session: MediaSessionCompat)
     fun playNext(id: String)
+    fun skipTo(position: Int)
     fun remove(id: String)
     fun swap(from: Int, to: Int)
     fun queue(): String
@@ -44,7 +46,7 @@ interface AudioQueueManager {
 
 class AudioQueueManagerImpl @Inject constructor(
     private val audiosDao: AudiosDao,
-    private val downloadRequestsDao: DownloadRequestsDao,
+    private val downloadsDao: DownloadRequestsDao,
     private val downloader: Downloader,
 ) : AudioQueueManager, CoroutineScope by MainScope() {
 
@@ -69,8 +71,10 @@ class AudioQueueManagerImpl @Inject constructor(
         set(value) {
             field = value
             if (value.isNotEmpty()) {
+                val orderByIndex = value.withIndex().associate { it.value to it.index }
                 launch {
-                    mediaSession.setQueue(audiosDao.entriesById(value).firstOrNull()?.toQueueItems())
+                    val audios = (audiosDao to downloadsDao).findAudios(value).sortedBy { orderByIndex[it.id] }
+                    mediaSession.setQueue(audios.toQueueItems())
                 }
             }
         }
@@ -113,6 +117,10 @@ class AudioQueueManagerImpl @Inject constructor(
         swap(queue.indexOf(id), nextIndex)
     }
 
+    override fun skipTo(position: Int) {
+        currentAudioId = queue[position]
+    }
+
     override fun remove(id: String) {
         queue = queue.toMutableList().apply { remove(id) }
     }
@@ -137,12 +145,12 @@ class AudioQueueManagerImpl @Inject constructor(
 
     override fun shuffleQueue(isShuffle: Boolean) {
         launch {
-            if (isShuffle) mediaSession.setQueue(shuffleQueue())
+            if (isShuffle) shuffleQueue()
             else restoreQueueOrder()
         }
     }
 
-    private suspend fun shuffleQueue(): List<MediaSessionCompat.QueueItem> {
+    private fun shuffleQueue() {
         val shuffled = queue.let { original ->
             original.shuffled().let { shuffled ->
                 val currentIdIndex = shuffled.indexOfFirst { id -> id == currentAudioId }
@@ -150,7 +158,7 @@ class AudioQueueManagerImpl @Inject constructor(
                     shuffled.swap(currentIdIndex, 0)
                 else {
                     Timber.e("CurrentIdIndex is not found found")
-                    return emptyList()
+                    return
                 }
             }
         }
@@ -161,7 +169,6 @@ class AudioQueueManagerImpl @Inject constructor(
         originalQueue = queue
         // set and return shuffled queue
         queue = shuffled
-        return audiosDao.entriesById(queue).firstOrNull()?.toQueueItems() ?: error("Null entries")
     }
 
     private fun restoreQueueOrder() {
