@@ -26,6 +26,7 @@ import coil.request.SuccessResult
 import coil.size.Precision
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
@@ -114,6 +115,7 @@ interface DatmusicPlayer {
     fun shuffleQueue(isShuffle: Boolean)
 }
 
+@Singleton
 class DatmusicPlayerImpl @Inject constructor(
     @ApplicationContext private val context: Context,
     private val dispatchers: CoroutineDispatchers,

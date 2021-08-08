@@ -34,7 +34,7 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.BottomSheetScaffold
 import androidx.compose.material.BottomSheetState
 import androidx.compose.material.ContentAlpha
@@ -450,6 +450,8 @@ private fun PlaybackProgressSlider(
     setDraggingProgress: (Float?) -> Unit,
     thumbRadius: Dp,
     contentColor: Color,
+    bufferedProgressColor: Color = contentColor.copy(alpha = 0.25f),
+    height: Dp = 44.dp,
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current
 ) {
     val updatedProgressState by rememberUpdatedState(progressState)
@@ -476,16 +478,31 @@ private fun PlaybackProgressSlider(
             }
         }
     }
+
     val sliderColors = SliderDefaults.colors(
         thumbColor = contentColor,
         activeTrackColor = contentColor,
         inactiveTrackColor = contentColor.copy(alpha = ContentAlpha.disabled)
     )
+    val linearProgressMod = Modifier
+        .fillMaxWidth(fraction = .99f) // reduce linearProgressIndicators width to match Slider's
+        .clip(CircleShape) // because Slider is rounded
+
+    val bufferedProgress = progressState.bufferedProgress
+    val isBuffering = playbackState.isBuffering
+
     Box(
-        modifier = Modifier.height(44.dp),
+        modifier = Modifier.height(height),
         contentAlignment = Alignment.Center
     ) {
-        val isBuffering = playbackState.isBuffering
+        if (!isBuffering)
+            LinearProgressIndicator(
+                progress = bufferedProgress,
+                color = bufferedProgressColor,
+                backgroundColor = Color.Transparent,
+                modifier = linearProgressMod
+            )
+
         Slider(
             value = draggingProgress ?: progressState.progress,
             onValueChange = {
@@ -496,22 +513,20 @@ private fun PlaybackProgressSlider(
             interactionSource = sliderInteractor,
             modifier = Modifier.alpha(isBuffering.not().toFloat())
         )
+
         if (isBuffering) {
             LinearProgressIndicator(
                 progress = 0f,
                 color = contentColor,
-                modifier = Modifier
-                    .clip(RoundedCornerShape(4.dp))
-                    .fillMaxWidth()
+                modifier = linearProgressMod
             )
             Delayed(
                 modifier = Modifier
-                    .fillMaxWidth()
                     .align(Alignment.Center)
+                    .then(linearProgressMod)
             ) {
                 LinearProgressIndicator(
                     color = contentColor,
-                    modifier = Modifier.clip(RoundedCornerShape(4.dp))
                 )
             }
         }
@@ -533,7 +548,7 @@ private fun BoxScope.PlaybackProgressDuration(
     ) {
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
             val currentDuration = when (draggingProgress != null) {
-                true -> (progressState.total.toFloat() * (draggingProgress ?: 0f)).toLong().millisToDuration()
+                true -> (progressState.total.toFloat() * (draggingProgress)).toLong().millisToDuration()
                 else -> progressState.currentDuration
             }
             Text(currentDuration, style = MaterialTheme.typography.caption)

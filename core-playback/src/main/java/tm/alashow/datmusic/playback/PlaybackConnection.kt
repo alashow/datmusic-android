@@ -46,6 +46,7 @@ import tm.alashow.datmusic.playback.models.PlaybackQueue
 import tm.alashow.datmusic.playback.models.QueueTitle
 import tm.alashow.datmusic.playback.models.fromMediaController
 import tm.alashow.datmusic.playback.models.toMediaAudioIds
+import tm.alashow.datmusic.playback.players.AudioPlayer
 import tm.alashow.datmusic.playback.players.FROM_POSITION_KEY
 import tm.alashow.datmusic.playback.players.QUEUE_LIST_KEY
 import tm.alashow.datmusic.playback.players.QUEUE_MEDIA_ID_KEY
@@ -82,6 +83,7 @@ class PlaybackConnectionImpl(
     serviceComponent: ComponentName,
     audiosDao: AudiosDao,
     downloadsDao: DownloadRequestsDao,
+    private val audioPlayer: AudioPlayer,
     coroutineScope: CoroutineScope = ProcessLifecycleOwner.get().lifecycleScope,
 ) : PlaybackConnection, CoroutineScope by coroutineScope {
 
@@ -117,17 +119,23 @@ class PlaybackConnectionImpl(
                 val duration = current.duration
                 val position = state.position
 
-                if (duration < 1) return@collect
+                if (state == NONE_PLAYBACK_STATE || current == NONE_PLAYING || duration < 1)
+                    return@collect
 
-                val initial = PlaybackProgressState(duration, position)
+                val initial = PlaybackProgressState(duration, position, buffered = audioPlayer.bufferedPosition())
                 playbackProgress.value = initial
 
                 if (state.isPlaying && !state.isBuffering)
-                    playbackInterval = launch {
-                        flowInterval(PLAYBACK_PROGRESS_INTERVAL).collect { ticks ->
-                            playbackProgress.value = initial.copy(elapsed = PLAYBACK_PROGRESS_INTERVAL * (ticks + 1))
-                        }
-                    }
+                    starPlaybackProgressInterval(initial)
+            }
+        }
+    }
+
+    private fun starPlaybackProgressInterval(initial: PlaybackProgressState) {
+        playbackInterval = launch {
+            flowInterval(PLAYBACK_PROGRESS_INTERVAL).collect { ticks ->
+                val elapsed = PLAYBACK_PROGRESS_INTERVAL * (ticks + 1)
+                playbackProgress.value = initial.copy(elapsed = elapsed, buffered = audioPlayer.bufferedPosition())
             }
         }
     }

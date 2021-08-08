@@ -19,6 +19,7 @@ import com.google.android.exoplayer2.util.PriorityTaskManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Named
+import javax.inject.Singleton
 import okhttp3.OkHttpClient
 import timber.log.Timber
 
@@ -32,6 +33,7 @@ interface AudioPlayer {
     fun isBuffering(): Boolean
     fun isPlaying(): Boolean
     fun position(): Long
+    fun bufferedPosition(): Long
     fun pause()
     fun stop()
     fun release()
@@ -43,6 +45,7 @@ interface AudioPlayer {
     fun onCompletion(completion: OnCompletion<AudioPlayer>)
 }
 
+@Singleton
 class AudioPlayerImpl @Inject constructor(
     @ApplicationContext internal val context: Context,
     @Named("player") private val okHttpClient: OkHttpClient,
@@ -67,8 +70,6 @@ class AudioPlayerImpl @Inject constructor(
     private var onCompletion: OnCompletion<AudioPlayer> = {}
 
     override fun play(startAtPosition: Long?) {
-        // if (player.playbackState) onBuffering()
-
         if (startAtPosition == null) {
             player.playWhenReady = true
             return
@@ -110,6 +111,8 @@ class AudioPlayerImpl @Inject constructor(
     override fun isPlaying() = player.isPlaying
 
     override fun position() = player.currentPosition
+
+    override fun bufferedPosition() = player.bufferedPosition
 
     override fun pause() {
         player.playWhenReady = false
