@@ -137,12 +137,15 @@ class Downloader @Inject constructor(
             return
         }
 
-        val downloadUrl = audio.downloadUrl
-        if (downloadUrl == null) {
+        if (audio.downloadUrl == null) {
             downloaderMessage(AudioDownloadErrorInvalidUrl)
             return
         }
 
+        val downloadUrl = Uri.parse(audio.downloadUrl).buildUpon()
+            .appendQueryParameter("redirect", "")
+            .build()
+            .toString()
         val request = Request(downloadUrl, file.uri)
         when (val enqueueResult = enqueue(downloadRequest, request)) {
             is FetchEnqueueSuccessful -> {
