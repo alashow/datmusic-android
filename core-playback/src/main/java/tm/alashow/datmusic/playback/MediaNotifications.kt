@@ -63,7 +63,7 @@ class MediaNotificationsImpl @Inject constructor(
     private val notificationManager: NotificationManager = context.systemService(Context.NOTIFICATION_SERVICE)
 
     override fun updateNotification(mediaSession: MediaSessionCompat) {
-        if (!PlayerService.IS_RUNNING) return
+        if (!PlayerService.IS_FOREGROUND) return
         GlobalScope.launch {
             notificationManager.notify(NOTIFICATION_ID, buildNotification(mediaSession))
         }

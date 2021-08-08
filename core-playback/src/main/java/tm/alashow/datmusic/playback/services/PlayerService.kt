@@ -15,6 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.datmusic.data.db.daos.AlbumsDao
 import tm.alashow.datmusic.data.db.daos.ArtistsDao
@@ -40,7 +41,7 @@ import tm.alashow.datmusic.playback.receivers.BecomingNoisyReceiver
 class PlayerService : MediaBrowserServiceCompat(), CoroutineScope by MainScope() {
 
     companion object {
-        var IS_RUNNING = false
+        var IS_FOREGROUND = false
     }
 
     @Inject
@@ -70,24 +71,42 @@ class PlayerService : MediaBrowserServiceCompat(), CoroutineScope by MainScope()
         becomingNoisyReceiver = BecomingNoisyReceiver(this, sessionToken!!)
 
         datmusicPlayer.onPlayingState { isPlaying, byUi ->
-            if (isPlaying) {
-                startForeground(NOTIFICATION_ID, mediaNotifications.buildNotification(getSession()))
-                becomingNoisyReceiver.register()
+            val isStopped = datmusicPlayer.getSession().controller.playbackState.isStopped
+            if (isStopped) {
+                pauseForeground(byUi)
+                mediaNotifications.clearNotifications()
             } else {
-                becomingNoisyReceiver.unregister()
-                stopForeground(byUi)
-
-                if (datmusicPlayer.getSession().controller.playbackState.isStopped) {
-                    mediaNotifications.clearNotifications()
-                } else
-                    mediaNotifications.updateNotification(getSession())
+                startForeground()
             }
-            IS_RUNNING = isPlaying
+
+            mediaNotifications.updateNotification(getSession())
         }
 
         datmusicPlayer.onMetaDataChanged {
             mediaNotifications.updateNotification(getSession())
         }
+    }
+
+    private fun startForeground() {
+        if (IS_FOREGROUND) {
+            Timber.w("Tried to start foreground, but was already in foreground")
+            return
+        }
+        Timber.d("Starting foreground service")
+        startForeground(NOTIFICATION_ID, mediaNotifications.buildNotification(datmusicPlayer.getSession()))
+        becomingNoisyReceiver.register()
+        IS_FOREGROUND = true
+    }
+
+    private fun pauseForeground(removeNotification: Boolean) {
+        if (!IS_FOREGROUND) {
+            Timber.w("Tried to stop foreground, but was already NOT in foreground")
+            return
+        }
+        Timber.d("Stopping foreground service")
+        becomingNoisyReceiver.unregister()
+        stopForeground(removeNotification)
+        IS_FOREGROUND = false
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
