@@ -117,7 +117,7 @@ fun CoverImage(
             }
         }
 
-        if (bitmapPlaceholder != null && painter.state !is ImagePainter.State.Success) {
+        if (bitmapPlaceholder != null && painter.state is ImagePainter.State.Loading) {
             Image(
                 painter = rememberImagePainter(bitmapPlaceholder),
                 contentDescription = null,
