@@ -72,8 +72,9 @@ class AudioQueueManagerImpl @Inject constructor(
 
     override var queue: List<String> = listOf()
         set(value) {
-            field = value
-            setQueueItems(value)
+            val deduped = value.toSet().toList()
+            field = deduped
+            setQueueItems(deduped)
         }
 
     override var queueTitle: String = ""

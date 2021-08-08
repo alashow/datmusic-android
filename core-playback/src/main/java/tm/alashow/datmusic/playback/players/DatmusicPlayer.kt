@@ -278,7 +278,7 @@ class DatmusicPlayerImpl @Inject constructor(
     }
 
     override suspend fun playAudio(audio: Audio) {
-        queueManager.currentAudioId = audio.id
+        setCurrentAudioId(audio.id)
         queueManager.refreshCurrentAudio()
         isInitialized = false
 
@@ -290,13 +290,7 @@ class DatmusicPlayerImpl @Inject constructor(
     }
 
     override suspend fun skipTo(position: Int) {
-        val previousAudioId = queueManager.currentAudioId
         queueManager.skipTo(position)
-
-        if (previousAudioId == queueManager.currentAudioId) {
-            return
-        }
-
         playAudio(queueManager.currentAudioId)
     }
 
@@ -345,9 +339,19 @@ class DatmusicPlayerImpl @Inject constructor(
 
     override suspend fun nextAudio(): String? {
         val id = queueManager.nextAudioId
-        id?.let { playAudio(it) }
+        if (id != null) {
+            playAudio(id)
+            setCurrentAudioId(id)
+        }
         logEvent("nextAudio")
         return id
+    }
+
+    override suspend fun previousAudio() {
+        queueManager.previousAudioId?.let {
+            playAudio(it)
+        } ?: repeatAudio()
+        logEvent("previousAudio")
     }
 
     override suspend fun repeatAudio() {
@@ -362,13 +366,6 @@ class DatmusicPlayerImpl @Inject constructor(
             nextAudio()
         }
         logEvent("repeatQueue")
-    }
-
-    override suspend fun previousAudio() {
-        queueManager.previousAudioId?.let {
-            playAudio(it)
-        } ?: repeatAudio()
-        logEvent("previousAudio")
     }
 
     override fun playNext(id: String) {
@@ -488,7 +485,6 @@ class DatmusicPlayerImpl @Inject constructor(
         }
 
         if (queue != null && queue.isNotEmpty()) {
-            setCurrentAudioId(audioId)
             setData(queue, queueTitle)
             playAudio(audioId)
             // delay for new queue to apply first
@@ -534,7 +530,7 @@ class DatmusicPlayerImpl @Inject constructor(
             queueState = queueState.copy(state = STATE_PAUSED)
         }
 
-        queueManager.currentAudioId = queueState.currentId
+        setCurrentAudioId(queueState.currentId)
 
         setData(queueState.queue, queueState.title ?: "")
 
@@ -576,7 +572,7 @@ class DatmusicPlayerImpl @Inject constructor(
         if (queueManager.queue.isEmpty()) return
 
         launch {
-            queueManager.currentAudioId = queueManager.queue.first()
+            setCurrentAudioId(queueManager.queue.first())
             queueManager.refreshCurrentAudio()?.apply { setMetaData(this) }
         }
     }
