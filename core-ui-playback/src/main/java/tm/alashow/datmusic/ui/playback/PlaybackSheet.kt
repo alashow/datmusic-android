@@ -11,9 +11,6 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.interaction.DragInteraction
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -102,7 +99,6 @@ import kotlin.math.absoluteValue
 import kotlin.math.roundToLong
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import tm.alashow.base.ui.ColorPalettePreference
 import tm.alashow.base.ui.ThemeState
 import tm.alashow.base.util.extensions.Callback
@@ -456,28 +452,6 @@ private fun PlaybackProgressSlider(
 ) {
     val updatedProgressState by rememberUpdatedState(progressState)
     val updatedDraggingProgress by rememberUpdatedState(draggingProgress)
-    val sliderInteractor = remember { MutableInteractionSource() }
-
-    LaunchedEffect(sliderInteractor) {
-        sliderInteractor.interactions.collect { interaction ->
-            Timber.d("Slider interaction: $interaction")
-            when (interaction) {
-                // reset progress on drag/press cancel
-                is DragInteraction.Cancel, is PressInteraction.Cancel -> {
-                    setDraggingProgress(null)
-                }
-                // request seekTo on drag end or press release of the slider and consume last set progress
-                is DragInteraction.Stop, is PressInteraction.Release -> {
-                    if (updatedDraggingProgress != null) {
-                        playbackConnection.transportControls?.seekTo(
-                            (updatedProgressState.total.toFloat() * (updatedDraggingProgress ?: 0f)).roundToLong()
-                        )
-                        setDraggingProgress(null)
-                    }
-                }
-            }
-        }
-    }
 
     val sliderColors = SliderDefaults.colors(
         thumbColor = contentColor,
@@ -510,8 +484,13 @@ private fun PlaybackProgressSlider(
             },
             thumbRadius = thumbRadius,
             colors = sliderColors,
-            interactionSource = sliderInteractor,
-            modifier = Modifier.alpha(isBuffering.not().toFloat())
+            modifier = Modifier.alpha(isBuffering.not().toFloat()),
+            onValueChangeFinished = {
+                playbackConnection.transportControls?.seekTo(
+                    (updatedProgressState.total.toFloat() * (updatedDraggingProgress ?: 0f)).roundToLong()
+                )
+                setDraggingProgress(null)
+            }
         )
 
         if (isBuffering) {
