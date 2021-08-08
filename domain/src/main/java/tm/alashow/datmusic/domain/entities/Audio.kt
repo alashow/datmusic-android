@@ -7,18 +7,15 @@ package tm.alashow.datmusic.domain.entities
 import android.net.Uri
 import android.os.Parcelable
 import androidx.core.net.toUri
-import androidx.documentfile.provider.DocumentFile
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
-import java.io.FileNotFoundException
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import tm.alashow.datmusic.domain.DownloadsSongsGrouping
 import tm.alashow.domain.models.BasePaginatedEntity
 
 @Parcelize
@@ -116,34 +113,7 @@ data class Audio(
 
     fun durationMillis() = (duration * 1000).toLong()
 
-    private fun fileDisplayName() = "$artist - $title"
+    fun fileDisplayName() = "$artist - $title"
     fun fileMimeType() = "audio/mpeg"
     fun fileExtension() = ".mp3"
-
-    private fun createDocumentFile(parent: DocumentFile) = when (val existing = parent.findFile(fileDisplayName() + fileExtension())) {
-        is DocumentFile -> existing
-        else -> parent.createFile(fileMimeType(), fileDisplayName()) ?: error("Couldn't create document file")
-    }
-
-    fun documentFile(parent: DocumentFile, songsGrouping: DownloadsSongsGrouping): DocumentFile {
-        if (!parent.exists())
-            throw FileNotFoundException("Parent folder doesn't exist")
-        return when (songsGrouping) {
-            DownloadsSongsGrouping.Flat -> createDocumentFile(parent)
-            DownloadsSongsGrouping.ByArtist -> {
-                val artistFolder = parent.findFile(artist) ?: parent.createDirectory(artist) ?: error("Couldn't create artist folder: $artist")
-                createDocumentFile(artistFolder)
-            }
-            DownloadsSongsGrouping.ByAlbum -> {
-                val artistFolder = parent.findFile(artist) ?: parent.createDirectory(artist) ?: error("Couldn't create artist folder: $artist")
-                if (album.isNullOrBlank()) {
-                    createDocumentFile(artistFolder)
-                } else {
-                    val albumFolder =
-                        artistFolder.findFile(album) ?: artistFolder.createDirectory(album) ?: error("Couldn't create album folder: $album")
-                    createDocumentFile(albumFolder)
-                }
-            }
-        }
-    }
 }

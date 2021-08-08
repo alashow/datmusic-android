@@ -14,6 +14,6 @@ enum class DownloadsSongsGrouping(val labelRes: Int, val exampleRes: Int) {
     companion object {
         private val map = values().associateBy { it.name }
 
-        fun from(value: String) = map[value] ?: ByArtist
+        fun from(value: String) = map[value] ?: ByAlbum
     }
 }
