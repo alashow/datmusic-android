@@ -60,7 +60,7 @@ import tm.alashow.datmusic.playback.isActive
 import tm.alashow.datmusic.ui.AppNavigation
 import tm.alashow.datmusic.ui.currentScreenAsState
 import tm.alashow.datmusic.ui.playback.PlaybackMiniControls
-import tm.alashow.datmusic.ui.playback.PlaybackMiniControlsHeight
+import tm.alashow.datmusic.ui.playback.PlaybackMiniControlsDefaults
 import tm.alashow.navigation.RootScreen
 import tm.alashow.navigation.RootScreen.Downloads as DownloadsTab
 import tm.alashow.navigation.RootScreen.Search as SearchTab
@@ -82,7 +82,7 @@ internal fun Home(
     val playerActive = (playbackState to nowPlaying).isActive
 
     val sysNavBarHeight = with(LocalDensity.current) { LocalWindowInsets.current.navigationBars.bottom.toDp() }
-    val bottomBarHeight = sysNavBarHeight + HomeBottomNavigationHeight + (if (playerActive) PlaybackMiniControlsHeight else 0.dp)
+    val bottomBarHeight = sysNavBarHeight + HomeBottomNavigationHeight + (if (playerActive) PlaybackMiniControlsDefaults.height else 0.dp)
 
     Scaffold(
         scaffoldState = scaffoldState,

@@ -81,7 +81,10 @@ import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.components.IconButton
 import tm.alashow.ui.theme.AppTheme
 
-val PlaybackMiniControlsHeight = 56.dp
+object PlaybackMiniControlsDefaults {
+    val height = 56.dp
+    val playPauseSize = 36.dp
+}
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -114,7 +117,7 @@ fun PlaybackMiniControls(
     nowPlaying: MediaMetadataCompat,
     modifier: Modifier = Modifier,
     onPlayPause: () -> Unit,
-    height: Dp = PlaybackMiniControlsHeight,
+    height: Dp = PlaybackMiniControlsDefaults.height,
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
     playbackSheetState: BottomSheetState = LocalPlaybackSheetState.current,
 ) {
@@ -143,8 +146,8 @@ fun PlaybackMiniControls(
                         .background(backgroundColor)
                 ) {
                     CompositionLocalProvider(LocalContentColor provides contentColor) {
-                        PlaybackNowPlaying(nowPlaying, height)
-                        PlaybackPlayPause(playbackState, onPlayPause)
+                        PlaybackNowPlaying(nowPlaying = nowPlaying, maxHeight = height)
+                        PlaybackPlayPause(playbackState = playbackState, onPlayPause = onPlayPause)
                     }
                 }
                 PlaybackProgress(
@@ -185,7 +188,7 @@ private fun PlaybackProgress(
 }
 
 @Composable
-private fun RowScope.PlaybackNowPlaying(nowPlaying: MediaMetadataCompat, height: Dp) {
+private fun RowScope.PlaybackNowPlaying(nowPlaying: MediaMetadataCompat, maxHeight: Dp) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
         modifier = Modifier.weight(7f),
@@ -193,7 +196,7 @@ private fun RowScope.PlaybackNowPlaying(nowPlaying: MediaMetadataCompat, height:
         val artwork = rememberImagePainter(nowPlaying.artwork ?: nowPlaying.artworkUri, builder = ImageLoading.defaultConfig)
         CoverImage(
             painter = artwork,
-            size = height - 16.dp,
+            size = maxHeight - 16.dp,
             modifier = Modifier.padding(AppTheme.specs.paddingSmall)
         ) { imageMod ->
             Image(
@@ -223,7 +226,11 @@ private fun RowScope.PlaybackNowPlaying(nowPlaying: MediaMetadataCompat, height:
 }
 
 @Composable
-private fun RowScope.PlaybackPlayPause(playbackState: PlaybackStateCompat, onPlayPause: () -> Unit) {
+private fun RowScope.PlaybackPlayPause(
+    playbackState: PlaybackStateCompat,
+    size: Dp = PlaybackMiniControlsDefaults.playPauseSize,
+    onPlayPause: () -> Unit
+) {
     IconButton(
         onClick = onPlayPause,
         rippleColor = LocalContentColor.current,
@@ -238,7 +245,7 @@ private fun RowScope.PlaybackPlayPause(playbackState: PlaybackStateCompat, onPla
                     else -> Icons.Filled.HourglassBottom
                 }
             ),
-            modifier = Modifier.size(32.dp),
+            modifier = Modifier.size(size),
             contentDescription = null
         )
     }
