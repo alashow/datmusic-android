@@ -24,6 +24,7 @@ import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import coil.size.Precision
+import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -33,7 +34,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import tm.alashow.base.util.CoroutineDispatchers
+import tm.alashow.base.util.event
 import tm.alashow.base.util.extensions.plus
 import tm.alashow.data.PreferencesStore
 import tm.alashow.datmusic.data.db.daos.AlbumsDao
@@ -118,7 +119,6 @@ interface DatmusicPlayer {
 @Singleton
 class DatmusicPlayerImpl @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val dispatchers: CoroutineDispatchers,
     private val audioPlayer: AudioPlayerImpl,
     private val queueManager: AudioQueueManagerImpl,
     private val audioFocusHelper: AudioFocusHelperImpl,
@@ -127,6 +127,7 @@ class DatmusicPlayerImpl @Inject constructor(
     private val albumsDao: AlbumsDao,
     private val downloadsDao: DownloadRequestsDao,
     private val preferences: PreferencesStore,
+    private val analytics: FirebaseAnalytics,
 ) : DatmusicPlayer, CoroutineScope by MainScope() {
 
     companion object {
@@ -315,6 +316,7 @@ class DatmusicPlayerImpl @Inject constructor(
                 1F
             )
         }
+        logEvent("seekTo")
     }
 
     override fun fastForward() {
@@ -327,6 +329,7 @@ class DatmusicPlayerImpl @Inject constructor(
                 seekTo(forwardTo)
             }
         }
+        logEvent("fastForward")
     }
 
     override fun rewind() {
@@ -336,16 +339,19 @@ class DatmusicPlayerImpl @Inject constructor(
         } else {
             seekTo(rewindTo)
         }
+        logEvent("rewind")
     }
 
     override suspend fun nextAudio(): String? {
         val id = queueManager.nextAudioId
         id?.let { playAudio(it) }
+        logEvent("nextAudio")
         return id
     }
 
     override suspend fun repeatAudio() {
         playAudio(queueManager.currentAudioId)
+        logEvent("repeatAudio")
     }
 
     override suspend fun repeatQueue() {
@@ -354,25 +360,30 @@ class DatmusicPlayerImpl @Inject constructor(
         else {
             nextAudio()
         }
+        logEvent("repeatQueue")
     }
 
     override suspend fun previousAudio() {
         queueManager.previousAudioId?.let {
             playAudio(it)
         } ?: repeatAudio()
+        logEvent("previousAudio")
     }
 
     override fun playNext(id: String) {
         queueManager.playNext(id)
+        logEvent("playNext", id)
     }
 
     override fun swapQueueAudios(from: Int, to: Int) {
         queueManager.swap(from, to)
         queueManager.currentAudio?.apply { setMetaData(this) }
+        logEvent("nextAudio")
     }
 
     override fun removeFromQueue(id: String) {
         queueManager.remove(id)
+        logEvent("removeFromQueue", id)
     }
 
     override fun stop(byUser: Boolean) {
@@ -480,6 +491,8 @@ class DatmusicPlayerImpl @Inject constructor(
         } else {
             Timber.e("Queue is null or empty: $mediaId")
         }
+
+        logEvent("playMedia", _mediaId)
     }
 
     override suspend fun saveQueueState() {
@@ -546,6 +559,7 @@ class DatmusicPlayerImpl @Inject constructor(
     override fun shuffleQueue(isShuffle: Boolean) {
         queueManager.shuffleQueue(isShuffle)
         queueManager.currentAudio?.apply { setMetaData(this) }
+        logEvent("shuffleQueue")
     }
 
     private fun goToStart() {
@@ -594,4 +608,15 @@ class DatmusicPlayerImpl @Inject constructor(
             else -> null
         }
     }
+
+    private fun logEvent(
+        event: String,
+        mediaId: String = queueManager.currentAudioId
+    ) = analytics.event(
+        "player.$event",
+        mapOf(
+            "mediaId" to
+                mediaId
+        )
+    )
 }
