@@ -118,9 +118,12 @@ data class Audio(
 
     private fun fileDisplayName() = "$artist - $title"
     fun fileMimeType() = "audio/mpeg"
+    fun fileExtension() = ".mp3"
 
-    private fun createDocumentFile(parent: DocumentFile) =
-        parent.createFile(fileMimeType(), fileDisplayName()) ?: error("Couldn't create document file")
+    private fun createDocumentFile(parent: DocumentFile) = when (val existing = parent.findFile(fileDisplayName() + fileExtension())) {
+        is DocumentFile -> existing
+        else -> parent.createFile(fileMimeType(), fileDisplayName()) ?: error("Couldn't create document file")
+    }
 
     fun documentFile(parent: DocumentFile, songsGrouping: DownloadsSongsGrouping): DocumentFile {
         if (!parent.exists())
