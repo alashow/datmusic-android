@@ -119,18 +119,18 @@ repositories {
 }
 
 dependencies {
-	implementation project(":common-ui-compose")
-	implementation project(":common-ui-theme")
-	implementation project(":common-ui-components")
-	implementation project(":core-playback")
-	implementation project(":core-ui-playback")
-	implementation project(":core-ui-downloader")
-	implementation project(":navigation")
-	implementation project(":ui-search")
-	implementation project(":ui-settings")
-	implementation project(":ui-artist")
-	implementation project(":ui-album")
-	implementation project(":ui-downloads")
+	implementation project(":modules:common-ui-compose")
+	implementation project(":modules:common-ui-theme")
+	implementation project(":modules:common-ui-components")
+	implementation project(":modules:core-playback")
+	implementation project(":modules:core-ui-playback")
+	implementation project(":modules:core-ui-downloader")
+	implementation project(":modules:navigation")
+	implementation project(":modules:ui-search")
+	implementation project(":modules:ui-settings")
+	implementation project(":modules:ui-artist")
+	implementation project(":modules:ui-album")
+	implementation project(":modules:ui-downloads")
 
 	implementation Deps.Kotlin.coroutinesAndroid
 
