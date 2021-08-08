@@ -7,6 +7,7 @@ package tm.alashow.datmusic.playback.players
 import android.content.Context
 import android.net.Uri
 import com.google.android.exoplayer2.C
+import com.google.android.exoplayer2.DefaultLoadControl
 import com.google.android.exoplayer2.ExoPlaybackException
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
@@ -49,7 +50,7 @@ interface AudioPlayer {
 class AudioPlayerImpl @Inject constructor(
     @ApplicationContext internal val context: Context,
     @Named("player") private val okHttpClient: OkHttpClient,
-) : AudioPlayer, Player.Listener, LoadEventController {
+) : AudioPlayer, Player.Listener {
 
     private var playerBase: ExoPlayer? = null
     private val player: ExoPlayer
@@ -174,11 +175,6 @@ class AudioPlayerImpl @Inject constructor(
         onIsPlaying(isPlaying, false)
     }
 
-    override fun onPrepared() {
-        isPrepared = true
-        onPrepared(this)
-    }
-
     override fun onPlayerError(error: ExoPlaybackException) {
         isPrepared = false
         onError(this, error)
@@ -186,11 +182,12 @@ class AudioPlayerImpl @Inject constructor(
 
     private fun createPlayer(owner: AudioPlayerImpl): ExoPlayer {
         return SimpleExoPlayer.Builder(context)
-            .setLoadControl(
-                LoadController().apply {
-                    eventController = owner
+            .setLoadControl(object : DefaultLoadControl() {
+                override fun onPrepared() {
+                    isPrepared = true
+                    onPrepared(owner)
                 }
-            )
+            })
             .build().apply {
                 val attr = AudioAttributes.Builder().apply {
                     setContentType(C.CONTENT_TYPE_MUSIC)
