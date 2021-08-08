@@ -49,6 +49,7 @@ allprojects {
             freeCompilerArgs += "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
             freeCompilerArgs += "-Xopt-in=kotlinx.coroutines.FlowPreview"
             freeCompilerArgs += "-Xopt-in=kotlin.Experimental"
+            freeCompilerArgs += "-Xopt-in=coil.annotation.ExperimentalCoilApi"
         }
     }
 }

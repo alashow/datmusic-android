@@ -8,14 +8,14 @@ object Deps {
     }
 
     object Kotlin {
-        const val version = "1.5.10"
+        const val version = "1.5.21"
 
         const val stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$version"
         const val gradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:$version"
         const val serialization = "org.jetbrains.kotlin:kotlin-serialization:$version"
         const val serializationRuntime = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2"
 
-        const val coroutinesVersion = "1.5.0"
+        const val coroutinesVersion = "1.5.1"
         const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
         const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
     }
@@ -38,14 +38,18 @@ object Deps {
         const val navigationCompose = "androidx.navigation:navigation-compose:$navigationVersion"
         const val navigationHiltCompose = "androidx.hilt:hilt-navigation-compose:1.0.0-alpha03"
 
-        const val dataStore = "androidx.datastore:datastore-preferences:1.0.0-rc02"
+        const val dataStore = "androidx.datastore:datastore-preferences:1.0.0"
 
         const val documentFile = "androidx.documentfile:documentfile:1.0.1"
 
+        const val palette = "androidx.palette:palette-ktx:1.0.0"
+        const val media ="androidx.media:media:1.4.0"
+
         object Compose {
-            const val version = "1.0.0"
+            const val version = "1.0.1"
 
             const val ui = "androidx.compose.ui:ui:$version"
+            const val uiUtil = "androidx.compose.ui:ui-util:$version"
             const val uiTooling = "androidx.compose.ui:ui-tooling:$version"
             const val foundation = "androidx.compose.foundation:foundation:$version"
             const val materialDesign = "androidx.compose.material:material:$version"
@@ -57,16 +61,18 @@ object Deps {
             const val viewModels = "androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha07"
             const val paging = "androidx.paging:paging-compose:1.0.0-alpha12"
 
-            private const val lottieVersion = "1.0.0-rc02-1-SNAPSHOT"
+            private const val lottieVersion = "4.0.0"
             const val lottie = "com.airbnb.android:lottie-compose:$lottieVersion"
+
+            const val coil = "io.coil-kt:coil-compose:${Utils.coilVersion}"
         }
 
         object Accompanist {
             private const val version = "0.15.0"
 
-            const val coil = "com.google.accompanist:accompanist-coil:$version"
             const val insets = "com.google.accompanist:accompanist-insets:$version"
             const val insetsUi = "com.google.accompanist:accompanist-insets-ui:$version"
+            const val pager = "com.google.accompanist:accompanist-pager:$version"
             const val permissions = "com.google.accompanist:accompanist-permissions:$version"
             const val placeholder = "com.google.accompanist:accompanist-placeholder-material:$version"
             const val swiperefresh = "com.google.accompanist:accompanist-swiperefresh:$version"
@@ -110,12 +116,15 @@ object Deps {
         const val junit = "junit:junit:4.13.2"
         const val threeTen = "org.threeten:threetenbp:1.5.1"
 
-        const val coilVersion = "1.2.1"
+        const val coilVersion = "1.3.1"
         const val coil = "io.coil-kt:coil:$coilVersion"
         const val store = "com.dropbox.mobile.store:store4:4.0.2-KT15"
 
         const val fetch = "androidx.tonyodev.fetch2:xfetch2:3.1.6"
         const val fetchOkhttp = "androidx.tonyodev.fetch2okhttp:xfetch2okhttp:3.1.6"
+
+        const val exoPlayer = "com.google.android.exoplayer:exoplayer-core:2.14.2"
+        const val exoPlayerOkhttp = "com.google.android.exoplayer:extension-okhttp:2.14.2"
     }
 
     object OkHttp {

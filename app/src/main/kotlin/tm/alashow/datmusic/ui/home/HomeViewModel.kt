@@ -12,6 +12,6 @@ import tm.alashow.navigation.Navigator
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
+    val navigator: Navigator,
     private val handle: SavedStateHandle,
-    val navigator: Navigator
 ) : ViewModel()

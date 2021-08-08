@@ -90,6 +90,19 @@ class NetworkModule {
         .build()
 
     @Provides
+    @Named("player")
+    fun playerOkHttp(
+        cache: Cache,
+        @Named("AppHeadersInterceptor") appHeadersInterceptor: Interceptor,
+    ) = getBaseBuilder(cache)
+        .readTimeout(Config.PLAYER_TIMEOUT, TimeUnit.MILLISECONDS)
+        .writeTimeout(Config.PLAYER_TIMEOUT, TimeUnit.MILLISECONDS)
+        .connectTimeout(Config.PLAYER_TIMEOUT_CONNECT, TimeUnit.MILLISECONDS)
+        .addInterceptor(appHeadersInterceptor)
+        .addInterceptor(HttpLoggingInterceptor().apply { level = LogLevel.HEADERS })
+        .build()
+
+    @Provides
     @Singleton
     fun jsonConfigured() = Json {
         ignoreUnknownKeys = true
