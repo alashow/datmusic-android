@@ -1,2 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="search.title">Gözleg</string>
+    <string name="search.hint.query">Gözleg sözi</string>
+    <string name="search.audios">Aýdymlar</string>
+    <string name="search.artists">Aýdymçylar</string>
+    <string name="search.albums">Albomlar</string>
+    <string name="search.minerva">Minerva</string>
+    <string name="artists.detail.title">Aýdymçy</string>
+    <string name="albums.detail.title">Albom</string>
+    <string name="audio.menu.cd">Audio menýu</string>
+    <string name="audio.menu.play">Diňle</string>
+    <string name="audio.menu.download">Indir</string>
+    <string name="audio.menu.downloadById">Indir</string>
+    <string name="downloader.downloadsLocationSelect.text">Indirmek üçin ýer saýlamak üçin Indiki basyň</string>
+    <string name="downloader.downloadsLocationSelect.next">Indiki</string>
+    <string name="downloader.enqueue.downloadsNotFound">Saýlanan indirme üçin bukjasy tapylmady</string>
+    <string name="downloader.enqueue.audio.queued">Indirmäne nobata goýuldy</string>
+    <string name="downloader.enqueue.audio.error.fileCreate">Indirme bukjasynda faýl ýasap bolmady</string>
+    <string name="downloader.enqueue.audio.existing.resuming">Köne indirme dowam edildi</string>
+    <string name="downloader.enqueue.audio.existing.alreadyQueued">Bu aýdym eýýäm indirmek üçin nobatda</string>
+    <string name="downloader.enqueue.audio.existing.completed">Bu aýdym eýýäm indirilen</string>
+    <string name="downloads.title">Indirmeler</string>
+    <string name="downloads.empty">Indiermeler ýok</string>
+    <string name="downloads.download.status.paused">Durdyrylan</string>
+    <string name="downloads.download.status.queued">Nobatda</string>
+    <string name="downloads.download.status.downloading">Indirilýar</string>
+    <string name="app_name">Datmusic</string>
+    <string name="search.hint">Aýdymlar, albomlar, aýdymçylar</string>
+    <string name="audio.menu.copyLink">Linki nusgala</string>
+    <string name="downloader.downloadsLocationSelect.title">Indirme ýeri</string>
+    <string name="downloader.enqueue.audio.error.invalidUrl">Aýdymy indirip bolanok</string>
+    <string name="downloader.enqueue.audio.existing.unknown">Indirme haýyşy eýýäm bar ýöne näbelli statusly: %1$s</string>
+    <string name="audio.menu.playNext">Indiki</string>
+</resources>
