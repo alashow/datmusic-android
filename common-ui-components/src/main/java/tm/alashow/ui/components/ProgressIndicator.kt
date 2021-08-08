@@ -27,17 +27,17 @@ object ProgressIndicatorDefaults {
 
 @Composable
 fun ProgressIndicatorSmall(modifier: Modifier = Modifier) =
-    ProgressIndicator(ProgressIndicatorDefaults.sizeSmall.first, ProgressIndicatorDefaults.sizeSmall.second, modifier)
+    ProgressIndicator(modifier, ProgressIndicatorDefaults.sizeSmall.first, ProgressIndicatorDefaults.sizeSmall.second)
 
 @Composable
 fun ProgressIndicator(modifier: Modifier = Modifier) =
-    ProgressIndicator(ProgressIndicatorDefaults.sizeMedium.first, ProgressIndicatorDefaults.sizeMedium.second, modifier)
+    ProgressIndicator(modifier, ProgressIndicatorDefaults.sizeMedium.first, ProgressIndicatorDefaults.sizeMedium.second)
 
 @Composable
 fun ProgressIndicator(
+    modifier: Modifier = Modifier,
     size: Dp = ProgressIndicatorDefaults.size.first,
     strokeWidth: Dp = ProgressIndicatorDefaults.size.second,
-    modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colors.secondary,
 ) {
     CircularProgressIndicator(modifier.size(size), color, strokeWidth)

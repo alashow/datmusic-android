@@ -109,7 +109,7 @@ private fun Search(
 ) {
     val searchBarHideThreshold = 4
     val searchBarHeight = 200.dp
-    val searchBarOffset = Animatable(0f)
+    val searchBarOffset = remember { Animatable(0f) }
 
     OffsetNotifyingBox(headerHeight = searchBarHeight) { _, progress ->
         Scaffold(
@@ -254,10 +254,10 @@ private fun ColumnScope.SearchFilterPanel(
 fun SearchTextField(
     value: TextFieldValue,
     onValueChange: (TextFieldValue) -> Unit,
+    modifier: Modifier = Modifier,
     onSearch: () -> Unit = {},
     hint: String,
     maxLength: Int = 50,
-    modifier: Modifier = Modifier,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search, keyboardType = KeyboardType.Text),
     keyboardActions: KeyboardActions = KeyboardActions(onSearch = { onSearch() }),
     analytics: FirebaseAnalytics = LocalAnalytics.current

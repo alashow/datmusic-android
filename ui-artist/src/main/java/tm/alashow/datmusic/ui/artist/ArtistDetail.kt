@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
@@ -71,7 +72,7 @@ private fun ArtistDetail(viewModel: ArtistDetailViewModel, onBackClick: () -> Un
     val listState = rememberLazyListState()
 
     val headerHeight = CoverHeaderDefaults.height
-    val headerOffsetProgress = Animatable(0f)
+    val headerOffsetProgress = remember { Animatable(0f) }
 
     OffsetNotifyingBox(headerHeight = headerHeight) { _, progress ->
         Scaffold(

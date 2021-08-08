@@ -22,8 +22,8 @@ import tm.alashow.ui.theme.*
 @Composable
 fun AppButton(
     onClick: () -> Unit,
-    enabled: Boolean = true,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     shape: Shape = RoundedCornerShape(percent = 50),
     backgroundColor: Color = MaterialTheme.colors.secondary,
     contentColor: Color = contentColorFor(backgroundColor),
@@ -46,10 +46,10 @@ fun AppButton(
 fun TextRoundedButton(
     onClick: () -> Unit,
     text: String,
+    modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    modifier: Modifier = Modifier
 ) {
-    AppButton(onClick, enabled, modifier) {
+    AppButton(onClick = onClick, modifier = modifier, enabled = enabled) {
         Text(text)
     }
 }

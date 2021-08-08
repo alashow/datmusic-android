@@ -22,10 +22,10 @@ import kotlinx.coroutines.launch
  */
 @Composable
 fun Zoomable(
+    modifier: Modifier = Modifier,
     maxScale: Float = 4f,
     minScale: Float = 0.7f,
     snapBack: Boolean = true,
-    modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()

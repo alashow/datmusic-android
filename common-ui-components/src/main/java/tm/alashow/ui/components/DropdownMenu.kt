@@ -36,9 +36,9 @@ fun <T> SelectableDropdownMenu(
     items: List<T>,
     selectedItem: T?,
     onItemSelect: (T) -> Unit,
+    modifier: Modifier = Modifier,
     labelMapper: @Composable (T) -> String = { it.toString().replace("_", " ") },
     subtitles: List<String?>? = null,
-    modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
     val dropIcon = if (expanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown

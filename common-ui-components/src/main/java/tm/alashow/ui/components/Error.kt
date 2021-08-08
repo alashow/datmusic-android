@@ -34,12 +34,12 @@ import tm.alashow.ui.theme.AppTheme
 
 @Composable
 fun EmptyErrorBox(
+    modifier: Modifier = Modifier,
     message: String = stringResource(R.string.error_empty),
     retryVisible: Boolean = true,
     onRetryClick: () -> Unit = {},
     maxHeight: Dp? = null,
     maxHeightFraction: Float = 0.7f,
-    modifier: Modifier = Modifier
 ) {
     ErrorBox(
         title = stringResource(R.string.error_empty_title),
@@ -55,15 +55,15 @@ fun EmptyErrorBox(
 @Preview
 @Composable
 fun ErrorBox(
+    modifier: Modifier = Modifier,
     title: String = stringResource(R.string.error_title),
     message: String = stringResource(R.string.error_unknown),
     retryVisible: Boolean = true,
     onRetryClick: () -> Unit = {},
     maxHeight: Dp? = null,
     maxHeightPercent: Float = 0.7f,
-    modifier: Modifier = Modifier,
 ) {
-    ErrorBox(maxHeight, maxHeightPercent) {
+    ErrorBox(maxHeight = maxHeight, maxHeightPercent = maxHeightPercent) {
         val loadingYOffset = (-130).dp
         val wavesComposition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.waves))
 
@@ -99,9 +99,9 @@ fun ErrorBox(
 
 @Composable
 fun ErrorBox(
+    modifier: Modifier = Modifier,
     maxHeight: Dp? = null,
     maxHeightPercent: Float = 0.7f,
-    modifier: Modifier = Modifier,
     content: @Composable BoxScope.() -> Unit,
 ) {
     val boxModifier = when (maxHeight != null) {

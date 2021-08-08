@@ -23,6 +23,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
@@ -67,7 +68,7 @@ private fun AlbumDetail(viewModel: AlbumDetailViewModel, onBackClick: () -> Unit
     val listState = rememberLazyListState()
 
     val headerHeight = CoverHeaderDefaults.height
-    val headerVisibilityProgress = Animatable(0f)
+    val headerVisibilityProgress = remember { Animatable(0f) }
 
     OffsetNotifyingBox(headerHeight = headerHeight) { _, progress ->
         Scaffold(
@@ -82,7 +83,7 @@ private fun AlbumDetail(viewModel: AlbumDetailViewModel, onBackClick: () -> Unit
                 )
             }
         ) { padding ->
-            AlbumDetailList(viewState, viewModel::refresh, padding, listState)
+            AlbumDetailList(viewState, viewModel::refresh, listState, padding = padding)
         }
     }
 }
@@ -91,9 +92,9 @@ private fun AlbumDetail(viewModel: AlbumDetailViewModel, onBackClick: () -> Unit
 private fun AlbumDetailList(
     viewState: AlbumDetailViewState,
     onRetry: () -> Unit,
-    padding: PaddingValues = PaddingValues(),
     listState: LazyListState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    padding: PaddingValues = PaddingValues(),
 ) {
     BoxWithConstraints {
         LazyColumn(
