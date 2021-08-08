@@ -7,17 +7,3 @@ v2.0.0-rc01
 
 v2.0.0-beta05
 - Artist/album details fetching bug fix
-
-v2.0.0-beta04
-- Added explicit album/song indicators
-
-v2.0.0-beta03
-- Download complete animation
-
-v2.0.0-beta02
-- Downloads settings to change downloads locations and songs folder grouping
-- Added Black color palettes
-- Bug fixes
-
-v2.0.0-beta01
-- Initial beta release
