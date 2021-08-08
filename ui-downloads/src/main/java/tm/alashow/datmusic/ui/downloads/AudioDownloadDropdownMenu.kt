@@ -61,6 +61,7 @@ internal fun AudioDownloadDropdownMenu(
     val items = buildList {
         val downloadInfo = audioDownload.downloadInfo
         add(R.string.downloads_download_play)
+        add(R.string.downloads_download_playNext)
         when (downloadInfo.status) {
             Status.DOWNLOADING, Status.QUEUED, Status.PAUSED -> add(R.string.downloads_download_cancel)
             Status.CANCELLED, Status.FAILED -> add(R.string.downloads_download_delete)
