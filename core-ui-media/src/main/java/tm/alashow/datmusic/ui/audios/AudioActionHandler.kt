@@ -19,7 +19,6 @@ import tm.alashow.base.util.extensions.simpleName
 import tm.alashow.base.util.toast
 import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.common.compose.LocalPlaybackConnection
-import tm.alashow.common.compose.LogCompositions
 import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.ui.downloader.LocalDownloader
@@ -38,15 +37,14 @@ fun audioActionHandler(
     clipboardManager: ClipboardManager = LocalClipboardManager.current,
     analytics: FirebaseAnalytics = LocalAnalytics.current,
 ): AudioActionHandler {
-    LogCompositions(tag = "AudioActionHandler")
     val context = LocalContext.current
     val coroutine = rememberCoroutineScope()
 
     return { action ->
-        Timber.d("onAudioAction: $action")
         analytics.event("audio.${action.simpleName}", mapOf("id" to action.audio.id))
         when (action) {
             is AudioItemAction.Play -> playbackConnection.playAudio(action.audio)
+            is AudioItemAction.PlayNext -> playbackConnection.playNextAudio(action.audio)
             is AudioItemAction.Download -> coroutine.launch {
                 Timber.d("Coroutine launched to download audio: $action")
                 downloader.enqueueAudio(action.audio)

@@ -22,6 +22,9 @@ import tm.alashow.datmusic.playback.BY_UI_KEY
 import tm.alashow.datmusic.playback.PAUSE_ACTION
 import tm.alashow.datmusic.playback.PLAY_ACTION
 import tm.alashow.datmusic.playback.PLAY_ALL_SHUFFLED
+import tm.alashow.datmusic.playback.PLAY_NEXT
+import tm.alashow.datmusic.playback.REMOVE_QUEUE_ITEM_BY_ID
+import tm.alashow.datmusic.playback.REMOVE_QUEUE_ITEM_BY_POSITION
 import tm.alashow.datmusic.playback.REPEAT_ALL
 import tm.alashow.datmusic.playback.REPEAT_ONE
 import tm.alashow.datmusic.playback.SET_MEDIA_STATE
@@ -32,12 +35,12 @@ import tm.alashow.datmusic.playback.models.toMediaIdList
 
 const val SEEK_TO = "action_seek_to"
 
-const val FROM_POSITION_KEY = "from_position_key"
-const val TO_POSITION_KEY = "to_position_key"
-
 const val QUEUE_MEDIA_ID_KEY = "queue_media_id_key"
 const val QUEUE_TITLE_KEY = "queue_title_key"
 const val QUEUE_LIST_KEY = "queue_list_key"
+
+const val QUEUE_FROM_POSITION_KEY = "queue_from_position_key"
+const val QUEUE_TO_POSITION_KEY = "queue_to_position_key"
 
 class MediaSessionCallback(
     private val mediaSession: MediaSessionCompat,
@@ -170,6 +173,9 @@ class MediaSessionCallback(
             REPEAT_ALL -> launch { datmusicPlayer.repeatQueue() }
             PAUSE_ACTION -> datmusicPlayer.pause(extras ?: bundleOf(BY_UI_KEY to true))
             PLAY_ACTION -> playOnFocus(extras ?: bundleOf(BY_UI_KEY to true))
+            PLAY_NEXT -> datmusicPlayer.playNext(extras?.getString(QUEUE_MEDIA_ID_KEY) ?: return)
+            REMOVE_QUEUE_ITEM_BY_POSITION -> datmusicPlayer.removeFromQueue(extras?.getInt(QUEUE_FROM_POSITION_KEY) ?: return)
+            REMOVE_QUEUE_ITEM_BY_ID -> datmusicPlayer.removeFromQueue(extras?.getString(QUEUE_MEDIA_ID_KEY) ?: return)
             UPDATE_QUEUE -> {
                 extras ?: return
 
@@ -195,8 +201,8 @@ class MediaSessionCallback(
             }
             SWAP_ACTION -> {
                 extras ?: return
-                val from = extras.getInt(FROM_POSITION_KEY)
-                val to = extras.getInt(TO_POSITION_KEY)
+                val from = extras.getInt(QUEUE_FROM_POSITION_KEY)
+                val to = extras.getInt(QUEUE_TO_POSITION_KEY)
 
                 datmusicPlayer.swapQueueAudios(from, to)
             }

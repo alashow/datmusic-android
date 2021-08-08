@@ -21,12 +21,19 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
 import tm.alashow.datmusic.ui.media.R
 
+private val defaultMenuActionLabels = listOf(
+    R.string.audio_menu_play,
+    R.string.audio_menu_playNext,
+    R.string.audio_menu_download,
+    R.string.audio_menu_copyLink
+)
+
 @Composable
 fun AudioDropdownMenu(
     expanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    actionLabels: List<Int> = listOf(R.string.audio_menu_play, R.string.audio_menu_download, R.string.audio_menu_copyLink),
+    actionLabels: List<Int> = defaultMenuActionLabels,
     onDropdownSelect: (Int) -> Unit = {}
 ) {
     IconButton(

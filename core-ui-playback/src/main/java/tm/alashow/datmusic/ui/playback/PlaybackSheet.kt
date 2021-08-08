@@ -273,7 +273,8 @@ private fun LazyListScope.playbackQueue(
 ) {
     val lastIndex = playbackQueue.audiosList.size
     val firstIndex = ((playbackQueueCurrent?.first ?: 0) + 1).coerceAtMost(lastIndex)
-    itemsIndexed(playbackQueue.audiosList.subList(firstIndex, lastIndex)) { index, audio ->
+    val queue = playbackQueue.audiosList.subList(firstIndex, lastIndex)
+    itemsIndexed(queue, key = { index, audio -> audio.id + index }) { index, audio ->
         val realPosition = firstIndex + index
         AudioRow(
             audio = audio,

@@ -24,6 +24,7 @@ import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 
 sealed class AudioDownloadItemAction(open val audio: AudioDownloadItem) {
     data class Play(override val audio: AudioDownloadItem) : AudioDownloadItemAction(audio)
+    data class PlayNext(override val audio: AudioDownloadItem) : AudioDownloadItemAction(audio)
     data class Resume(override val audio: AudioDownloadItem) : AudioDownloadItemAction(audio)
     data class Pause(override val audio: AudioDownloadItem) : AudioDownloadItemAction(audio)
     data class Cancel(override val audio: AudioDownloadItem) : AudioDownloadItemAction(audio)
@@ -35,6 +36,7 @@ sealed class AudioDownloadItemAction(open val audio: AudioDownloadItem) {
     companion object {
         fun from(actionLabelRes: Int, audio: AudioDownloadItem) = when (actionLabelRes) {
             R.string.downloads_download_play -> Play(audio)
+            R.string.downloads_download_playNext -> PlayNext(audio)
             R.string.downloads_download_pause -> Pause(audio)
             R.string.downloads_download_resume -> Resume(audio)
             R.string.downloads_download_cancel -> Cancel(audio)

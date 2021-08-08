@@ -22,6 +22,7 @@
 
     <string name="audio.menu.cd">Audio menu</string>
     <string name="audio.menu.play">Play</string>
+    <string name="audio.menu.playNext">Play next</string>
     <string name="audio.menu.download">Download</string>
     <string name="audio.menu.downloadById">Download</string>
     <string name="audio.menu.copyLink">Copy link</string>
@@ -49,6 +50,7 @@
     <string name="downloads.download.status.cancelled">Cancelled</string>
 
     <string name="downloads.download.play">Play</string>
+    <string name="downloads.download.playNext">Play next</string>
     <string name="downloads.download.pause">Pause</string>
     <string name="downloads.download.resume">Resume</string>
     <string name="downloads.download.cancel">Cancel</string>

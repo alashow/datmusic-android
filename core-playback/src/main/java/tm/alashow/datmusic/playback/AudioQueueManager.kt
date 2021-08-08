@@ -38,6 +38,7 @@ interface AudioQueueManager {
     fun setMediaSession(session: MediaSessionCompat)
     fun playNext(id: String)
     fun skipTo(position: Int)
+    fun remove(position: Int)
     fun remove(id: String)
     fun swap(from: Int, to: Int)
     fun queue(): String
@@ -119,11 +120,17 @@ class AudioQueueManagerImpl @Inject constructor(
 
     override fun playNext(id: String) {
         val nextIndex = currentAudioIndex + 1
-        swap(queue.indexOf(id), nextIndex)
+        queue = queue.toMutableList().apply {
+            add(nextIndex, id)
+        }
     }
 
     override fun skipTo(position: Int) {
         currentAudioId = queue[position]
+    }
+
+    override fun remove(position: Int) {
+        queue = queue.toMutableList().apply { removeAt(position) }
     }
 
     override fun remove(id: String) {

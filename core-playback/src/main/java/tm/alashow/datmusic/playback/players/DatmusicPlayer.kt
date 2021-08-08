@@ -95,8 +95,9 @@ interface DatmusicPlayer {
     suspend fun previousAudio()
     fun playNext(id: String)
     suspend fun skipTo(position: Int)
-    fun swapQueueAudios(from: Int, to: Int)
+    fun removeFromQueue(position: Int)
     fun removeFromQueue(id: String)
+    fun swapQueueAudios(from: Int, to: Int)
     fun stop(byUser: Boolean = true)
     fun release()
     fun onPlayingState(playing: OnIsPlaying<DatmusicPlayer>)
@@ -375,15 +376,20 @@ class DatmusicPlayerImpl @Inject constructor(
         logEvent("playNext", id)
     }
 
-    override fun swapQueueAudios(from: Int, to: Int) {
-        queueManager.swap(from, to)
-        queueManager.currentAudio?.apply { setMetaData(this) }
-        logEvent("nextAudio")
+    override fun removeFromQueue(position: Int) {
+        queueManager.remove(position)
+        logEvent("removeFromQueue", "position=$position")
     }
 
     override fun removeFromQueue(id: String) {
         queueManager.remove(id)
         logEvent("removeFromQueue", id)
+    }
+
+    override fun swapQueueAudios(from: Int, to: Int) {
+        queueManager.swap(from, to)
+        queueManager.currentAudio?.apply { setMetaData(this) }
+        logEvent("nextAudio")
     }
 
     override fun stop(byUser: Boolean) {

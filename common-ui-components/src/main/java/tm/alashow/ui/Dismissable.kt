@@ -20,7 +20,7 @@ fun Dismissable(
 ) {
     val dismissState = rememberDismissState {
         if (it != DismissValue.Default) {
-            onDismiss?.invoke()
+            onDismiss.invoke()
         }
         true
     }

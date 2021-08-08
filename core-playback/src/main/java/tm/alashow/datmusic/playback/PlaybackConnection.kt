@@ -47,11 +47,11 @@ import tm.alashow.datmusic.playback.models.QueueTitle
 import tm.alashow.datmusic.playback.models.fromMediaController
 import tm.alashow.datmusic.playback.models.toMediaAudioIds
 import tm.alashow.datmusic.playback.players.AudioPlayer
-import tm.alashow.datmusic.playback.players.FROM_POSITION_KEY
+import tm.alashow.datmusic.playback.players.QUEUE_FROM_POSITION_KEY
 import tm.alashow.datmusic.playback.players.QUEUE_LIST_KEY
 import tm.alashow.datmusic.playback.players.QUEUE_MEDIA_ID_KEY
 import tm.alashow.datmusic.playback.players.QUEUE_TITLE_KEY
-import tm.alashow.datmusic.playback.players.TO_POSITION_KEY
+import tm.alashow.datmusic.playback.players.QUEUE_TO_POSITION_KEY
 
 const val PLAYBACK_PROGRESS_INTERVAL = 1000L
 
@@ -68,14 +68,18 @@ interface PlaybackConnection {
     var mediaController: MediaControllerCompat?
     val transportControls: MediaControllerCompat.TransportControls?
 
-    fun swapQueue(from: Int, to: Int)
-
     fun playAudio(audio: Audio, title: QueueTitle = QueueTitle())
+    fun playNextAudio(audio: Audio)
     fun playAudios(audios: List<Audio>, index: Int = 0, title: QueueTitle = QueueTitle())
     fun playArtist(artist: Artist, index: Int = 0)
     fun playAlbum(album: Album, index: Int = 0)
     fun playWithQuery(query: String, audioId: String)
     fun playWithMinervaQuery(query: String, audioId: String)
+
+    fun swapQueue(from: Int, to: Int)
+
+    fun removeByPosition(position: Int)
+    fun removeById(id: String)
 }
 
 class PlaybackConnectionImpl(
@@ -140,16 +144,6 @@ class PlaybackConnectionImpl(
         }
     }
 
-    override fun swapQueue(from: Int, to: Int) {
-        transportControls?.sendCustomAction(
-            SWAP_ACTION,
-            bundleOf(
-                FROM_POSITION_KEY to from,
-                TO_POSITION_KEY to to,
-            )
-        )
-    }
-
     override fun playAudio(audio: Audio, title: QueueTitle) = playAudios(audios = listOf(audio), index = 0, title = title)
 
     override fun playAudios(audios: List<Audio>, index: Int, title: QueueTitle) {
@@ -161,6 +155,15 @@ class PlaybackConnectionImpl(
                 putStringArray(QUEUE_LIST_KEY, audiosIds)
                 putString(QUEUE_TITLE_KEY, title.toString())
             }
+        )
+    }
+
+    override fun playNextAudio(audio: Audio) {
+        transportControls?.sendCustomAction(
+            PLAY_NEXT,
+            bundleOf(
+                QUEUE_MEDIA_ID_KEY to audio.id
+            )
         )
     }
 
@@ -186,6 +189,34 @@ class PlaybackConnectionImpl(
             MediaId(MEDIA_TYPE_AUDIO_MINERVA_QUERY, query, -1).toString(),
             bundleOf(
                 QUEUE_MEDIA_ID_KEY to audioId
+            )
+        )
+    }
+
+    override fun swapQueue(from: Int, to: Int) {
+        transportControls?.sendCustomAction(
+            SWAP_ACTION,
+            bundleOf(
+                QUEUE_FROM_POSITION_KEY to from,
+                QUEUE_TO_POSITION_KEY to to,
+            )
+        )
+    }
+
+    override fun removeByPosition(position: Int) {
+        transportControls?.sendCustomAction(
+            REMOVE_QUEUE_ITEM_BY_POSITION,
+            bundleOf(
+                QUEUE_FROM_POSITION_KEY to position,
+            )
+        )
+    }
+
+    override fun removeById(id: String) {
+        transportControls?.sendCustomAction(
+            REMOVE_QUEUE_ITEM_BY_ID,
+            bundleOf(
+                QUEUE_MEDIA_ID_KEY to id,
             )
         )
     }

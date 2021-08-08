@@ -32,9 +32,8 @@ import tm.alashow.datmusic.playback.receivers.MediaButtonReceiver.Companion.buil
 import tm.alashow.datmusic.playback.services.PlayerService
 
 const val NOTIFICATION_ID = 2000
-const val CHANNEl_ID = "audio-player"
+const val CHANNEL_ID = "audio-player"
 
-const val REMOVE_SONG = "action_remove_song"
 const val PREVIOUS = "action_previous"
 const val NEXT = "action_next"
 const val STOP_PLAYBACK = "action_stop"
@@ -42,11 +41,13 @@ const val PLAY_PAUSE = "action_play_or_pause"
 const val REPEAT_ONE = "action_repeat_one"
 const val REPEAT_ALL = "action_repeat_all"
 const val PLAY_ALL_SHUFFLED = "action_play_all_shuffled"
+const val PLAY_NEXT = "action_play_next"
+const val REMOVE_QUEUE_ITEM_BY_POSITION = "action_remove_queue_item_by_position"
+const val REMOVE_QUEUE_ITEM_BY_ID = "action_remove_queue_item_by_id"
 const val UPDATE_QUEUE = "action_update_queue"
 const val SET_MEDIA_STATE = "action_set_media_state"
 const val PLAY_ACTION = "action_play"
 const val PAUSE_ACTION = "action_pause"
-const val PLAY_SONG_FROM_INTENT = "action_play_song_from_intent"
 const val SWAP_ACTION = "swap_action"
 const val BY_UI_KEY = "by_ui_key"
 
@@ -94,7 +95,7 @@ class MediaNotificationsImpl @Inject constructor(
             .setShowActionsInCompactView(0, 1, 2)
             .setCancelButtonIntent(buildMediaButtonPendingIntent(context, ACTION_STOP))
 
-        val builder = NotificationCompat.Builder(context, CHANNEl_ID).apply {
+        val builder = NotificationCompat.Builder(context, CHANNEL_ID).apply {
             setStyle(style)
             setSmallIcon(R.drawable.ic_launcher_foreground)
             setLargeIcon(artwork)
@@ -163,7 +164,7 @@ class MediaNotificationsImpl @Inject constructor(
 
     private fun createEmptyNotification(): Notification {
         createNotificationChannel()
-        return NotificationCompat.Builder(context, CHANNEl_ID).apply {
+        return NotificationCompat.Builder(context, CHANNEL_ID).apply {
             setSmallIcon(R.drawable.ic_launcher_foreground)
             setContentTitle(context.getString(R.string.app_name))
             setColorized(true)
@@ -175,7 +176,7 @@ class MediaNotificationsImpl @Inject constructor(
     private fun createNotificationChannel() {
         if (!isOreo()) return
         val name = context.getString(R.string.app_name)
-        val channel = NotificationChannel(CHANNEl_ID, name, IMPORTANCE_LOW).apply {
+        val channel = NotificationChannel(CHANNEL_ID, name, IMPORTANCE_LOW).apply {
             description = context.getString(R.string.app_name)
             setShowBadge(false)
             lockscreenVisibility = Notification.VISIBILITY_PUBLIC
