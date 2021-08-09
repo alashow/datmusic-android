@@ -395,6 +395,7 @@ class DatmusicPlayerImpl @Inject constructor(
         }
         isInitialized = false
         audioPlayer.stop()
+        isPlayingCallback(false, byUser)
         launch { saveQueueState() }
     }
 

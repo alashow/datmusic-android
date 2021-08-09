@@ -1,6 +1,9 @@
 Hey! Thanks for using datmusic app!
 Please review the app if you like it!
 
+v2.0.0-rc03
+- Playback bug fixes
+
 v2.0.0-rc02
 - Horizontal pager for mini playback control to skip songs
 - Clear playback notification when player is inactive
@@ -10,6 +13,3 @@ v2.0.0-rc02
 v2.0.0-rc01
 - Playback v2: fully featured audio player!
 - Downloader: multiple artist name splitter (less artist folders)
-
-v2.0.0-beta05
-- Artist/album details fetching bug fix

@@ -9,7 +9,6 @@ import com.tonyodev.fetch2.Status
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -17,6 +16,7 @@ import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.base.util.extensions.swap
 import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
+import tm.alashow.datmusic.data.db.daos.findAudio
 import tm.alashow.datmusic.data.db.daos.findAudios
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.downloader.Downloader
@@ -64,7 +64,7 @@ class AudioQueueManagerImpl @Inject constructor(
     private val currentAudioIndex get() = queue.indexOf(currentAudioId)
 
     override suspend fun refreshCurrentAudio(): Audio? {
-        currentAudio = audiosDao.entry(currentAudioId).firstOrNull()?.apply {
+        currentAudio = (audiosDao to downloadsDao).findAudio(currentAudioId)?.apply {
             audioDownloadItem = downloader.getAudioDownload(id, Status.COMPLETED).orNull()
         }
         return currentAudio

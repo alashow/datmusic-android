@@ -8,12 +8,12 @@ import kotlinx.coroutines.flow.firstOrNull
 import timber.log.Timber
 import tm.alashow.datmusic.domain.entities.Audio
 
-suspend fun Pair<AudiosDao, DownloadRequestsDao>.findAudio(id: String) = first.entry(id).firstOrNull() ?: second.entry(id).firstOrNull()?.audio
+suspend fun Pair<AudiosDao, DownloadRequestsDao>.findAudio(id: String): Audio? = findAudios(listOf(id)).firstOrNull()
 
 @OptIn(ExperimentalStdlibApi::class)
 suspend fun Pair<AudiosDao, DownloadRequestsDao>.findAudios(ids: List<String>): List<Audio> {
     val audios = first.entriesById(ids.toList()).firstOrNull().orEmpty().map { it.id to it }.toMap()
-    val downloads = first.entriesById(ids.toList()).firstOrNull().orEmpty().map { it.id to it }.toMap()
+    val downloads = second.entriesById(ids.toList()).firstOrNull().orEmpty().map { it.audio.id to it.audio }.toMap()
     return buildList {
         ids.forEach { id ->
             val audio = audios[id] ?: downloads[id]
