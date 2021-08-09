@@ -1,2 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="dialog.ok">\@android: cadena/correcto</string>
+    <string name="dialog.dismiss">\@cadena/genérico.cerrado</string>
+    <string name="error.loading">Carga fallida. Toca para volver a intentarlo</string>
+    <string name="notifications.defaultChannel">Canal por defecto</string>
+    <string name="generic.back">Volver</string>
+    <string name="generic.close">Cerrar</string>
+    <string name="generic.clear">Limpiar</string>
+    <string name="generic.clipboard.copied">Copiado</string>
+    <string name="dialog.warning">Advertencia</string>
+    <string name="dialog.confirm">Confirmar</string>
+    <string name="dialog.confirm.no">No</string>
+    <string name="dialog.confirm.yes">\@cadena/diálogo.correcto</string>
+    <string name="unknown">Desconocido</string>
+    <string name="error.title">Error</string>
+    <string name="error.subtitle">¡Ups! :(</string>
+    <string name="error.tryAgain">Prueba otra vez</string>
+    <string name="error.network">Error de Red</string>
+    <string name="error.server">Error del Servidor</string>
+    <string name="error.auth">Autorización Errónea</string>
+    <string name="error.notFound">No encontrado</string>
+    <string name="error.api">Error de API</string>
+    <string name="error.noAuth">Necesitas iniciar sesión</string>
+    <string name="error.empty.title">Vacío</string>
+    <string name="error.empty">Sin Resultados</string>
+    <string name="error.blank">No debe estar vacío</string>
+    <string name="error.unknown">Error Desconocido</string>
+    <string name="error.errorLogOut">No se pudo cerrar la sesión, intente restablecer la configuración de la aplicación</string>
+    <string name="error.alreadyLogined">Se ha iniciado sesión</string>
+    <string name="error.serverUnavailable">Servidor no disponible</string>
+    <string name="time.duration">%1$d hora %2$d min</string>
+    <string name="time.duration.minutes">%1$d minuto</string>
+    <string name="error.retry">Inténtalo otra vez</string>
+</resources>
