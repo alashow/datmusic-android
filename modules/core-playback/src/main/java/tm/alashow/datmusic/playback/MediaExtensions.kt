@@ -108,6 +108,9 @@ inline val PlaybackStateCompat.isBuffering
 inline val PlaybackStateCompat.isStopped
     get() = (state == PlaybackStateCompat.STATE_STOPPED)
 
+inline val PlaybackStateCompat.isIdle
+    get() = (state == PlaybackStateCompat.STATE_NONE || state == PlaybackStateCompat.STATE_STOPPED)
+
 inline val PlaybackStateCompat.isError
     get() = (state == PlaybackStateCompat.STATE_ERROR)
 
