@@ -108,7 +108,6 @@ object Deps {
     }
 
     object Utils {
-        const val localizationActivity = "com.github.akexorcist:Localization:3226dc6d5d"
         const val timber = "com.jakewharton.timber:timber:4.7.1"
         const val threeTenAbp = "com.jakewharton.threetenabp:threetenabp:1.3.1"
         const val proguardSnippets = "com.github.yongjhih.android-proguards:android-proguards-all:-SNAPSHOT"
@@ -166,6 +165,7 @@ object Deps {
 
         const val bom = "com.google.firebase:firebase-bom:28.3.0"
         const val messaging = "com.google.firebase:firebase-messaging-ktx"
+        const val remoteConfig = "com.google.firebase:firebase-config-ktx"
         const val analytics = "com.google.firebase:firebase-analytics-ktx"
         const val crashlytics = "com.google.firebase:firebase-crashlytics-ktx"
         const val crashlyticsGradle = "com.google.firebase:firebase-crashlytics-gradle:2.7.0"

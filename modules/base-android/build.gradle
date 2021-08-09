@@ -44,7 +44,6 @@ repositories {
 
 dependencies {
 	api Deps.Utils.coil
-	api Deps.Utils.localizationActivity
 
 	api Deps.Dagger.hilt
 

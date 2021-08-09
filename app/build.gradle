@@ -149,8 +149,6 @@ dependencies {
 
 	// android
 	implementation Deps.Android.multiDex
-
-	implementation Deps.Firebase.messaging
 }
 
 apply plugin: "com.google.gms.google-services"
