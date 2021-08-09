@@ -58,22 +58,18 @@ import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -81,7 +77,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.lerp
 import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
 import com.google.accompanist.insets.LocalWindowInsets
@@ -90,14 +85,7 @@ import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.ui.Scaffold
 import com.google.accompanist.insets.ui.TopAppBar
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.PagerScope
-import com.google.accompanist.pager.calculateCurrentOffsetForPage
-import com.google.accompanist.pager.rememberPagerState
-import kotlin.math.absoluteValue
 import kotlin.math.roundToLong
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import tm.alashow.base.ui.ColorPalettePreference
 import tm.alashow.base.ui.ThemeState
@@ -243,11 +231,10 @@ fun PlaybackSheetContent(
                 }
 
                 item {
-                    PlaybackArtworkPager(
-                        nowPlaying = nowPlaying,
-                        contentColor = contentColor,
-                        modifier = Modifier.height(IntrinsicSize.Min)
-                    )
+                    PlaybackPager(nowPlaying = nowPlaying, modifier = Modifier.height(IntrinsicSize.Min)) { audio, page, pagerMod ->
+                        val currentArtwork = rememberImagePainter(audio.coverUri(CoverImageSize.LARGE))
+                        PlaybackArtwork(currentArtwork, contentColor, nowPlaying, pagerMod)
+                    }
                 }
 
                 playbackNowPlayingWithControls(nowPlaying, playbackState, contentColor)
@@ -314,51 +301,12 @@ private fun LazyListScope.playbackNowPlayingWithControls(
     }
 }
 
-@OptIn(ExperimentalPagerApi::class)
 @Composable
-private fun PlaybackArtworkPager(
-    nowPlaying: MediaMetadataCompat,
-    contentColor: Color,
-    modifier: Modifier = Modifier,
-    playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
-) {
-    val playbackQueue by rememberFlowWithLifecycle(playbackConnection.playbackQueue).collectAsState(PlaybackQueue())
-
-    val playbackQueueCurrent = remember(playbackQueue, nowPlaying) { playbackQueue.findAudio(nowPlaying) } ?: return
-    var lastRequestedPage by remember(playbackQueue, nowPlaying) { mutableStateOf<Int?>(playbackQueueCurrent.first) }
-
-    val pagerState = rememberPagerState(
-        pageCount = playbackQueue.list.size,
-        initialPage = playbackQueueCurrent.first,
-        initialOffscreenLimit = 3
-    )
-
-    LaunchedEffect(playbackQueueCurrent, pagerState) {
-        if (playbackQueueCurrent.first != pagerState.currentPage) {
-            pagerState.scrollToPage(playbackQueueCurrent.first)
-        }
-        snapshotFlow { pagerState.currentPage }.collect { page ->
-            if (lastRequestedPage != page) {
-                lastRequestedPage = page
-                playbackConnection.transportControls?.skipToQueueItem(page.toLong())
-            }
-        }
-    }
-
-    HorizontalPager(state = pagerState, modifier = modifier) { page ->
-        val currentAudio = playbackQueue.audiosList.getOrNull(page) ?: Audio()
-        val currentArtwork = rememberImagePainter(currentAudio.coverUri(CoverImageSize.LARGE))
-        PlaybackArtwork(currentArtwork, contentColor, nowPlaying, page)
-    }
-}
-
-@OptIn(ExperimentalPagerApi::class)
-@Composable
-private fun PagerScope.PlaybackArtwork(
+private fun PlaybackArtwork(
     currentArtwork: ImagePainter,
     contentColor: Color,
     nowPlaying: MediaMetadataCompat,
-    page: Int,
+    modifier: Modifier = Modifier,
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
 ) {
     CoverImage(
@@ -370,23 +318,7 @@ private fun PagerScope.PlaybackArtwork(
         modifier = Modifier
             .padding(horizontal = AppTheme.specs.paddingLarge)
             .fillMaxWidth()
-            .graphicsLayer {
-                val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
-                lerp(
-                    start = 0.75f,
-                    stop = 1f,
-                    fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                ).also { scale ->
-                    scaleX = scale
-                    scaleY = scale
-                }
-
-                alpha = lerp(
-                    start = 0.5f,
-                    stop = 1f,
-                    fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                )
-            }
+            .then(modifier)
     ) { imageMod ->
         Image(
             painter = currentArtwork,
