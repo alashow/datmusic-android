@@ -265,6 +265,7 @@ fun PlaybackSheetContent(
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 private fun LazyListScope.playbackQueue(
     playbackQueue: PlaybackQueue,
     playbackQueueCurrent: Pair<Int, Audio>?,
@@ -274,7 +275,7 @@ private fun LazyListScope.playbackQueue(
     val lastIndex = playbackQueue.audiosList.size
     val firstIndex = ((playbackQueueCurrent?.first ?: 0) + 1).coerceAtMost(lastIndex)
     val queue = playbackQueue.audiosList.subList(firstIndex, lastIndex)
-    itemsIndexed(queue, key = { index, audio -> audio.id + index }) { index, audio ->
+    itemsIndexed(queue, key = { _, audio -> audio.id }) { index, audio ->
         val realPosition = firstIndex + index
         AudioRow(
             audio = audio,
