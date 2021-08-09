@@ -1,2 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="app_launcher">Datmusic</string>
+    <string name="app_label">Datmusic</string>
+    <string name="search.title">Buscar</string>
+    <string name="search.hint">Canciones, álbumes, artistas</string>
+    <string name="search.hint.query">Consulta de busqueda</string>
+    <string name="search.audios">Canciones</string>
+    <string name="search.artists">Artistas</string>
+    <string name="search.albums">Álbumes</string>
+    <string name="artists.detail.title">Artista</string>
+    <string name="albums.detail.title">Álbum</string>
+    <string name="audio.menu.cd">Menú de audio</string>
+    <string name="audio.menu.play">Tocar canción</string>
+    <string name="app_name">Datmusic</string>
+    <string name="audio.menu.copyLink">Copiar link</string>
+    <string name="search.minerva">Minerva</string>
+</resources>
