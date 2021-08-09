@@ -26,7 +26,7 @@ import tm.alashow.datmusic.playback.NOTIFICATION_ID
 import tm.alashow.datmusic.playback.PLAY_PAUSE
 import tm.alashow.datmusic.playback.PREVIOUS
 import tm.alashow.datmusic.playback.STOP_PLAYBACK
-import tm.alashow.datmusic.playback.isStopped
+import tm.alashow.datmusic.playback.isIdle
 import tm.alashow.datmusic.playback.models.MediaId
 import tm.alashow.datmusic.playback.models.MediaId.Companion.CALLER_OTHER
 import tm.alashow.datmusic.playback.models.MediaId.Companion.CALLER_SELF
@@ -71,8 +71,8 @@ class PlayerService : MediaBrowserServiceCompat(), CoroutineScope by MainScope()
         becomingNoisyReceiver = BecomingNoisyReceiver(this, sessionToken!!)
 
         datmusicPlayer.onPlayingState { isPlaying, byUi ->
-            val isStopped = datmusicPlayer.getSession().controller.playbackState.isStopped
-            if (isStopped) {
+            val isIdle = datmusicPlayer.getSession().controller.playbackState.isIdle
+            if (!isPlaying && isIdle) {
                 pauseForeground(byUi)
                 mediaNotifications.clearNotifications()
             } else {

@@ -23,6 +23,7 @@ import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.base.util.LocalConfig
 import tm.alashow.datmusic.fcm.FcmTokenRegistrator
 import tm.alashow.datmusic.notifications.NotificationsInitializer
+import tm.alashow.datmusic.util.RemoteConfigInitializer
 
 @InstallIn(SingletonComponent::class)
 @Module
@@ -52,17 +53,25 @@ class AppModule {
     }
 
     @Provides
+    @Singleton
+    fun localConfig(app: Application) = LocalConfig(app.getSharedPreferences("local_config", Context.MODE_PRIVATE))
+
+    @Provides
     fun appInitializers(
         notifications: NotificationsInitializer,
         timberManager: TimberInitializer,
         threeTen: ThreeTenAbpInitializer,
         coilAppInitializer: CoilAppInitializer,
-        fcmTokenRegistrator: FcmTokenRegistrator
+        fcmTokenRegistrator: FcmTokenRegistrator,
+        remoteConfigInitializer: RemoteConfigInitializer,
     ): AppInitializers {
-        return AppInitializers(notifications, timberManager, threeTen, coilAppInitializer, fcmTokenRegistrator)
+        return AppInitializers(
+            notifications,
+            timberManager,
+            threeTen,
+            coilAppInitializer,
+            fcmTokenRegistrator,
+            remoteConfigInitializer
+        )
     }
-
-    @Provides
-    @Singleton
-    fun localConfig(app: Application) = LocalConfig(app.getSharedPreferences("local_config", Context.MODE_PRIVATE))
 }

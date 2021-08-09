@@ -6,7 +6,9 @@ package tm.alashow.ui.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ContentAlpha
@@ -29,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.unit.dp
 import tm.alashow.ui.theme.AppTheme
 
 @Composable
@@ -46,7 +49,9 @@ fun <T> SelectableDropdownMenu(
     Column(modifier = modifier) {
         TextButton(
             onClick = { expanded = !expanded },
-            colors = ButtonDefaults.textButtonColors(contentColor = LocalContentColor.current)
+            colors = ButtonDefaults.textButtonColors(contentColor = LocalContentColor.current),
+            contentPadding = PaddingValues(vertical = AppTheme.specs.paddingSmall, horizontal = AppTheme.specs.paddingSmall),
+            modifier = Modifier.offset(x = 12.dp)
         ) {
             Text(text = if (selectedItem != null) labelMapper(selectedItem) else "    ")
             Spacer(Modifier.width(AppTheme.specs.paddingSmall))

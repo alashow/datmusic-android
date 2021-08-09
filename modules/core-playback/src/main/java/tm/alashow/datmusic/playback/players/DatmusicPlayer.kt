@@ -390,11 +390,11 @@ class DatmusicPlayerImpl @Inject constructor(
     }
 
     override fun stop(byUser: Boolean) {
-        audioPlayer.stop()
         updatePlaybackState {
             setState(if (byUser) STATE_NONE else STATE_STOPPED, 0, 1F)
         }
         isInitialized = false
+        audioPlayer.stop()
         launch { saveQueueState() }
     }
 

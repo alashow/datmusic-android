@@ -60,6 +60,7 @@ dependencies {
 
 	api platform(Deps.Firebase.bom)
 	api Deps.Firebase.messaging
+	api Deps.Firebase.remoteConfig
 	api Deps.Firebase.analytics
 	api Deps.Firebase.crashlytics
 

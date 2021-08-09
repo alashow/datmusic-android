@@ -81,6 +81,7 @@ fun CoverImage(
     bitmapPlaceholder: Bitmap? = null,
     image: @Composable (Modifier) -> Unit
 ) {
+    val state = painter.state
     val sizeMod = if (size != Dp.Unspecified) Modifier.size(size) else Modifier
     Surface(
         elevation = 2.dp,
@@ -94,7 +95,7 @@ fun CoverImage(
             Modifier
                 .fillMaxSize()
                 .placeholder(
-                    visible = painter.state is ImagePainter.State.Loading,
+                    visible = state is ImagePainter.State.Loading,
                     color = backgroundColor,
                     shape = shape,
                     highlight = PlaceholderHighlight.shimmer(
@@ -104,7 +105,7 @@ fun CoverImage(
                 )
         )
 
-        when (painter.state) {
+        when (state) {
             is ImagePainter.State.Error, ImagePainter.State.Empty, is ImagePainter.State.Loading -> {
                 Icon(
                     painter = icon,
@@ -115,9 +116,10 @@ fun CoverImage(
                         .padding(iconPadding)
                 )
             }
+            else -> Unit
         }
 
-        if (bitmapPlaceholder != null && painter.state is ImagePainter.State.Loading) {
+        if (bitmapPlaceholder != null && state is ImagePainter.State.Loading) {
             Image(
                 painter = rememberImagePainter(bitmapPlaceholder),
                 contentDescription = null,

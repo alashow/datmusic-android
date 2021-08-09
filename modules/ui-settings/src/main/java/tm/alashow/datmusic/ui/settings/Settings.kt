@@ -6,6 +6,7 @@ package tm.alashow.datmusic.ui.settings
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -29,11 +30,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.ui.Scaffold
 import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.coroutines.launch
+import tm.alashow.Config
 import tm.alashow.base.ui.ColorPalettePreference
 import tm.alashow.base.ui.DarkModePreference
 import tm.alashow.base.ui.ThemeState
@@ -42,6 +45,7 @@ import tm.alashow.base.util.event
 import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.DownloadsSongsGrouping
+import tm.alashow.datmusic.domain.entities.SettingsLinks
 import tm.alashow.datmusic.ui.downloader.LocalDownloader
 import tm.alashow.ui.ThemeViewModel
 import tm.alashow.ui.components.AppTopBar
@@ -50,38 +54,42 @@ import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.DefaultTheme
 import tm.alashow.ui.theme.DefaultThemeDark
 
-val LocalAppVersion = staticCompositionLocalOf<String> { "Unknown" }
+val LocalAppVersion = staticCompositionLocalOf { "Unknown" }
 
 @Composable
-fun Settings() {
-    val themeViewModel = hiltViewModel<ThemeViewModel>()
+fun Settings(
+    themeViewModel: ThemeViewModel = hiltViewModel(),
+    viewModel: SettingsViewModel = hiltViewModel(),
+) {
     val themeState by rememberFlowWithLifecycle(themeViewModel.themeState).collectAsState(initial = null)
+    val settingsLinks by rememberFlowWithLifecycle(viewModel.settingsLinks).collectAsState(emptyList())
     themeState?.let { theme ->
-        Settings(theme, themeViewModel::applyThemeState)
+        Settings(theme, themeViewModel::applyThemeState, settingsLinks)
     }
 }
 
 @Composable
-private fun Settings(themeState: ThemeState, setThemeState: (ThemeState) -> Unit) {
+private fun Settings(themeState: ThemeState, setThemeState: (ThemeState) -> Unit, settingsLinks: SettingsLinks = emptyList()) {
     Scaffold(
         topBar = {
             AppTopBar(title = stringResource(R.string.settings_title))
         }
     ) { padding ->
-        SettingsList(themeState, setThemeState, padding)
+        SettingsList(themeState, setThemeState, settingsLinks, padding)
     }
 }
 
 @Composable
-fun SettingsList(themeState: ThemeState, setThemeState: (ThemeState) -> Unit, paddings: PaddingValues) {
+fun SettingsList(themeState: ThemeState, setThemeState: (ThemeState) -> Unit, settingsLinks: SettingsLinks, paddings: PaddingValues) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
         modifier = Modifier.fillMaxWidth(),
         contentPadding = paddings
     ) {
-        settingsDownloadsSection()
         settingsThemeSection(themeState, setThemeState)
+        settingsDownloadsSection()
         settingsAboutSection()
+        settingsListsSection(settingsLinks)
     }
 }
 
@@ -116,7 +124,7 @@ fun LazyListScope.settingsDownloadsSection() {
                     labelMapper = { stringResource(it.labelRes) },
                     subtitles = DownloadsSongsGrouping.values().map { stringResource(it.exampleRes) },
                     selectedItem = downloadsSongsGrouping,
-                    onItemSelect = { coroutine.launch { downloader.setDownloadsSongsGrouping(it) } }
+                    onItemSelect = { coroutine.launch { downloader.setDownloadsSongsGrouping(it) } },
                 )
             }
         }
@@ -130,7 +138,7 @@ fun LazyListScope.settingsThemeSection(themeState: ThemeState, setThemeState: (T
             SelectableDropdownMenu(
                 items = DarkModePreference.values().toList(),
                 selectedItem = themeState.darkModePreference,
-                onItemSelect = { setThemeState(themeState.copy(darkModePreference = it)) }
+                onItemSelect = { setThemeState(themeState.copy(darkModePreference = it)) },
             )
         }
         SettingsItem(stringResource(R.string.settings_theme_colorPalette)) {
@@ -160,9 +168,27 @@ fun LazyListScope.settingsAboutSection() {
                 linkRes = R.string.settings_about_community_link
             )
 
-            SettingsItem(stringResource(R.string.settings_about_version)) {
-                Text(LocalAppVersion.current, style = MaterialTheme.typography.subtitle1)
+            SettingsLinkItem(
+                label = stringResource(R.string.settings_about_version),
+                text = LocalAppVersion.current,
+                link = Config.PLAYSTORE_URL
+            )
+        }
+    }
+}
+
+fun LazyListScope.settingsListsSection(settingsLinks: SettingsLinks) {
+    settingsLinks.forEach { settingsLink ->
+        item {
+            settingsLink.localizedCategory?.let { category ->
+                SettingsSectionLabel(category)
             }
+
+            SettingsLinkItem(
+                label = settingsLink.localizedLabel,
+                text = settingsLink.getLinkName(),
+                link = settingsLink.getLinkUrl()
+            )
         }
     }
 }
@@ -181,16 +207,24 @@ private fun SettingsLinkItem(
     @StringRes labelRes: Int,
     @StringRes textRes: Int,
     @StringRes linkRes: Int,
+) {
+    SettingsLinkItem(stringResource(labelRes), stringResource(textRes), stringResource(linkRes))
+}
+
+@Composable
+private fun SettingsLinkItem(
+    label: String,
+    text: String,
+    link: String,
     analytics: FirebaseAnalytics = LocalAnalytics.current
 ) {
-    SettingsItem(stringResource(labelRes)) {
+    SettingsItem(label) {
         val context = LocalContext.current
-
-        val link = stringResource(linkRes)
         ClickableText(
-            text = buildAnnotatedString { append(stringResource(textRes)) },
+            text = buildAnnotatedString { append(text) },
             style = TextStyle.Default.copy(
                 color = MaterialTheme.colors.onBackground,
+                textAlign = TextAlign.End
             ),
             onClick = {
                 analytics.event("settings.linkClick", mapOf("link" to link))
@@ -204,17 +238,28 @@ private fun SettingsLinkItem(
 private fun SettingsItem(
     label: String,
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
+    labelWeight: Float = 1f,
+    contentWeight: Float = 1f,
+    content: @Composable () -> Unit = {},
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.Top,
         modifier = modifier
             .padding(horizontal = AppTheme.specs.padding)
             .fillMaxWidth()
     ) {
-        Text(label, style = MaterialTheme.typography.subtitle1)
-        content()
+        Text(
+            label,
+            style = MaterialTheme.typography.subtitle1,
+            modifier = Modifier
+                .padding(end = AppTheme.specs.paddingTiny)
+                .weight(labelWeight)
+        )
+        Box(
+            modifier = Modifier.weight(contentWeight, false),
+            contentAlignment = Alignment.CenterEnd
+        ) { content() }
     }
 }
 

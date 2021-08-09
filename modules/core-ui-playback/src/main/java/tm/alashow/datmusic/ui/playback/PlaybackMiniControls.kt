@@ -60,11 +60,11 @@ import tm.alashow.base.imageloading.ImageLoading
 import tm.alashow.base.util.extensions.orNA
 import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.common.compose.rememberFlowWithLifecycle
+import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.playback.NONE_PLAYBACK_STATE
 import tm.alashow.datmusic.playback.NONE_PLAYING
 import tm.alashow.datmusic.playback.PLAYBACK_PROGRESS_INTERVAL
 import tm.alashow.datmusic.playback.PlaybackConnection
-import tm.alashow.datmusic.playback.artist
 import tm.alashow.datmusic.playback.artwork
 import tm.alashow.datmusic.playback.artworkUri
 import tm.alashow.datmusic.playback.isActive
@@ -74,7 +74,6 @@ import tm.alashow.datmusic.playback.isPlayEnabled
 import tm.alashow.datmusic.playback.isPlaying
 import tm.alashow.datmusic.playback.models.PlaybackProgressState
 import tm.alashow.datmusic.playback.playPause
-import tm.alashow.datmusic.playback.title
 import tm.alashow.ui.Dismissable
 import tm.alashow.ui.adaptiveColor
 import tm.alashow.ui.components.CoverImage
@@ -188,9 +187,12 @@ private fun PlaybackProgress(
 }
 
 @Composable
-private fun RowScope.PlaybackNowPlaying(nowPlaying: MediaMetadataCompat, maxHeight: Dp) {
+private fun RowScope.PlaybackNowPlaying(
+    nowPlaying: MediaMetadataCompat,
+    maxHeight: Dp,
+) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
+        horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall),
         modifier = Modifier.weight(7f),
     ) {
         val artwork = rememberImagePainter(nowPlaying.artwork ?: nowPlaying.artworkUri, builder = ImageLoading.defaultConfig)
@@ -206,21 +208,33 @@ private fun RowScope.PlaybackNowPlaying(nowPlaying: MediaMetadataCompat, maxHeig
             )
         }
 
-        Column(modifier = Modifier.padding(vertical = AppTheme.specs.paddingSmall)) {
+        PlaybackPager(nowPlaying) { audio, page, pagerMod ->
+            PlaybackNowPlayingPage(audio, modifier = pagerMod)
+        }
+    }
+}
+
+@Composable
+private fun PlaybackNowPlayingPage(audio: Audio, modifier: Modifier = Modifier) {
+    Column(
+        modifier = Modifier
+            .padding(vertical = AppTheme.specs.paddingSmall)
+            .fillMaxWidth()
+            .then(modifier)
+    ) {
+        Text(
+            audio.title.orNA(),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            style = MaterialTheme.typography.body2.copy(fontWeight = FontWeight.Bold)
+        )
+        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
             Text(
-                nowPlaying.title.orNA(),
+                audio.artist.orNA(),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.body2.copy(fontWeight = FontWeight.Bold)
+                style = MaterialTheme.typography.body2
             )
-            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                Text(
-                    nowPlaying.artist.orNA(),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.body2
-                )
-            }
         }
     }
 }

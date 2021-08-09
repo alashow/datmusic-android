@@ -29,6 +29,7 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import tm.alashow.Config
 import tm.alashow.datmusic.util.AppHeadersInterceptor
 import tm.alashow.datmusic.util.RewriteCachesInterceptor
+import tm.alashow.domain.models.DEFAULT_JSON_FORMAT
 
 @InstallIn(SingletonComponent::class)
 @Module
@@ -104,9 +105,7 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun jsonConfigured() = Json {
-        ignoreUnknownKeys = true
-    }
+    fun jsonConfigured() = DEFAULT_JSON_FORMAT
 
     @Provides
     @Singleton

@@ -50,6 +50,7 @@ allprojects {
             freeCompilerArgs += "-Xopt-in=kotlinx.coroutines.FlowPreview"
             freeCompilerArgs += "-Xopt-in=kotlin.Experimental"
             freeCompilerArgs += "-Xopt-in=coil.annotation.ExperimentalCoilApi"
+            freeCompilerArgs += "-Xopt-in=com.google.accompanist.pager.ExperimentalPagerApi"
         }
     }
 }

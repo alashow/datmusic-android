@@ -9,6 +9,7 @@ import tm.alashow.buildSrc.Deps
 
 plugins {
 	id "com.android.library"
+	id "dagger.hilt.android.plugin"
 	id "kotlin-android"
 	id "kotlin-kapt"
 }
@@ -44,4 +45,8 @@ dependencies {
 	implementation project(":modules:common-ui-components")
 	implementation project(":modules:core-ui-downloader")
 	implementation project(":modules:navigation")
+
+	implementation Deps.Dagger.hilt
+	kapt Deps.Dagger.compiler
+	kapt Deps.Dagger.hiltCompiler
 }
