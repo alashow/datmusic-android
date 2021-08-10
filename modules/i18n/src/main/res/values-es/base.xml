@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="dialog.ok">\@android: cadena/correcto</string>
-    <string name="dialog.dismiss">\@cadena/genérico.cerrado</string>
-    <string name="error.loading">Carga fallida. Toca para volver a intentarlo</string>
+    <string name="dialog.ok">\@android:string/ok</string>
+    <string name="dialog.dismiss">\@string/generic.close</string>
+    <string name="error.loading">Error al cargar. Toca para volver a intentarlo</string>
     <string name="notifications.defaultChannel">Canal por defecto</string>
     <string name="generic.back">Volver</string>
     <string name="generic.close">Cerrar</string>
@@ -11,7 +11,7 @@
     <string name="dialog.warning">Advertencia</string>
     <string name="dialog.confirm">Confirmar</string>
     <string name="dialog.confirm.no">No</string>
-    <string name="dialog.confirm.yes">\@cadena/diálogo.correcto</string>
+    <string name="dialog.confirm.yes">\@string/dialog.ok</string>
     <string name="unknown">Desconocido</string>
     <string name="error.title">Error</string>
     <string name="error.subtitle">¡Ups! :(</string>
@@ -29,7 +29,7 @@
     <string name="error.errorLogOut">No se pudo cerrar la sesión, intente restablecer la configuración de la aplicación</string>
     <string name="error.alreadyLogined">Se ha iniciado sesión</string>
     <string name="error.serverUnavailable">Servidor no disponible</string>
-    <string name="time.duration">%1$d hora %2$d min</string>
+    <string name="time.duration">%1$d hora %2$d min.</string>
     <string name="time.duration.minutes">%1$d minuto</string>
     <string name="error.retry">Inténtalo otra vez</string>
 </resources>
