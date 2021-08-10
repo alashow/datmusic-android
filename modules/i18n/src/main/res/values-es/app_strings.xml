@@ -14,8 +14,8 @@
     <string name="audio.menu.play">Reproducir</string>
     <string name="app_name">Datmusic</string>
     <string name="audio.menu.copyLink">Copiar enlace</string>
-    <string name="search.minerva">Minerva</string>
-    <string name="audio.menu.playNext">Reproduce Siguiente</string>
+    <string name="search.minerva">Historial</string>
+    <string name="audio.menu.playNext">Reproducir Siguiente</string>
     <string name="downloads.download.play">Reproducir</string>
     <string name="audio.menu.downloadById">Descargar</string>
     <string name="downloads.download.status.queued">Puesto en cola</string>
@@ -34,7 +34,7 @@
     <string name="settings.downloads.songsGrouping.byAlbum.example">/Artista/Álbum/Canción</string>
     <string name="settings.downloads.songsGrouping.byArtist">Por Artista</string>
     <string name="settings.downloads.songsGrouping.byArtist.example">/Artista/Canción</string>
-    <string name="settings.downloads.songsGrouping.flat">Plano</string>
+    <string name="settings.downloads.songsGrouping.flat">Raíz</string>
     <string name="settings.downloads.songsGrouping.flat.example">/Canción</string>
     <string name="settings.about">Acerca de</string>
     <string name="settings.about.author">Autor</string>
@@ -60,7 +60,7 @@
     <string name="downloader.enqueue.audio.error.invalidUrl">El audio tiene una URL de descarga no válida</string>
     <string name="downloader.enqueue.audio.error.fileCreate">No se pudo crear el archivo en la ubicación de descargas</string>
     <string name="downloader.enqueue.audio.existing.resuming">Reanudando la descarga existente</string>
-    <string name="downloader.enqueue.audio.existing.alreadyQueued">Esta canción ya está en la cola de descarga.</string>
+    <string name="downloader.enqueue.audio.existing.alreadyQueued">Esta canción ya está en la cola de descarga</string>
     <string name="downloader.enqueue.audio.existing.completed">Esta canción ya se ha descargado</string>
     <string name="downloader.enqueue.audio.existing.unknown">La solicitud de descarga existe, pero tiene un estado no gestionado:% 1 $ s</string>
     <string name="downloads.title">Descargas</string>
