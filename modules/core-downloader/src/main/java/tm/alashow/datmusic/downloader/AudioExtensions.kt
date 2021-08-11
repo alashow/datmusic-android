@@ -11,14 +11,18 @@ import tm.alashow.datmusic.domain.entities.Audio
 
 private val MULTIPLE_ARTIST_SPLIT_REGEX = Regex("((,)|(feat\\.)|(ft\\.))")
 
-fun DocumentFile.getOrCreateDir(name: String) = findFile(name) ?: createDirectory(name) ?: error("Couldn't create folder: $name")
+val filenameIllegalChars = setOf('|', '/', '\\', '?', '*', '<', '>', '"', ':')
+private fun String.cleanIllegalChars(chars: Set<Char> = filenameIllegalChars, replacement: Char = '_') =
+    map { if (it in chars) replacement else it }.joinToString("")
+
+fun DocumentFile.getOrCreateDir(name: String) = findFile(name) ?: createDirectory(name.cleanIllegalChars()) ?: error("Couldn't create folder: $name")
 
 fun Audio.artists() = artist.split(MULTIPLE_ARTIST_SPLIT_REGEX, 10).map { it.trim() }
 fun Audio.mainArtist() = artist.split(MULTIPLE_ARTIST_SPLIT_REGEX, 10).first().trim()
 
 private fun Audio.createDocumentFile(parent: DocumentFile) = when (val existing = parent.findFile(fileDisplayName() + fileExtension())) {
     is DocumentFile -> existing
-    else -> parent.createFile(fileMimeType(), fileDisplayName()) ?: error("Couldn't create document file")
+    else -> parent.createFile(fileMimeType(), fileDisplayName().cleanIllegalChars()) ?: error("Couldn't create document file")
 }
 
 fun Audio.documentFile(parent: DocumentFile, songsGrouping: DownloadsSongsGrouping): DocumentFile {
