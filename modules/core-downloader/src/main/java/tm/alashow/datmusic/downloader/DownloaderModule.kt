@@ -37,7 +37,7 @@ class DownloaderModule {
         val fetcherConfig = FetchConfiguration.Builder(appContext)
             .setNamespace("downloads")
             .setDownloadConcurrentLimit(2)
-            .setAutoRetryMaxAttempts(2)
+            .setAutoRetryMaxAttempts(4)
             .enableRetryOnNetworkGain(true)
             .enableAutoStart(true)
             .setNotificationManager(notificationManager)
