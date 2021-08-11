@@ -8,6 +8,10 @@ import android.graphics.Bitmap
 import android.graphics.Color as AColor
 import androidx.annotation.ColorInt
 import androidx.annotation.FloatRange
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,6 +29,8 @@ import androidx.palette.graphics.Palette
 import tm.alashow.ui.theme.contrastComposite
 import tm.alashow.ui.theme.toColor
 
+val ADAPTIVE_COLOR_ANIMATION: AnimationSpec<Color> = tween(easing = FastOutSlowInEasing)
+
 data class AdaptiveColorResult(val color: Color, val contentColor: Color, val gradient: Brush)
 
 @Composable
@@ -32,8 +38,10 @@ fun adaptiveColor(
     image: Bitmap? = null,
     initial: Color = MaterialTheme.colors.onSurface.contrastComposite(),
     fallback: Color = MaterialTheme.colors.secondary,
+    animationSpec: AnimationSpec<Color> = ADAPTIVE_COLOR_ANIMATION
 ): AdaptiveColorResult {
     var accent by remember { mutableStateOf(initial) }
+    val accentAnimated by animateColorAsState(accent, animationSpec)
     val contentColor by derivedStateOf { accent.contentColor() }
 
     val isDarkColors = !MaterialTheme.colors.isLight
@@ -46,7 +54,7 @@ fun adaptiveColor(
                 }
     }
 
-    return AdaptiveColorResult(accent, contentColor, backgroundGradient(accent))
+    return AdaptiveColorResult(accent, contentColor, backgroundGradient(accentAnimated))
 }
 
 @Composable

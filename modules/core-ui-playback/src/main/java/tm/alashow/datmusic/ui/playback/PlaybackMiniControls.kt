@@ -74,6 +74,7 @@ import tm.alashow.datmusic.playback.isPlayEnabled
 import tm.alashow.datmusic.playback.isPlaying
 import tm.alashow.datmusic.playback.models.PlaybackProgressState
 import tm.alashow.datmusic.playback.playPause
+import tm.alashow.ui.ADAPTIVE_COLOR_ANIMATION
 import tm.alashow.ui.Dismissable
 import tm.alashow.ui.adaptiveColor
 import tm.alashow.ui.components.CoverImage
@@ -124,8 +125,8 @@ fun PlaybackMiniControls(
     val expand = { coroutine.launch { playbackSheetState.expand() } }
 
     val adaptiveColor = adaptiveColor(nowPlaying.artwork)
-    val backgroundColor by animateColorAsState(adaptiveColor.color)
-    val contentColor by animateColorAsState(adaptiveColor.contentColor)
+    val backgroundColor by animateColorAsState(adaptiveColor.color, ADAPTIVE_COLOR_ANIMATION)
+    val contentColor by animateColorAsState(adaptiveColor.contentColor, ADAPTIVE_COLOR_ANIMATION)
 
     Dismissable(onDismiss = { playbackConnection.transportControls?.stop() }) {
         Surface(

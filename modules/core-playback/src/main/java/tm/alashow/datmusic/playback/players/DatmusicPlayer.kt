@@ -533,13 +533,15 @@ class DatmusicPlayerImpl @Inject constructor(
             queueState = queueState.copy(state = STATE_PAUSED)
         }
 
-        setCurrentAudioId(queueState.queue[queueState.currentIndex], queueState.currentIndex)
+        if (queueState.queue.isNotEmpty()) {
+            setCurrentAudioId(queueState.queue[queueState.currentIndex], queueState.currentIndex)
 
-        setData(queueState.queue, queueState.title ?: "")
+            setData(queueState.queue, queueState.title ?: "")
 
-        queueManager.refreshCurrentAudio()?.apply {
-            Timber.d("Setting metadata from saved state: currentAudio=$id")
-            setMetaData(this)
+            queueManager.refreshCurrentAudio()?.apply {
+                Timber.d("Setting metadata from saved state: currentAudio=$id")
+                setMetaData(this)
+            }
         }
 
         val extras = bundleOf(

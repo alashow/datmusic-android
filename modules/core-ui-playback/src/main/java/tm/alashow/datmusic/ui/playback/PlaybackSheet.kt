@@ -126,6 +126,7 @@ import tm.alashow.datmusic.ui.audios.AudioItemAction
 import tm.alashow.datmusic.ui.audios.AudioRow
 import tm.alashow.datmusic.ui.audios.LocalAudioActionHandler
 import tm.alashow.datmusic.ui.media.R
+import tm.alashow.ui.ADAPTIVE_COLOR_ANIMATION
 import tm.alashow.ui.Delayed
 import tm.alashow.ui.DismissableSnackbarHost
 import tm.alashow.ui.adaptiveColor
@@ -203,7 +204,7 @@ fun PlaybackSheetContent(
     val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying).collectAsState(NONE_PLAYING)
 
     val adaptiveColor = adaptiveColor(nowPlaying.artwork)
-    val contentColor by animateColorAsState(adaptiveColor.color)
+    val contentColor by animateColorAsState(adaptiveColor.color, ADAPTIVE_COLOR_ANIMATION)
 
     Scaffold(
         backgroundColor = Color.Transparent,
