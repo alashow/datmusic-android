@@ -2,7 +2,7 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.datmusic.ui.downloads
+package tm.alashow.datmusic.ui.downloads.audio
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.LinearEasing
@@ -56,6 +56,9 @@ import tm.alashow.datmusic.downloader.isResumable
 import tm.alashow.datmusic.downloader.isRetriable
 import tm.alashow.datmusic.downloader.progressVisible
 import tm.alashow.datmusic.ui.audios.AudioRowItem
+import tm.alashow.datmusic.ui.downloads.R
+import tm.alashow.datmusic.ui.downloads.fileSizeStatus
+import tm.alashow.datmusic.ui.downloads.statusLabel
 import tm.alashow.ui.TimedVisibility
 import tm.alashow.ui.colorFilterDynamicProperty
 import tm.alashow.ui.components.IconButton

@@ -2,7 +2,7 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.datmusic.ui.downloads
+package tm.alashow.datmusic.ui.downloads.audio
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -19,35 +19,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
-import com.tonyodev.fetch2.Status
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
-
-sealed class AudioDownloadItemAction(open val audio: AudioDownloadItem) {
-    data class Play(override val audio: AudioDownloadItem) : AudioDownloadItemAction(audio)
-    data class PlayNext(override val audio: AudioDownloadItem) : AudioDownloadItemAction(audio)
-    data class Resume(override val audio: AudioDownloadItem) : AudioDownloadItemAction(audio)
-    data class Pause(override val audio: AudioDownloadItem) : AudioDownloadItemAction(audio)
-    data class Cancel(override val audio: AudioDownloadItem) : AudioDownloadItemAction(audio)
-    data class Retry(override val audio: AudioDownloadItem) : AudioDownloadItemAction(audio)
-    data class Open(override val audio: AudioDownloadItem) : AudioDownloadItemAction(audio)
-    data class Remove(override val audio: AudioDownloadItem) : AudioDownloadItemAction(audio)
-    data class Delete(override val audio: AudioDownloadItem) : AudioDownloadItemAction(audio)
-
-    companion object {
-        fun from(actionLabelRes: Int, audio: AudioDownloadItem) = when (actionLabelRes) {
-            R.string.downloads_download_play -> Play(audio)
-            R.string.downloads_download_playNext -> PlayNext(audio)
-            R.string.downloads_download_pause -> Pause(audio)
-            R.string.downloads_download_resume -> Resume(audio)
-            R.string.downloads_download_cancel -> Cancel(audio)
-            R.string.downloads_download_retry -> Retry(audio)
-            R.string.downloads_download_open -> Open(audio)
-            R.string.downloads_download_remove -> Remove(audio)
-            R.string.downloads_download_delete -> Delete(audio)
-            else -> error("Unknown action: $actionLabelRes")
-        }
-    }
-}
+import tm.alashow.datmusic.downloader.isCancelable
+import tm.alashow.datmusic.downloader.isComplete
+import tm.alashow.datmusic.downloader.isIncomplete
+import tm.alashow.datmusic.downloader.isResumable
+import tm.alashow.datmusic.downloader.isRetriable
+import tm.alashow.datmusic.ui.downloads.R
 
 @OptIn(ExperimentalStdlibApi::class)
 @Composable
@@ -60,14 +38,28 @@ internal fun AudioDownloadDropdownMenu(
 ) {
     val items = buildList {
         val downloadInfo = audioDownload.downloadInfo
+
+        if (downloadInfo.isResumable()) {
+            add(R.string.downloads_download_resume)
+        }
+
+        if (downloadInfo.isRetriable()) {
+            add(R.string.downloads_download_retry)
+        }
+
+        if (downloadInfo.isCancelable()) {
+            add(R.string.downloads_download_cancel)
+        }
+
         add(R.string.downloads_download_play)
         add(R.string.downloads_download_playNext)
-        when (downloadInfo.status) {
-            Status.DOWNLOADING, Status.QUEUED, Status.PAUSED -> add(R.string.downloads_download_cancel)
-            Status.CANCELLED, Status.FAILED -> add(R.string.downloads_download_delete)
-            else -> Unit
+        add(R.string.audio_menu_copyLink)
+
+        if (downloadInfo.isIncomplete()) {
+            add(R.string.downloads_download_delete)
         }
-        if (downloadInfo.status == Status.COMPLETED) {
+
+        if (downloadInfo.isComplete()) {
             add(R.string.downloads_download_open)
             add(R.string.downloads_download_remove)
             add(R.string.downloads_download_delete)

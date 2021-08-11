@@ -95,9 +95,7 @@ import tm.alashow.base.util.extensions.toFloat
 import tm.alashow.base.util.millisToDuration
 import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.common.compose.LocalScaffoldState
-import tm.alashow.common.compose.LogCompositions
 import tm.alashow.common.compose.rememberFlowWithLifecycle
-import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.CoverImageSize
 import tm.alashow.datmusic.playback.NONE_PLAYBACK_STATE
 import tm.alashow.datmusic.playback.NONE_PLAYING
@@ -106,7 +104,6 @@ import tm.alashow.datmusic.playback.artist
 import tm.alashow.datmusic.playback.artwork
 import tm.alashow.datmusic.playback.hasNext
 import tm.alashow.datmusic.playback.hasPrevious
-import tm.alashow.datmusic.playback.id
 import tm.alashow.datmusic.playback.isBuffering
 import tm.alashow.datmusic.playback.isError
 import tm.alashow.datmusic.playback.isPlayEnabled
@@ -115,7 +112,6 @@ import tm.alashow.datmusic.playback.models.PlaybackModeState
 import tm.alashow.datmusic.playback.models.PlaybackProgressState
 import tm.alashow.datmusic.playback.models.PlaybackQueue
 import tm.alashow.datmusic.playback.models.QueueTitle
-import tm.alashow.datmusic.playback.models.toMediaId
 import tm.alashow.datmusic.playback.playPause
 import tm.alashow.datmusic.playback.title
 import tm.alashow.datmusic.playback.toggleRepeatMode
@@ -125,7 +121,7 @@ import tm.alashow.datmusic.ui.audios.AudioDropdownMenu
 import tm.alashow.datmusic.ui.audios.AudioItemAction
 import tm.alashow.datmusic.ui.audios.AudioRow
 import tm.alashow.datmusic.ui.audios.LocalAudioActionHandler
-import tm.alashow.datmusic.ui.media.R
+import tm.alashow.datmusic.ui.audios.currentPlayingMenuActionLabels
 import tm.alashow.ui.ADAPTIVE_COLOR_ANIMATION
 import tm.alashow.ui.Delayed
 import tm.alashow.ui.DismissableSnackbarHost
@@ -222,7 +218,7 @@ fun PlaybackSheetContent(
                 item {
                     PlaybackSheetTopBar(
                         nowPlaying = nowPlaying,
-                        title = playbackQueue.title,
+                        playbackQueue = playbackQueue,
                         onClose = onClose
                     )
                     val topPadding = AppTheme.specs.padding
@@ -581,13 +577,12 @@ private fun PlaybackControls(
 @Composable
 private fun PlaybackSheetTopBar(
     nowPlaying: MediaMetadataCompat,
-    title: String? = null,
+    playbackQueue: PlaybackQueue,
     onClose: () -> Unit,
     iconSize: Dp = 36.dp,
     actionHandler: AudioActionHandler = LocalAudioActionHandler.current,
 ) {
     val (expanded, setExpanded) = remember { mutableStateOf(false) }
-    LogCompositions(tag = "PlaybackSheetTopBar")
 
     TopAppBar(
         elevation = 0.dp,
@@ -601,7 +596,7 @@ private fun PlaybackSheetTopBar(
                     .offset(x = -8.dp) // idk why this is needed for centering
             ) {
                 val context = LocalContext.current
-                val queueTitle = QueueTitle.from(title ?: "")
+                val queueTitle = QueueTitle.from(playbackQueue.title ?: "")
                 Text(
                     queueTitle.localizeType(context).uppercase(),
                     style = MaterialTheme.typography.overline.copy(fontWeight = FontWeight.Light),
@@ -629,9 +624,9 @@ private fun PlaybackSheetTopBar(
                 AudioDropdownMenu(
                     expanded = expanded,
                     onExpandedChange = setExpanded,
-                    actionLabels = listOf(R.string.audio_menu_downloadById),
+                    actionLabels = currentPlayingMenuActionLabels,
                 ) {
-                    actionHandler(AudioItemAction.from(it, Audio(id = nowPlaying.id.toMediaId().value)))
+                    actionHandler(AudioItemAction.from(it, playbackQueue.currentAudio))
                 }
             }
         }
