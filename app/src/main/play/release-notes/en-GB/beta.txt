@@ -15,7 +15,3 @@ v2.0.0-rc02
 - Clear playback notification when player is inactive
 - Settings links
 - Added spanish translation
-
-v2.0.0-rc01
-- Playback v2: fully featured audio player!
-- Downloader: multiple artist name splitter (less artist folders)
