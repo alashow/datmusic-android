@@ -193,7 +193,7 @@ private fun RowScope.PlaybackNowPlaying(
     maxHeight: Dp,
 ) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall),
+        horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingTiny),
         modifier = Modifier.weight(7f),
     ) {
         val artwork = rememberImagePainter(nowPlaying.artwork ?: nowPlaying.artworkUri, builder = ImageLoading.defaultConfig)
