@@ -109,7 +109,8 @@ private fun AlbumDetailList(
                     var previousOffset = 0
                     val parallax = 0.6f
                     CoverHeaderRow(
-                        title = album.title, imageRequest = album.photo.mediumUrl,
+                        title = album.title,
+                        imageRequest = album.photo.mediumUrl,
                         modifier = Modifier.graphicsLayer {
                             scrolledY += listState.firstVisibleItemScrollOffset - previousOffset
                             translationY = scrolledY * parallax
