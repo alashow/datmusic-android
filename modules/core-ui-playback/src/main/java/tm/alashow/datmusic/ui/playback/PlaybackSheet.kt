@@ -217,7 +217,6 @@ fun PlaybackSheetContent(
             ) {
                 item {
                     PlaybackSheetTopBar(
-                        nowPlaying = nowPlaying,
                         playbackQueue = playbackQueue,
                         onClose = onClose
                     )
@@ -576,7 +575,6 @@ private fun PlaybackControls(
 
 @Composable
 private fun PlaybackSheetTopBar(
-    nowPlaying: MediaMetadataCompat,
     playbackQueue: PlaybackQueue,
     onClose: () -> Unit,
     iconSize: Dp = 36.dp,
@@ -626,7 +624,8 @@ private fun PlaybackSheetTopBar(
                     onExpandedChange = setExpanded,
                     actionLabels = currentPlayingMenuActionLabels,
                 ) {
-                    actionHandler(AudioItemAction.from(it, playbackQueue.currentAudio))
+                    if (playbackQueue.isValid)
+                        actionHandler(AudioItemAction.from(it, playbackQueue.currentAudio))
                 }
             }
         }
