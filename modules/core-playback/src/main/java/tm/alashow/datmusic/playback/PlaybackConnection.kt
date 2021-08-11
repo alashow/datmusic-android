@@ -46,6 +46,7 @@ import tm.alashow.datmusic.playback.models.PlaybackQueue
 import tm.alashow.datmusic.playback.models.QueueTitle
 import tm.alashow.datmusic.playback.models.fromMediaController
 import tm.alashow.datmusic.playback.models.toMediaAudioIds
+import tm.alashow.datmusic.playback.models.toMediaId
 import tm.alashow.datmusic.playback.players.AudioPlayer
 import tm.alashow.datmusic.playback.players.QUEUE_FROM_POSITION_KEY
 import tm.alashow.datmusic.playback.players.QUEUE_LIST_KEY
@@ -85,8 +86,8 @@ interface PlaybackConnection {
 class PlaybackConnectionImpl(
     context: Context,
     serviceComponent: ComponentName,
-    audiosDao: AudiosDao,
-    downloadsDao: DownloadRequestsDao,
+    private val audiosDao: AudiosDao,
+    private val downloadsDao: DownloadRequestsDao,
     private val audioPlayer: AudioPlayer,
     coroutineScope: CoroutineScope = ProcessLifecycleOwner.get().lifecycleScope,
 ) : PlaybackConnection, CoroutineScope by coroutineScope {
@@ -96,47 +97,67 @@ class PlaybackConnectionImpl(
     override val nowPlaying = MutableStateFlow(NONE_PLAYING)
 
     private val playbackQueueState = MutableStateFlow(PlaybackQueue())
-    override val playbackQueue = playbackQueueState.map { queue ->
-        val audios = (audiosDao to downloadsDao).findAudios(queue.list.toMediaAudioIds())
-        queue.copy(audiosList = audios)
-    }.shareIn(this, SharingStarted.WhileSubscribed(), 1)
 
+    override val playbackQueue = combine(nowPlaying, playbackState, playbackQueueState, ::Triple).map(::buildPlaybackQueue)
+        .shareIn(this, SharingStarted.WhileSubscribed(), 1)
+
+    private var playbackProgressInterval: Job = Job()
     override val playbackProgress = MutableStateFlow(PlaybackProgressState())
+
     override val playbackMode = MutableStateFlow(PlaybackModeState())
 
     override var mediaController: MediaControllerCompat? = null
     override val transportControls get() = mediaController?.transportControls
-
     private val mediaBrowserConnectionCallback = MediaBrowserConnectionCallback(context)
-    private val mediaBrowser = MediaBrowserCompat(
-        context,
-        serviceComponent,
-        mediaBrowserConnectionCallback, null
-    ).apply { connect() }
-
-    private var playbackInterval: Job = Job()
+    private val mediaBrowser = MediaBrowserCompat(context, serviceComponent, mediaBrowserConnectionCallback, null).apply { connect() }
 
     init {
-        launch {
-            combine(playbackState, nowPlaying, ::Pair).collect { (state, current) ->
-                playbackInterval.cancel()
-                val duration = current.duration
-                val position = state.position
+        startPlaybackProgress()
+    }
 
-                if (state == NONE_PLAYBACK_STATE || current == NONE_PLAYING || duration < 1)
-                    return@collect
+    private fun startPlaybackProgress() = launch {
+        combine(playbackState, nowPlaying, ::Pair).collect { (state, current) ->
+            playbackProgressInterval.cancel()
+            val duration = current.duration
+            val position = state.position
 
-                val initial = PlaybackProgressState(duration, position, buffered = audioPlayer.bufferedPosition())
-                playbackProgress.value = initial
+            if (state == NONE_PLAYBACK_STATE || current == NONE_PLAYING || duration < 1)
+                return@collect
 
-                if (state.isPlaying && !state.isBuffering)
-                    starPlaybackProgressInterval(initial)
+            val initial = PlaybackProgressState(duration, position, buffered = audioPlayer.bufferedPosition())
+            playbackProgress.value = initial
+
+            if (state.isPlaying && !state.isBuffering)
+                starPlaybackProgressInterval(initial)
+        }
+    }
+
+    /**
+     * Resolves audios from given playback queue ids and validates current queues index.
+     */
+    private suspend fun buildPlaybackQueue(data: Triple<MediaMetadataCompat, PlaybackStateCompat, PlaybackQueue>): PlaybackQueue {
+        val (nowPlaying, state, queue) = data
+        val audios = (audiosDao to downloadsDao).findAudios(queue.list.toMediaAudioIds())
+        val nowPlayingId = nowPlaying.id.toMediaId().value
+
+        return queue.copy(audiosList = audios, currentIndex = state.currentIndex).let {
+            // check if now playing id and current audio's id by index matches
+            val synced = when {
+                it.isEmpty() -> false
+                state.currentIndex >= it.size -> false
+                else -> nowPlayingId == it[state.currentIndex].id
+            }
+
+            // if not, try to override current index by finding audio via now playing id
+            when (synced) {
+                true -> it
+                else -> it.copy(currentIndex = it.indexOfFirst { a -> a.id == nowPlayingId })
             }
         }
     }
 
     private fun starPlaybackProgressInterval(initial: PlaybackProgressState) {
-        playbackInterval = launch {
+        playbackProgressInterval = launch {
             flowInterval(PLAYBACK_PROGRESS_INTERVAL).collect { ticks ->
                 val elapsed = PLAYBACK_PROGRESS_INTERVAL * (ticks + 1)
                 playbackProgress.value = initial.copy(elapsed = elapsed, buffered = audioPlayer.bufferedPosition())
@@ -250,7 +271,7 @@ class PlaybackConnectionImpl(
         }
 
         override fun onQueueChanged(queue: MutableList<MediaSessionCompat.QueueItem>?) {
-            Timber.d("New queue: size=${queue?.size}, $queue")
+            Timber.d("New queue: size=${queue?.size}")
             val newQueue = fromMediaController(mediaController ?: return)
             this@PlaybackConnectionImpl.playbackQueueState.value = newQueue
         }

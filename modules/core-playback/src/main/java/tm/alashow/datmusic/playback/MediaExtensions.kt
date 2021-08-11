@@ -13,6 +13,7 @@ import android.support.v4.media.session.PlaybackStateCompat
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import timber.log.Timber
+import tm.alashow.datmusic.playback.players.QUEUE_CURRENT_INDEX
 import tm.alashow.datmusic.playback.players.QUEUE_HAS_NEXT
 import tm.alashow.datmusic.playback.players.QUEUE_HAS_PREVIOUS
 
@@ -120,6 +121,9 @@ inline val PlaybackStateCompat.isPlayEnabled
             (actions and PlaybackStateCompat.ACTION_PLAY_PAUSE != 0L) &&
                 (state == PlaybackStateCompat.STATE_PAUSED)
             )
+
+inline val PlaybackStateCompat.currentIndex
+    get() = (extras?.getInt(QUEUE_CURRENT_INDEX) ?: 0)
 
 inline val PlaybackStateCompat.hasPrevious
     get() = (extras?.getBoolean(QUEUE_HAS_PREVIOUS) ?: false)

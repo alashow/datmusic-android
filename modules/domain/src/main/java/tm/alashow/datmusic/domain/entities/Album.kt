@@ -12,6 +12,7 @@ import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import tm.alashow.datmusic.domain.UNTITLED_ALBUM
 import tm.alashow.domain.models.BasePaginatedEntity
 
 typealias AlbumId = Long
@@ -37,7 +38,7 @@ data class Album(
 
     @SerialName("title")
     @ColumnInfo(name = "title")
-    val title: String = "Untitled",
+    val title: String = UNTITLED_ALBUM,
 
     @SerialName("subtitle")
     @ColumnInfo(name = "subtitle")
