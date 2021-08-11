@@ -16,6 +16,8 @@ import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import tm.alashow.datmusic.domain.UNKNOWN_ARTIST
+import tm.alashow.datmusic.domain.UNTITLED_SONG
 import tm.alashow.domain.models.BasePaginatedEntity
 
 @Parcelize
@@ -36,11 +38,11 @@ data class Audio(
 
     @SerialName("artist")
     @ColumnInfo(name = "artist")
-    val artist: String = "Unknown Artist",
+    val artist: String = UNKNOWN_ARTIST,
 
     @SerialName("title")
     @ColumnInfo(name = "title")
-    val title: String = "Untitled Song",
+    val title: String = UNTITLED_SONG,
 
     @SerialName("duration")
     @ColumnInfo(name = "duration")

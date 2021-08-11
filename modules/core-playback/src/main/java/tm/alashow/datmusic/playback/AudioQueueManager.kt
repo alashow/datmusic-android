@@ -24,14 +24,15 @@ import tm.alashow.datmusic.playback.models.toQueueItems
 import tm.alashow.domain.models.orNull
 
 interface AudioQueueManager {
-    var currentAudioId: String
+    var currentAudioIndex: Int
+    val currentAudioId: String
     var currentAudio: Audio?
 
     var queue: List<String>
     var queueTitle: String
 
-    val previousAudioId: String?
-    val nextAudioId: String?
+    val previousAudioIndex: Int?
+    val nextAudioIndex: Int?
 
     suspend fun refreshCurrentAudio(): Audio?
 
@@ -44,7 +45,7 @@ interface AudioQueueManager {
     fun queue(): String
     fun clear()
     fun clearPlayedAudios()
-    fun shuffleQueue(isShuffle: Boolean = false)
+    suspend fun shuffleQueue(isShuffle: Boolean = false)
 }
 
 class AudioQueueManagerImpl @Inject constructor(
@@ -58,13 +59,13 @@ class AudioQueueManagerImpl @Inject constructor(
     private val playedAudios = mutableListOf<String>()
     private var originalQueue = listOf<String>()
 
-    override var currentAudioId: String = ""
     override var currentAudio: Audio? = null
 
-    private val currentAudioIndex get() = queue.indexOf(currentAudioId)
+    override var currentAudioIndex = 0
+    override val currentAudioId get() = queue[currentAudioIndex]
 
     override suspend fun refreshCurrentAudio(): Audio? {
-        currentAudio = (audiosDao to downloadsDao).findAudio(currentAudioId)?.apply {
+        currentAudio = (audiosDao to downloadsDao).findAudio(queue[currentAudioIndex])?.apply {
             audioDownloadItem = downloader.getAudioDownload(id, Status.COMPLETED).orNull()
         }
         return currentAudio
@@ -72,9 +73,8 @@ class AudioQueueManagerImpl @Inject constructor(
 
     override var queue: List<String> = listOf()
         set(value) {
-            val deduped = value.toSet().toList()
-            field = deduped
-            setQueueItems(deduped)
+            field = value
+            setQueueItems(value)
         }
 
     override var queueTitle: String = ""
@@ -83,33 +83,39 @@ class AudioQueueManagerImpl @Inject constructor(
             mediaSession.setQueueTitle(value)
         }
 
-    override val previousAudioId: String?
+    override val previousAudioIndex: Int?
         get() {
-            if (mediaSession.position() >= 5000) return currentAudioId
+            if (mediaSession.position() >= 5000) return currentAudioIndex
             val previousIndex = currentAudioIndex - 1
 
             return when {
-                previousIndex >= 0 -> queue[previousIndex]
+                previousIndex >= 0 -> previousIndex
                 else -> null
             }
         }
 
-    override val nextAudioId: String?
+    override val nextAudioIndex: Int?
         get() {
             val nextIndex = currentAudioIndex + 1
             return when {
-                nextIndex < queue.size -> queue[nextIndex]
+                nextIndex < queue.size -> nextIndex
                 else -> null
             }
         }
 
+    @OptIn(ExperimentalStdlibApi::class)
     private fun setQueueItems(ids: List<String>) {
         if (ids.isNotEmpty()) {
             launch {
                 withContext(dispatchers.computation) {
-                    val orderByIndex = ids.withIndex().associate { it.value to it.index }
-                    val audios = (audiosDao to downloadsDao).findAudios(ids).sortedBy { orderByIndex[it.id] }
-                    mediaSession.setQueue(audios.toQueueItems())
+                    val audios = (audiosDao to downloadsDao).findAudios(ids).associateBy { it.id }
+                    val audiosOrdered = buildList {
+                        ids.forEach { id ->
+                            // map not found audios to empty ones to keep index integrity
+                            add(audios[id] ?: Audio())
+                        }
+                    }
+                    mediaSession.setQueue(audiosOrdered.toQueueItems())
                 }
             }
         }
@@ -127,7 +133,7 @@ class AudioQueueManagerImpl @Inject constructor(
     }
 
     override fun skipTo(position: Int) {
-        currentAudioId = queue[position]
+        currentAudioIndex = position
     }
 
     override fun remove(position: Int) {
@@ -149,33 +155,30 @@ class AudioQueueManagerImpl @Inject constructor(
     override fun clear() {
         queue = emptyList()
         queueTitle = ""
-        currentAudioId = ""
+        currentAudioIndex = 0
     }
 
     override fun clearPlayedAudios() {
         playedAudios.clear()
     }
 
-    override fun shuffleQueue(isShuffle: Boolean) {
-        launch {
-            withContext(dispatchers.computation) {
-                if (isShuffle) shuffleQueue()
-                else restoreQueueOrder()
-            }
+    override suspend fun shuffleQueue(isShuffle: Boolean) {
+        withContext(dispatchers.computation) {
+            if (isShuffle) shuffleQueue()
+            else restoreQueueOrder()
         }
     }
 
     private fun shuffleQueue() {
-        val shuffled = queue.let { original ->
-            original.shuffled().let { shuffled ->
-                val currentIdIndex = shuffled.indexOfFirst { id -> id == currentAudioId }
-                if (currentIdIndex >= 0)
-                    shuffled.swap(currentIdIndex, 0)
-                else {
-                    Timber.e("CurrentIdIndex is not found found")
-                    return
-                }
-            }
+        var shuffled = queue.shuffled()
+
+        val currentIdIndex = shuffled.indexOfFirst { id -> id == queue[currentAudioIndex] }
+        if (currentIdIndex >= 0) {
+            currentAudioIndex = 0
+            shuffled = shuffled.swap(currentIdIndex, 0)
+        } else {
+            Timber.e("CurrentIdIndex is not found")
+            return
         }
 
         Timber.d("Saving shuffled queue: ${shuffled.size}")
@@ -187,6 +190,8 @@ class AudioQueueManagerImpl @Inject constructor(
     }
 
     private fun restoreQueueOrder() {
+        val currentIndexId = currentAudioId
         queue = originalQueue
+        currentAudioIndex = queue.indexOf(currentIndexId)
     }
 }

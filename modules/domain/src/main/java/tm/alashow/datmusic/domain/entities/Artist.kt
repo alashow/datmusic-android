@@ -14,6 +14,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import tm.alashow.Config
+import tm.alashow.datmusic.domain.UNKNOWN_ARTIST
 import tm.alashow.domain.models.BasePaginatedEntity
 
 typealias ArtistId = String
@@ -28,7 +29,7 @@ data class Artist(
 
     @SerialName("name")
     @ColumnInfo(name = "name")
-    val name: String = "Unknown",
+    val name: String = UNKNOWN_ARTIST,
 
     @SerialName("domain")
     @ColumnInfo(name = "domain")

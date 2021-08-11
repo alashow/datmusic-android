@@ -202,8 +202,6 @@ fun PlaybackSheetContent(
     val playbackQueue by rememberFlowWithLifecycle(playbackConnection.playbackQueue).collectAsState(PlaybackQueue())
     val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying).collectAsState(NONE_PLAYING)
 
-    val playbackQueueCurrent = remember(playbackQueue, nowPlaying) { playbackQueue.findAudio(nowPlaying) }
-
     val adaptiveColor = adaptiveColor(nowPlaying.artwork)
     val contentColor by animateColorAsState(adaptiveColor.color)
 
@@ -231,7 +229,10 @@ fun PlaybackSheetContent(
                 }
 
                 item {
-                    PlaybackPager(nowPlaying = nowPlaying, modifier = Modifier.height(IntrinsicSize.Min)) { audio, page, pagerMod ->
+                    PlaybackPager(
+                        nowPlaying = nowPlaying,
+                        modifier = Modifier.height(IntrinsicSize.Min)
+                    ) { audio, _, pagerMod ->
                         val currentArtwork = rememberImagePainter(audio.coverUri(CoverImageSize.LARGE))
                         PlaybackArtwork(currentArtwork, contentColor, nowPlaying, pagerMod)
                     }
@@ -241,7 +242,6 @@ fun PlaybackSheetContent(
 
                 playbackQueue(
                     playbackQueue = playbackQueue,
-                    playbackQueueCurrent = playbackQueueCurrent,
                     scrollToTop = scrollToTop,
                     playbackConnection = playbackConnection,
                 )
@@ -255,14 +255,13 @@ fun PlaybackSheetContent(
 @OptIn(ExperimentalAnimationApi::class)
 private fun LazyListScope.playbackQueue(
     playbackQueue: PlaybackQueue,
-    playbackQueueCurrent: Pair<Int, Audio>?,
     scrollToTop: Callback,
     playbackConnection: PlaybackConnection,
 ) {
     val lastIndex = playbackQueue.audiosList.size
-    val firstIndex = ((playbackQueueCurrent?.first ?: 0) + 1).coerceAtMost(lastIndex)
+    val firstIndex = (playbackQueue.currentIndex + 1).coerceAtMost(lastIndex)
     val queue = playbackQueue.audiosList.subList(firstIndex, lastIndex)
-    itemsIndexed(queue, key = { _, audio -> audio.id }) { index, audio ->
+    itemsIndexed(queue, key = { index, _ -> index }) { index, audio ->
         val realPosition = firstIndex + index
         AudioRow(
             audio = audio,

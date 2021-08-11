@@ -209,13 +209,13 @@ private fun RowScope.PlaybackNowPlaying(
         }
 
         PlaybackPager(nowPlaying) { audio, page, pagerMod ->
-            PlaybackNowPlayingPage(audio, modifier = pagerMod)
+            PlaybackNowPlaying(audio, modifier = pagerMod)
         }
     }
 }
 
 @Composable
-private fun PlaybackNowPlayingPage(audio: Audio, modifier: Modifier = Modifier) {
+private fun PlaybackNowPlaying(audio: Audio, modifier: Modifier = Modifier) {
     Column(
         modifier = Modifier
             .padding(vertical = AppTheme.specs.paddingSmall)
