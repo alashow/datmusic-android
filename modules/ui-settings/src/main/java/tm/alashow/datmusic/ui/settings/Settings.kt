@@ -218,7 +218,7 @@ private fun SettingsLinkItem(
     link: String,
     analytics: FirebaseAnalytics = LocalAnalytics.current
 ) {
-    SettingsItem(label) {
+    SettingsItem(label, verticalAlignment = Alignment.Top) {
         val context = LocalContext.current
         ClickableText(
             text = buildAnnotatedString { append(text) },
@@ -240,11 +240,12 @@ private fun SettingsItem(
     modifier: Modifier = Modifier,
     labelWeight: Float = 1f,
     contentWeight: Float = 1f,
+    verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
     content: @Composable () -> Unit = {},
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.Top,
+        verticalAlignment = verticalAlignment,
         modifier = modifier
             .padding(horizontal = AppTheme.specs.padding)
             .fillMaxWidth()
