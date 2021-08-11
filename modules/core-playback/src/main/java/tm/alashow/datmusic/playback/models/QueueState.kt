@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class QueueState(
     val queue: List<String>,
-    val currentId: String = "",
+    val currentIndex: Int = 0,
     val title: String? = null,
     val repeatMode: Int = 0,
     val shuffleMode: Int = 0,

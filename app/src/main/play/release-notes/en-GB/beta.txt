@@ -1,6 +1,12 @@
 Hey! Thanks for using datmusic app!
 Please review the app if you like it!
 
+v2.0.0-rc04
+- Playback queue bug fixes (+ allow multiple song instances via Play next)
+- Smoother adaptive color animation
+- Crash fix when network available
+- Settings layout fix
+
 v2.0.0-rc03
 - Playback bug fixes
 
