@@ -8,10 +8,10 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
 import timber.log.Timber
-import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.base.util.RemoteLogger
 import tm.alashow.domain.models.DEFAULT_JSON_FORMAT
 import tm.alashow.domain.models.None
@@ -23,7 +23,8 @@ const val REMOTE_CONFIG_FETCH_INTERVAL_SECONDS = 3600L
 
 private val format = DEFAULT_JSON_FORMAT
 
-class RemoteConfig @Inject constructor(dispatchers: CoroutineDispatchers) {
+@Singleton
+class RemoteConfig @Inject constructor() {
 
     private val remoteConfig by lazy {
         Firebase.remoteConfig.apply {
@@ -35,8 +36,12 @@ class RemoteConfig @Inject constructor(dispatchers: CoroutineDispatchers) {
     }
 
     init {
-        remoteConfig.fetchAndActivate().addOnCompleteListener(dispatchers.executor) { task ->
-            Timber.d("Fetch and activate remote config: successful=${task.result}")
+        try {
+            remoteConfig.fetchAndActivate().addOnCompleteListener { task ->
+                Timber.d("Fetch and activate remote config: successful=${task.result}")
+            }
+        } catch (e: Exception) {
+            RemoteLogger.exception(e)
         }
     }
 
