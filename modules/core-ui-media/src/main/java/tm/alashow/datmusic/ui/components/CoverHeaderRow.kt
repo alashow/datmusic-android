@@ -24,7 +24,9 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import tm.alashow.base.imageloading.ImageLoading
 import tm.alashow.ui.components.ImageWithPlaceholder
+import tm.alashow.ui.gradientBackground
 import tm.alashow.ui.theme.AppTheme
+import tm.alashow.ui.theme.parseColor
 import tm.alashow.ui.theme.textShadow
 
 object CoverHeaderDefaults {
@@ -36,6 +38,12 @@ object CoverHeaderDefaults {
             shadow = textShadow(),
             fontWeight = FontWeight.Black
         )
+
+    val overlayGradient = Modifier.gradientBackground(
+        0.2f to parseColor("#10000000"),
+        1.0f to parseColor("#00000000"),
+        angle = 80f
+    )
 }
 
 @Composable
@@ -59,6 +67,13 @@ fun CoverHeaderRow(
                 modifier = it.fillMaxWidth()
             )
         }
+
+        Box(
+            Modifier
+                .height(height)
+                .fillMaxWidth()
+                .then(CoverHeaderDefaults.overlayGradient)
+        )
 
         Text(
             text = title,
