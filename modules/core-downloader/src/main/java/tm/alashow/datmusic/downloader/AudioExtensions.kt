@@ -22,10 +22,8 @@ fun DocumentFile.getOrCreateDir(name: String) = findFile(name.cleanIllegalChars(
 fun Audio.artists() = artist.split(MULTIPLE_ARTIST_SPLIT_REGEX, 10).map { it.trim() }
 fun Audio.mainArtist() = artist.split(MULTIPLE_ARTIST_SPLIT_REGEX, 10).first().trim()
 
-private fun Audio.createDocumentFile(parent: DocumentFile) = when (val existing = parent.findFile(fileDisplayName() + fileExtension())) {
-    is DocumentFile -> existing
-    else -> parent.createFile(fileMimeType(), fileDisplayName().cleanIllegalChars()) ?: error("Couldn't create document file")
-}
+private fun Audio.createDocumentFile(parent: DocumentFile) = parent.createFile(fileMimeType(), fileDisplayName().cleanIllegalChars())
+    ?: error("Couldn't create document file")
 
 fun Audio.documentFile(parent: DocumentFile, songsGrouping: DownloadsSongsGrouping): DocumentFile {
     if (!parent.exists())
