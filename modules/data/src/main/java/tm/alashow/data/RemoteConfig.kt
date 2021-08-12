@@ -37,8 +37,8 @@ class RemoteConfig @Inject constructor() {
 
     init {
         try {
-            remoteConfig.fetchAndActivate().addOnCompleteListener { task ->
-                Timber.d("Fetch and activate remote config: successful=${task.result}")
+            remoteConfig.fetchAndActivate().addOnCompleteListener {
+                Timber.d("Fetch and activate remote config completed")
             }
         } catch (e: Exception) {
             RemoteLogger.exception(e)
