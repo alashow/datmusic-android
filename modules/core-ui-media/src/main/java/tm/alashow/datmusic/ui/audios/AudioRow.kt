@@ -36,14 +36,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
-import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
-import com.google.accompanist.placeholder.material.shimmer
 import tm.alashow.base.imageloading.ImageLoading
 import tm.alashow.base.util.extensions.interpunctize
 import tm.alashow.base.util.millisToDuration
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.ui.components.CoverImage
+import tm.alashow.ui.components.shimmer
 import tm.alashow.ui.theme.AppTheme
 
 object AudiosDefaults {
@@ -122,7 +121,7 @@ fun AudioRowItem(
 ) {
     val loadingModifier = Modifier.placeholder(
         visible = isPlaceholder,
-        highlight = PlaceholderHighlight.shimmer(),
+        highlight = shimmer(),
     )
     Row(
         horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),

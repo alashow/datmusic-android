@@ -42,7 +42,6 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.core.net.toUri
 import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
-import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -52,6 +51,7 @@ import tm.alashow.base.util.event
 import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.domain.models.errors.ApiCaptchaError
 import tm.alashow.ui.components.TextRoundedButton
+import tm.alashow.ui.components.shimmer
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.outlinedTextFieldColors
 
@@ -141,7 +141,7 @@ private fun CaptchaErrorImage(
                 .align(Alignment.Center)
                 .placeholder(
                     visible = image.state is ImagePainter.State.Loading,
-                    highlight = PlaceholderHighlight.shimmer(),
+                    highlight = shimmer(),
                 )
         )
 

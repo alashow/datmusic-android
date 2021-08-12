@@ -98,10 +98,7 @@ fun CoverImage(
                     visible = state is ImagePainter.State.Loading,
                     color = backgroundColor,
                     shape = shape,
-                    highlight = PlaceholderHighlight.shimmer(
-                        highlightColor = contentColor.copy(alpha = 0.15f),
-                        animationSpec = PlaceholderDefaults.shimmerAnimationSpec
-                    ),
+                    highlight = PlaceholderHighlight.shimmer(highlightColor = contentColor.copy(alpha = .15f)),
                 )
         )
 
