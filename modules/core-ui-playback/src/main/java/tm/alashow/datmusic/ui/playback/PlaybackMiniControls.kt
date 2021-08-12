@@ -209,7 +209,7 @@ private fun RowScope.PlaybackNowPlaying(
             )
         }
 
-        PlaybackPager(nowPlaying) { audio, page, pagerMod ->
+        PlaybackPager(nowPlaying) { audio, _, pagerMod ->
             PlaybackNowPlaying(audio, modifier = pagerMod)
         }
     }

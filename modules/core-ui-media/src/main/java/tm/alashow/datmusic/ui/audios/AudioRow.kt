@@ -34,15 +34,15 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
-import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
-import com.google.accompanist.placeholder.material.shimmer
 import tm.alashow.base.imageloading.ImageLoading
 import tm.alashow.base.util.extensions.interpunctize
 import tm.alashow.base.util.millisToDuration
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.ui.components.CoverImage
+import tm.alashow.ui.components.shimmer
 import tm.alashow.ui.theme.AppTheme
 
 object AudiosDefaults {
@@ -121,7 +121,7 @@ fun AudioRowItem(
 ) {
     val loadingModifier = Modifier.placeholder(
         visible = isPlaceholder,
-        highlight = PlaceholderHighlight.shimmer(),
+        highlight = shimmer(),
     )
     Row(
         horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
@@ -149,7 +149,7 @@ fun AudioRowItem(
         Column(verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingTiny)) {
             Text(
                 audio.title,
-                style = MaterialTheme.typography.body1,
+                style = MaterialTheme.typography.body2.copy(fontSize = 15.sp),
                 maxLines = maxLines,
                 overflow = TextOverflow.Ellipsis,
                 modifier = loadingModifier
@@ -168,9 +168,10 @@ fun AudioRowItem(
                                 .alignByBaseline(),
                             tint = MaterialTheme.colors.onBackground.copy(alpha = ContentAlpha.medium),
                         )
+                    val artistAndDuration = listOf(audio.artist, audio.durationMillis().millisToDuration()).interpunctize()
                     Text(
-                        listOf(audio.artist, audio.durationMillis().millisToDuration()).interpunctize(),
-                        style = MaterialTheme.typography.body2,
+                        artistAndDuration,
+                        style = MaterialTheme.typography.subtitle2.copy(fontSize = 14.sp),
                         maxLines = maxLines,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier

@@ -20,12 +20,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.graphics.ColorUtils
 import androidx.core.math.MathUtils
 import androidx.palette.graphics.Palette
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.min
+import kotlin.math.pow
+import kotlin.math.sin
+import kotlin.math.sqrt
 import tm.alashow.ui.theme.contrastComposite
 import tm.alashow.ui.theme.toColor
 
@@ -77,6 +86,34 @@ fun backgroundGradient(
 
     return Brush.verticalGradient(listOf(first, second, endColor))
 }
+
+/**
+ * Applies linear gradient background with given [colorStops] and [angle].
+ */
+fun Modifier.gradientBackground(vararg colorStops: Pair<Float, Color>, angle: Float) = this.then(
+    Modifier.drawBehind {
+        val angleRad = angle / 180f * PI
+        val x = cos(angleRad).toFloat() // Fractional x
+        val y = sin(angleRad).toFloat() // Fractional y
+
+        val radius = sqrt(size.width.pow(2) + size.height.pow(2)) / 2f
+        val offset = center + Offset(x * radius, y * radius)
+
+        val exactOffset = Offset(
+            x = min(offset.x.coerceAtLeast(0f), size.width),
+            y = size.height - min(offset.y.coerceAtLeast(0f), size.height)
+        )
+
+        drawRect(
+            brush = Brush.linearGradient(
+                colorStops = colorStops,
+                start = Offset(size.width, size.height) - exactOffset,
+                end = exactOffset
+            ),
+            size = size
+        )
+    }
+)
 
 fun getAccentColor(isDark: Boolean, default: Int, palette: Palette): Int {
     when (isDark) {

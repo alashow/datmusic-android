@@ -20,6 +20,9 @@ import kotlinx.coroutines.flow.callbackFlow
 fun Download.isRetriable() = status in listOf(Status.FAILED, Status.CANCELLED)
 fun Download.isResumable() = status in listOf(Status.PAUSED)
 fun Download.isPausable() = status in listOf(Status.DOWNLOADING, Status.QUEUED)
+fun Download.isCancelable() = status in listOf(Status.DOWNLOADING, Status.QUEUED, Status.PAUSED)
+fun Download.isComplete() = status in listOf(Status.COMPLETED)
+fun Download.isIncomplete() = status in listOf(Status.CANCELLED, Status.FAILED)
 fun Download.progressVisible() = status in listOf(Status.DOWNLOADING, Status.PAUSED, Status.FAILED, Status.CANCELLED, Status.QUEUED)
 
 sealed class FetchEnqueueResult

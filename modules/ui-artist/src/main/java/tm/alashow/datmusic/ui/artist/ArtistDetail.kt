@@ -112,7 +112,8 @@ private fun ArtistDetailList(
                 val parallax = 0.3f
                 item {
                     CoverHeaderRow(
-                        title = artist.name, imageRequest = artist.largePhoto(),
+                        title = artist.name,
+                        imageRequest = artist.largePhoto(),
                         modifier = Modifier.graphicsLayer {
                             scrolledY += listState.firstVisibleItemScrollOffset - previousOffset
                             translationY = scrolledY * parallax

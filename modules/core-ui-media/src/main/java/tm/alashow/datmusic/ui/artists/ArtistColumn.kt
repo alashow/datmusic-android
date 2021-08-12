@@ -25,7 +25,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
-import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -34,6 +33,7 @@ import tm.alashow.base.util.click
 import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.ui.components.CoverImage
+import tm.alashow.ui.components.shimmer
 import tm.alashow.ui.theme.AppTheme
 
 object ArtistsDefaults {
@@ -52,7 +52,7 @@ fun ArtistColumn(
 ) {
     val loadingModifier = Modifier.placeholder(
         visible = isPlaceholder,
-        highlight = PlaceholderHighlight.shimmer(),
+        highlight = shimmer(),
     )
     Column(
         verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall),

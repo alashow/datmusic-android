@@ -105,12 +105,12 @@ data class Audio(
     @IgnoredOnParcel
     var audioDownloadItem: AudioDownloadItem? = null
 
-    fun coverUri(size: CoverImageSize = CoverImageSize.LARGE, allowAlternate: Boolean = false): Uri = (
+    fun coverUri(size: CoverImageSize = CoverImageSize.LARGE, allowAlternate: Boolean = true): Uri = (
         when (size) {
             CoverImageSize.LARGE -> coverUrl
             CoverImageSize.MEDIUM -> coverUrlMedium
             CoverImageSize.SMALL -> coverUrlSmall
-        } ?: coverUrl ?: (if (allowAlternate) coverAlternate else "")
+        } ?: coverUrl ?: (if (allowAlternate) coverAlternate.toUri().buildUpon().appendPath(size.type).toString() else "")
         ).toUri()
 
     fun durationMillis() = (duration * 1000).toLong()
