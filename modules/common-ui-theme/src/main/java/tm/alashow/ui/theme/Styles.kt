@@ -21,7 +21,7 @@ fun topAppBarTitleStyle() = MaterialTheme.typography.h4.copy(fontWeight = FontWe
 fun topAppBarTitleStyleSmall() = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold)
 
 @Composable
-fun textShadow(color: Color = Color.Black, offset: Offset = Offset(0f, 1f), radius: Float = 1f) = Shadow(color, offset, radius)
+fun textShadow(color: Color = Color.Black, offset: Offset = Offset(0f, 1f), radius: Float = 0.4f) = Shadow(color, offset, radius)
 
 @Composable
 fun borderlessTextFieldColors(

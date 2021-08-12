@@ -28,6 +28,11 @@ private val defaultMenuActionLabels = listOf(
     R.string.audio_menu_copyLink
 )
 
+val currentPlayingMenuActionLabels = listOf(
+    R.string.audio_menu_download,
+    R.string.audio_menu_copyLink
+)
+
 @Composable
 fun AudioDropdownMenu(
     expanded: Boolean,

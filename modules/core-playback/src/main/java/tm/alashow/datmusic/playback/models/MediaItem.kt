@@ -66,6 +66,7 @@ fun Audio.toMediaMetadata(builder: MediaMetadataCompat.Builder): MediaMetadataCo
     putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, MediaId(MEDIA_TYPE_AUDIO, id).toString())
     putLong(MediaMetadataCompat.METADATA_KEY_DURATION, durationMillis())
     putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, coverUri(CoverImageSize.LARGE).toString())
+    putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, null)
 }
 
 fun MediaMetadataCompat.toAudio() = Audio(

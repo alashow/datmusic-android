@@ -593,13 +593,17 @@ class DatmusicPlayerImpl @Inject constructor(
     private fun setMetaData(audio: Audio) {
         val player = this
         launch {
-            val smallCoverBitmap = getBitmap(audio.coverUri(size = CoverImageSize.SMALL), CoverImageSize.SMALL.maxSize)
-
-            val mediaMetadata = audio.toMediaMetadata(metadataBuilder).apply {
-                putBitmap(METADATA_KEY_ALBUM_ART, smallCoverBitmap)
-            }
-
+            val mediaMetadata = audio.toMediaMetadata(metadataBuilder)
             mediaSession.setMetadata(mediaMetadata.build())
+            metaDataChangedCallback(player)
+
+            val smallCoverBitmap = getBitmap(audio.coverUri(CoverImageSize.SMALL), CoverImageSize.SMALL.maxSize)
+
+            mediaSession.setMetadata(
+                mediaMetadata.apply {
+                    putBitmap(METADATA_KEY_ALBUM_ART, smallCoverBitmap)
+                }.build()
+            )
             metaDataChangedCallback(player)
         }
     }

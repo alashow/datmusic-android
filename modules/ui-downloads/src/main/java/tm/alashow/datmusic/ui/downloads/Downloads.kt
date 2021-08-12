@@ -24,6 +24,7 @@ import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.domain.entities.DownloadRequest
 import tm.alashow.datmusic.downloader.AudioDownloadItems
 import tm.alashow.datmusic.downloader.DownloadItems
+import tm.alashow.datmusic.ui.downloads.audio.AudioDownload
 import tm.alashow.domain.models.Incomplete
 import tm.alashow.domain.models.Success
 import tm.alashow.domain.models.Uninitialized
