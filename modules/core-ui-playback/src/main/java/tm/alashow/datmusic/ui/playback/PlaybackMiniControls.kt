@@ -194,6 +194,7 @@ private fun RowScope.PlaybackNowPlaying(
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingTiny),
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.weight(7f),
     ) {
         val artwork = rememberImagePainter(nowPlaying.artwork ?: nowPlaying.artworkUri, builder = ImageLoading.defaultConfig)
