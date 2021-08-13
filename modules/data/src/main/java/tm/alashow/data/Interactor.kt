@@ -7,12 +7,12 @@ package tm.alashow.data
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import java.util.concurrent.TimeUnit
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withTimeout
@@ -93,8 +93,10 @@ abstract class SubjectInteractor<P : Any, T> {
 
     protected abstract fun createObservable(params: P): Flow<T>
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    fun observe(): Flow<T> = paramState.flatMapLatest { createObservable(it) }
+    val flow: Flow<T> = paramState
+        .distinctUntilChanged()
+        .flatMapLatest { createObservable(it) }
+        .distinctUntilChanged()
 
     private val errorState = MutableSharedFlow<Throwable>(
         replay = 1,

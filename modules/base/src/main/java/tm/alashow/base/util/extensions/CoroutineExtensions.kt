@@ -11,11 +11,13 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
 fun <T, R> Flow<T?>.flatMapLatestNullable(transform: suspend (value: T) -> Flow<R>): Flow<R?> {
     return flatMapLatest { if (it != null) transform(it) else flowOf(null) }
@@ -47,3 +49,12 @@ fun <T> CoroutineScope.lazyAsync(block: suspend CoroutineScope.() -> T): Lazy<De
         block.invoke(this)
     }
 }
+
+/**
+ * Alias to stateIn with defaults
+ */
+fun <T> Flow<T>.stateInDefault(
+    scope: CoroutineScope,
+    initialValue: T,
+    started: SharingStarted = SharingStarted.WhileSubscribed(500),
+) = stateIn(scope, started, initialValue)

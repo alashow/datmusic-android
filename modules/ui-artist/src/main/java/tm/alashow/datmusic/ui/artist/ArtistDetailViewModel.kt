@@ -9,10 +9,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
+import tm.alashow.base.util.extensions.stateInDefault
 import tm.alashow.datmusic.data.interactors.GetArtistDetails
 import tm.alashow.datmusic.data.observers.ObserveArtist
 import tm.alashow.datmusic.data.observers.ObserveArtistDetails
@@ -28,7 +27,8 @@ class ArtistDetailViewModel @Inject constructor(
 
     private val artistParams = DatmusicArtistParams(handle.get<String>(ARTIST_ID_KEY)!!)
 
-    val state = combine(artist.observe(), artistDetails.observe(), ::ArtistDetailViewState).shareIn(viewModelScope, SharingStarted.Lazily, 1)
+    val state = combine(artist.flow, artistDetails.flow, ::ArtistDetailViewState)
+        .stateInDefault(viewModelScope, ArtistDetailViewState.Empty)
 
     init {
         load()

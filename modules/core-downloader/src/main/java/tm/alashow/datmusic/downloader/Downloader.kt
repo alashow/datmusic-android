@@ -45,7 +45,7 @@ import tm.alashow.domain.models.None
 import tm.alashow.domain.models.Optional
 import tm.alashow.domain.models.some
 
-typealias DownloadItems = Map<DownloadRequest.Type, List<DownloadItem>>
+data class DownloadItems(val audios: List<AudioDownloadItem>)
 typealias AudioDownloadItems = List<AudioDownloadItem>
 
 class Downloader @Inject constructor(
@@ -89,7 +89,7 @@ class Downloader @Inject constructor(
             AudioDownloadItem.from(request, request.audio, downloadInfo)
         }.sortedByDescending { it.downloadRequest.createdAt }
 
-        mapOf(DownloadRequest.Type.Audio to audioDownloads)
+        DownloadItems(audioDownloads)
     }
 
     /**
