@@ -43,6 +43,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -88,17 +89,25 @@ internal fun Home(
         scaffoldState = scaffoldState,
         snackbarHost = { DismissableSnackbarHost(it) },
         bottomBar = {
-            val currentSelectedItem by navController.currentScreenAsState()
+            val selectedTab by navController.currentScreenAsState()
             Box(Modifier.height(bottomBarHeight)) {
                 HomeBottomNavigation(
-                    selectedNavigation = currentSelectedItem,
+                    selectedTab = selectedTab,
                     onNavigationSelected = { selected ->
                         navController.navigate(selected.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
                             launchSingleTop = true
                             restoreState = true
 
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
+                            val currentEntry = navController.currentBackStackEntry
+                            val currentDestination = currentEntry?.destination
+                            val isReselected = currentDestination?.hierarchy?.any { it.route == selected.route } == true
+                            val isRootReselected = currentDestination?.route == selected.startScreen.route
+
+                            if (isReselected && !isRootReselected) {
+                                navController.navigateUp()
                             }
                         }
                     },
@@ -120,7 +129,7 @@ internal fun Home(
 
 @Composable
 internal fun HomeBottomNavigation(
-    selectedNavigation: RootScreen,
+    selectedTab: RootScreen,
     onNavigationSelected: (RootScreen) -> Unit,
     playbackState: PlaybackStateCompat,
     nowPlaying: MediaMetadataCompat,
@@ -150,7 +159,7 @@ internal fun HomeBottomNavigation(
             HomeBottomNavigationItem(
                 label = stringResource(R.string.search_title),
                 contentDescription = stringResource(R.string.search_title),
-                selected = selectedNavigation == SearchTab,
+                selected = selectedTab == SearchTab,
                 onClick = { onNavigationSelected(SearchTab) },
                 painter = rememberVectorPainter(Icons.Outlined.Search),
                 selectedPainter = rememberVectorPainter(Icons.Filled.Search),
@@ -158,7 +167,7 @@ internal fun HomeBottomNavigation(
             HomeBottomNavigationItem(
                 label = stringResource(R.string.downloads_title),
                 contentDescription = stringResource(R.string.downloads_title),
-                selected = selectedNavigation == DownloadsTab,
+                selected = selectedTab == DownloadsTab,
                 onClick = { onNavigationSelected(DownloadsTab) },
                 painter = rememberVectorPainter(Icons.Outlined.Download),
                 selectedPainter = rememberVectorPainter(Icons.Filled.Download),
@@ -166,7 +175,7 @@ internal fun HomeBottomNavigation(
             HomeBottomNavigationItem(
                 label = stringResource(R.string.settings_title),
                 contentDescription = stringResource(R.string.settings_title),
-                selected = selectedNavigation == SettingsTab,
+                selected = selectedTab == SettingsTab,
                 onClick = { onNavigationSelected(SettingsTab) },
                 painter = rememberVectorPainter(Icons.Outlined.Settings),
                 selectedPainter = rememberVectorPainter(Icons.Filled.Settings),

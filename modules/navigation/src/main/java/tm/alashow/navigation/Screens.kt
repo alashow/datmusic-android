@@ -33,12 +33,13 @@ interface Screen {
 
 sealed class RootScreen(
     override val route: String,
+    val startScreen: LeafScreen,
     val arguments: List<NamedNavArgument> = emptyList(),
-    val deepLinks: List<NavDeepLink> = emptyList()
+    val deepLinks: List<NavDeepLink> = emptyList(),
 ) : Screen {
-    object Search : RootScreen("search_root")
-    object Downloads : RootScreen("downloads_root")
-    object Settings : RootScreen("settings_root")
+    object Search : RootScreen("search_root", LeafScreen.Search)
+    object Downloads : RootScreen("downloads_root", LeafScreen.Downloads)
+    object Settings : RootScreen("settings_root", LeafScreen.Settings)
 }
 
 sealed class LeafScreen(

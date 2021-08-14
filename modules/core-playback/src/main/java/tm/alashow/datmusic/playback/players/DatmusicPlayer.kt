@@ -8,10 +8,7 @@ import android.app.PendingIntent
 import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.media.session.PlaybackState
-import android.net.Uri
 import android.os.Bundle
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.MediaMetadataCompat.*
@@ -20,10 +17,6 @@ import android.support.v4.media.session.PlaybackStateCompat
 import android.support.v4.media.session.PlaybackStateCompat.*
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
-import coil.ImageLoader
-import coil.request.ImageRequest
-import coil.request.SuccessResult
-import coil.size.Precision
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -34,6 +27,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import tm.alashow.base.imageloading.getBitmap
 import tm.alashow.base.util.event
 import tm.alashow.base.util.extensions.plus
 import tm.alashow.data.PreferencesStore
@@ -597,7 +591,7 @@ class DatmusicPlayerImpl @Inject constructor(
             mediaSession.setMetadata(mediaMetadata.build())
             metaDataChangedCallback(player)
 
-            val smallCoverBitmap = getBitmap(audio.coverUri(CoverImageSize.SMALL), CoverImageSize.SMALL.maxSize)
+            val smallCoverBitmap = context.getBitmap(audio.coverUri(CoverImageSize.SMALL), CoverImageSize.SMALL.maxSize)
 
             mediaSession.setMetadata(
                 mediaMetadata.apply {
@@ -605,21 +599,6 @@ class DatmusicPlayerImpl @Inject constructor(
                 }.build()
             )
             metaDataChangedCallback(player)
-        }
-    }
-
-    private suspend fun getBitmap(uri: Uri, size: Int): Bitmap? {
-        val loader = ImageLoader(context)
-        val request = ImageRequest.Builder(context)
-            .data(uri)
-            .size(size)
-            .precision(Precision.INEXACT)
-            .allowHardware(false)
-            .build()
-
-        return when (val result = loader.execute(request)) {
-            is SuccessResult -> (result.drawable as BitmapDrawable).bitmap
-            else -> null
         }
     }
 
