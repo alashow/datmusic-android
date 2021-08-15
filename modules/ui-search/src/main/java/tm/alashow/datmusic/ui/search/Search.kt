@@ -134,10 +134,9 @@ private fun Search(
                     onBackendTypeSelect = { actioner(it) }
                 )
             }
-        ) { padding ->
+        ) {
             SearchList(
                 viewModel = viewModel,
-                padding = padding,
                 listState = listState,
             )
         }
