@@ -17,6 +17,7 @@ import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import timber.log.Timber
 import tm.alashow.data.LastRequests
 import tm.alashow.data.PreferencesStore
 import tm.alashow.datmusic.data.db.daos.AlbumsDao
@@ -30,9 +31,10 @@ typealias DatmusicAlbumDetailsStore = Store<DatmusicAlbumParams, List<Audio>>
 @Module
 object DatmusicAlbumDetailsStoreModule {
 
-    private suspend fun <T> Result<T>.fetcherDefaults(lastRequests: LastRequests, params: DatmusicAlbumParams) = onSuccess {
-        lastRequests.save(params.toString())
-    }.getOrThrow()
+    private suspend fun <T> Result<List<T>>.fetcherDefaults(lastRequests: LastRequests, params: DatmusicAlbumParams) =
+        onSuccess { lastRequests.save(params.toString()) }
+            .onFailure { Timber.e(it) }
+            .getOrThrow()
 
     private fun Flow<Album?>.sourceReaderFilter(lastRequests: LastRequests, params: DatmusicAlbumParams) = map { entry ->
         when (entry != null) {
