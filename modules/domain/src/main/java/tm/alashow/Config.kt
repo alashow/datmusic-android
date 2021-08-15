@@ -9,7 +9,7 @@ import org.threeten.bp.Duration
 object Config {
     const val BASE_HOST = "datmusic.xyz"
     const val BASE_URL = "https://$BASE_HOST/"
-    const val API_BASE_URL = "https://demo-api.$BASE_HOST/"
+    const val API_BASE_URL = "https://api.$BASE_HOST/"
 
     const val PLAYSTORE_URL = "https://play.google.com/store/apps/details?id=tm.alashow.datmusic"
 
