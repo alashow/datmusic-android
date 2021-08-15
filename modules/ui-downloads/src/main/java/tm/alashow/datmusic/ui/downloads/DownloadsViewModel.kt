@@ -9,14 +9,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import tm.alashow.base.util.extensions.stateInDefault
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
-import tm.alashow.datmusic.domain.entities.DownloadRequest
-import tm.alashow.datmusic.downloader.AudioDownloadItems
 import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.models.QueueTitle
@@ -30,21 +28,12 @@ class DownloadsViewModel @Inject constructor(
     private val playbackConnection: PlaybackConnection,
 ) : ViewModel() {
 
-    val downloadRequests = flow {
-        emit(Uninitialized)
-        downloader.downloadRequests
-            .collect {
-                emit(Success(it))
-            }
-    }
+    val downloadRequests = downloader.downloadRequests
+        .map { Success(it) }
+        .stateInDefault(viewModelScope, Uninitialized)
 
     fun playAudioDownload(audioDownloadItem: AudioDownloadItem) = viewModelScope.launch {
-        val downloads = try {
-            downloader.downloadRequests.first()[DownloadRequest.Type.Audio] as AudioDownloadItems
-        } catch (e: Exception) {
-            Timber.e(e)
-            return@launch
-        }
+        val downloads = downloader.downloadRequests.first().audios
 
         val downloadIndex = downloads.indexOfFirst { it.audio.id == audioDownloadItem.audio.id }
         if (downloadIndex < 0) {

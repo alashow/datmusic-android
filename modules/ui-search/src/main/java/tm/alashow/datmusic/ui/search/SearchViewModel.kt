@@ -59,10 +59,10 @@ internal class SearchViewModel @Inject constructor(
 
     private val pendingActions = MutableSharedFlow<SearchAction>()
 
-    val pagedAudioList get() = audiosPager.observe().cachedIn(viewModelScope)
-    val pagedMinervaList get() = minervaPager.observe().cachedIn(viewModelScope)
-    val pagedArtistsList get() = artistsPager.observe().cachedIn(viewModelScope)
-    val pagedAlbumsList get() = albumsPager.observe().cachedIn(viewModelScope)
+    val pagedAudioList get() = audiosPager.flow.cachedIn(viewModelScope)
+    val pagedMinervaList get() = minervaPager.flow.cachedIn(viewModelScope)
+    val pagedArtistsList get() = artistsPager.flow.cachedIn(viewModelScope)
+    val pagedAlbumsList get() = albumsPager.flow.cachedIn(viewModelScope)
 
     val state = combine(searchFilter.filterNotNull(), snackbarManager.errors, captchaError, ::SearchViewState)
 

@@ -1,17 +1,5 @@
-Hey! Thanks for using datmusic app!
-Please review the app if you like it!
-
-v1.6.12
-- Possible fix for Network errors
-- Analytics fix
-
-v1.6.10
-- Fixes crash on launch on some devices
-
-
-v1.6.9
-- Fixed a crash when selecting an audio
-- White cursor for search input
-
-v1.6.7
-- Added Crashlytics to collect crash reports and fix them.
+v2.0.0-rc05
+- Complete rewrite & redesign with dark mode and multiple color palette support
+- Multiple search backends: Songs, Artists, Albums & Minerva (cached songs)
+- In-app downloader
+- Fully featured audio player to play music from search results & downloads

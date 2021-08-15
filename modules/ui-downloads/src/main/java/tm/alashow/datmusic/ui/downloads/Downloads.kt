@@ -21,8 +21,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.ui.Scaffold
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
-import tm.alashow.datmusic.domain.entities.DownloadRequest
-import tm.alashow.datmusic.downloader.AudioDownloadItems
 import tm.alashow.datmusic.downloader.DownloadItems
 import tm.alashow.datmusic.ui.downloads.audio.AudioDownload
 import tm.alashow.domain.models.Incomplete
@@ -40,7 +38,7 @@ fun Downloads() {
 @Composable
 private fun Downloads(viewModel: DownloadsViewModel) {
     val listState = rememberLazyListState()
-    val asyncDownloads by rememberFlowWithLifecycle(viewModel.downloadRequests).collectAsState(initial = Uninitialized)
+    val asyncDownloads by rememberFlowWithLifecycle(viewModel.downloadRequests).collectAsState(Uninitialized)
 
     Scaffold(
         topBar = {
@@ -79,8 +77,8 @@ fun DownloadsList(
             contentPadding = paddingValues,
             modifier = modifier.fillMaxSize()
         ) {
-            val allDownloadsEmpty = downloads.all { (_, list) -> list.isEmpty() }
-            if (allDownloadsEmpty) {
+            val downloadsEmpty = downloads.audios.isEmpty()
+            if (downloadsEmpty) {
                 item {
                     EmptyErrorBox(
                         message = stringResource(R.string.downloads_empty),
@@ -91,17 +89,9 @@ fun DownloadsList(
                 }
             }
 
-            downloads.forEach { (type, items) ->
-                @Suppress("UNCHECKED_CAST")
-                when (type) {
-                    DownloadRequest.Type.Audio -> {
-                        val audioDownloads = items as AudioDownloadItems
-                        itemsIndexed(audioDownloads, { _, it -> it.downloadRequest.id }) { index, it ->
-                            if (index != 0) Divider()
-                            AudioDownload(it, onAudioPlay)
-                        }
-                    }
-                }
+            itemsIndexed(downloads.audios, { _, it -> it.downloadRequest.id }) { index, it ->
+                if (index != 0) Divider()
+                AudioDownload(it, onAudioPlay)
             }
         }
     }
