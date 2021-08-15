@@ -47,6 +47,8 @@ import tm.alashow.datmusic.playback.REPEAT_ALL
 import tm.alashow.datmusic.playback.REPEAT_ONE
 import tm.alashow.datmusic.playback.createDefaultPlaybackState
 import tm.alashow.datmusic.playback.isPlaying
+import tm.alashow.datmusic.playback.models.MEDIA_TYPE_AUDIO
+import tm.alashow.datmusic.playback.models.MediaId
 import tm.alashow.datmusic.playback.models.QueueState
 import tm.alashow.datmusic.playback.models.toAudioList
 import tm.alashow.datmusic.playback.models.toMediaId
@@ -339,17 +341,17 @@ class DatmusicPlayerImpl @Inject constructor(
         if (index != null) {
             val id = queueManager.queue[index]
             playAudio(id, index)
+            logEvent("nextAudio")
             return id
         }
-        logEvent("nextAudio")
         return null
     }
 
     override suspend fun previousAudio() {
         queueManager.previousAudioIndex?.let {
             playAudio(queueManager.queue[it], it)
+            logEvent("previousAudio")
         } ?: repeatAudio()
-        logEvent("previousAudio")
     }
 
     override suspend fun repeatAudio() {
@@ -367,7 +369,13 @@ class DatmusicPlayerImpl @Inject constructor(
     }
 
     override fun playNext(id: String) {
-        queueManager.playNext(id)
+        if (queueManager.queue.isEmpty()) {
+            launch {
+                setDataFromMediaId(MediaId(MEDIA_TYPE_AUDIO, id).toString())
+            }
+        } else {
+            queueManager.playNext(id)
+        }
         logEvent("playNext", id)
     }
 
@@ -394,6 +402,7 @@ class DatmusicPlayerImpl @Inject constructor(
         isInitialized = false
         audioPlayer.stop()
         isPlayingCallback(false, byUser)
+        queueManager.clear()
         launch { saveQueueState() }
     }
 

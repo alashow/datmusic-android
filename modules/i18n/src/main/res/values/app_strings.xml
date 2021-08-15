@@ -59,6 +59,7 @@
     <string name="downloads.download.remove">Remove</string>
     <string name="downloads.download.delete">Delete file</string>
 
+    <string name="playback.queueTitle.audio">Playing from queue</string>
     <string name="playback.queueTitle.downloads">Playing from downloads</string>
     <string name="playback.queueTitle.artist">Playing from artist</string>
     <string name="playback.queueTitle.artist.value">Playing from artist</string>

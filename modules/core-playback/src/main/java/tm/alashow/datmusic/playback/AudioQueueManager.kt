@@ -62,7 +62,7 @@ class AudioQueueManagerImpl @Inject constructor(
     override var currentAudio: Audio? = null
 
     override var currentAudioIndex = 0
-    override val currentAudioId get() = queue[currentAudioIndex]
+    override val currentAudioId get() = queue.getOrNull(currentAudioIndex) ?: ""
 
     override suspend fun refreshCurrentAudio(): Audio? {
         currentAudio = (audiosDao to downloadsDao).findAudio(queue[currentAudioIndex])?.apply {
