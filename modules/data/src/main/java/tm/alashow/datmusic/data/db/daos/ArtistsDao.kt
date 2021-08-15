@@ -24,24 +24,24 @@ abstract class ArtistsDao : PaginatedEntryDao<DatmusicSearchParams, Artist>() {
     abstract override fun entriesObservable(count: Int, offset: Int): Flow<List<Artist>>
 
     @Transaction
-    @Query("SELECT * FROM artists ORDER BY search_index ASC")
+    @Query("SELECT * FROM artists ORDER BY page ASC, search_index ASC")
     abstract override fun entriesPagingSource(): PagingSource<Int, Artist>
 
     @Transaction
-    @Query("SELECT * FROM artists WHERE params = :params ORDER BY search_index ASC")
+    @Query("SELECT * FROM artists WHERE params = :params ORDER BY page ASC, search_index ASC")
     abstract override fun entriesPagingSource(params: DatmusicSearchParams): PagingSource<Int, Artist>
 
     @Transaction
-    @Query("SELECT * FROM artists WHERE id = :id")
+    @Query("SELECT * FROM artists WHERE id = :id ORDER BY details_fetched")
     abstract override fun entry(id: String): Flow<Artist>
-
-    @Transaction
-    @Query("SELECT * FROM artists WHERE id = :id")
-    abstract override fun entryNullable(id: String): Flow<Artist?>
 
     @Transaction
     @Query("SELECT * FROM artists WHERE id in (:ids)")
     abstract override fun entriesById(ids: List<String>): Flow<List<Artist>>
+
+    @Transaction
+    @Query("SELECT * FROM artists WHERE id = :id")
+    abstract override fun entryNullable(id: String): Flow<Artist?>
 
     @Query("DELETE FROM artists WHERE id = :id")
     abstract override suspend fun delete(id: String)

@@ -6,13 +6,13 @@ package tm.alashow.datmusic.ui.search
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.expandIn
-import androidx.compose.animation.shrinkOut
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -44,6 +44,7 @@ import androidx.paging.CombinedLoadStates
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.google.accompanist.insets.ui.LocalScaffoldPadding
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -72,8 +73,10 @@ import tm.alashow.ui.components.ProgressIndicatorSmall
 import tm.alashow.ui.items
 import tm.alashow.ui.theme.AppTheme
 
+fun <T : Any> LazyPagingItems<T>.isLoading() = loadState.refresh == LoadState.Loading
+
 @Composable
-internal fun SearchList(viewModel: SearchViewModel, listState: LazyListState, padding: PaddingValues) {
+internal fun SearchList(viewModel: SearchViewModel, listState: LazyListState) {
     SearchList(
         viewModel = viewModel,
         audiosLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedAudioList).collectAsLazyPagingItems(),
@@ -81,7 +84,6 @@ internal fun SearchList(viewModel: SearchViewModel, listState: LazyListState, pa
         artistsLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedArtistsList).collectAsLazyPagingItems(),
         albumsLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedAlbumsList).collectAsLazyPagingItems(),
         listState = listState,
-        padding = padding
     )
 }
 
@@ -93,7 +95,6 @@ internal fun SearchList(
     artistsLazyPagingItems: LazyPagingItems<Artist>,
     albumsLazyPagingItems: LazyPagingItems<Album>,
     listState: LazyListState,
-    padding: PaddingValues,
 ) {
     // TODO: figure out better way of hoisting this state out without recomposing [SearchList] two levels above (in [Search] screen where viewState is originally hosted
     // which causes pagers to restart/request unnecessarily)
@@ -131,7 +132,7 @@ internal fun SearchList(
             isRefreshing = false
         ),
         onRefresh = { refreshPagers() },
-        indicatorPadding = padding,
+        indicatorPadding = LocalScaffoldPadding.current,
         indicator = { state, trigger ->
             SwipeRefreshIndicator(
                 state = state,
@@ -150,7 +151,6 @@ internal fun SearchList(
             pagersAreEmpty,
             retryPagers,
             refreshErrorState,
-            padding,
             onPlayAudio = {
                 viewModel.submitAction(SearchAction.PlayAudio(it))
             }
@@ -213,14 +213,13 @@ private fun SearchListContent(
     pagersAreEmpty: Boolean,
     retryPagers: () -> Unit,
     refreshErrorState: LoadState?,
-    padding: PaddingValues,
     onPlayAudio: (Audio) -> Unit
 ) {
     LogCompositions(tag = "SearchListContent")
     BoxWithConstraints {
         LazyColumn(
             state = listState,
-            contentPadding = padding,
+            contentPadding = LocalScaffoldPadding.current,
             modifier = Modifier.fillMaxSize()
         ) {
             if (refreshErrorState is LoadState.Error && pagersAreEmpty) {
@@ -235,13 +234,21 @@ private fun SearchListContent(
                     }
                 }
             }
-            item("artists_albums") {
-                // TODO: separate these into diff [item]s after swiperefresh bug fix
-                if (searchFilter.hasArtists)
-                    ArtistList(artistsLazyPagingItems)
-                if (searchFilter.hasAlbums)
-                    AlbumList(albumsLazyPagingItems)
+
+            // TODO: examine why swiperefresh only works when first list item has some height
+            item {
+                Spacer(Modifier.height(1.dp))
             }
+
+            if (searchFilter.hasArtists)
+                item("artists") {
+                    ArtistList(artistsLazyPagingItems)
+                }
+
+            if (searchFilter.hasAlbums)
+                item("albums") {
+                    AlbumList(albumsLazyPagingItems)
+                }
 
             if (searchFilter.hasAudios)
                 audioList(audiosLazyPagingItems, onPlayAudio)
@@ -318,7 +325,7 @@ internal fun AlbumList(
 }
 
 internal fun LazyListScope.audioList(pagingItems: LazyPagingItems<Audio>, onPlayAudio: (Audio) -> Unit) {
-    val isLoading = pagingItems.loadState.refresh == LoadState.Loading
+    val isLoading = pagingItems.isLoading()
     val hasItems = pagingItems.itemCount > 0
     if (hasItems || isLoading)
         item {
@@ -374,8 +381,8 @@ private fun SearchListLabel(label: String, hasItems: Boolean, loadState: Combine
 
         AnimatedVisibility(
             visible = (hasItems && loadState.mediator?.refresh == LoadState.Loading),
-            enter = expandIn(Alignment.Center),
-            exit = shrinkOut(Alignment.Center)
+            enter = fadeIn(),
+            exit = fadeOut()
         ) {
             ProgressIndicatorSmall()
         }
