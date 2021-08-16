@@ -35,6 +35,12 @@
 -keepattributes LineNumberTable
 -keep public class * extends java.lang.Exception
 
+# fetch
+-keep class com.tonyodev.fetch2.** {*;}
+-keep class com.tonyodev.fetch2core.** {*;}
+-keep interface com.tonyodev.fetch2.** {*;}
+-keep interface com.tonyodev.fetch2core.** {*;}
+
 # project
 -keep class tm.alashow.datmusic.domain.entities.** { *; }
 -keep class tm.alashow.datmusic.domain.models.** { *; }
