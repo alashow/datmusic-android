@@ -118,8 +118,10 @@ object Deps {
         const val coil = "io.coil-kt:coil:$coilVersion"
         const val store = "com.dropbox.mobile.store:store4:4.0.2-KT15"
 
-        const val fetch = "androidx.tonyodev.fetch2:xfetch2:3.1.6"
-        const val fetchOkhttp = "androidx.tonyodev.fetch2okhttp:xfetch2okhttp:3.1.6"
+        // const val fetch = "androidx.tonyodev.fetch2:xfetch2:3.1.6"
+        // const val fetchOkhttp = "androidx.tonyodev.fetch2okhttp:xfetch2okhttp:3.1.6"
+        const val fetch = "com.github.alashow:Fetch:3.1.62"
+        const val fetchOkhttp = "com.github.alashow:xfetch2okhttp:3.1.62"
 
         const val exoPlayer = "com.google.android.exoplayer:exoplayer-core:2.15.0"
         const val exoPlayerOkhttp = "com.google.android.exoplayer:extension-okhttp:2.15.0"
