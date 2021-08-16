@@ -8,6 +8,7 @@ import android.content.Context
 import com.tonyodev.fetch2.Fetch
 import com.tonyodev.fetch2.FetchConfiguration
 import com.tonyodev.fetch2.FetchNotificationManager
+import com.tonyodev.fetch2core.Downloader
 import com.tonyodev.fetch2okhttp.OkHttpDownloader
 import dagger.Module
 import dagger.Provides
@@ -41,7 +42,7 @@ class DownloaderModule {
             .enableRetryOnNetworkGain(true)
             .enableAutoStart(true)
             .setNotificationManager(notificationManager)
-            .setHttpDownloader(OkHttpDownloader(okHttpClient))
+            .setHttpDownloader(OkHttpDownloader(okHttpClient, Downloader.FileDownloaderType.SEQUENTIAL))
             .build()
         Fetch.Impl.setDefaultInstanceConfiguration(fetcherConfig)
         return Fetch.Impl.getInstance(fetcherConfig)
