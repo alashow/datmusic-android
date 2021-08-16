@@ -18,7 +18,7 @@
     <string name="error.tryAgain">Prueba otra vez</string>
     <string name="error.network">Error de Red</string>
     <string name="error.server">Error del Servidor</string>
-    <string name="error.auth">Autorización Errónea</string>
+    <string name="error.auth">Error de Autorización</string>
     <string name="error.notFound">No encontrado</string>
     <string name="error.api">Error de API</string>
     <string name="error.noAuth">Necesitas iniciar sesión</string>

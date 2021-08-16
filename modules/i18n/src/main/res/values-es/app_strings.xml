@@ -21,7 +21,7 @@
     <string name="downloads.download.status.queued">Puesto en cola</string>
     <string name="downloads.download.status.downloading">Descargando</string>
     <string name="downloads.download.playNext">Reproducir Siguiente</string>
-    <string name="playback.queueTitle.downloads">Reproducción desde descargas</string>
+    <string name="playback.queueTitle.downloads">Reproduciendo desde descargas</string>
     <string name="playback.queueTitle.artist">Reproduciendo Artista</string>
     <string name="playback.queueTitle.artist.value">Reproduciendo Artista</string>
     <string name="playback.queueTitle.album">Reproducciendo Álbum</string>
@@ -45,7 +45,7 @@
     <string name="settings.about.community.link">https://t.me/datmusictesters</string>
     <string name="settings.about.version">Versión</string>
     <string name="captcha.title">Error de CAPTCHA</string>
-    <string name="captcha.hint">Escriba letras encima</string>
+    <string name="captcha.hint">Escriba las letras encima</string>
     <string name="captcha.reload">Recargar</string>
     <string name="captcha.empty">Captcha no puede estar vacío</string>
     <string name="captcha.submit">Enviar</string>
@@ -80,4 +80,5 @@
     <string name="settings.theme.darkMode">Modo oscuro</string>
     <string name="settings.theme.colorPalette">Paleta de color</string>
     <string name="settings.downloads">Descargas</string>
+    <string name="playback.queueTitle.audio">Reproduciendo desde la cola</string>
 </resources>
