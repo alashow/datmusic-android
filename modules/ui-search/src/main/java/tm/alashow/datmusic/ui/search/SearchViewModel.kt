@@ -38,6 +38,8 @@ import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.domain.models.errors.ApiCaptchaError
 import tm.alashow.navigation.QUERY_KEY
 
+const val SEARCH_DEBOUNCE_MILLIS = 400L
+
 @OptIn(FlowPreview::class)
 @HiltViewModel
 internal class SearchViewModel @Inject constructor(
@@ -90,7 +92,7 @@ internal class SearchViewModel @Inject constructor(
 
         viewModelScope.launch {
             combine(searchTrigger.filterNotNull(), searchFilter.filterNotNull(), ::Pair)
-                .debounce(200)
+                .debounce(SEARCH_DEBOUNCE_MILLIS)
                 .collectLatest { (trigger, filter) ->
                     search(trigger, filter)
                 }
