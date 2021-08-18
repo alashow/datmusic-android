@@ -27,6 +27,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import tm.alashow.base.imageloading.artworkFromFile
 import tm.alashow.base.imageloading.getBitmap
 import tm.alashow.base.util.event
 import tm.alashow.base.util.extensions.plus
@@ -273,13 +274,13 @@ class DatmusicPlayerImpl @Inject constructor(
 
     override suspend fun playAudio(audio: Audio, index: Int?) {
         setCurrentAudioId(audio.id, index)
-        queueManager.refreshCurrentAudio()
+        val refreshedAudio = queueManager.refreshCurrentAudio()
         isInitialized = false
 
         updatePlaybackState {
             setState(mediaSession.controller.playbackState.state, 0, 1F)
         }
-        setMetaData(audio)
+        setMetaData(refreshedAudio ?: audio)
         playAudio()
     }
 
@@ -596,17 +597,19 @@ class DatmusicPlayerImpl @Inject constructor(
     private fun setMetaData(audio: Audio) {
         val player = this
         launch {
-            val mediaMetadata = audio.toMediaMetadata(metadataBuilder)
+            val mediaMetadata = audio.toMediaMetadata(metadataBuilder).apply {
+                val artworkFromFile = audio.artworkFromFile(context)
+                if (artworkFromFile != null) {
+                    putBitmap(METADATA_KEY_ALBUM_ART, artworkFromFile)
+                }
+            }
             mediaSession.setMetadata(mediaMetadata.build())
             metaDataChangedCallback(player)
 
+            // cover image is applied separately to avoid delaying metadata setting while fetching bitmap from network
             val smallCoverBitmap = context.getBitmap(audio.coverUri(CoverImageSize.SMALL), CoverImageSize.SMALL.maxSize)
-
-            mediaSession.setMetadata(
-                mediaMetadata.apply {
-                    putBitmap(METADATA_KEY_ALBUM_ART, smallCoverBitmap)
-                }.build()
-            )
+            val updatedMetadata = mediaMetadata.apply { putBitmap(METADATA_KEY_ALBUM_ART, smallCoverBitmap) }.build()
+            mediaSession.setMetadata(updatedMetadata)
             metaDataChangedCallback(player)
         }
     }
