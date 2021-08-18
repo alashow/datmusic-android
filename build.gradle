@@ -91,3 +91,5 @@ def getFile(String... fileNames) {
     }
     return null
 }
+
+apply from: file('gradle/projectDependencyGraph.gradle')
