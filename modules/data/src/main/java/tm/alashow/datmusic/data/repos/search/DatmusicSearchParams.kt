@@ -41,5 +41,15 @@ data class DatmusicSearchParams(
         AUDIOS("audios"), ARTISTS("artists"), ALBUMS("albums"), MINERVA("minerva");
 
         override fun toString() = type
+
+        companion object {
+            private val map = values().associateBy { it.type }
+
+            fun from(value: String) = map[value] ?: AUDIOS
+
+            private const val separator = "||"
+            fun BackendTypes.toQueryParam() = joinToString(separator) { it.type }
+            fun String.asBackendTypes() = split(separator).map { from(it) }.toSet()
+        }
     }
 }

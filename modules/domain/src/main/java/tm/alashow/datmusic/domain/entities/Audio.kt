@@ -20,6 +20,10 @@ import tm.alashow.datmusic.domain.UNKNOWN_ARTIST
 import tm.alashow.datmusic.domain.UNTITLED_SONG
 import tm.alashow.domain.models.BasePaginatedEntity
 
+private val MULTIPLE_ARTIST_SPLIT_REGEX = Regex("((,)|(feat\\.)|(ft\\.))")
+fun String.artists() = split(MULTIPLE_ARTIST_SPLIT_REGEX, 10).map { it.trim() }
+fun String.mainArtist() = split(MULTIPLE_ARTIST_SPLIT_REGEX, 10).first().trim()
+
 @Parcelize
 @Serializable
 @Entity(tableName = "audios")
@@ -118,4 +122,7 @@ data class Audio(
     fun fileDisplayName() = "$artist - $title"
     fun fileMimeType() = "audio/mpeg"
     fun fileExtension() = ".mp3"
+
+    fun artists() = artist.artists()
+    fun mainArtist() = artist.mainArtist()
 }

@@ -18,10 +18,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navArgument
 import androidx.navigation.navDeepLink
 import tm.alashow.Config
+import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
+import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams.BackendType.Companion.toQueryParam
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.ArtistId
 
 const val QUERY_KEY = "query"
+const val SEARCH_BACKENDS_KEY = "search_backends"
 const val ARTIST_ID_KEY = "artist_id"
 const val ALBUM_ID_KEY = "album_id"
 const val ALBUM_OWNER_ID_KEY = "album_owner_id"
@@ -49,9 +52,13 @@ sealed class LeafScreen(
 ) : Screen {
 
     object Search : LeafScreen(
-        "search/?$QUERY_KEY={$QUERY_KEY}",
+        "search/?$QUERY_KEY={$QUERY_KEY}&$SEARCH_BACKENDS_KEY={$SEARCH_BACKENDS_KEY}",
         arguments = listOf(
             navArgument(QUERY_KEY) {
+                type = NavType.StringType
+                nullable = true
+            },
+            navArgument(SEARCH_BACKENDS_KEY) {
                 type = NavType.StringType
                 nullable = true
             }
@@ -62,7 +69,9 @@ sealed class LeafScreen(
             }
         )
     ) {
-        fun buildRoute(query: String) = "search/?$QUERY_KEY=$query"
+        fun buildRoute(query: String, vararg backends: DatmusicSearchParams.BackendType) =
+            "search/?$QUERY_KEY=$query&$SEARCH_BACKENDS_KEY=${backends.toSet().toQueryParam()}"
+
         fun buildUri(query: String) = "${Config.BASE_URL}search?q=$query".toUri()
     }
 

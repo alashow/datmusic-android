@@ -4,7 +4,6 @@
  */
 package tm.alashow.datmusic.ui.search
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateContentSize
@@ -176,19 +175,6 @@ private fun SearchAppBar(
             focusManager.clearFocus()
         }
 
-        var query by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue(initialQuery)) }
-
-        if (query.text.isNotBlank() || searchActive) {
-            BackHandler(
-                onBack = {
-                    query = TextFieldValue()
-                    onQueryChange("")
-                    keyboardController?.hide()
-                    focusManager.clearFocus()
-                }
-            )
-        }
-
         Column(
             verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall),
             modifier = Modifier.animateContentSize()
@@ -201,6 +187,7 @@ private fun SearchAppBar(
                 modifier = titleModifier.padding(start = AppTheme.specs.padding, top = AppTheme.specs.padding),
             )
 
+            var query by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue(initialQuery)) }
             SearchTextField(
                 value = query,
                 onValueChange = { value ->

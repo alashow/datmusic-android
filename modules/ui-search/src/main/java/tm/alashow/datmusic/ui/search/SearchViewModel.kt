@@ -37,6 +37,7 @@ import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.domain.models.errors.ApiCaptchaError
 import tm.alashow.navigation.QUERY_KEY
+import tm.alashow.navigation.SEARCH_BACKENDS_KEY
 
 const val SEARCH_DEBOUNCE_MILLIS = 400L
 
@@ -54,7 +55,7 @@ internal class SearchViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val searchQuery = MutableStateFlow("")
-    private val searchFilter = handle.getStateFlow("search_filter", viewModelScope, SearchFilter())
+    private val searchFilter = handle.getStateFlow("search_filter", viewModelScope, SearchFilter.from(handle.get(SEARCH_BACKENDS_KEY)))
     private val searchTrigger = handle.getStateFlow("search_trigger", viewModelScope, SearchTrigger(handle.get(QUERY_KEY) ?: ""))
 
     private val captchaError = MutableStateFlow<ApiCaptchaError?>(null)

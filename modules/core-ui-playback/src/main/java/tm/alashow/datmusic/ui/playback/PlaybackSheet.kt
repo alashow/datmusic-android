@@ -96,6 +96,7 @@ import tm.alashow.base.util.millisToDuration
 import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.common.compose.LocalScaffoldState
 import tm.alashow.common.compose.rememberFlowWithLifecycle
+import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
 import tm.alashow.datmusic.domain.entities.CoverImageSize
 import tm.alashow.datmusic.playback.NONE_PLAYBACK_STATE
 import tm.alashow.datmusic.playback.NONE_PLAYING
@@ -112,6 +113,8 @@ import tm.alashow.datmusic.playback.models.PlaybackModeState
 import tm.alashow.datmusic.playback.models.PlaybackProgressState
 import tm.alashow.datmusic.playback.models.PlaybackQueue
 import tm.alashow.datmusic.playback.models.QueueTitle
+import tm.alashow.datmusic.playback.models.toAlbumSearchQuery
+import tm.alashow.datmusic.playback.models.toArtistSearchQuery
 import tm.alashow.datmusic.playback.playPause
 import tm.alashow.datmusic.playback.title
 import tm.alashow.datmusic.playback.toggleRepeatMode
@@ -122,6 +125,9 @@ import tm.alashow.datmusic.ui.audios.AudioItemAction
 import tm.alashow.datmusic.ui.audios.AudioRow
 import tm.alashow.datmusic.ui.audios.LocalAudioActionHandler
 import tm.alashow.datmusic.ui.audios.currentPlayingMenuActionLabels
+import tm.alashow.navigation.LeafScreen
+import tm.alashow.navigation.LocalNavigator
+import tm.alashow.navigation.Navigator
 import tm.alashow.ui.ADAPTIVE_COLOR_ANIMATION
 import tm.alashow.ui.Delayed
 import tm.alashow.ui.DismissableSnackbarHost
@@ -131,6 +137,7 @@ import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.components.IconButton
 import tm.alashow.ui.material.Slider
 import tm.alashow.ui.material.SliderDefaults
+import tm.alashow.ui.simpleClickable
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.LocalThemeState
 import tm.alashow.ui.theme.disabledAlpha
@@ -234,7 +241,7 @@ fun PlaybackSheetContent(
                     }
                 }
 
-                playbackNowPlayingWithControls(nowPlaying, playbackState, contentColor)
+                playbackNowPlayingWithControls(nowPlaying, playbackState, contentColor, onClose)
 
                 playbackQueue(
                     playbackQueue = playbackQueue,
@@ -273,7 +280,8 @@ private fun LazyListScope.playbackQueue(
 private fun LazyListScope.playbackNowPlayingWithControls(
     nowPlaying: MediaMetadataCompat,
     playbackState: PlaybackStateCompat,
-    contentColor: Color
+    contentColor: Color,
+    onClose: Callback,
 ) {
     item {
         Column(
@@ -281,7 +289,7 @@ private fun LazyListScope.playbackNowPlayingWithControls(
             modifier = Modifier
                 .padding(AppTheme.specs.paddingLarge)
         ) {
-            PlaybackNowPlaying(nowPlaying = nowPlaying)
+            PlaybackNowPlaying(nowPlaying = nowPlaying, onClose = onClose)
 
             PlaybackProgress(
                 playbackState = playbackState,
@@ -332,12 +340,21 @@ private fun PlaybackArtwork(
 }
 
 @Composable
-private fun PlaybackNowPlaying(nowPlaying: MediaMetadataCompat) {
+private fun PlaybackNowPlaying(
+    nowPlaying: MediaMetadataCompat,
+    onClose: Callback,
+    navigator: Navigator = LocalNavigator.current
+) {
+    val title = nowPlaying.title
     Text(
-        nowPlaying.title.orNA(),
+        title.orNA(),
         style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold),
         overflow = TextOverflow.Ellipsis,
         maxLines = 1,
+        modifier = Modifier.simpleClickable {
+            navigator.navigate(LeafScreen.Search.buildRoute(nowPlaying.toAlbumSearchQuery(), DatmusicSearchParams.BackendType.ALBUMS))
+            onClose()
+        }
     )
     CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
         Text(
@@ -345,6 +362,16 @@ private fun PlaybackNowPlaying(nowPlaying: MediaMetadataCompat) {
             style = MaterialTheme.typography.subtitle1,
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,
+            modifier = Modifier.simpleClickable {
+                navigator.navigate(
+                    LeafScreen.Search.buildRoute(
+                        nowPlaying.toArtistSearchQuery(),
+                        DatmusicSearchParams.BackendType.ARTISTS,
+                        DatmusicSearchParams.BackendType.ALBUMS
+                    )
+                )
+                onClose()
+            }
         )
     }
 }
@@ -576,7 +603,7 @@ private fun PlaybackControls(
 @Composable
 private fun PlaybackSheetTopBar(
     playbackQueue: PlaybackQueue,
-    onClose: () -> Unit,
+    onClose: Callback,
     iconSize: Dp = 36.dp,
     actionHandler: AudioActionHandler = LocalAudioActionHandler.current,
 ) {

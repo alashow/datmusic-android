@@ -9,6 +9,7 @@ import kotlinx.parcelize.Parcelize
 import tm.alashow.datmusic.data.repos.CaptchaSolution
 import tm.alashow.datmusic.data.repos.search.BackendTypes
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams.BackendType
+import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams.BackendType.Companion.asBackendTypes
 import tm.alashow.domain.models.errors.ApiCaptchaError
 
 @Parcelize
@@ -26,6 +27,8 @@ data class SearchFilter(
 
     companion object {
         val DefaultBackends = setOf(BackendType.AUDIOS, BackendType.ARTISTS, BackendType.ALBUMS)
+
+        fun from(backends: String?) = SearchFilter(backends?.asBackendTypes() ?: DefaultBackends)
     }
 }
 
