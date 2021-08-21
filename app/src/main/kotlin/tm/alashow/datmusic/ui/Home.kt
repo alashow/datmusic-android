@@ -2,7 +2,7 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.datmusic.ui.home
+package tm.alashow.datmusic.ui
 
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
@@ -42,7 +42,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -58,8 +57,6 @@ import tm.alashow.datmusic.playback.NONE_PLAYBACK_STATE
 import tm.alashow.datmusic.playback.NONE_PLAYING
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.isActive
-import tm.alashow.datmusic.ui.AppNavigation
-import tm.alashow.datmusic.ui.currentScreenAsState
 import tm.alashow.datmusic.ui.playback.PlaybackMiniControls
 import tm.alashow.datmusic.ui.playback.PlaybackMiniControlsDefaults
 import tm.alashow.navigation.RootScreen
@@ -75,7 +72,6 @@ val HomeBottomNavigationHeight = 56.dp
 internal fun Home(
     scaffoldState: ScaffoldState = LocalScaffoldState.current,
     navController: NavHostController = rememberNavController(),
-    viewModel: HomeViewModel = viewModel(),
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current
 ) {
     val playbackState by rememberFlowWithLifecycle(playbackConnection.playbackState).collectAsState(NONE_PLAYBACK_STATE)
@@ -122,7 +118,7 @@ internal fun Home(
         }
     ) {
         Box(Modifier.fillMaxSize()) {
-            AppNavigation(navController, viewModel.navigator)
+            AppNavigation(navController)
         }
     }
 }

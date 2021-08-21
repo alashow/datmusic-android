@@ -81,3 +81,15 @@ Object prop(String propertyName, Object defaultValue) {
     def envValue = System.getenv(propertyName)
     return propertyValue != null ? propertyValue : (envValue != null ? envValue : defaultValue)
 }
+
+def getFile(String... fileNames) {
+    for (fileName in fileNames) {
+        File file = rootProject.file(fileName)
+        if (file.exists()) {
+            return file
+        }
+    }
+    return null
+}
+
+apply from: file('gradle/projectDependencyGraph.gradle')

@@ -4,6 +4,7 @@
  */
 package tm.alashow.ui
 
+import androidx.compose.foundation.Indication
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material.MaterialTheme
@@ -15,6 +16,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+
+@Composable
+fun Modifier.simpleClickable(
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    indication: Indication? = null,
+    onClick: () -> Unit,
+) = clickable(
+    onClick = onClick,
+    role = Role.Button,
+    indication = indication,
+    interactionSource = interactionSource
+)
 
 @Composable
 fun Modifier.coloredRippleClickable(

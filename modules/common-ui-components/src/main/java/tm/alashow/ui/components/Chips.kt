@@ -5,11 +5,11 @@
 package tm.alashow.ui.components
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
@@ -17,11 +17,13 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import timber.log.Timber
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.DefaultThemeDark
 
@@ -33,14 +35,24 @@ fun <T : Any> ChipsRow(
     labelMapper: @Composable (T) -> String = { it.toString().replaceFirstChar { it.uppercase() } },
     modifier: Modifier = Modifier,
 ) {
-    Row(
+    val scrollState = rememberLazyListState()
+    val firstSelectedIndex = if (selectedItems.isEmpty()) null else items.indexOf(selectedItems.first())
+    LaunchedEffect(firstSelectedIndex) {
+        if (firstSelectedIndex != null) {
+            Timber.d("Scrollnig to: $firstSelectedIndex")
+            scrollState.animateScrollToItem(firstSelectedIndex)
+        }
+    }
+    LazyRow(
         horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall),
-        modifier = modifier.padding(
-            horizontal = AppTheme.specs.padding,
-            vertical = AppTheme.specs.paddingTiny
-        ).horizontalScroll(rememberScrollState())
+        state = scrollState,
+        modifier = modifier
+            .padding(
+                horizontal = AppTheme.specs.padding,
+                vertical = AppTheme.specs.paddingTiny
+            )
     ) {
-        items.forEach { item ->
+        items(items, null) { item ->
             val isSelected = selectedItems.contains(item)
             Chip(
                 selected = isSelected,

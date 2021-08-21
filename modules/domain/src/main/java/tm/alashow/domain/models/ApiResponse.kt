@@ -61,6 +61,9 @@ data class ApiResponse(
         @SerialName("minerva")
         val minerva: List<Audio> = arrayListOf(),
 
+        @SerialName("flacs")
+        val flacs: List<Audio> = arrayListOf(),
+
         @SerialName("artists")
         val artists: List<Artist> = arrayListOf(),
 

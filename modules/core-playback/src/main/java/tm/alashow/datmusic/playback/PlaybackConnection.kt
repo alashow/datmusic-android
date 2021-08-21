@@ -34,9 +34,11 @@ import tm.alashow.datmusic.data.db.daos.findAudios
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
+import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.playback.models.MEDIA_TYPE_ALBUM
 import tm.alashow.datmusic.playback.models.MEDIA_TYPE_ARTIST
 import tm.alashow.datmusic.playback.models.MEDIA_TYPE_AUDIO
+import tm.alashow.datmusic.playback.models.MEDIA_TYPE_AUDIO_FLACS_QUERY
 import tm.alashow.datmusic.playback.models.MEDIA_TYPE_AUDIO_MINERVA_QUERY
 import tm.alashow.datmusic.playback.models.MEDIA_TYPE_AUDIO_QUERY
 import tm.alashow.datmusic.playback.models.MediaId
@@ -53,6 +55,7 @@ import tm.alashow.datmusic.playback.players.QUEUE_LIST_KEY
 import tm.alashow.datmusic.playback.players.QUEUE_MEDIA_ID_KEY
 import tm.alashow.datmusic.playback.players.QUEUE_TITLE_KEY
 import tm.alashow.datmusic.playback.players.QUEUE_TO_POSITION_KEY
+import tm.alashow.domain.models.orNull
 
 const val PLAYBACK_PROGRESS_INTERVAL = 1000L
 
@@ -76,6 +79,7 @@ interface PlaybackConnection {
     fun playAlbum(album: Album, index: Int = 0)
     fun playWithQuery(query: String, audioId: String)
     fun playWithMinervaQuery(query: String, audioId: String)
+    fun playWithFlacsQuery(query: String, audioId: String)
 
     fun swapQueue(from: Int, to: Int)
 
@@ -89,6 +93,7 @@ class PlaybackConnectionImpl(
     private val audiosDao: AudiosDao,
     private val downloadsDao: DownloadRequestsDao,
     private val audioPlayer: AudioPlayer,
+    private val downloader: Downloader,
     coroutineScope: CoroutineScope = ProcessLifecycleOwner.get().lifecycleScope,
 ) : PlaybackConnection, CoroutineScope by coroutineScope {
 
@@ -137,8 +142,13 @@ class PlaybackConnectionImpl(
      */
     private suspend fun buildPlaybackQueue(data: Triple<MediaMetadataCompat, PlaybackStateCompat, PlaybackQueue>): PlaybackQueue {
         val (nowPlaying, state, queue) = data
-        val audios = (audiosDao to downloadsDao).findAudios(queue.list.toMediaAudioIds())
         val nowPlayingId = nowPlaying.id.toMediaId().value
+        val audios = (audiosDao to downloadsDao).findAudios(queue.list.toMediaAudioIds()).map {
+            if (it.id == nowPlayingId) {
+                it.audioDownloadItem = downloader.getAudioDownload(nowPlayingId).orNull()
+            }
+            it
+        }
 
         return queue.copy(audiosList = audios, currentIndex = state.currentIndex).let {
             // check if now playing id and current audio's id by index matches
@@ -208,6 +218,15 @@ class PlaybackConnectionImpl(
     override fun playWithMinervaQuery(query: String, audioId: String) {
         transportControls?.playFromMediaId(
             MediaId(MEDIA_TYPE_AUDIO_MINERVA_QUERY, query, -1).toString(),
+            bundleOf(
+                QUEUE_MEDIA_ID_KEY to audioId
+            )
+        )
+    }
+
+    override fun playWithFlacsQuery(query: String, audioId: String) {
+        transportControls?.playFromMediaId(
+            MediaId(MEDIA_TYPE_AUDIO_FLACS_QUERY, query, -1).toString(),
             bundleOf(
                 QUEUE_MEDIA_ID_KEY to audioId
             )

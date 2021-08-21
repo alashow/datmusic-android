@@ -5,7 +5,6 @@
 package tm.alashow.datmusic.ui
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
@@ -36,7 +35,7 @@ import tm.alashow.navigation.composableScreen
 @Composable
 internal fun AppNavigation(
     navController: NavHostController,
-    navigator: Navigator
+    navigator: Navigator = LocalNavigator.current,
 ) {
     collectEvent(navigator.queue) { event ->
         Timber.i("Navigation event: $event")
@@ -47,15 +46,13 @@ internal fun AppNavigation(
         }
     }
 
-    CompositionLocalProvider(LocalNavigator provides navigator) {
-        NavHost(
-            navController = navController,
-            startDestination = RootScreen.Search.route
-        ) {
-            addSearchRoot(navController)
-            addDownloadsRoot(navController)
-            addSettingsRoot(navController)
-        }
+    NavHost(
+        navController = navController,
+        startDestination = RootScreen.Search.route
+    ) {
+        addSearchRoot(navController)
+        addDownloadsRoot(navController)
+        addSettingsRoot(navController)
     }
 }
 

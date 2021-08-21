@@ -223,8 +223,8 @@ class MediaSessionCallback(
         mediaSession.setMetadata(mediaSession.controller.metadata)
         datmusicPlayer.setPlaybackState(mediaSession.controller.playbackState)
         datmusicPlayer.setData(
-            mediaSession.controller.queue.toMediaIdList().map { it.value },
-            mediaSession.controller.queueTitle.toString()
+            mediaSession.controller?.queue.toMediaIdList().map { it.value },
+            mediaSession.controller?.queueTitle.toString()
         )
     }
 
