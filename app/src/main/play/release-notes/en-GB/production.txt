@@ -1,3 +1,8 @@
+v2.0.4
+- Flacs! (BETA)
+- Navigate to search from playback sheet
+- Show audio quality in playback sheet for downloaded songs
+
 v2.0.2
 - Fix: downloader corrupting audio files on some devices
 
