@@ -56,22 +56,24 @@ fun Audio.documentFile(parent: DocumentFile, songsGrouping: DownloadsSongsGroupi
 }
 
 fun Audio.artworkFromFile(context: Context): Bitmap? {
-    val downloadInfo = audioDownloadItem?.downloadInfo ?: return null
-    val metadataRetriever = MediaMetadataRetriever()
-    metadataRetriever.setDataSource(context, downloadInfo.fileUri)
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-        try {
-            return metadataRetriever.primaryImage
-        } catch (e: Exception) {
-            Timber.e(e)
-        }
-    }
-
     try {
+        val downloadInfo = audioDownloadItem?.downloadInfo ?: return null
+
+        val metadataRetriever = MediaMetadataRetriever()
+        metadataRetriever.setDataSource(context, downloadInfo.fileUri)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            try {
+                return metadataRetriever.primaryImage
+            } catch (e: Exception) {
+                Timber.e(e)
+            }
+        }
+
         val data = metadataRetriever.embeddedPicture
         if (data != null) {
             return BitmapFactory.decodeByteArray(data, 0, data.size)
         }
+        return null
     } catch (e: Exception) {
         Timber.e(e)
     }
@@ -79,7 +81,12 @@ fun Audio.artworkFromFile(context: Context): Bitmap? {
 }
 
 fun AudioDownloadItem.audioHeader(context: Context): AudioHeader {
-    val mediaExtractor = MediaExtractor()
-    mediaExtractor.setDataSource(context, downloadInfo.fileUri, null)
-    return AudioHeader.from(this, mediaExtractor.getTrackFormat(0))
+    try {
+        val mediaExtractor = MediaExtractor()
+        mediaExtractor.setDataSource(context, downloadInfo.fileUri, null)
+        return AudioHeader.from(this, mediaExtractor.getTrackFormat(0))
+    } catch (e: Exception) {
+        Timber.e(e)
+    }
+    return AudioHeader()
 }
