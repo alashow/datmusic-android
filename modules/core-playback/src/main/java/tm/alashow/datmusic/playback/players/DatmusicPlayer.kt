@@ -27,7 +27,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import tm.alashow.base.imageloading.artworkFromFile
 import tm.alashow.base.imageloading.getBitmap
 import tm.alashow.base.util.event
 import tm.alashow.base.util.extensions.plus
@@ -40,6 +39,7 @@ import tm.alashow.datmusic.data.db.daos.findAudio
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.domain.entities.CoverImageSize
+import tm.alashow.datmusic.downloader.artworkFromFile
 import tm.alashow.datmusic.playback.AudioFocusHelperImpl
 import tm.alashow.datmusic.playback.AudioQueueManagerImpl
 import tm.alashow.datmusic.playback.BY_UI_KEY

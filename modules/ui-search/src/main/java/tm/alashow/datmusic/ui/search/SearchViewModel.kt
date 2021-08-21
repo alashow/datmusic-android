@@ -47,6 +47,7 @@ internal class SearchViewModel @Inject constructor(
     handle: SavedStateHandle,
     private val audiosPager: ObservePagedDatmusicSearch<Audio>,
     private val minervaPager: ObservePagedDatmusicSearch<Audio>,
+    private val flacsPager: ObservePagedDatmusicSearch<Audio>,
     private val artistsPager: ObservePagedDatmusicSearch<Artist>,
     private val albumsPager: ObservePagedDatmusicSearch<Album>,
     private val snackbarManager: SnackbarManager,
@@ -64,6 +65,7 @@ internal class SearchViewModel @Inject constructor(
 
     val pagedAudioList get() = audiosPager.flow.cachedIn(viewModelScope)
     val pagedMinervaList get() = minervaPager.flow.cachedIn(viewModelScope)
+    val pagedFlacsList get() = flacsPager.flow.cachedIn(viewModelScope)
     val pagedArtistsList get() = artistsPager.flow.cachedIn(viewModelScope)
     val pagedAlbumsList get() = albumsPager.flow.cachedIn(viewModelScope)
 
@@ -99,7 +101,7 @@ internal class SearchViewModel @Inject constructor(
                 }
         }
 
-        listOf(audiosPager, artistsPager, albumsPager).forEach { pager ->
+        listOf(audiosPager, minervaPager, flacsPager, artistsPager, albumsPager).forEach { pager ->
             pager.errors().watchForErrors(pager)
         }
     }
@@ -124,6 +126,9 @@ internal class SearchViewModel @Inject constructor(
                 artistsPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(BackendType.ARTISTS)))
             if (filter.hasAlbums)
                 albumsPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(BackendType.ALBUMS)))
+
+            if (filter.hasFlacs)
+                flacsPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(BackendType.FLACS), MINERVA_PAGING))
         }
     }
 
@@ -138,9 +143,11 @@ internal class SearchViewModel @Inject constructor(
      */
     private fun playAudio(audio: Audio) {
         val query = searchTrigger.value?.query ?: searchQuery.value
-        val isMinerva = searchFilter.value?.hasMinervaOnly == true
-        if (isMinerva) playbackConnection.playWithMinervaQuery(query, audio.id)
-        else playbackConnection.playWithQuery(query, audio.id)
+        when {
+            searchFilter.value?.hasMinerva == true -> playbackConnection.playWithMinervaQuery(query, audio.id)
+            searchFilter.value?.hasFlacs == true -> playbackConnection.playWithFlacsQuery(query, audio.id)
+            else -> playbackConnection.playWithQuery(query, audio.id)
+        }
     }
 
     /**

@@ -61,6 +61,9 @@ dependencies {
 	api Deps.Android.media
 	api Deps.Utils.exoPlayer
 	api Deps.Utils.exoPlayerOkhttp
+	api(Deps.Utils.exoPlayerFlac) {
+		transitive = false
+	}
 
 	api project(":modules:base")
 	api project(":modules:data")

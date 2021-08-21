@@ -276,7 +276,7 @@ class Downloader @Inject constructor(
     /**
      * Builds [AudioDownloadItem] from given audio id if it exists and satisfies [allowedStatuses].
      */
-    suspend fun getAudioDownload(audioId: String, vararg allowedStatuses: Status): Optional<AudioDownloadItem> {
+    suspend fun getAudioDownload(audioId: String, vararg allowedStatuses: Status = arrayOf(Status.COMPLETED)): Optional<AudioDownloadItem> {
         val existingRequest = dao.has(audioId) > 0
         if (existingRequest) {
             val request = dao.entry(audioId).first()

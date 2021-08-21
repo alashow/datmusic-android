@@ -19,8 +19,9 @@ data class DatmusicSearchParams(
     // used as a key in Room/Store
     override fun toString() = "query=$query" +
         // append minerva tag to store minerva audios separately in room
-        when (types.contains(BackendType.MINERVA)) {
-            true -> "#minerva"
+        when {
+            types.contains(BackendType.MINERVA) -> "#minerva"
+            types.contains(BackendType.FLACS) -> "#flacs"
             else -> ""
         }
 
@@ -38,7 +39,7 @@ data class DatmusicSearchParams(
     }
 
     enum class BackendType(val type: String) {
-        AUDIOS("audios"), ARTISTS("artists"), ALBUMS("albums"), MINERVA("minerva");
+        AUDIOS("audios"), ARTISTS("artists"), ALBUMS("albums"), MINERVA("minerva"), FLACS("flacs");
 
         override fun toString() = type
 

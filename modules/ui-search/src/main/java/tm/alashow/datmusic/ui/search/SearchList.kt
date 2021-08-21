@@ -81,6 +81,7 @@ internal fun SearchList(viewModel: SearchViewModel, listState: LazyListState) {
         viewModel = viewModel,
         audiosLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedAudioList).collectAsLazyPagingItems(),
         minervaLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedMinervaList).collectAsLazyPagingItems(),
+        flacsLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedFlacsList).collectAsLazyPagingItems(),
         artistsLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedArtistsList).collectAsLazyPagingItems(),
         albumsLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedAlbumsList).collectAsLazyPagingItems(),
         listState = listState,
@@ -92,6 +93,7 @@ internal fun SearchList(
     viewModel: SearchViewModel,
     audiosLazyPagingItems: LazyPagingItems<Audio>,
     minervaLazyPagingItems: LazyPagingItems<Audio>,
+    flacsLazyPagingItems: LazyPagingItems<Audio>,
     artistsLazyPagingItems: LazyPagingItems<Artist>,
     albumsLazyPagingItems: LazyPagingItems<Album>,
     listState: LazyListState,
@@ -108,6 +110,7 @@ internal fun SearchList(
                 BackendType.ARTISTS -> artistsLazyPagingItems
                 BackendType.ALBUMS -> albumsLazyPagingItems
                 BackendType.MINERVA -> minervaLazyPagingItems
+                BackendType.FLACS -> flacsLazyPagingItems
             }
         }.toSet()
         else -> setOf(audiosLazyPagingItems, artistsLazyPagingItems, albumsLazyPagingItems)
@@ -144,6 +147,7 @@ internal fun SearchList(
         SearchListContent(
             audiosLazyPagingItems,
             minervaLazyPagingItems,
+            flacsLazyPagingItems,
             artistsLazyPagingItems,
             albumsLazyPagingItems,
             listState,
@@ -206,6 +210,7 @@ private fun SearchListErrors(
 private fun SearchListContent(
     audiosLazyPagingItems: LazyPagingItems<Audio>,
     minervaAudiosLazyPagingItems: LazyPagingItems<Audio>,
+    flacsAudiosLazyPagingItems: LazyPagingItems<Audio>,
     artistsLazyPagingItems: LazyPagingItems<Artist>,
     albumsLazyPagingItems: LazyPagingItems<Album>,
     listState: LazyListState,
@@ -255,6 +260,9 @@ private fun SearchListContent(
 
             if (searchFilter.hasMinerva)
                 audioList(minervaAudiosLazyPagingItems, onPlayAudio)
+
+            if (searchFilter.hasFlacs)
+                audioList(flacsAudiosLazyPagingItems, onPlayAudio)
         }
     }
 }

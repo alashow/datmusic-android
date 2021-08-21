@@ -89,7 +89,10 @@ fun appLightColors(
 )
 
 @Composable
-fun Colors.plainBackground() = if (MaterialTheme.colors.isLight) Color.White else Color.Black
+fun Colors.plainSurfaceColor() = if (MaterialTheme.colors.isLight) Color.White else Color.Black
+
+@Composable
+fun Colors.plainBackgroundColor() = if (!MaterialTheme.colors.isLight) Color.White else Color.Black
 
 @Composable
 fun Colors.plainGrayBackground() = if (MaterialTheme.colors.isLight) Color.LightGray else Color.DarkGray

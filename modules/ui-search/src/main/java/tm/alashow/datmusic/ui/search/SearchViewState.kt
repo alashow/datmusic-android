@@ -22,6 +22,7 @@ data class SearchFilter(
     val hasAlbums get() = backends.contains(BackendType.ALBUMS)
 
     val hasMinerva get() = backends.contains(BackendType.MINERVA)
+    val hasFlacs get() = backends.contains(BackendType.FLACS)
 
     val hasMinervaOnly get() = backends.size == 1 && backends.contains(BackendType.MINERVA)
 

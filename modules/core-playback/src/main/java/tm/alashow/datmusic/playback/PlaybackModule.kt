@@ -14,6 +14,7 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
+import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.playback.players.AudioPlayerImpl
 import tm.alashow.datmusic.playback.services.PlayerService
 
@@ -28,11 +29,13 @@ class PlaybackModule {
         audiosDao: AudiosDao,
         downloadsRequestsDao: DownloadRequestsDao,
         audioPlayer: AudioPlayerImpl,
+        downloader: Downloader,
     ): PlaybackConnection = PlaybackConnectionImpl(
         context = context,
         serviceComponent = ComponentName(context, PlayerService::class.java),
         audiosDao = audiosDao,
         downloadsDao = downloadsRequestsDao,
         audioPlayer = audioPlayer,
+        downloader = downloader,
     )
 }

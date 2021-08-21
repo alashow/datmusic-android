@@ -41,6 +41,7 @@ import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ScaffoldState
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ErrorOutline
@@ -77,6 +78,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
 import com.google.accompanist.insets.LocalWindowInsets
@@ -98,6 +100,7 @@ import tm.alashow.common.compose.LocalScaffoldState
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
 import tm.alashow.datmusic.domain.entities.CoverImageSize
+import tm.alashow.datmusic.downloader.audioHeader
 import tm.alashow.datmusic.playback.NONE_PLAYBACK_STATE
 import tm.alashow.datmusic.playback.NONE_PLAYING
 import tm.alashow.datmusic.playback.PlaybackConnection
@@ -141,7 +144,8 @@ import tm.alashow.ui.simpleClickable
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.LocalThemeState
 import tm.alashow.ui.theme.disabledAlpha
-import tm.alashow.ui.theme.plainBackground
+import tm.alashow.ui.theme.plainBackgroundColor
+import tm.alashow.ui.theme.plainSurfaceColor
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -243,6 +247,11 @@ fun PlaybackSheetContent(
 
                 playbackNowPlayingWithControls(nowPlaying, playbackState, contentColor, onClose)
 
+                if (playbackQueue.isValid)
+                    item {
+                        PlaybackNowPlayingAudioInfo(playbackQueue = playbackQueue)
+                    }
+
                 playbackQueue(
                     playbackQueue = playbackQueue,
                     scrollToTop = scrollToTop,
@@ -315,7 +324,7 @@ private fun PlaybackArtwork(
     CoverImage(
         painter = currentArtwork,
         shape = RectangleShape,
-        backgroundColor = MaterialTheme.colors.plainBackground(),
+        backgroundColor = MaterialTheme.colors.plainSurfaceColor(),
         contentColor = contentColor,
         bitmapPlaceholder = nowPlaying.artwork,
         modifier = Modifier
@@ -596,6 +605,33 @@ private fun PlaybackControls(
                 modifier = Modifier.fillMaxSize(),
                 contentDescription = null
             )
+        }
+    }
+}
+
+@Composable
+private fun PlaybackNowPlayingAudioInfo(playbackQueue: PlaybackQueue) {
+    val context = LocalContext.current
+    val dlItem = playbackQueue.currentAudio.audioDownloadItem
+    if (dlItem != null) {
+        val audiHeader = dlItem.audioHeader(context)
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = AppTheme.specs.padding)
+        ) {
+            Surface(
+                color = MaterialTheme.colors.plainBackgroundColor().copy(alpha = 0.1f),
+                shape = CircleShape,
+            ) {
+                Text(
+                    audiHeader.info(),
+                    style = MaterialTheme.typography.body2.copy(fontWeight = FontWeight.Bold, fontSize = 10.sp),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp)
+                )
+            }
         }
     }
 }

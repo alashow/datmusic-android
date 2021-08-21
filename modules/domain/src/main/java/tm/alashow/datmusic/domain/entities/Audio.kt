@@ -120,8 +120,18 @@ data class Audio(
     fun durationMillis() = (duration * 1000).toLong()
 
     fun fileDisplayName() = "$artist - $title"
-    fun fileMimeType() = "audio/mpeg"
-    fun fileExtension() = ".mp3"
+
+    fun isFlac() = searchKey == "flacs" || id.startsWith("dz.")
+
+    fun fileMimeType() = when {
+        isFlac() -> "audio/flac"
+        else -> "audio/mpeg"
+    }
+
+    fun fileExtension() = when {
+        isFlac() -> ".flac"
+        else -> ".mp3"
+    }
 
     fun artists() = artist.artists()
     fun mainArtist() = artist.mainArtist()
