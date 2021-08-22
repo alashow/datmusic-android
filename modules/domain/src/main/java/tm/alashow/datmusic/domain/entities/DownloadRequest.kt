@@ -55,6 +55,8 @@ data class DownloadRequest(
     enum class Type {
         Audio;
 
+        override fun toString() = name
+
         companion object {
             private val map = values().associateBy { it.name }
 
