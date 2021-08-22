@@ -121,15 +121,15 @@ internal class SearchViewModel @Inject constructor(
         if (filter.hasMinerva)
             minervaPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(BackendType.MINERVA), MINERVA_PAGING))
 
+        if (filter.hasFlacs)
+            flacsPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(BackendType.FLACS), MINERVA_PAGING))
+
         // don't send queries if backend can't handle empty queries
         if (query.isNotBlank()) {
             if (filter.hasArtists)
                 artistsPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(BackendType.ARTISTS)))
             if (filter.hasAlbums)
                 albumsPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(BackendType.ALBUMS)))
-
-            if (filter.hasFlacs)
-                flacsPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(BackendType.FLACS), MINERVA_PAGING))
         }
     }
 
