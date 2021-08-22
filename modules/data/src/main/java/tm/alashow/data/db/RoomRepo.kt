@@ -8,17 +8,16 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import tm.alashow.base.util.CoroutineDispatchers
-import tm.alashow.domain.models.Entity
-import tm.alashow.domain.models.Params
+import tm.alashow.domain.models.BaseEntity
 
-abstract class RoomRepo<E : Entity>(
-    private val dao: EntityDao<Params, E>,
+abstract class RoomRepo<E : BaseEntity>(
+    private val dao: BaseDao<E>,
     private val dispatchers: CoroutineDispatchers
 ) {
-    suspend fun entries(params: Params) = withContext(dispatchers.io) { dao.entriesObservable(params, params.page) }
+    suspend fun entries() = withContext(dispatchers.io) { dao.entries() }
 
-    suspend fun isEmpty(params: Params): Flow<Boolean> {
-        return entries(params).map { it.isNotEmpty() }
+    suspend fun isEmpty(): Flow<Boolean> {
+        return entries().map { it.isNotEmpty() }
     }
 
     suspend fun entry(id: String) = withContext(dispatchers.io) { dao.entry(id) }

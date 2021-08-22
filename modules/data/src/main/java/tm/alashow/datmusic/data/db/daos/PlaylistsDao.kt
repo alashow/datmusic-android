@@ -1,0 +1,61 @@
+/*
+ * Copyright (C) 2021, Alashov Berkeli
+ * All rights reserved.
+ */
+package tm.alashow.datmusic.data.db.daos
+
+import androidx.paging.PagingSource
+import androidx.room.Dao
+import androidx.room.Query
+import androidx.room.Transaction
+import kotlinx.coroutines.flow.Flow
+import tm.alashow.data.db.EntityDao
+import tm.alashow.datmusic.domain.entities.Playlist
+import tm.alashow.domain.models.Params
+
+@Dao
+abstract class PlaylistsDao : EntityDao<Params, Playlist>() {
+
+    @Transaction
+    @Query("SELECT * FROM playlists ORDER BY _id ASC")
+    abstract override fun entries(): Flow<List<Playlist>>
+
+    @Transaction
+    @Query("SELECT * FROM playlists ORDER BY _id ASC LIMIT :count OFFSET :offset")
+    abstract override fun entriesObservable(count: Int, offset: Int): Flow<List<Playlist>>
+
+    @Transaction
+    @Query("SELECT * FROM playlists ORDER BY _id ASC")
+    abstract override fun entriesPagingSource(): PagingSource<Int, Playlist>
+
+    @Transaction
+    @Query("SELECT * FROM playlists WHERE params = :params ORDER BY _id ASC")
+    abstract override fun entriesPagingSource(params: Params): PagingSource<Int, Playlist>
+
+    @Transaction
+    @Query("SELECT * FROM playlists WHERE id = :id")
+    abstract override fun entry(id: String): Flow<Playlist>
+
+    @Transaction
+    @Query("SELECT * FROM playlists WHERE id in (:ids)")
+    abstract override fun entriesById(ids: List<String>): Flow<List<Playlist>>
+
+    @Transaction
+    @Query("SELECT * FROM playlists WHERE id = :id")
+    abstract override fun entryNullable(id: String): Flow<Playlist?>
+
+    @Query("DELETE FROM playlists WHERE id = :id")
+    abstract override suspend fun delete(id: String): Int
+
+    @Query("DELETE FROM playlists WHERE params = :params")
+    abstract override suspend fun delete(params: Params): Int
+
+    @Query("DELETE FROM playlists")
+    abstract override suspend fun deleteAll(): Int
+
+    @Query("SELECT COUNT(*) from playlists where params = :params")
+    abstract override suspend fun count(params: Params): Int
+
+    @Query("SELECT COUNT(*) from playlists where id = :id")
+    abstract override suspend fun has(id: String): Int
+}

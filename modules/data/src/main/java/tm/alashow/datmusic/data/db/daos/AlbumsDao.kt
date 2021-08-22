@@ -21,6 +21,10 @@ abstract class AlbumsDao : PaginatedEntryDao<DatmusicSearchParams, Album>() {
     abstract suspend fun deleteExcept(titles: Set<String>): Int
 
     @Transaction
+    @Query("SELECT * FROM albums ORDER BY page ASC, search_index ASC")
+    abstract override fun entries(): Flow<List<Album>>
+
+    @Transaction
     @Query("SELECT * FROM albums WHERE params = :params and page = :page ORDER BY page ASC, search_index ASC")
     abstract override fun entriesObservable(params: DatmusicSearchParams, page: Int): Flow<List<Album>>
 

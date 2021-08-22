@@ -4,12 +4,12 @@
  */
 package tm.alashow.domain.models
 
-interface Entity {
+interface BaseEntity {
     val id: String
     var params: String
 }
 
-interface PaginatedEntity : Entity {
+interface PaginatedEntity : BaseEntity {
     var page: Int
 }
 

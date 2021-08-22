@@ -16,6 +16,10 @@ import tm.alashow.datmusic.domain.entities.DownloadRequest
 abstract class DownloadRequestsDao : BaseDao<DownloadRequest>() {
 
     @Transaction
+    @Query("SELECT * FROM download_requests ORDER BY id")
+    abstract override fun entries(): Flow<List<DownloadRequest>>
+
+    @Transaction
     @Query("SELECT * FROM download_requests WHERE entity_type = :type ORDER BY id")
     abstract fun entriesObservableByType(type: DownloadRequest.Type): Flow<List<DownloadRequest>>
 

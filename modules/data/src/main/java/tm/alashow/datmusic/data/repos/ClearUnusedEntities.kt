@@ -11,6 +11,7 @@ import tm.alashow.datmusic.data.db.daos.AlbumsDao
 import tm.alashow.datmusic.data.db.daos.ArtistsDao
 import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
+import tm.alashow.datmusic.data.db.daos.PlaylistsWithAudiosDao
 import tm.alashow.datmusic.domain.entities.DownloadRequest
 
 class ClearUnusedEntities @Inject constructor(
@@ -18,6 +19,7 @@ class ClearUnusedEntities @Inject constructor(
     private val artistsDao: ArtistsDao,
     private val albumsDao: AlbumsDao,
     private val downloadsRequestsDao: DownloadRequestsDao,
+    private val playlistWithAudios: PlaylistsWithAudiosDao,
 ) {
     /**
      * Delete all audios except the ones are in downloads and delete all artists/albums.
@@ -26,12 +28,15 @@ class ClearUnusedEntities @Inject constructor(
     suspend operator fun invoke() {
         val downloadRequestAudios = downloadsRequestsDao.entriesObservableByType(DownloadRequest.Type.Audio).first()
         val downloadedAudioIds = downloadRequestAudios.map { it.entityId }
+        val audiosIdsInPlaylists = playlistWithAudios.distinctAudios().first()
 
-        // val downloadedAudios = audiosDao.entriesById(downloadedAudioIds).first()
+        val audiosIds = downloadedAudioIds + audiosIdsInPlaylists
+
+        // val downloadedAudios = audiosDao.entriesById(audiosIds).first()
         // val downloadedArtistNames = downloadedAudios.map { it.artists() }.flatten().toSet()
         // val downloadedAlbumTitles = downloadedAudios.map { it.album }.filterNotNull().toSet()
 
-        val deletedAudios = audiosDao.deleteExcept(downloadedAudioIds)
+        val deletedAudios = audiosDao.deleteExcept(audiosIds)
         val deletedArtists = artistsDao.deleteAll()
         val deletedAlbums = albumsDao.deleteAll()
         Timber.d("deletedAudios: $deletedAudios, deletedArtists: $deletedArtists, deletedAlbums: $deletedAlbums")

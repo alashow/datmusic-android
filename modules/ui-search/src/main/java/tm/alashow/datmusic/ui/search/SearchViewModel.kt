@@ -55,7 +55,7 @@ internal class SearchViewModel @Inject constructor(
     private val playbackConnection: PlaybackConnection,
 ) : ViewModel() {
 
-    val initialQuery = handle.get(QUERY_KEY) ?: ""
+    private val initialQuery = handle.get(QUERY_KEY) ?: ""
     private val searchQuery = MutableStateFlow(initialQuery)
     private val searchFilter = handle.getStateFlow("search_filter", viewModelScope, SearchFilter.from(handle.get(SEARCH_BACKENDS_KEY)))
     private val searchTrigger = handle.getStateFlow("search_trigger", viewModelScope, SearchTrigger(initialQuery))

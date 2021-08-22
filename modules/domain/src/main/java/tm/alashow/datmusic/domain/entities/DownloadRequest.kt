@@ -9,7 +9,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.serialization.json.Json
 import org.threeten.bp.LocalDateTime
-import tm.alashow.domain.models.Entity as BaseEntity
+import tm.alashow.domain.models.BaseEntity as BaseEntity
 
 @Entity(tableName = "download_requests")
 data class DownloadRequest(
