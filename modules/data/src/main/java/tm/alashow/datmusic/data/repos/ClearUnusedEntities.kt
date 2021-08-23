@@ -28,15 +28,15 @@ class ClearUnusedEntities @Inject constructor(
     suspend operator fun invoke() {
         val downloadRequestAudios = downloadsRequestsDao.entriesObservableByType(DownloadRequest.Type.Audio).first()
         val downloadedAudioIds = downloadRequestAudios.map { it.entityId }
-        val audiosIdsInPlaylists = playlistWithAudios.distinctAudios().first()
+        val audioIdsInPlaylists = playlistWithAudios.distinctAudios().first()
 
-        val audiosIds = downloadedAudioIds + audiosIdsInPlaylists
+        val audioIds = downloadedAudioIds + audioIdsInPlaylists
 
-        // val downloadedAudios = audiosDao.entriesById(audiosIds).first()
+        // val downloadedAudios = audiosDao.entriesById(audioIds).first()
         // val downloadedArtistNames = downloadedAudios.map { it.artists() }.flatten().toSet()
         // val downloadedAlbumTitles = downloadedAudios.map { it.album }.filterNotNull().toSet()
 
-        val deletedAudios = audiosDao.deleteExcept(audiosIds)
+        val deletedAudios = audiosDao.deleteExcept(audioIds)
         val deletedArtists = artistsDao.deleteAll()
         val deletedAlbums = albumsDao.deleteAll()
         Timber.d("deletedAudios: $deletedAudios, deletedArtists: $deletedArtists, deletedAlbums: $deletedAlbums")
