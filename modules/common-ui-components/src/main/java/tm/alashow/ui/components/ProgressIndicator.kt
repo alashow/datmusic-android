@@ -5,10 +5,8 @@
 package tm.alashow.ui.components
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraintsScope
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -43,16 +41,15 @@ fun ProgressIndicator(
     CircularProgressIndicator(modifier.size(size), color, strokeWidth)
 }
 
-@Composable
-fun BoxWithConstraintsScope.FullScreenLoading(delayMillis: Long = 100) {
-    Delayed(delayMillis = delayMillis) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(maxHeight)
-        ) {
-            ProgressIndicator()
+fun LazyListScope.fullScreenLoading(delayMillis: Long = 100) {
+    item {
+        Delayed(delayMillis = delayMillis) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillParentMaxSize()
+            ) {
+                ProgressIndicator()
+            }
         }
     }
 }
