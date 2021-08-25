@@ -1,2 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="playback.queueTitle.audio">Воспроизведение из очереди</string>
+    <string name="audio.menu.play">Воспроизвести</string>
+    <string name="audio.menu.downloadById">Загрузить</string>
+    <string name="audio.menu.playNext">Воспроизвести следующий</string>
+    <string name="downloads.download.status.queued">В очереди</string>
+    <string name="downloads.download.status.downloading">Скачивание</string>
+    <string name="downloads.download.play">Воспроизвести</string>
+    <string name="downloads.download.playNext">Воспроизвести следущий</string>
+    <string name="playback.queueTitle.downloads">Воспроизведение из загрузок</string>
+    <string name="playback.queueTitle.artist">Воспроизведение от исполнителя</string>
+    <string name="playback.queueTitle.artist.value">Воспроизведение от исполнителя</string>
+    <string name="playback.queueTitle.album">Воспроизведение из альбома</string>
+    <string name="audio.menu.download">Загрузить</string>
+    <string name="audio.menu.copyLink">Копировать ссылку</string>
+    <string name="downloader.downloadsLocationSelect.title">Расположение загрузки</string>
+    <string name="downloader.downloadsLocationSelect.text">Нажмите Далее, чтобы выбрать расположение папки загрузок</string>
+    <string name="downloader.downloadsLocationSelect.next">Следующий</string>
+    <string name="downloader.enqueue.downloadsNotFound">Выбранная папка для загрузок не найдена</string>
+    <string name="downloader.enqueue.audio.queued">Добавлено в очередь на скачивание</string>
+    <string name="downloader.enqueue.audio.error.invalidUrl">Недействительная ссылка для скачивания</string>
+    <string name="downloader.enqueue.audio.error.fileCreate">Не удалось создать файл в папке загрузок</string>
+    <string name="downloader.enqueue.audio.existing.resuming">Возобновление загрузки</string>
+    <string name="downloader.enqueue.audio.existing.alreadyQueued">Трек уже находится в очереди на скачивание</string>
+    <string name="app_name">Datmusic</string>
+    <string name="downloader.enqueue.audio.existing.completed">Этот трек уже был загружен</string>
+    <string name="downloader.enqueue.audio.existing.unknown">Запрос на загрузку существует, но имеет необработанный статус</string>
+    <string name="downloads.title">Загрузки</string>
+    <string name="downloads.empty">Нет загрузок</string>
+    <string name="downloads.download.status.paused">Приостановлено</string>
+    <string name="downloads.download.status.failed">Неудачно</string>
+    <string name="downloads.download.status.cancelled">Отменен</string>
+    <string name="search.title">Поиск</string>
+    <string name="search.hint">Композиции, альбомы, исполнители</string>
+    <string name="search.hint.query">Поисковый запрос</string>
+    <string name="search.audios">Треки</string>
+    <string name="search.artists">Исполнители</string>
+    <string name="search.albums">Альбомы</string>
+    <string name="artists.detail.title">Исполнитель</string>
+    <string name="albums.detail.title">Альбом</string>
+    <string name="audio.menu.cd">Аудио меню</string>
+    <string name="downloads.download.pause">Пауза</string>
+    <string name="downloads.download.resume">Возобновить</string>
+    <string name="downloads.download.cancel">Отменить</string>
+    <string name="downloads.download.retry">Повторить</string>
+    <string name="downloads.download.open">Открыть файл</string>
+    <string name="downloads.download.remove">Удалить</string>
+    <string name="downloads.download.delete">Удалить файл</string>
+    <string name="search.minerva">Minerva</string>
+</resources>

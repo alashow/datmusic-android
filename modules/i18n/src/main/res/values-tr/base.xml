@@ -1,2 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="generic.back">Geri</string>
+    <string name="generic.close">Kapat</string>
+    <string name="generic.clear">Temizle</string>
+    <string name="generic.clipboard.copied">Kopyalandı</string>
+    <string name="dialog.warning">Uyarı</string>
+    <string name="dialog.confirm">Onayla</string>
+    <string name="dialog.confirm.no">Hayır</string>
+    <string name="unknown">Bilinmeyen</string>
+    <string name="error.title">Hata</string>
+    <string name="error.subtitle">Eyvah :(</string>
+    <string name="error.tryAgain">Tekrar dene</string>
+    <string name="error.server">Sunucu hatası</string>
+    <string name="error.noAuth">Giriş yapmanız gerekiyor</string>
+    <string name="error.notFound">Bulunamadı</string>
+    <string name="error.api">API hatası</string>
+    <string name="error.empty.title">Boş</string>
+    <string name="error.empty">Sonuç yok</string>
+    <string name="error.blank">Boş bırakılamaz</string>
+    <string name="error.unknown">Bilinmeyen hata</string>
+    <string name="error.errorLogOut">Çıkış yapılamadı, uygulama ayarlarını sıfırlamayı deneyin</string>
+    <string name="error.alreadyLogined">Zaten giriş yaptınız</string>
+    <string name="error.loading">Yükleme hatası. Tekrar denemek için dokunun.</string>
+    <string name="error.retry">Tekrar dene</string>
+    <string name="time.duration">%1$d saat %2$d dakika</string>
+    <string name="time.duration.minutes">%1$d dakika</string>
+</resources>
