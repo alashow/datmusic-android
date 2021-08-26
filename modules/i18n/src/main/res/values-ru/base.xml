@@ -30,6 +30,6 @@
     <string name="error.loading">Загрузка не удалась. Нажмите, чтобы повторить попытку</string>
     <string name="error.retry">Заново</string>
     <string name="error.serverUnavailable">Сервер не доступен</string>
-    <string name="time.duration">%1$d час %2$d мин</string>
+    <string name="time.duration">%1$d час %2$d мин.</string>
     <string name="time.duration.minutes">%1$d минут</string>
 </resources>
