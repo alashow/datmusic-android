@@ -12,6 +12,11 @@
 |![Image](/art/screenshots/source/3.png?raw=true)  |  ![Image](/art/screenshots/source/4.png?raw=true)|![Image](/art/screenshots/source/5.png?raw=true)|
 |![Image](/art/screenshots/source/6.png?raw=true)  |  ![Image](/art/screenshots/source/7.png?raw=true)|![Image](/art/screenshots/source/8.png?raw=true)|
 
+
+# Project dependency graph
+
+![Project dependency graph](/art/project-dependency-graph.png?raw=true)
+
 ### Build
 
 ```bash

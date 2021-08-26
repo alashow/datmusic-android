@@ -13,12 +13,12 @@ import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
-import tm.alashow.domain.models.Entity
+import tm.alashow.domain.models.BaseEntity
 import tm.alashow.domain.models.PaginatedEntity
 
-abstract class BaseDao<E : Entity> {
+abstract class BaseDao<E : BaseEntity> {
     @Insert
-    abstract suspend fun insert(entity: E)
+    abstract suspend fun insert(entity: E): Long
 
     @Insert
     abstract suspend fun insertAll(vararg entity: E)
@@ -38,17 +38,17 @@ abstract class BaseDao<E : Entity> {
     }
 
     @Delete
-    abstract suspend fun delete(entity: E)
+    abstract suspend fun delete(entity: E): Int
 
     @Delete
-    abstract suspend fun delete(id: String)
+    abstract suspend fun delete(id: String): Int
 
-    abstract suspend fun deleteAll()
+    abstract suspend fun deleteAll(): Int
 
     @Transaction
     open suspend fun withTransaction(tx: suspend () -> Unit) = tx()
 
-    // abstract fun entriesObservable(): Flow<List<E>>
+    abstract fun entries(): Flow<List<E>>
     abstract fun entriesObservable(count: Int, offset: Int): Flow<List<E>>
 
     abstract fun entriesPagingSource(): PagingSource<Int, E>
@@ -61,12 +61,11 @@ abstract class BaseDao<E : Entity> {
     abstract suspend fun has(id: String): Int
 }
 
-abstract class EntityDao<Params : Any, E : Entity> : BaseDao<E>() {
+abstract class EntityDao<Params : Any, E : BaseEntity> : BaseDao<E>() {
 
     abstract fun entriesPagingSource(params: Params): PagingSource<Int, E>
-    abstract fun entriesObservable(params: Params, page: Int): Flow<List<E>>
     abstract suspend fun count(params: Params): Int
-    abstract suspend fun delete(params: Params)
+    abstract suspend fun delete(params: Params): Int
 
     @Transaction
     open suspend fun update(params: Params, entity: E) {
@@ -76,8 +75,11 @@ abstract class EntityDao<Params : Any, E : Entity> : BaseDao<E>() {
 }
 
 abstract class PaginatedEntryDao<Params : Any, E : PaginatedEntity> : EntityDao<Params, E>() {
+
+    abstract fun entriesObservable(params: Params, page: Int): Flow<List<E>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract override suspend fun insert(entity: E)
+    abstract override suspend fun insert(entity: E): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract override suspend fun insertAll(vararg entity: E)
@@ -85,7 +87,7 @@ abstract class PaginatedEntryDao<Params : Any, E : PaginatedEntity> : EntityDao<
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract override suspend fun insertAll(entities: List<E>)
 
-    abstract suspend fun delete(params: Params, page: Int)
+    abstract suspend fun delete(params: Params, page: Int): Int
     abstract suspend fun getLastPage(params: Params): Int?
 
     @Transaction

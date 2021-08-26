@@ -23,9 +23,9 @@ import tm.alashow.datmusic.ui.audios.audioActionHandler
 import tm.alashow.datmusic.ui.downloader.DownloaderHost
 import tm.alashow.datmusic.ui.downloads.audio.LocalAudioDownloadItemActionHandler
 import tm.alashow.datmusic.ui.downloads.audio.audioDownloadItemActionHandler
-import tm.alashow.datmusic.ui.home.Home
 import tm.alashow.datmusic.ui.playback.PlaybackHost
 import tm.alashow.datmusic.ui.settings.LocalAppVersion
+import tm.alashow.navigation.NavigatorHost
 import tm.alashow.ui.ThemeViewModel
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.DefaultTheme
@@ -35,31 +35,33 @@ fun DatmusicApp(
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     analytics: FirebaseAnalytics = FirebaseAnalytics.getInstance(LocalContext.current),
 ) {
-
     CompositionLocalProvider(
         LocalScaffoldState provides scaffoldState,
         LocalAnalytics provides analytics,
         LocalAppVersion provides BuildConfig.VERSION_NAME
     ) {
-        val themeViewModel = hiltViewModel<ThemeViewModel>()
-        val themeState by rememberFlowWithLifecycle(themeViewModel.themeState).collectAsState(DefaultTheme)
-
-        AppTheme(themeState) {
-            ProvideWindowInsets(consumeWindowInsets = false) {
-                DatmusicCore {
-                    Home()
-                }
+        ProvideWindowInsets(consumeWindowInsets = false) {
+            DatmusicCore {
+                Home()
             }
         }
     }
 }
 
 @Composable
-private fun DatmusicCore(content: @Composable () -> Unit) {
-    DownloaderHost {
-        PlaybackHost {
-            DatmusicActionHandlers {
-                content()
+private fun DatmusicCore(
+    themeViewModel: ThemeViewModel = hiltViewModel(),
+    content: @Composable () -> Unit
+) {
+    val themeState by rememberFlowWithLifecycle(themeViewModel.themeState).collectAsState(DefaultTheme)
+    AppTheme(themeState) {
+        NavigatorHost {
+            DownloaderHost {
+                PlaybackHost {
+                    DatmusicActionHandlers {
+                        content()
+                    }
+                }
             }
         }
     }

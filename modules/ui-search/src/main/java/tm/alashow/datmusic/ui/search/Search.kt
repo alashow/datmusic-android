@@ -4,7 +4,6 @@
  */
 package tm.alashow.datmusic.ui.search
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateContentSize
@@ -66,7 +65,7 @@ import tm.alashow.base.util.click
 import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.common.compose.getNavArgument
 import tm.alashow.common.compose.rememberFlowWithLifecycle
-import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
+import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams.BackendType
 import tm.alashow.navigation.QUERY_KEY
 import tm.alashow.ui.OffsetNotifyingBox
 import tm.alashow.ui.components.ChipsRow
@@ -176,19 +175,6 @@ private fun SearchAppBar(
             focusManager.clearFocus()
         }
 
-        var query by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue(initialQuery)) }
-
-        if (query.text.isNotBlank() || searchActive) {
-            BackHandler(
-                onBack = {
-                    query = TextFieldValue()
-                    onQueryChange("")
-                    keyboardController?.hide()
-                    focusManager.clearFocus()
-                }
-            )
-        }
-
         Column(
             verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall),
             modifier = Modifier.animateContentSize()
@@ -201,6 +187,7 @@ private fun SearchAppBar(
                 modifier = titleModifier.padding(start = AppTheme.specs.padding, top = AppTheme.specs.padding),
             )
 
+            var query by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue(initialQuery)) }
             SearchTextField(
                 value = query,
                 onValueChange = { value ->
@@ -232,7 +219,7 @@ private fun SearchAppBar(
 @Composable
 private fun ColumnScope.SearchFilterPanel(
     visible: Boolean,
-    selectedItems: Set<DatmusicSearchParams.BackendType>,
+    selectedItems: Set<BackendType>,
     onBackendTypeSelect: (SearchAction.SelectBackendType) -> Unit
 ) {
     AnimatedVisibility(
@@ -241,7 +228,7 @@ private fun ColumnScope.SearchFilterPanel(
         exit = shrinkOut(Alignment.BottomCenter) + fadeOut()
     ) {
         ChipsRow(
-            items = DatmusicSearchParams.BackendType.values().toList(),
+            items = BackendType.values().toList(),
             selectedItems = selectedItems,
             onItemSelect = { selected, item ->
                 onBackendTypeSelect(SearchAction.SelectBackendType(selected, item))
@@ -249,10 +236,11 @@ private fun ColumnScope.SearchFilterPanel(
             labelMapper = {
                 stringResource(
                     when (it) {
-                        DatmusicSearchParams.BackendType.AUDIOS -> R.string.search_audios
-                        DatmusicSearchParams.BackendType.ARTISTS -> R.string.search_artists
-                        DatmusicSearchParams.BackendType.ALBUMS -> R.string.search_albums
-                        DatmusicSearchParams.BackendType.MINERVA -> R.string.search_minerva
+                        BackendType.AUDIOS -> R.string.search_audios
+                        BackendType.ARTISTS -> R.string.search_artists
+                        BackendType.ALBUMS -> R.string.search_albums
+                        BackendType.MINERVA -> R.string.search_minerva
+                        BackendType.FLACS -> R.string.search_flacs
                     }
                 )
             }

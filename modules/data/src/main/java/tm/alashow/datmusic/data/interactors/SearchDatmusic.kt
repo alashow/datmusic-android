@@ -11,9 +11,9 @@ import tm.alashow.data.Interactor
 import tm.alashow.data.fetch
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchStore
-import tm.alashow.domain.models.Entity
+import tm.alashow.domain.models.BaseEntity
 
-class SearchDatmusic<T : Entity> @Inject constructor(
+class SearchDatmusic<T : BaseEntity> @Inject constructor(
     private val datmusicSearchStore: DatmusicSearchStore<T>,
     private val dispatchers: CoroutineDispatchers
 ) : Interactor<SearchDatmusic.Params>() {

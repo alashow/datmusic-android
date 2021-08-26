@@ -19,6 +19,7 @@ const val MEDIA_TYPE_ARTIST = "Media.Artist"
 const val MEDIA_TYPE_ALBUM = "Media.Album"
 const val MEDIA_TYPE_AUDIO_QUERY = "Media.AudioQuery"
 const val MEDIA_TYPE_AUDIO_MINERVA_QUERY = "Media.AudioMinervaQuery"
+const val MEDIA_TYPE_AUDIO_FLACS_QUERY = "Media.AudioFlacsQuery"
 
 private const val MEDIA_ID_SEPARATOR = " | "
 
@@ -46,7 +47,12 @@ fun String.toMediaId(): MediaId {
     val parts = split(MEDIA_ID_SEPARATOR)
     val type = parts[0]
 
-    if (type !in listOf(MEDIA_TYPE_AUDIO, MEDIA_TYPE_ARTIST, MEDIA_TYPE_ALBUM, MEDIA_TYPE_AUDIO_QUERY, MEDIA_TYPE_AUDIO_MINERVA_QUERY)) {
+    val knownTypes = listOf(
+        MEDIA_TYPE_AUDIO, MEDIA_TYPE_ARTIST,
+        MEDIA_TYPE_ALBUM, MEDIA_TYPE_AUDIO_QUERY,
+        MEDIA_TYPE_AUDIO_MINERVA_QUERY, MEDIA_TYPE_AUDIO_FLACS_QUERY
+    )
+    if (type !in knownTypes) {
         Timber.e("Unknown media type: $type")
         return MediaId()
     }
@@ -61,10 +67,11 @@ suspend fun MediaId.toAudioList(audiosDao: AudiosDao, artistsDao: ArtistsDao, al
     MEDIA_TYPE_AUDIO -> listOfNotNull(audiosDao.entry(value).firstOrNull())
     MEDIA_TYPE_ALBUM -> albumsDao.entry(value).firstOrNull()?.audios
     MEDIA_TYPE_ARTIST -> artistsDao.entry(value).firstOrNull()?.audios
-    MEDIA_TYPE_AUDIO_QUERY, MEDIA_TYPE_AUDIO_MINERVA_QUERY -> {
+    MEDIA_TYPE_AUDIO_QUERY, MEDIA_TYPE_AUDIO_MINERVA_QUERY, MEDIA_TYPE_AUDIO_FLACS_QUERY -> {
         val params = DatmusicSearchParams(value).run {
-            when (type == MEDIA_TYPE_AUDIO_MINERVA_QUERY) {
-                true -> withTypes(DatmusicSearchParams.BackendType.MINERVA)
+            when (type) {
+                MEDIA_TYPE_AUDIO_MINERVA_QUERY -> withTypes(DatmusicSearchParams.BackendType.MINERVA)
+                MEDIA_TYPE_AUDIO_FLACS_QUERY -> withTypes(DatmusicSearchParams.BackendType.FLACS)
                 else -> this
             }
         }
@@ -77,6 +84,6 @@ suspend fun MediaId.toQueueTitle(audiosDao: AudiosDao, artistsDao: ArtistsDao, a
     MEDIA_TYPE_AUDIO -> QueueTitle(QueueTitle.Type.AUDIO, audiosDao.entry(value).firstOrNull()?.title)
     MEDIA_TYPE_ARTIST -> QueueTitle(QueueTitle.Type.ARTIST, artistsDao.entry(value).firstOrNull()?.name)
     MEDIA_TYPE_ALBUM -> QueueTitle(QueueTitle.Type.ALBUM, albumsDao.entry(value).firstOrNull()?.title)
-    MEDIA_TYPE_AUDIO_QUERY, MEDIA_TYPE_AUDIO_MINERVA_QUERY -> QueueTitle(QueueTitle.Type.SEARCH, value)
+    MEDIA_TYPE_AUDIO_QUERY, MEDIA_TYPE_AUDIO_MINERVA_QUERY, MEDIA_TYPE_AUDIO_FLACS_QUERY -> QueueTitle(QueueTitle.Type.SEARCH, value)
     else -> QueueTitle()
 }

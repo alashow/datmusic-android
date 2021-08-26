@@ -8,6 +8,8 @@ import android.content.Context
 import android.net.Uri
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.DefaultLoadControl
+import com.google.android.exoplayer2.DefaultRenderersFactory
+import com.google.android.exoplayer2.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackException
@@ -181,7 +183,12 @@ class AudioPlayerImpl @Inject constructor(
     }
 
     private fun createPlayer(owner: AudioPlayerImpl): ExoPlayer {
-        return SimpleExoPlayer.Builder(context)
+        return SimpleExoPlayer.Builder(
+            context,
+            DefaultRenderersFactory(context).apply {
+                setExtensionRendererMode(EXTENSION_RENDERER_MODE_PREFER)
+            }
+        )
             .setLoadControl(object : DefaultLoadControl() {
                 override fun onPrepared() {
                     isPrepared = true

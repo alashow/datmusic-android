@@ -33,7 +33,6 @@ repositories {
 
 dependencies {
 	api project(":modules:data")
-//	api Deps.Utils.fetchOkhttp
 
 	implementation Deps.Dagger.hilt
 	kapt Deps.Dagger.compiler

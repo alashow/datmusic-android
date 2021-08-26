@@ -37,6 +37,9 @@ import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.domain.models.errors.ApiCaptchaError
 import tm.alashow.navigation.QUERY_KEY
+import tm.alashow.navigation.SEARCH_BACKENDS_KEY
+
+const val SEARCH_DEBOUNCE_MILLIS = 400L
 
 @OptIn(FlowPreview::class)
 @HiltViewModel
@@ -44,6 +47,7 @@ internal class SearchViewModel @Inject constructor(
     handle: SavedStateHandle,
     private val audiosPager: ObservePagedDatmusicSearch<Audio>,
     private val minervaPager: ObservePagedDatmusicSearch<Audio>,
+    private val flacsPager: ObservePagedDatmusicSearch<Audio>,
     private val artistsPager: ObservePagedDatmusicSearch<Artist>,
     private val albumsPager: ObservePagedDatmusicSearch<Album>,
     private val snackbarManager: SnackbarManager,
@@ -51,9 +55,10 @@ internal class SearchViewModel @Inject constructor(
     private val playbackConnection: PlaybackConnection,
 ) : ViewModel() {
 
-    private val searchQuery = MutableStateFlow("")
-    private val searchFilter = handle.getStateFlow("search_filter", viewModelScope, SearchFilter())
-    private val searchTrigger = handle.getStateFlow("search_trigger", viewModelScope, SearchTrigger(handle.get(QUERY_KEY) ?: ""))
+    private val initialQuery = handle.get(QUERY_KEY) ?: ""
+    private val searchQuery = MutableStateFlow(initialQuery)
+    private val searchFilter = handle.getStateFlow("search_filter", viewModelScope, SearchFilter.from(handle.get(SEARCH_BACKENDS_KEY)))
+    private val searchTrigger = handle.getStateFlow("search_trigger", viewModelScope, SearchTrigger(initialQuery))
 
     private val captchaError = MutableStateFlow<ApiCaptchaError?>(null)
 
@@ -61,6 +66,7 @@ internal class SearchViewModel @Inject constructor(
 
     val pagedAudioList get() = audiosPager.flow.cachedIn(viewModelScope)
     val pagedMinervaList get() = minervaPager.flow.cachedIn(viewModelScope)
+    val pagedFlacsList get() = flacsPager.flow.cachedIn(viewModelScope)
     val pagedArtistsList get() = artistsPager.flow.cachedIn(viewModelScope)
     val pagedAlbumsList get() = albumsPager.flow.cachedIn(viewModelScope)
 
@@ -90,13 +96,13 @@ internal class SearchViewModel @Inject constructor(
 
         viewModelScope.launch {
             combine(searchTrigger.filterNotNull(), searchFilter.filterNotNull(), ::Pair)
-                .debounce(200)
+                .debounce(SEARCH_DEBOUNCE_MILLIS)
                 .collectLatest { (trigger, filter) ->
                     search(trigger, filter)
                 }
         }
 
-        listOf(audiosPager, artistsPager, albumsPager).forEach { pager ->
+        listOf(audiosPager, minervaPager, flacsPager, artistsPager, albumsPager).forEach { pager ->
             pager.errors().watchForErrors(pager)
         }
     }
@@ -114,6 +120,9 @@ internal class SearchViewModel @Inject constructor(
 
         if (filter.hasMinerva)
             minervaPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(BackendType.MINERVA), MINERVA_PAGING))
+
+        if (filter.hasFlacs)
+            flacsPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(BackendType.FLACS), MINERVA_PAGING))
 
         // don't send queries if backend can't handle empty queries
         if (query.isNotBlank()) {
@@ -135,9 +144,11 @@ internal class SearchViewModel @Inject constructor(
      */
     private fun playAudio(audio: Audio) {
         val query = searchTrigger.value?.query ?: searchQuery.value
-        val isMinerva = searchFilter.value?.hasMinervaOnly == true
-        if (isMinerva) playbackConnection.playWithMinervaQuery(query, audio.id)
-        else playbackConnection.playWithQuery(query, audio.id)
+        when {
+            searchFilter.value?.hasMinerva == true -> playbackConnection.playWithMinervaQuery(query, audio.id)
+            searchFilter.value?.hasFlacs == true -> playbackConnection.playWithFlacsQuery(query, audio.id)
+            else -> playbackConnection.playWithQuery(query, audio.id)
+        }
     }
 
     /**

@@ -4,12 +4,19 @@
  */
 package tm.alashow.datmusic.downloader
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.media.MediaExtractor
+import android.media.MediaMetadataRetriever
+import android.os.Build
 import androidx.documentfile.provider.DocumentFile
 import java.io.FileNotFoundException
+import timber.log.Timber
 import tm.alashow.datmusic.domain.DownloadsSongsGrouping
 import tm.alashow.datmusic.domain.entities.Audio
-
-private val MULTIPLE_ARTIST_SPLIT_REGEX = Regex("((,)|(feat\\.)|(ft\\.))")
+import tm.alashow.datmusic.domain.entities.AudioDownloadItem
+import tm.alashow.datmusic.domain.entities.AudioHeader
 
 val filenameIllegalChars = setOf('|', '/', '\\', '?', '*', '<', '>', '"', ':')
 private fun String.cleanIllegalChars(chars: Set<Char> = filenameIllegalChars, replacement: Char = '_') =
@@ -18,9 +25,6 @@ private fun String.cleanIllegalChars(chars: Set<Char> = filenameIllegalChars, re
 fun DocumentFile.getOrCreateDir(name: String) = findFile(name.cleanIllegalChars())
     ?: createDirectory(name.cleanIllegalChars())
     ?: error("Couldn't create folder:$name")
-
-fun Audio.artists() = artist.split(MULTIPLE_ARTIST_SPLIT_REGEX, 10).map { it.trim() }
-fun Audio.mainArtist() = artist.split(MULTIPLE_ARTIST_SPLIT_REGEX, 10).first().trim()
 
 private fun Audio.createDocumentFile(parent: DocumentFile) = parent.createFile(fileMimeType(), fileDisplayName().cleanIllegalChars())
     ?: error("Couldn't create document file")
@@ -49,4 +53,40 @@ fun Audio.documentFile(parent: DocumentFile, songsGrouping: DownloadsSongsGroupi
             }
         }
     }
+}
+
+fun Audio.artworkFromFile(context: Context): Bitmap? {
+    try {
+        val downloadInfo = audioDownloadItem?.downloadInfo ?: return null
+
+        val metadataRetriever = MediaMetadataRetriever()
+        metadataRetriever.setDataSource(context, downloadInfo.fileUri)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            try {
+                return metadataRetriever.primaryImage
+            } catch (e: Exception) {
+                Timber.e(e)
+            }
+        }
+
+        val data = metadataRetriever.embeddedPicture
+        if (data != null) {
+            return BitmapFactory.decodeByteArray(data, 0, data.size)
+        }
+        return null
+    } catch (e: Exception) {
+        Timber.e(e)
+    }
+    return null
+}
+
+fun AudioDownloadItem.audioHeader(context: Context): AudioHeader {
+    try {
+        val mediaExtractor = MediaExtractor()
+        mediaExtractor.setDataSource(context, downloadInfo.fileUri, null)
+        return AudioHeader.from(this, mediaExtractor.getTrackFormat(0))
+    } catch (e: Exception) {
+        Timber.e(e)
+    }
+    return AudioHeader()
 }

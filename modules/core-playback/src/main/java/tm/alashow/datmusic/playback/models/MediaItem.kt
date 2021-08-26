@@ -12,6 +12,8 @@ import tm.alashow.datmusic.domain.UNKNOWN_ARTIST
 import tm.alashow.datmusic.domain.UNTITLED_SONG
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.CoverImageSize
+import tm.alashow.datmusic.domain.entities.mainArtist
+import tm.alashow.datmusic.playback.album
 import tm.alashow.datmusic.playback.artist
 import tm.alashow.datmusic.playback.artworkUri
 import tm.alashow.datmusic.playback.duration
@@ -76,3 +78,6 @@ fun MediaMetadataCompat.toAudio() = Audio(
     duration = (duration / 1000).toInt(),
     coverUrl = artworkUri.toString()
 )
+
+fun MediaMetadataCompat.toArtistSearchQuery() = "${artist?.mainArtist()}"
+fun MediaMetadataCompat.toAlbumSearchQuery() = "$album"

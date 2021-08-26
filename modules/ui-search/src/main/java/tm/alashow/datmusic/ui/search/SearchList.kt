@@ -10,7 +10,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -81,6 +80,7 @@ internal fun SearchList(viewModel: SearchViewModel, listState: LazyListState) {
         viewModel = viewModel,
         audiosLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedAudioList).collectAsLazyPagingItems(),
         minervaLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedMinervaList).collectAsLazyPagingItems(),
+        flacsLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedFlacsList).collectAsLazyPagingItems(),
         artistsLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedArtistsList).collectAsLazyPagingItems(),
         albumsLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedAlbumsList).collectAsLazyPagingItems(),
         listState = listState,
@@ -92,6 +92,7 @@ internal fun SearchList(
     viewModel: SearchViewModel,
     audiosLazyPagingItems: LazyPagingItems<Audio>,
     minervaLazyPagingItems: LazyPagingItems<Audio>,
+    flacsLazyPagingItems: LazyPagingItems<Audio>,
     artistsLazyPagingItems: LazyPagingItems<Artist>,
     albumsLazyPagingItems: LazyPagingItems<Album>,
     listState: LazyListState,
@@ -108,6 +109,7 @@ internal fun SearchList(
                 BackendType.ARTISTS -> artistsLazyPagingItems
                 BackendType.ALBUMS -> albumsLazyPagingItems
                 BackendType.MINERVA -> minervaLazyPagingItems
+                BackendType.FLACS -> flacsLazyPagingItems
             }
         }.toSet()
         else -> setOf(audiosLazyPagingItems, artistsLazyPagingItems, albumsLazyPagingItems)
@@ -144,6 +146,7 @@ internal fun SearchList(
         SearchListContent(
             audiosLazyPagingItems,
             minervaLazyPagingItems,
+            flacsLazyPagingItems,
             artistsLazyPagingItems,
             albumsLazyPagingItems,
             listState,
@@ -206,6 +209,7 @@ private fun SearchListErrors(
 private fun SearchListContent(
     audiosLazyPagingItems: LazyPagingItems<Audio>,
     minervaAudiosLazyPagingItems: LazyPagingItems<Audio>,
+    flacsAudiosLazyPagingItems: LazyPagingItems<Audio>,
     artistsLazyPagingItems: LazyPagingItems<Artist>,
     albumsLazyPagingItems: LazyPagingItems<Album>,
     listState: LazyListState,
@@ -216,46 +220,48 @@ private fun SearchListContent(
     onPlayAudio: (Audio) -> Unit
 ) {
     LogCompositions(tag = "SearchListContent")
-    BoxWithConstraints {
-        LazyColumn(
-            state = listState,
-            contentPadding = LocalScaffoldPadding.current,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            if (refreshErrorState is LoadState.Error && pagersAreEmpty) {
-                item {
-                    Delayed {
-                        ErrorBox(
-                            title = stringResource(refreshErrorState.error.localizedTitle()),
-                            message = stringResource(refreshErrorState.error.localizedMessage()),
-                            onRetryClick = { retryPagers() },
-                            maxHeight = this@BoxWithConstraints.maxHeight
-                        )
-                    }
-                }
-            }
 
-            // TODO: examine why swiperefresh only works when first list item has some height
+    LazyColumn(
+        state = listState,
+        contentPadding = LocalScaffoldPadding.current,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        if (refreshErrorState is LoadState.Error && pagersAreEmpty) {
             item {
-                Spacer(Modifier.height(1.dp))
+                Delayed {
+                    ErrorBox(
+                        title = stringResource(refreshErrorState.error.localizedTitle()),
+                        message = stringResource(refreshErrorState.error.localizedMessage()),
+                        onRetryClick = { retryPagers() },
+                        modifier = Modifier.fillParentMaxHeight()
+                    )
+                }
+            }
+        }
+
+        // TODO: examine why swiperefresh only works when first list item has some height
+        item {
+            Spacer(Modifier.height(1.dp))
+        }
+
+        if (searchFilter.hasArtists)
+            item("artists") {
+                ArtistList(artistsLazyPagingItems)
             }
 
-            if (searchFilter.hasArtists)
-                item("artists") {
-                    ArtistList(artistsLazyPagingItems)
-                }
+        if (searchFilter.hasAlbums)
+            item("albums") {
+                AlbumList(albumsLazyPagingItems)
+            }
 
-            if (searchFilter.hasAlbums)
-                item("albums") {
-                    AlbumList(albumsLazyPagingItems)
-                }
+        if (searchFilter.hasAudios)
+            audioList(audiosLazyPagingItems, onPlayAudio)
 
-            if (searchFilter.hasAudios)
-                audioList(audiosLazyPagingItems, onPlayAudio)
+        if (searchFilter.hasMinerva)
+            audioList(minervaAudiosLazyPagingItems, onPlayAudio)
 
-            if (searchFilter.hasMinerva)
-                audioList(minervaAudiosLazyPagingItems, onPlayAudio)
-        }
+        if (searchFilter.hasFlacs)
+            audioList(flacsAudiosLazyPagingItems, onPlayAudio)
     }
 }
 

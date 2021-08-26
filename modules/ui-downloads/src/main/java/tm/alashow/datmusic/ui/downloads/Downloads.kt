@@ -4,11 +4,9 @@
  */
 package tm.alashow.datmusic.ui.downloads
 
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Divider
@@ -23,12 +21,11 @@ import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.downloader.DownloadItems
 import tm.alashow.datmusic.ui.downloads.audio.AudioDownload
-import tm.alashow.domain.models.Incomplete
 import tm.alashow.domain.models.Success
 import tm.alashow.domain.models.Uninitialized
 import tm.alashow.ui.components.AppTopBar
 import tm.alashow.ui.components.EmptyErrorBox
-import tm.alashow.ui.components.FullScreenLoading
+import tm.alashow.ui.components.fullScreenLoading
 
 @Composable
 fun Downloads() {
@@ -43,56 +40,41 @@ private fun Downloads(viewModel: DownloadsViewModel) {
     Scaffold(
         topBar = {
             AppTopBar(title = stringResource(R.string.downloads_title))
-        }
+        },
+        modifier = Modifier.fillMaxSize()
     ) { padding ->
-        BoxWithConstraints {
-            when (val downloads = asyncDownloads) {
-                is Success -> {
-                    DownloadsList(
-                        downloads = downloads(),
-                        listState = listState,
-                        paddingValues = padding,
-                        onAudioPlay = viewModel::playAudioDownload
-                    )
-                }
-                is Incomplete -> {
-                    FullScreenLoading()
-                }
+        LazyColumn(
+            state = listState,
+            contentPadding = padding,
+        ) {
+            when (val dls = asyncDownloads) {
+                is Success -> downloadsList(
+                    downloads = dls(),
+                    onAudioPlay = viewModel::playAudioDownload
+                )
+                else -> fullScreenLoading()
             }
         }
     }
 }
 
-@Composable
-fun DownloadsList(
+fun LazyListScope.downloadsList(
     downloads: DownloadItems,
-    listState: LazyListState,
-    modifier: Modifier = Modifier,
-    paddingValues: PaddingValues = PaddingValues(),
     onAudioPlay: (AudioDownloadItem) -> Unit,
 ) {
-    BoxWithConstraints {
-        LazyColumn(
-            state = listState,
-            contentPadding = paddingValues,
-            modifier = modifier.fillMaxSize()
-        ) {
-            val downloadsEmpty = downloads.audios.isEmpty()
-            if (downloadsEmpty) {
-                item {
-                    EmptyErrorBox(
-                        message = stringResource(R.string.downloads_empty),
-                        retryVisible = false,
-                        maxHeight = maxHeight,
-                        maxHeightFraction = .85f
-                    )
-                }
-            }
-
-            itemsIndexed(downloads.audios, { _, it -> it.downloadRequest.id }) { index, it ->
-                if (index != 0) Divider()
-                AudioDownload(it, onAudioPlay)
-            }
+    val downloadsEmpty = downloads.audios.isEmpty()
+    if (downloadsEmpty) {
+        item {
+            EmptyErrorBox(
+                message = stringResource(R.string.downloads_empty),
+                retryVisible = false,
+                modifier = Modifier.fillParentMaxHeight()
+            )
         }
+    }
+
+    itemsIndexed(downloads.audios, { _, it -> it.downloadRequest.id }) { index, it ->
+        if (index != 0) Divider()
+        AudioDownload(it, onAudioPlay)
     }
 }
