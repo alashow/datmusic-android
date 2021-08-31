@@ -25,4 +25,11 @@
     <string name="error.retry">Tekrar dene</string>
     <string name="time.duration">%1$d saat %2$d dakika</string>
     <string name="time.duration.minutes">%1$d dakika</string>
+    <string name="notifications.defaultChannel">Varsayılan Kanal</string>
+    <string name="dialog.confirm.yes">Evet</string>
+    <string name="dialog.ok">Tamam</string>
+    <string name="dialog.dismiss">Kapat</string>
+    <string name="error.network">Bağlantı hatası</string>
+    <string name="error.auth">Yetki hatası</string>
+    <string name="error.serverUnavailable">Sunucu hizmet veremiyor</string>
 </resources>
