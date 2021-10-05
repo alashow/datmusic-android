@@ -229,21 +229,22 @@ fun PlaybackSheetContent(
                     playbackQueue = playbackQueue,
                     onClose = onClose
                 )
-                val topPadding = AppTheme.specs.padding
-                Spacer(Modifier.height(topPadding))
+                Spacer(Modifier.height(AppTheme.specs.paddingTiny))
             }
 
             item {
                 PlaybackPager(
                     nowPlaying = nowPlaying,
-                    modifier = Modifier.fillParentMaxHeight(0.4f)
+                    modifier = Modifier.fillParentMaxHeight(0.45f)
                 ) { audio, _, pagerMod ->
                     val currentArtwork = rememberImagePainter(audio.coverUri(CoverImageSize.LARGE))
                     PlaybackArtwork(currentArtwork, contentColor, nowPlaying, pagerMod)
                 }
             }
 
-            playbackNowPlayingWithControls(nowPlaying, playbackState, contentColor, onClose)
+            item {
+                PlaybackNowPlayingWithControls(nowPlaying, playbackState, contentColor, onClose)
+            }
 
             if (playbackQueue.isValid)
                 item {
@@ -354,30 +355,29 @@ private fun PlaybackArtwork(
     }
 }
 
-private fun LazyListScope.playbackNowPlayingWithControls(
+@Composable
+private fun PlaybackNowPlayingWithControls(
     nowPlaying: MediaMetadataCompat,
     playbackState: PlaybackStateCompat,
     contentColor: Color,
     onClose: Callback,
+    modifier: Modifier = Modifier
 ) {
-    item {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .padding(AppTheme.specs.paddingLarge)
-        ) {
-            PlaybackNowPlaying(nowPlaying = nowPlaying, onClose = onClose)
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier.padding(AppTheme.specs.paddingLarge)
+    ) {
+        PlaybackNowPlaying(nowPlaying = nowPlaying, onClose = onClose)
 
-            PlaybackProgress(
-                playbackState = playbackState,
-                contentColor = contentColor
-            )
+        PlaybackProgress(
+            playbackState = playbackState,
+            contentColor = contentColor
+        )
 
-            PlaybackControls(
-                playbackState = playbackState,
-                contentColor = contentColor,
-            )
-        }
+        PlaybackControls(
+            playbackState = playbackState,
+            contentColor = contentColor,
+        )
     }
 }
 
