@@ -23,7 +23,7 @@ class PlaylistsRepo @Inject constructor(
     private val playlistAudiosDao: PlaylistsWithAudiosDao,
 ) : RoomRepo<Playlist>(dao, dispatchers) {
 
-    suspend fun createPlaylist(playlist: Playlist, audioIds: List<String>) {
+    suspend fun createPlaylist(playlist: Playlist, audioIds: List<String> = listOf()) {
         withContext(dispatchers.io) {
             val playlistId = dao.insert(playlist)
             addAudiosToPlaylist(playlistId, audioIds)

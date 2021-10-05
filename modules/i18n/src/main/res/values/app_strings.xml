@@ -63,6 +63,7 @@
     <string name="library.title">Library</string>
     <string name="library.empty">No items</string>
     <string name="library.createPlaylist">Create playlist</string>
+    <string name="library.createPlaylist.placeholder">Playlist name</string>
 
     <string name="playback.queueTitle.audio">Playing from queue</string>
     <string name="playback.queueTitle.downloads">Playing from downloads</string>
