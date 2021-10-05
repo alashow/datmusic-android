@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -237,7 +236,7 @@ fun PlaybackSheetContent(
             item {
                 PlaybackPager(
                     nowPlaying = nowPlaying,
-                    modifier = Modifier.height(IntrinsicSize.Min)
+                    modifier = Modifier.fillParentMaxHeight(0.4f)
                 ) { audio, _, pagerMod ->
                     val currentArtwork = rememberImagePainter(audio.coverUri(CoverImageSize.LARGE))
                     PlaybackArtwork(currentArtwork, contentColor, nowPlaying, pagerMod)
@@ -337,7 +336,6 @@ private fun PlaybackArtwork(
         bitmapPlaceholder = nowPlaying.artwork,
         modifier = Modifier
             .padding(horizontal = AppTheme.specs.paddingLarge)
-            .fillMaxWidth()
             .then(modifier)
     ) { imageMod ->
         Image(

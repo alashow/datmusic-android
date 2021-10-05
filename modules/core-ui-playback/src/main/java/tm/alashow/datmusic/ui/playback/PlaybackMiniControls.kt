@@ -99,8 +99,8 @@ fun PlaybackMiniControls(
     AnimatedVisibility(
         visible = visible,
         modifier = modifier,
-        enter = slideInVertically({ it / 2 }),
-        exit = slideOutVertically({ it / 2 })
+        enter = slideInVertically(initialOffsetY = { it / 2 }),
+        exit = slideOutVertically(targetOffsetY = { it / 2 })
     ) {
         PlaybackMiniControls(
             playbackState = playbackState,

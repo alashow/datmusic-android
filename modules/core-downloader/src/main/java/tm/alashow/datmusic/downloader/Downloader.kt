@@ -307,7 +307,12 @@ class Downloader @Inject constructor(
 
     fun requestNewDownloadsLocations() = downloaderEvent(DownloaderEvent.ChooseDownloadsLocation)
 
-    suspend fun setDownloadsLocation(uri: Uri) {
+    suspend fun setDownloadsLocation(uri: Uri?) {
+        if (uri == null) {
+            Timber.e("Downloads URI is null")
+            downloaderMessage(DownloadsUnknownError)
+            return
+        }
         analytics.event("downloads.setDownloadsLocation", mapOf("uri" to uri))
         val takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
         appContext.contentResolver.takePersistableUriPermission(uri, takeFlags)
