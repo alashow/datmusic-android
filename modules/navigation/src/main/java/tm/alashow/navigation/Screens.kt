@@ -42,6 +42,7 @@ sealed class RootScreen(
 ) : Screen {
     object Search : RootScreen("search_root", LeafScreen.Search)
     object Downloads : RootScreen("downloads_root", LeafScreen.Downloads)
+    object Library : RootScreen("library_root", LeafScreen.Library)
     object Settings : RootScreen("settings_root", LeafScreen.Settings)
 }
 
@@ -76,6 +77,8 @@ sealed class LeafScreen(
     }
 
     object Downloads : LeafScreen("downloads")
+
+    object Library : LeafScreen("library")
 
     object Settings : LeafScreen("settings")
 

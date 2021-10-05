@@ -9,16 +9,14 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Icon
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
 import androidx.compose.material.IconButton
-import androidx.compose.material.Text
-import androidx.compose.material.contentColorFor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -35,20 +33,67 @@ import tm.alashow.ui.theme.topAppBarTitleStyleSmall
 import tm.alashow.ui.theme.translucentSurface
 import tm.alashow.ui.theme.translucentSurfaceColor
 
+private val AppBarHorizontalPadding = 4.dp
+
+private val TitleInsetWithoutIcon = Modifier.width(16.dp - AppBarHorizontalPadding)
+private val TitleIconModifier = Modifier
+    .fillMaxHeight()
+    .width(72.dp - AppBarHorizontalPadding)
+
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun AppTopBar(title: String, modifier: Modifier = Modifier) {
-    Box(
+fun AppTopBar(
+    modifier: Modifier = Modifier,
+    title: String,
+    titleContent: @Composable () -> Unit = {
+        Text(
+            title,
+            style = topAppBarTitleStyle()
+        )
+    },
+    navigationIcon: @Composable (() -> Unit)? = null,
+    actions: @Composable RowScope.() -> Unit = {},
+    actionsContentAlpha: Float = ContentAlpha.medium
+) {
+    Row(
         modifier = modifier
             .fillMaxWidth()
             .translucentSurface()
             .statusBarsPadding()
+            .padding(vertical = AppTheme.specs.padding)
+            .padding(end = AppTheme.specs.padding),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            title,
-            style = topAppBarTitleStyle(),
-            modifier = Modifier.padding(AppTheme.specs.padding)
-        )
+        if (navigationIcon == null) {
+            Spacer(TitleInsetWithoutIcon)
+        } else {
+            Row(TitleIconModifier, verticalAlignment = Alignment.CenterVertically) {
+                CompositionLocalProvider(
+                    LocalContentAlpha provides ContentAlpha.high,
+                    content = navigationIcon
+                )
+            }
+        }
+
+        Row(
+            Modifier.weight(1f),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            ProvideTextStyle(value = MaterialTheme.typography.h6) {
+                CompositionLocalProvider(
+                    LocalContentAlpha provides ContentAlpha.high,
+                    content = titleContent
+                )
+            }
+        }
+
+        CompositionLocalProvider(LocalContentAlpha provides actionsContentAlpha) {
+            Row(
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically,
+                content = actions
+            )
+        }
     }
 }
 

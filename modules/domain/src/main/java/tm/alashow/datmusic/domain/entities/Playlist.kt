@@ -29,7 +29,9 @@ data class Playlist(
 
     @ColumnInfo(name = "params")
     override var params: String = "",
-) : BaseEntity
+) : BaseEntity, LibraryItem {
+    override fun getLabel() = name
+}
 
 @Entity(
     tableName = "playlist_audios",

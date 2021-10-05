@@ -52,6 +52,7 @@ internal fun AppNavigation(
     ) {
         addSearchRoot(navController)
         addDownloadsRoot(navController)
+        addLibraryRoot(navController)
         addSettingsRoot(navController)
     }
 }
@@ -73,6 +74,18 @@ private fun NavGraphBuilder.addDownloadsRoot(navController: NavController) {
         startDestination = LeafScreen.Downloads.route
     ) {
         addDownloads(navController)
+    }
+}
+
+private fun NavGraphBuilder.addLibraryRoot(navController: NavController) {
+    navigation(
+        route = RootScreen.Library.route,
+        startDestination = LeafScreen.Library.route
+    ) {
+        addLibrary(navController)
+        addSearch(navController)
+        addArtistDetails(navController)
+        addAlbumDetails(navController)
     }
 }
 
@@ -103,6 +116,12 @@ private fun NavGraphBuilder.addDownloads(navController: NavController) {
     }
 }
 
+private fun NavGraphBuilder.addLibrary(navController: NavController) {
+    composableScreen(LeafScreen.Library) {
+        Library()
+    }
+}
+
 private fun NavGraphBuilder.addArtistDetails(navController: NavController) {
     composableScreen(LeafScreen.ArtistDetails) {
         ArtistDetail()
@@ -123,19 +142,11 @@ private fun NavGraphBuilder.addAlbumDetails(navController: NavController) {
 @Composable
 internal fun NavController.currentScreenAsState(): State<RootScreen> {
     val selectedItem = remember { mutableStateOf<RootScreen>(RootScreen.Search) }
-
+    val rootScreens = listOf(RootScreen.Search, RootScreen.Downloads, RootScreen.Library, RootScreen.Settings)
     DisposableEffect(this) {
         val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
-            when {
-                destination.hierarchy.any { it.route == RootScreen.Search.route } -> {
-                    selectedItem.value = RootScreen.Search
-                }
-                destination.hierarchy.any { it.route == RootScreen.Downloads.route } -> {
-                    selectedItem.value = RootScreen.Downloads
-                }
-                destination.hierarchy.any { it.route == RootScreen.Settings.route } -> {
-                    selectedItem.value = RootScreen.Settings
-                }
+            rootScreens.firstOrNull { rs -> destination.hierarchy.any { it.route == rs.route } }?.let {
+                selectedItem.value = it
             }
         }
         addOnDestinationChangedListener(listener)
