@@ -10,7 +10,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -221,49 +220,48 @@ private fun SearchListContent(
     onPlayAudio: (Audio) -> Unit
 ) {
     LogCompositions(tag = "SearchListContent")
-    BoxWithConstraints {
-        LazyColumn(
-            state = listState,
-            contentPadding = LocalScaffoldPadding.current,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            if (refreshErrorState is LoadState.Error && pagersAreEmpty) {
-                item {
-                    Delayed {
-                        ErrorBox(
-                            title = stringResource(refreshErrorState.error.localizedTitle()),
-                            message = stringResource(refreshErrorState.error.localizedMessage()),
-                            onRetryClick = { retryPagers() },
-                            maxHeight = this@BoxWithConstraints.maxHeight
-                        )
-                    }
-                }
-            }
 
-            // TODO: examine why swiperefresh only works when first list item has some height
+    LazyColumn(
+        state = listState,
+        contentPadding = LocalScaffoldPadding.current,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        if (refreshErrorState is LoadState.Error && pagersAreEmpty) {
             item {
-                Spacer(Modifier.height(1.dp))
+                Delayed {
+                    ErrorBox(
+                        title = stringResource(refreshErrorState.error.localizedTitle()),
+                        message = stringResource(refreshErrorState.error.localizedMessage()),
+                        onRetryClick = { retryPagers() },
+                        modifier = Modifier.fillParentMaxHeight()
+                    )
+                }
+            }
+        }
+
+        // TODO: examine why swiperefresh only works when first list item has some height
+        item {
+            Spacer(Modifier.height(1.dp))
+        }
+
+        if (searchFilter.hasArtists)
+            item("artists") {
+                ArtistList(artistsLazyPagingItems)
             }
 
-            if (searchFilter.hasArtists)
-                item("artists") {
-                    ArtistList(artistsLazyPagingItems)
-                }
+        if (searchFilter.hasAlbums)
+            item("albums") {
+                AlbumList(albumsLazyPagingItems)
+            }
 
-            if (searchFilter.hasAlbums)
-                item("albums") {
-                    AlbumList(albumsLazyPagingItems)
-                }
+        if (searchFilter.hasAudios)
+            audioList(audiosLazyPagingItems, onPlayAudio)
 
-            if (searchFilter.hasAudios)
-                audioList(audiosLazyPagingItems, onPlayAudio)
+        if (searchFilter.hasMinerva)
+            audioList(minervaAudiosLazyPagingItems, onPlayAudio)
 
-            if (searchFilter.hasMinerva)
-                audioList(minervaAudiosLazyPagingItems, onPlayAudio)
-
-            if (searchFilter.hasFlacs)
-                audioList(flacsAudiosLazyPagingItems, onPlayAudio)
-        }
+        if (searchFilter.hasFlacs)
+            audioList(flacsAudiosLazyPagingItems, onPlayAudio)
     }
 }
 

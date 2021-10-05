@@ -6,7 +6,6 @@ package tm.alashow.datmusic.ui.artist
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,7 +28,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.ui.Scaffold
 import kotlin.math.round
@@ -56,7 +54,7 @@ import tm.alashow.ui.OffsetNotifyingBox
 import tm.alashow.ui.components.CollapsingTopBar
 import tm.alashow.ui.components.EmptyErrorBox
 import tm.alashow.ui.components.ErrorBox
-import tm.alashow.ui.components.FullScreenLoading
+import tm.alashow.ui.components.fullScreenLoading
 import tm.alashow.ui.theme.AppTheme
 
 @Composable
@@ -99,41 +97,37 @@ private fun ArtistDetailList(
     padding: PaddingValues = PaddingValues(),
     listState: LazyListState,
 ) {
-    BoxWithConstraints {
-        LazyColumn(
-            state = listState,
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = padding.calculateTopPadding() + padding.calculateBottomPadding())
-        ) {
-            val artist = viewState.artist
-            if (artist != null) {
-                var scrolledY = 0f
-                var previousOffset = 0
-                val parallax = 0.3f
-                item {
-                    CoverHeaderRow(
-                        title = artist.name,
-                        imageRequest = artist.largePhoto(),
-                        modifier = Modifier.graphicsLayer {
-                            scrolledY += listState.firstVisibleItemScrollOffset - previousOffset
-                            translationY = scrolledY * parallax
-                            previousOffset = listState.firstVisibleItemScrollOffset
-                        }
-                    )
-                }
-
-                val details = viewState.artistDetails
-                val detailsLoading = details is Incomplete
-
-                val (artistAlbums, artistAudios) = artistDetails(details, detailsLoading)
-
-                artistDetailsFail(details, onRetry, maxHeight)
-                artistDetailsEmpty(details, artistAlbums.isEmpty() && artistAudios.isEmpty(), onRetry, maxHeight)
-            } else {
-                item {
-                    FullScreenLoading()
-                }
+    LazyColumn(
+        state = listState,
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(bottom = padding.calculateTopPadding() + padding.calculateBottomPadding())
+    ) {
+        val artist = viewState.artist
+        if (artist != null) {
+            var scrolledY = 0f
+            var previousOffset = 0
+            val parallax = 0.3f
+            item {
+                CoverHeaderRow(
+                    title = artist.name,
+                    imageRequest = artist.largePhoto(),
+                    modifier = Modifier.graphicsLayer {
+                        scrolledY += listState.firstVisibleItemScrollOffset - previousOffset
+                        translationY = scrolledY * parallax
+                        previousOffset = listState.firstVisibleItemScrollOffset
+                    }
+                )
             }
+
+            val details = viewState.artistDetails
+            val detailsLoading = details is Incomplete
+
+            val (artistAlbums, artistAudios) = artistDetails(details, detailsLoading)
+
+            artistDetailsFail(details, onRetry)
+            artistDetailsEmpty(details, artistAlbums.isEmpty() && artistAudios.isEmpty(), onRetry)
+        } else {
+            fullScreenLoading()
         }
     }
 }
@@ -206,7 +200,6 @@ private fun LazyListScope.artistDetails(
 private fun LazyListScope.artistDetailsFail(
     details: Async<Artist>,
     onRetry: () -> Unit,
-    maxHeight: Dp,
 ) {
     if (details is Fail) {
         item {
@@ -214,7 +207,7 @@ private fun LazyListScope.artistDetailsFail(
                 title = stringResource(details.error.localizedTitle()),
                 message = stringResource(details.error.localizedMessage()),
                 onRetryClick = onRetry,
-                maxHeight = maxHeight
+                modifier = Modifier.fillParentMaxHeight()
             )
         }
     }
@@ -224,13 +217,12 @@ private fun LazyListScope.artistDetailsEmpty(
     details: Async<Artist>,
     detailsEmpty: Boolean,
     onRetry: () -> Unit,
-    maxHeight: Dp,
 ) {
     if (details is Success && detailsEmpty) {
         item {
             EmptyErrorBox(
                 onRetryClick = onRetry,
-                maxHeight = maxHeight
+                modifier = Modifier.fillParentMaxHeight()
             )
         }
     }

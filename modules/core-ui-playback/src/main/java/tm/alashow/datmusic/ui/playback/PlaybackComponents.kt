@@ -48,11 +48,7 @@ fun PlaybackPager(
         return
     }
 
-    val pagerState = rememberPagerState(
-        pageCount = playbackQueue.list.size,
-        initialPage = playbackCurrentIndex,
-        initialOffscreenLimit = 3
-    )
+    val pagerState = rememberPagerState(initialPage = playbackCurrentIndex)
 
     LaunchedEffect(playbackCurrentIndex, pagerState) {
         if (playbackCurrentIndex != pagerState.currentPage) {
@@ -67,7 +63,11 @@ fun PlaybackPager(
         }
     }
 
-    HorizontalPager(state = pagerState, modifier = modifier) { page ->
+    HorizontalPager(
+        count = playbackQueue.list.size,
+        state = pagerState,
+        modifier = modifier
+    ) { page ->
         val currentAudio = playbackQueue.audiosList.getOrNull(page) ?: Audio()
 
         val pagerMod = Modifier.graphicsLayer {

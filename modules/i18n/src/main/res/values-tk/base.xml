@@ -1,2 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="notifications.defaultChannel">Gaýybana kanal</string>
+    <string name="generic.back">Yza</string>
+    <string name="generic.close">Ýap</string>
+    <string name="generic.clipboard.copied">Nusgala</string>
+    <string name="generic.clear">Poz</string>
+    <string name="dialog.warning">Duýduryş</string>
+    <string name="dialog.confirm">Tassykla</string>
+    <string name="dialog.confirm.no">Ýok</string>
+    <string name="dialog.confirm.yes">\@string/dialog.ok</string>
+    <string name="dialog.ok">\@android:string/ok</string>
+    <string name="dialog.dismiss">\@string/generic.close</string>
+    <string name="unknown">Näbelli</string>
+    <string name="error.title">Ýalňyşlyk</string>
+    <string name="error.subtitle">Whoops :(</string>
+    <string name="error.tryAgain">Täzeden barla</string>
+    <string name="error.network">Aragatnaşyk ýalňyşlygy</string>
+    <string name="error.server">Serwer ýalňyşlygy</string>
+    <string name="error.auth">Awtorizasiýa ýalňyşlygy</string>
+    <string name="error.noAuth">Içeri girmeli</string>
+    <string name="error.notFound">Tapylmady</string>
+    <string name="error.api">API ýalňyşlygy</string>
+    <string name="error.errorLogOut">Çykyp bolmady, app sazlamary pozup görüň</string>
+    <string name="error.empty.title">Boş</string>
+    <string name="error.alreadyLogined">Eýýäm içeri girilen</string>
+    <string name="error.empty">Hiçzat ýok</string>
+    <string name="error.blank">Boş bolmaly däl</string>
+    <string name="error.unknown">Näbelli ýalňyşlyk</string>
+    <string name="error.loading">Ýükläp bolmady. Täzeden barlamak üçin basyň</string>
+    <string name="error.retry">Täzeden</string>
+    <string name="error.serverUnavailable">Serwer el ýeterli däl</string>
+    <string name="time.duration">%1$d sag %2$d min.</string>
+    <string name="time.duration.minutes">%1$d minut</string>
+</resources>

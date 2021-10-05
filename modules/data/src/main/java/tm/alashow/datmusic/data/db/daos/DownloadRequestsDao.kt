@@ -17,6 +17,14 @@ abstract class DownloadRequestsDao : BaseDao<DownloadRequest>() {
 
     @Transaction
     @Query("SELECT * FROM download_requests ORDER BY id")
+    abstract override fun entries(): Flow<List<DownloadRequest>>
+
+    @Transaction
+    @Query("SELECT * FROM download_requests WHERE entity_type = :type ORDER BY id")
+    abstract fun entriesObservableByType(type: DownloadRequest.Type): Flow<List<DownloadRequest>>
+
+    @Transaction
+    @Query("SELECT * FROM download_requests ORDER BY id")
     abstract fun entriesObservable(): Flow<List<DownloadRequest>>
 
     @Transaction
@@ -40,10 +48,10 @@ abstract class DownloadRequestsDao : BaseDao<DownloadRequest>() {
     abstract override fun entriesById(ids: List<String>): Flow<List<DownloadRequest>>
 
     @Query("DELETE FROM download_requests WHERE id = :id")
-    abstract override suspend fun delete(id: String)
+    abstract override suspend fun delete(id: String): Int
 
     @Query("DELETE FROM download_requests")
-    abstract override suspend fun deleteAll()
+    abstract override suspend fun deleteAll(): Int
 
     @Query("SELECT COUNT(*) from download_requests where id = :id")
     abstract override suspend fun has(id: String): Int

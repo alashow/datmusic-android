@@ -1,2 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="notifications.defaultChannel">Канал по умолчанию</string>
+    <string name="generic.back">Назад</string>
+    <string name="generic.close">Закрыть</string>
+    <string name="generic.clear">Очистить</string>
+    <string name="generic.clipboard.copied">Копировать</string>
+    <string name="dialog.warning">Предупреждение</string>
+    <string name="dialog.confirm">Подтверждать</string>
+    <string name="dialog.confirm.no">Нет</string>
+    <string name="dialog.confirm.yes">\@string/dialog.ok</string>
+    <string name="dialog.ok">\@android:string/ok</string>
+    <string name="dialog.dismiss">\@string/generic.close</string>
+    <string name="unknown">Неизвестный</string>
+    <string name="error.title">Ошибка</string>
+    <string name="error.subtitle">Упс :(</string>
+    <string name="error.tryAgain">Попробуйте заново</string>
+    <string name="error.network">Ошибка сети</string>
+    <string name="error.server">Ошибка сервера</string>
+    <string name="error.auth">Ошибка авторизации</string>
+    <string name="error.noAuth">Вам необходимо авторизоваться</string>
+    <string name="error.notFound">Не найден</string>
+    <string name="error.api">Ошибка API</string>
+    <string name="error.empty.title">Пусто</string>
+    <string name="error.empty">Нет результата</string>
+    <string name="error.blank">Не может быть пустым</string>
+    <string name="error.unknown">Неизвестная ошибка</string>
+    <string name="error.errorLogOut">Не удалось выйти из системы, попробуйте сбросить настройки приложение</string>
+    <string name="error.alreadyLogined">Вы авторизованы</string>
+    <string name="error.loading">Загрузка не удалась. Нажмите, чтобы повторить попытку</string>
+    <string name="error.retry">Заново</string>
+    <string name="error.serverUnavailable">Сервер не доступен</string>
+    <string name="time.duration">%1$d час %2$d мин.</string>
+    <string name="time.duration.minutes">%1$d минут</string>
+</resources>

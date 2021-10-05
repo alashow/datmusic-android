@@ -46,6 +46,7 @@ dependencies {
 	kapt Deps.Dagger.hiltCompiler
 
 	implementation Deps.Android.Room.ktx
+	implementation Deps.Android.Room.paging
 	kapt Deps.Android.Room.compiler
 
 	api Deps.Android.Paging.runtime

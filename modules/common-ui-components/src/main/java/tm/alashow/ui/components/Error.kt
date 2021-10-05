@@ -6,11 +6,8 @@ package tm.alashow.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
@@ -22,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -38,16 +34,12 @@ fun EmptyErrorBox(
     message: String = stringResource(R.string.error_empty),
     retryVisible: Boolean = true,
     onRetryClick: () -> Unit = {},
-    maxHeight: Dp? = null,
-    maxHeightFraction: Float = 0.7f,
 ) {
     ErrorBox(
         title = stringResource(R.string.error_empty_title),
         message = message,
         retryVisible = retryVisible,
         onRetryClick = onRetryClick,
-        maxHeight = maxHeight,
-        maxHeightPercent = maxHeightFraction,
         modifier = modifier
     )
 }
@@ -59,12 +51,15 @@ fun ErrorBox(
     title: String = stringResource(R.string.error_title),
     message: String = stringResource(R.string.error_unknown),
     retryVisible: Boolean = true,
-    onRetryClick: () -> Unit = {},
-    maxHeight: Dp? = null,
-    maxHeightPercent: Float = 0.7f,
+    onRetryClick: () -> Unit = {}
 ) {
-    ErrorBox(maxHeight = maxHeight, maxHeightPercent = maxHeightPercent) {
-        val loadingYOffset = (-130).dp
+    val loadingYOffset = 130.dp
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .fillMaxWidth()
+            .offset(y = loadingYOffset / 3f)
+    ) {
         val wavesComposition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.waves))
 
         Zoomable {
@@ -73,8 +68,7 @@ fun ErrorBox(
                 speed = 0.5f,
                 iterations = LottieConstants.IterateForever,
                 dynamicProperties = colorFilterDynamicProperty(MaterialTheme.colors.secondary.copy(alpha = 0.1f)),
-                modifier = Modifier
-                    .offset(y = loadingYOffset)
+                modifier = Modifier.offset(y = -loadingYOffset)
             )
         }
 
@@ -94,25 +88,5 @@ fun ErrorBox(
                     modifier = Modifier.padding(top = AppTheme.specs.padding)
                 )
         }
-    }
-}
-
-@Composable
-fun ErrorBox(
-    modifier: Modifier = Modifier,
-    maxHeight: Dp? = null,
-    maxHeightPercent: Float = 0.7f,
-    content: @Composable BoxScope.() -> Unit,
-) {
-    val boxModifier = when (maxHeight != null) {
-        true -> modifier.height(maxHeight.times(maxHeightPercent))
-        else -> modifier.fillMaxHeight()
-    }
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = boxModifier
-            .fillMaxWidth()
-    ) {
-        content()
     }
 }

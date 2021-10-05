@@ -55,7 +55,7 @@ internal class SearchViewModel @Inject constructor(
     private val playbackConnection: PlaybackConnection,
 ) : ViewModel() {
 
-    val initialQuery = handle.get(QUERY_KEY) ?: ""
+    private val initialQuery = handle.get(QUERY_KEY) ?: ""
     private val searchQuery = MutableStateFlow(initialQuery)
     private val searchFilter = handle.getStateFlow("search_filter", viewModelScope, SearchFilter.from(handle.get(SEARCH_BACKENDS_KEY)))
     private val searchTrigger = handle.getStateFlow("search_trigger", viewModelScope, SearchTrigger(initialQuery))
@@ -121,15 +121,15 @@ internal class SearchViewModel @Inject constructor(
         if (filter.hasMinerva)
             minervaPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(BackendType.MINERVA), MINERVA_PAGING))
 
+        if (filter.hasFlacs)
+            flacsPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(BackendType.FLACS), MINERVA_PAGING))
+
         // don't send queries if backend can't handle empty queries
         if (query.isNotBlank()) {
             if (filter.hasArtists)
                 artistsPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(BackendType.ARTISTS)))
             if (filter.hasAlbums)
                 albumsPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(BackendType.ALBUMS)))
-
-            if (filter.hasFlacs)
-                flacsPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(BackendType.FLACS), MINERVA_PAGING))
         }
     }
 

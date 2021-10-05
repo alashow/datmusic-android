@@ -349,10 +349,11 @@ class DatmusicPlayerImpl @Inject constructor(
     }
 
     override suspend fun previousAudio() {
-        queueManager.previousAudioIndex?.let {
-            playAudio(queueManager.queue[it], it)
-            logEvent("previousAudio")
-        } ?: repeatAudio()
+        if (queueManager.queue.isNotEmpty())
+            queueManager.previousAudioIndex?.let {
+                playAudio(queueManager.queue[it], it)
+                logEvent("previousAudio")
+            } ?: repeatAudio()
     }
 
     override suspend fun repeatAudio() {
@@ -361,12 +362,14 @@ class DatmusicPlayerImpl @Inject constructor(
     }
 
     override suspend fun repeatQueue() {
-        if (queueManager.currentAudioId == queueManager.queue.last())
-            playAudio(queueManager.queue.first())
-        else {
-            nextAudio()
+        if (queueManager.queue.isNotEmpty()) {
+            if (queueManager.currentAudioId == queueManager.queue.last())
+                playAudio(queueManager.queue.first())
+            else {
+                nextAudio()
+            }
+            logEvent("repeatQueue")
         }
-        logEvent("repeatQueue")
     }
 
     override fun playNext(id: String) {

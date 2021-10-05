@@ -224,8 +224,8 @@ private fun ColumnScope.SearchFilterPanel(
 ) {
     AnimatedVisibility(
         visible = visible,
-        enter = expandIn(Alignment.TopCenter) + fadeIn(),
-        exit = shrinkOut(Alignment.BottomCenter) + fadeOut()
+        enter = expandIn(expandFrom = Alignment.TopCenter) + fadeIn(),
+        exit = shrinkOut(shrinkTowards = Alignment.BottomCenter) + fadeOut()
     ) {
         ChipsRow(
             items = BackendType.values().toList(),
@@ -268,8 +268,8 @@ fun SearchTextField(
         trailingIcon = {
             AnimatedVisibility(
                 visible = value.text.isNotEmpty(),
-                enter = expandIn(Alignment.Center),
-                exit = shrinkOut(Alignment.Center)
+                enter = expandIn(expandFrom = Alignment.Center),
+                exit = shrinkOut(shrinkTowards = Alignment.Center)
             ) {
                 IconButton(
                     onClick = {

@@ -69,7 +69,11 @@ fun Settings(
 }
 
 @Composable
-private fun Settings(themeState: ThemeState, setThemeState: (ThemeState) -> Unit, settingsLinks: SettingsLinks = emptyList()) {
+private fun Settings(
+    themeState: ThemeState,
+    setThemeState: (ThemeState) -> Unit,
+    settingsLinks: SettingsLinks = emptyList()
+) {
     Scaffold(
         topBar = {
             AppTopBar(title = stringResource(R.string.settings_title))
@@ -80,7 +84,12 @@ private fun Settings(themeState: ThemeState, setThemeState: (ThemeState) -> Unit
 }
 
 @Composable
-fun SettingsList(themeState: ThemeState, setThemeState: (ThemeState) -> Unit, settingsLinks: SettingsLinks, paddings: PaddingValues) {
+fun SettingsList(
+    themeState: ThemeState,
+    setThemeState: (ThemeState) -> Unit,
+    settingsLinks: SettingsLinks,
+    paddings: PaddingValues
+) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
         modifier = Modifier.fillMaxWidth(),
@@ -89,7 +98,7 @@ fun SettingsList(themeState: ThemeState, setThemeState: (ThemeState) -> Unit, se
         settingsThemeSection(themeState, setThemeState)
         settingsDownloadsSection()
         settingsAboutSection()
-        settingsListsSection(settingsLinks)
+        settingsLinksSection(settingsLinks)
     }
 }
 
@@ -177,7 +186,7 @@ fun LazyListScope.settingsAboutSection() {
     }
 }
 
-fun LazyListScope.settingsListsSection(settingsLinks: SettingsLinks) {
+fun LazyListScope.settingsLinksSection(settingsLinks: SettingsLinks) {
     settingsLinks.forEach { settingsLink ->
         item {
             settingsLink.localizedCategory?.let { category ->

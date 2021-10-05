@@ -52,5 +52,11 @@ class DatabaseModule {
     fun albumsDaoBase(db: AppDatabase): PaginatedEntryDao<DatmusicSearchParams, Album> = db.albumsDao()
 
     @Provides
+    fun playlistsDao(db: AppDatabase) = db.playlistsDao()
+
+    @Provides
+    fun playlistsWithAudiosDao(db: AppDatabase) = db.playlistsWithAudiosDao()
+
+    @Provides
     fun downloadRequestsDao(db: AppDatabase) = db.downloadRequestsDao()
 }

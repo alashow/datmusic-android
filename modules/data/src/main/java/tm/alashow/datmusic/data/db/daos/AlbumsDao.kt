@@ -15,6 +15,15 @@ import tm.alashow.datmusic.domain.entities.Album
 
 @Dao
 abstract class AlbumsDao : PaginatedEntryDao<DatmusicSearchParams, Album>() {
+
+    @Transaction
+    @Query("DELETE FROM albums WHERE title NOT IN (:titles)")
+    abstract suspend fun deleteExcept(titles: Set<String>): Int
+
+    @Transaction
+    @Query("SELECT * FROM albums ORDER BY page ASC, search_index ASC")
+    abstract override fun entries(): Flow<List<Album>>
+
     @Transaction
     @Query("SELECT * FROM albums WHERE params = :params and page = :page ORDER BY page ASC, search_index ASC")
     abstract override fun entriesObservable(params: DatmusicSearchParams, page: Int): Flow<List<Album>>
@@ -44,16 +53,16 @@ abstract class AlbumsDao : PaginatedEntryDao<DatmusicSearchParams, Album>() {
     abstract override fun entryNullable(id: String): Flow<Album?>
 
     @Query("DELETE FROM albums WHERE id = :id")
-    abstract override suspend fun delete(id: String)
+    abstract override suspend fun delete(id: String): Int
 
     @Query("DELETE FROM albums WHERE params = :params")
-    abstract override suspend fun delete(params: DatmusicSearchParams)
+    abstract override suspend fun delete(params: DatmusicSearchParams): Int
 
     @Query("DELETE FROM albums WHERE params = :params and page = :page")
-    abstract override suspend fun delete(params: DatmusicSearchParams, page: Int)
+    abstract override suspend fun delete(params: DatmusicSearchParams, page: Int): Int
 
     @Query("DELETE FROM albums")
-    abstract override suspend fun deleteAll()
+    abstract override suspend fun deleteAll(): Int
 
     @Query("SELECT MAX(page) from albums WHERE params = :params")
     abstract override suspend fun getLastPage(params: DatmusicSearchParams): Int?

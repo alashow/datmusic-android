@@ -14,9 +14,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -222,45 +220,44 @@ fun PlaybackSheetContent(
             DismissableSnackbarHost(it, modifier = Modifier.navigationBarsPadding())
         },
     ) { paddingValues ->
-        BoxWithConstraints {
-            LazyColumn(
-                state = listState,
-                contentPadding = paddingValues,
-            ) {
-                item {
-                    PlaybackSheetTopBar(
-                        playbackQueue = playbackQueue,
-                        onClose = onClose
-                    )
-                    val topPadding = AppTheme.specs.padding
-                    Spacer(Modifier.height(topPadding))
-                }
-
-                item {
-                    PlaybackPager(
-                        nowPlaying = nowPlaying,
-                        modifier = Modifier.height(IntrinsicSize.Min)
-                    ) { audio, _, pagerMod ->
-                        val currentArtwork = rememberImagePainter(audio.coverUri(CoverImageSize.LARGE))
-                        PlaybackArtwork(currentArtwork, contentColor, nowPlaying, pagerMod)
-                    }
-                }
-
-                playbackNowPlayingWithControls(nowPlaying, playbackState, contentColor, onClose)
-
-                if (playbackQueue.isValid)
-                    item {
-                        PlaybackAudioInfo(audio = playbackQueue.currentAudio)
-                    }
-
-                playbackQueue(
+        LazyColumn(
+            state = listState,
+            contentPadding = paddingValues,
+        ) {
+            item {
+                PlaybackSheetTopBar(
                     playbackQueue = playbackQueue,
-                    scrollToTop = scrollToTop,
-                    playbackConnection = playbackConnection,
+                    onClose = onClose
                 )
-
-                item { Spacer(Modifier.navigationBarsHeight()) }
+                Spacer(Modifier.height(AppTheme.specs.paddingTiny))
             }
+
+            item {
+                PlaybackPager(
+                    nowPlaying = nowPlaying,
+                    modifier = Modifier.fillParentMaxHeight(0.45f)
+                ) { audio, _, pagerMod ->
+                    val currentArtwork = rememberImagePainter(audio.coverUri(CoverImageSize.LARGE))
+                    PlaybackArtwork(currentArtwork, contentColor, nowPlaying, pagerMod)
+                }
+            }
+
+            item {
+                PlaybackNowPlayingWithControls(nowPlaying, playbackState, contentColor, onClose)
+            }
+
+            if (playbackQueue.isValid)
+                item {
+                    PlaybackAudioInfo(audio = playbackQueue.currentAudio)
+                }
+
+            playbackQueue(
+                playbackQueue = playbackQueue,
+                scrollToTop = scrollToTop,
+                playbackConnection = playbackConnection,
+            )
+
+            item { Spacer(Modifier.navigationBarsHeight()) }
         }
     }
 }
@@ -340,7 +337,6 @@ private fun PlaybackArtwork(
         bitmapPlaceholder = nowPlaying.artwork,
         modifier = Modifier
             .padding(horizontal = AppTheme.specs.paddingLarge)
-            .fillMaxWidth()
             .then(modifier)
     ) { imageMod ->
         Image(
@@ -359,30 +355,29 @@ private fun PlaybackArtwork(
     }
 }
 
-private fun LazyListScope.playbackNowPlayingWithControls(
+@Composable
+private fun PlaybackNowPlayingWithControls(
     nowPlaying: MediaMetadataCompat,
     playbackState: PlaybackStateCompat,
     contentColor: Color,
     onClose: Callback,
+    modifier: Modifier = Modifier
 ) {
-    item {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .padding(AppTheme.specs.paddingLarge)
-        ) {
-            PlaybackNowPlaying(nowPlaying = nowPlaying, onClose = onClose)
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier.padding(AppTheme.specs.paddingLarge)
+    ) {
+        PlaybackNowPlaying(nowPlaying = nowPlaying, onClose = onClose)
 
-            PlaybackProgress(
-                playbackState = playbackState,
-                contentColor = contentColor
-            )
+        PlaybackProgress(
+            playbackState = playbackState,
+            contentColor = contentColor
+        )
 
-            PlaybackControls(
-                playbackState = playbackState,
-                contentColor = contentColor,
-            )
-        }
+        PlaybackControls(
+            playbackState = playbackState,
+            contentColor = contentColor,
+        )
     }
 }
 
