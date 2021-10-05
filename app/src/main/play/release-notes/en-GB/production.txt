@@ -1,13 +1,3 @@
-v2.0.4
-- Flacs! (BETA)
-- Navigate to search from playback sheet
-- Show audio quality in playback sheet for downloaded songs
-
-v2.0.2
-- Fix: downloader corrupting audio files on some devices
-
-v2.0.0
-- Complete rewrite & redesign with dark mode and multiple color palette support
-- Multiple search backends: Songs, Artists, Albums & Minerva (cached songs)
-- In-app downloader
-- Fully featured audio player to play music from search results & downloads
+v2.0.5
+- Added new translations: Russian, Turkmen, Turkish (incomplete)
+- Other small UI changes
