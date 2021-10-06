@@ -8,14 +8,14 @@ import androidx.compose.runtime.Composable
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
+import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
-import androidx.navigation.compose.NamedNavArgument
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.navArgument
+import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import tm.alashow.Config
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
@@ -24,7 +24,7 @@ import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.ArtistId
 
 const val QUERY_KEY = "query"
-const val SEARCH_BACKENDS_KEY = "search_backends"
+const val SEARCH_BACKENDS_KEY = "backends"
 const val ARTIST_ID_KEY = "artist_id"
 const val ALBUM_ID_KEY = "album_id"
 const val ALBUM_OWNER_ID_KEY = "album_owner_id"
@@ -52,6 +52,8 @@ sealed class LeafScreen(
     val deepLinks: List<NavDeepLink> = emptyList()
 ) : Screen {
 
+    fun createRoute(root: RootScreen) = "${root.route}/$route"
+
     object Search : LeafScreen(
         "search/?$QUERY_KEY={$QUERY_KEY}&$SEARCH_BACKENDS_KEY={$SEARCH_BACKENDS_KEY}",
         arguments = listOf(
@@ -66,7 +68,7 @@ sealed class LeafScreen(
         ),
         deepLinks = listOf(
             navDeepLink {
-                uriPattern = "${Config.BASE_URL}search?q={$QUERY_KEY}"
+                uriPattern = "${Config.BASE_URL}search?$QUERY_KEY={$QUERY_KEY}&$SEARCH_BACKENDS_KEY={$SEARCH_BACKENDS_KEY}"
             }
         )
     ) {
@@ -82,8 +84,8 @@ sealed class LeafScreen(
 
     object Settings : LeafScreen("settings")
 
-    object ArtistDetails : LeafScreen(
-        "artists/{$ARTIST_ID_KEY}",
+    data class ArtistDetails(override val route: String = "artists/{$ARTIST_ID_KEY}") : LeafScreen(
+        route,
         arguments = listOf(
             navArgument(ARTIST_ID_KEY) {
                 type = NavType.StringType
@@ -95,12 +97,16 @@ sealed class LeafScreen(
             }
         )
     ) {
-        fun buildRoute(id: ArtistId) = "artists/$id"
-        fun buildUri(id: ArtistId) = "${Config.BASE_URL}artists/$id".toUri()
+        companion object {
+
+            fun createRoute(root: RootScreen) = ArtistDetails().let { it.copy(route = "${root.route}/${it.route}") }
+            fun buildRoute(id: ArtistId, root: RootScreen = RootScreen.Search) = "${root.route}/artists/$id"
+            fun buildUri(id: ArtistId) = "${Config.BASE_URL}artists/$id".toUri()
+        }
     }
 
-    object AlbumDetails : LeafScreen(
-        "albums/{$ALBUM_ID_KEY}/{$ALBUM_OWNER_ID_KEY}/{$ALBUM_ACCESS_KEY}",
+    data class AlbumDetails(override val route: String = "albums/{$ALBUM_ID_KEY}/{$ALBUM_OWNER_ID_KEY}/{$ALBUM_ACCESS_KEY}") : LeafScreen(
+        route,
         arguments = listOf(
             navArgument(ALBUM_ID_KEY) {
                 type = NavType.LongType
@@ -113,7 +119,11 @@ sealed class LeafScreen(
             }
         )
     ) {
-        fun buildRoute(album: Album) = "albums/${album.id}/${album.ownerId}/${album.accessKey}"
+        companion object {
+            fun createRoute(root: RootScreen) = AlbumDetails().let { it.copy(route = "${root.route}/${it.route}") }
+            fun buildRoute(album: Album, root: RootScreen = RootScreen.Search) = "${root.route}/albums/${album.id}/${album.ownerId}/${album.accessKey}"
+            fun buildUri(album: Album) = "${Config.BASE_URL}albums/${album.id}".toUri()
+        }
     }
 }
 

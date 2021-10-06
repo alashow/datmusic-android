@@ -63,8 +63,8 @@ private fun NavGraphBuilder.addSearchRoot(navController: NavController) {
         startDestination = LeafScreen.Search.route
     ) {
         addSearch(navController)
-        addArtistDetails(navController)
-        addAlbumDetails(navController)
+        addArtistDetails(navController, RootScreen.Search)
+        addAlbumDetails(navController, RootScreen.Search)
     }
 }
 
@@ -82,10 +82,10 @@ private fun NavGraphBuilder.addLibraryRoot(navController: NavController) {
         route = RootScreen.Library.route,
         startDestination = LeafScreen.Library.route
     ) {
-        addLibrary(navController)
         addSearch(navController)
-        addArtistDetails(navController)
-        addAlbumDetails(navController)
+        addLibrary(navController)
+        addArtistDetails(navController, RootScreen.Library)
+        addAlbumDetails(navController, RootScreen.Library)
     }
 }
 
@@ -122,14 +122,14 @@ private fun NavGraphBuilder.addLibrary(navController: NavController) {
     }
 }
 
-private fun NavGraphBuilder.addArtistDetails(navController: NavController) {
-    composableScreen(LeafScreen.ArtistDetails) {
+private fun NavGraphBuilder.addArtistDetails(navController: NavController, root: RootScreen) {
+    composableScreen(LeafScreen.ArtistDetails.createRoute(root)) {
         ArtistDetail()
     }
 }
 
-private fun NavGraphBuilder.addAlbumDetails(navController: NavController) {
-    composableScreen(LeafScreen.AlbumDetails) {
+private fun NavGraphBuilder.addAlbumDetails(navController: NavController, root: RootScreen) {
+    composableScreen(LeafScreen.AlbumDetails.createRoute(root)) {
         AlbumDetail()
     }
 }

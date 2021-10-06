@@ -30,10 +30,10 @@ object Deps {
         const val activityVersion = "1.4.0-beta01"
         const val activityKtx = "androidx.activity:activity-ktx:$activityVersion"
 
-        private const val navigationVersion = "2.4.0-alpha04"
+        private const val navigationVersion = "2.4.0-SNAPSHOT"
         const val navigationFragment = "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
         const val navigationUi = "androidx.navigation:navigation-ui-ktx:$navigationVersion"
-        const val navigationSafeArgs = "androidx.navigation:navigation-safe-args-gradle-plugin:$navigationVersion"
+        const val navigationSafeArgs = "androidx.navigation:navigation-safe-args-gradle-plugin:2.4.0-alpha10"
         const val navigationCompose = "androidx.navigation:navigation-compose:$navigationVersion"
         const val navigationHiltCompose = "androidx.hilt:hilt-navigation-compose:1.0.0-alpha03"
 
