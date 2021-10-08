@@ -24,6 +24,7 @@ import tm.alashow.datmusic.ui.album.AlbumDetail
 import tm.alashow.datmusic.ui.artist.ArtistDetail
 import tm.alashow.datmusic.ui.downloads.Downloads
 import tm.alashow.datmusic.ui.playlists.create.CreatePlaylist
+import tm.alashow.datmusic.ui.playlists.detail.PlaylistDetail
 import tm.alashow.datmusic.ui.search.Search
 import tm.alashow.datmusic.ui.settings.Settings
 import tm.alashow.navigation.LeafScreen
@@ -63,7 +64,7 @@ internal fun AppNavigation(
 private fun NavGraphBuilder.addSearchRoot(navController: NavController) {
     navigation(
         route = RootScreen.Search.route,
-        startDestination = LeafScreen.Search.route
+        startDestination = LeafScreen.Search().createRoute()
     ) {
         addSearch(navController)
         addArtistDetails(navController, RootScreen.Search)
@@ -74,7 +75,7 @@ private fun NavGraphBuilder.addSearchRoot(navController: NavController) {
 private fun NavGraphBuilder.addDownloadsRoot(navController: NavController) {
     navigation(
         route = RootScreen.Downloads.route,
-        startDestination = LeafScreen.Downloads.route
+        startDestination = LeafScreen.Downloads().createRoute()
     ) {
         addDownloads(navController)
     }
@@ -83,11 +84,11 @@ private fun NavGraphBuilder.addDownloadsRoot(navController: NavController) {
 private fun NavGraphBuilder.addLibraryRoot(navController: NavController) {
     navigation(
         route = RootScreen.Library.route,
-        startDestination = LeafScreen.Library.route
+        startDestination = LeafScreen.Library().createRoute()
     ) {
-        addSearch(navController)
         addLibrary(navController)
         addCreatePlaylist(navController)
+        addPlaylistDetails(navController, RootScreen.Library)
         addArtistDetails(navController, RootScreen.Library)
         addAlbumDetails(navController, RootScreen.Library)
     }
@@ -96,50 +97,56 @@ private fun NavGraphBuilder.addLibraryRoot(navController: NavController) {
 private fun NavGraphBuilder.addSettingsRoot(navController: NavController) {
     navigation(
         route = RootScreen.Settings.route,
-        startDestination = LeafScreen.Settings.route
+        startDestination = LeafScreen.Settings().createRoute()
     ) {
         addSettings(navController)
     }
 }
 
 private fun NavGraphBuilder.addSearch(navController: NavController) {
-    composableScreen(LeafScreen.Search) {
+    composableScreen(LeafScreen.Search()) {
         Search()
     }
 }
 
 private fun NavGraphBuilder.addSettings(navController: NavController) {
-    composableScreen(LeafScreen.Settings) {
+    composableScreen(LeafScreen.Settings()) {
         Settings()
     }
 }
 
 private fun NavGraphBuilder.addDownloads(navController: NavController) {
-    composableScreen(LeafScreen.Downloads) {
+    composableScreen(LeafScreen.Downloads()) {
         Downloads()
     }
 }
 
 private fun NavGraphBuilder.addLibrary(navController: NavController) {
-    composableScreen(LeafScreen.Library) {
+    composableScreen(LeafScreen.Library()) {
         Library()
     }
 }
 
 private fun NavGraphBuilder.addCreatePlaylist(navController: NavController) {
-    bottomSheetScreen(LeafScreen.CreatePlaylist) {
+    bottomSheetScreen(LeafScreen.CreatePlaylist()) {
         CreatePlaylist()
     }
 }
 
+private fun NavGraphBuilder.addPlaylistDetails(navController: NavController, root: RootScreen) {
+    composableScreen(LeafScreen.PlaylistDetail(root = root)) {
+        PlaylistDetail()
+    }
+}
+
 private fun NavGraphBuilder.addArtistDetails(navController: NavController, root: RootScreen) {
-    composableScreen(LeafScreen.ArtistDetails.createRoute(root)) {
+    composableScreen(LeafScreen.ArtistDetails(root = root)) {
         ArtistDetail()
     }
 }
 
 private fun NavGraphBuilder.addAlbumDetails(navController: NavController, root: RootScreen) {
-    composableScreen(LeafScreen.AlbumDetails.createRoute(root)) {
+    composableScreen(LeafScreen.AlbumDetails(root = root)) {
         AlbumDetail()
     }
 }

@@ -54,7 +54,6 @@ class CreatePlaylistViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            playlistsRepo.clear()
             playlistsRepo.createPlaylist(Playlist(name = name))
             navigator.goBack()
         }

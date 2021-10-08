@@ -16,6 +16,7 @@ import tm.alashow.datmusic.domain.entities.Audio
 
 const val MEDIA_TYPE_AUDIO = "Media.Audio"
 const val MEDIA_TYPE_ARTIST = "Media.Artist"
+const val MEDIA_TYPE_PLAYLIST = "Media.Playlist"
 const val MEDIA_TYPE_ALBUM = "Media.Album"
 const val MEDIA_TYPE_AUDIO_QUERY = "Media.AudioQuery"
 const val MEDIA_TYPE_AUDIO_MINERVA_QUERY = "Media.AudioMinervaQuery"

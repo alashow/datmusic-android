@@ -106,7 +106,9 @@ data class Album(
     @Transient
     @ColumnInfo(name = "search_index")
     val searchIndex: Int = 0,
-) : BasePaginatedEntity(), Parcelable {
+) : BasePaginatedEntity(), Parcelable, LibraryItem {
+
+    override fun getLabel() = title
 
     @Serializable
     @Parcelize

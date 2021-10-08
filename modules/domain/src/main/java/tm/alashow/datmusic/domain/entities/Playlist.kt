@@ -23,11 +23,11 @@ data class Playlist(
     @ColumnInfo(name = "_id")
     val _id: PlaylistId = 0,
 
-    @ColumnInfo(name = "name")
-    val name: String = "",
-
     @ColumnInfo(name = "id")
     override val id: String = _id.toString(),
+
+    @ColumnInfo(name = "name")
+    val name: String = "",
 
     @ColumnInfo(name = "params")
     override var params: String = "",

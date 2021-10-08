@@ -56,4 +56,9 @@ class PlaylistsRepo @Inject constructor(
             playlistAudiosDao.updatePlaylistAudio(PlaylistAudio(playlistId, toId, from))
         }
     }
+
+    fun playlists() = dao.entries()
+    fun playlist(id: PlaylistId) = dao.entry(id)
+    fun playlistsWithAudios() = playlistAudiosDao.playlistsWithAudios()
+    fun playlistWithAudios(id: PlaylistId) = playlistAudiosDao.playlistWithAudios(id)
 }

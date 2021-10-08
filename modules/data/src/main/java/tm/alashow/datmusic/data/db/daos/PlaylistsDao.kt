@@ -11,6 +11,7 @@ import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 import tm.alashow.data.db.EntityDao
 import tm.alashow.datmusic.domain.entities.Playlist
+import tm.alashow.datmusic.domain.entities.PlaylistId
 import tm.alashow.domain.models.Params
 
 @Dao
@@ -35,6 +36,10 @@ abstract class PlaylistsDao : EntityDao<Params, Playlist>() {
     @Transaction
     @Query("SELECT * FROM playlists WHERE id = :id")
     abstract override fun entry(id: String): Flow<Playlist>
+
+    @Transaction
+    @Query("SELECT * FROM playlists WHERE _id = :id")
+    abstract fun entry(id: PlaylistId): Flow<Playlist>
 
     @Transaction
     @Query("SELECT * FROM playlists WHERE id in (:ids)")

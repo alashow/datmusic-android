@@ -49,7 +49,7 @@ fun CreatePlaylist(
             .padding(AppTheme.specs.padding),
     ) {
         Text(
-            text = stringResource(R.string.library_createPlaylist_placeholder),
+            text = stringResource(R.string.library_createPlaylist_label),
             style = MaterialTheme.typography.h6,
             textAlign = TextAlign.Center
         )

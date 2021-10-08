@@ -32,12 +32,14 @@ import tm.alashow.ui.theme.AppTheme
 fun EmptyErrorBox(
     modifier: Modifier = Modifier,
     message: String = stringResource(R.string.error_empty),
+    retryLabel: String = stringResource(R.string.error_retry),
     retryVisible: Boolean = true,
     onRetryClick: () -> Unit = {},
 ) {
     ErrorBox(
         title = stringResource(R.string.error_empty_title),
         message = message,
+        retryLabel = retryLabel,
         retryVisible = retryVisible,
         onRetryClick = onRetryClick,
         modifier = modifier
@@ -50,6 +52,7 @@ fun ErrorBox(
     modifier: Modifier = Modifier,
     title: String = stringResource(R.string.error_title),
     message: String = stringResource(R.string.error_unknown),
+    retryLabel: String = stringResource(R.string.error_retry),
     retryVisible: Boolean = true,
     onRetryClick: () -> Unit = {}
 ) {
@@ -84,7 +87,7 @@ fun ErrorBox(
             if (retryVisible)
                 TextRoundedButton(
                     onClick = onRetryClick,
-                    text = stringResource(R.string.error_retry),
+                    text = retryLabel,
                     modifier = Modifier.padding(top = AppTheme.specs.padding)
                 )
         }

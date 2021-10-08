@@ -8,13 +8,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
@@ -24,11 +22,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.insets.ui.LocalScaffoldPadding
 import com.google.accompanist.insets.ui.Scaffold
 import tm.alashow.base.util.extensions.Callback
 import tm.alashow.common.compose.rememberFlowWithLifecycle
+import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.LibraryItems
+import tm.alashow.datmusic.domain.entities.Playlist
+import tm.alashow.datmusic.ui.items.LibraryItemRow
 import tm.alashow.datmusic.ui.library.R
+import tm.alashow.datmusic.ui.playlists.PlaylistRow
 import tm.alashow.domain.models.Success
 import tm.alashow.domain.models.Uninitialized
 import tm.alashow.navigation.LeafScreen
@@ -51,20 +54,20 @@ private fun Library(
     navigator: Navigator = LocalNavigator.current
 ) {
     val listState = rememberLazyListState()
-
     val asyncLibraryItems by rememberFlowWithLifecycle(viewModel.libraryItems).collectAsState(Uninitialized)
+
     Scaffold(
         topBar = {
             LibraryTopBar(
                 onCreatePlaylist = {
-                    navigator.navigate(LeafScreen.CreatePlaylist.createRoute())
+                    navigator.navigate(LeafScreen.CreatePlaylist().createRoute())
                 }
             )
         },
         modifier = Modifier.fillMaxSize()
-    ) { padding ->
+    ) {
         LazyColumn(
-            contentPadding = padding,
+            contentPadding = LocalScaffoldPadding.current,
             state = listState
         ) {
             when (val items = asyncLibraryItems) {
@@ -110,8 +113,11 @@ fun LazyListScope.libraryList(
         }
     }
 
-    itemsIndexed(items) { index, it ->
-        if (index != 0) Divider()
-        Text(it.getLabel())
+    items(items) {
+        when (it) {
+            is Playlist -> PlaylistRow(playlist = it)
+            is Album -> LibraryItemRow(libraryItem = it, typeRes = R.string.albums_detail_title)
+            else -> LibraryItemRow(libraryItem = it, typeRes = R.string.unknown)
+        }
     }
 }

@@ -62,8 +62,11 @@
 
     <string name="library.title">Library</string>
     <string name="library.empty">No items</string>
+    <string name="library.playlist">Playlist</string>
+    <string name="library.playlist.empty">Playlist is empty</string>
+    <string name="library.playlist.empty.addSongs">Add Songs</string>
     <string name="library.createPlaylist">Create playlist</string>
-    <string name="library.createPlaylist.placeholder">Give your playlist a name</string>
+    <string name="library.createPlaylist.label">Give your playlist a name</string>
 
     <string name="playback.queueTitle.audio">Playing from queue</string>
     <string name="playback.queueTitle.downloads">Playing from downloads</string>

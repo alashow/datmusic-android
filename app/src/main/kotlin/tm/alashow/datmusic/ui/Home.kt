@@ -50,6 +50,7 @@ import androidx.navigation.NavHostController
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
+import timber.log.Timber
 import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.common.compose.LocalScaffoldState
 import tm.alashow.common.compose.rememberFlowWithLifecycle
@@ -92,6 +93,7 @@ internal fun Home(
                 HomeBottomNavigation(
                     selectedTab = selectedTab,
                     onNavigationSelected = { selected ->
+                        Timber.d("Navigating to: ${selected.route}")
                         navController.navigate(selected.route) {
                             popUpTo(navController.graph.findStartDestination().id) {
                                 saveState = true
@@ -103,6 +105,11 @@ internal fun Home(
                             val currentDestination = currentEntry?.destination
                             val isReselected = currentDestination?.hierarchy?.any { it.route == selected.route } == true
                             val isRootReselected = currentDestination?.route == selected.startScreen.route
+
+                            Timber.d("Selected: ${selected.route}, start=${selected.startScreen.root}")
+                            Timber.d("Selected tab: ${selectedTab.route}")
+                            Timber.d("CurrentDestionat: ${currentDestination?.route}")
+                            Timber.d("CurrentDestionat.H: ${currentDestination?.hierarchy?.joinToString { it.route ?: "" }}")
 
                             if (isReselected && !isRootReselected) {
                                 navController.navigateUp()
