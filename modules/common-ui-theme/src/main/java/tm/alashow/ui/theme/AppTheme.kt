@@ -59,8 +59,8 @@ fun ProvideAppTheme(
 
 @Stable
 data class AppColors(
-    val _onSurfaceInputBackground: Color,
-    val _materialColors: Colors
+    private val _onSurfaceInputBackground: Color,
+    private val _materialColors: Colors,
 ) {
     var onSurfaceInputBackground by mutableStateOf(_onSurfaceInputBackground)
         private set

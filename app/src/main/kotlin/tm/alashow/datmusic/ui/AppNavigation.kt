@@ -23,6 +23,7 @@ import tm.alashow.common.compose.collectEvent
 import tm.alashow.datmusic.ui.album.AlbumDetail
 import tm.alashow.datmusic.ui.artist.ArtistDetail
 import tm.alashow.datmusic.ui.downloads.Downloads
+import tm.alashow.datmusic.ui.playlists.create.CreatePlaylist
 import tm.alashow.datmusic.ui.search.Search
 import tm.alashow.datmusic.ui.settings.Settings
 import tm.alashow.navigation.LeafScreen

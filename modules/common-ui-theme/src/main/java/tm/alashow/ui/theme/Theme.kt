@@ -33,7 +33,9 @@ fun AppTheme(
         ColorPalettePreference.Asphalt -> if (isDarkTheme) appDarkColors(Asphalt, Orange) else appLightColors(Asphalt, Orange)
         ColorPalettePreference.Orange -> if (isDarkTheme) appDarkColors(Orange, Color.Black) else appLightColors(Orange, Orange)
         ColorPalettePreference.Black -> if (isDarkTheme) appDarkColors(Color.Black, Secondary) else appLightColors(Primary, Secondary)
-        ColorPalettePreference.Black_Yellow -> if (isDarkTheme) appDarkColors(Color.Black, Yellow) else appLightColors(Primary, Yellow500)
+        ColorPalettePreference.Black_Yellow ->
+            if (isDarkTheme) appDarkColors(Color.Black, Yellow, onSecondary = Color.Black)
+            else appLightColors(Primary, Yellow500, onSecondary = Color.Black)
         else -> if (isDarkTheme) DarkAppColors else LightAppColors
     }
 
