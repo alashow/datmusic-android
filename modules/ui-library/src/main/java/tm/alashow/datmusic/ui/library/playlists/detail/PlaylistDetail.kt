@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
 import kotlin.math.round
 import tm.alashow.base.util.extensions.localizedMessage
@@ -47,6 +48,7 @@ import tm.alashow.domain.models.Success
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.Navigator
 import tm.alashow.ui.OffsetNotifyingBox
+import tm.alashow.ui.components.AppBarHeight
 import tm.alashow.ui.components.CollapsingTopBar
 import tm.alashow.ui.components.EmptyErrorBox
 import tm.alashow.ui.components.ErrorBox
@@ -76,14 +78,15 @@ private fun PlaylistDetail(viewModel: PlaylistDetailViewModel, onBackClick: () -
                 }
                 CollapsingTopBar(
                     title = stringResource(R.string.library_playlist),
-                    collapsed = headerOffsetProgress.value == 0f,
+                    collapsed = !viewState.isEmptyPlaylist && headerOffsetProgress.value == 0f,
                     onNavigationClick = onBackClick,
                 )
             }
         ) { padding ->
             PlaylistDetailList(
                 viewState = viewState,
-                onRetry = viewModel::addSongs,
+                onFailRetry = viewModel::refresh,
+                onEmptyRetry = viewModel::addSongs,
                 padding = padding,
                 listState = listState
             )
@@ -94,7 +97,8 @@ private fun PlaylistDetail(viewModel: PlaylistDetailViewModel, onBackClick: () -
 @Composable
 private fun PlaylistDetailList(
     viewState: PlaylistDetailViewState,
-    onRetry: () -> Unit,
+    onFailRetry: () -> Unit,
+    onEmptyRetry: () -> Unit,
     padding: PaddingValues = PaddingValues(),
     listState: LazyListState,
 ) {
@@ -105,28 +109,30 @@ private fun PlaylistDetailList(
     ) {
         val playlist = viewState.playlist
         if (playlist != null) {
-            var scrolledY = 0f
-            var previousOffset = 0
-            val parallax = 0.3f
-            item {
-                CoverHeaderRow(
-                    title = playlist.name,
-                    imageRequest = "artist.largePhoto()",
-                    modifier = Modifier.graphicsLayer {
-                        scrolledY += listState.firstVisibleItemScrollOffset - previousOffset
-                        translationY = scrolledY * parallax
-                        previousOffset = listState.firstVisibleItemScrollOffset
-                    }
-                )
-            }
-
             val details = viewState.playlistDetails
             val detailsLoading = details is Incomplete
 
+            if (!viewState.isEmptyPlaylist) {
+                var scrolledY = 0f
+                var previousOffset = 0
+                val parallax = 0.3f
+                item {
+                    CoverHeaderRow(
+                        title = playlist.name,
+                        imageRequest = "artist.largePhoto()",
+                        modifier = Modifier.graphicsLayer {
+                            scrolledY += listState.firstVisibleItemScrollOffset - previousOffset
+                            translationY = scrolledY * parallax
+                            previousOffset = listState.firstVisibleItemScrollOffset
+                        }
+                    )
+                }
+            }
+
             val artistAudios = playlistDetails(details, detailsLoading)
 
-            playlistDetailsFail(details, onRetry)
-            playlistDetailsEmpty(details, artistAudios.isEmpty(), onRetry)
+            playlistDetailsFail(details, onFailRetry)
+            playlistDetailsEmpty(details, artistAudios.isEmpty(), onEmptyRetry)
         } else {
             fullScreenLoading()
         }
@@ -137,7 +143,6 @@ private fun LazyListScope.playlistDetails(
     details: Async<PlaylistWithAudios>,
     detailsLoading: Boolean
 ): List<Audio> {
-
     val playlistAudios = when (details) {
         is Success -> details().audios
         is Loading -> (1..5).map { Audio() }
@@ -173,14 +178,14 @@ private fun LazyListScope.playlistDetails(
 
 private fun LazyListScope.playlistDetailsFail(
     details: Async<PlaylistWithAudios>,
-    onRetry: () -> Unit,
+    onFailRetry: () -> Unit,
 ) {
     if (details is Fail) {
         item {
             ErrorBox(
                 title = stringResource(details.error.localizedTitle()),
                 message = stringResource(details.error.localizedMessage()),
-                onRetryClick = onRetry,
+                onRetryClick = onFailRetry,
                 modifier = Modifier.fillParentMaxHeight()
             )
         }
@@ -190,15 +195,18 @@ private fun LazyListScope.playlistDetailsFail(
 private fun LazyListScope.playlistDetailsEmpty(
     details: Async<PlaylistWithAudios>,
     detailsEmpty: Boolean,
-    onRetry: () -> Unit,
+    onEmptyRetry: () -> Unit,
 ) {
     if (details is Success && detailsEmpty) {
         item {
             EmptyErrorBox(
-                onRetryClick = onRetry,
+                onRetryClick = onEmptyRetry,
                 message = stringResource(R.string.library_playlist_empty),
                 retryLabel = stringResource(R.string.library_playlist_empty_addSongs),
-                modifier = Modifier.fillParentMaxHeight()
+                modifier = Modifier
+                    .fillParentMaxHeight()
+                    .statusBarsPadding()
+                    .padding(top = AppBarHeight)
             )
         }
     }
