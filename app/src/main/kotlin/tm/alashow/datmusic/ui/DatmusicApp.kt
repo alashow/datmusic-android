@@ -12,7 +12,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.plusAssign
 import com.google.accompanist.insets.ProvideWindowInsets
+import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.firebase.analytics.FirebaseAnalytics
 import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.common.compose.LocalScaffoldState
@@ -26,13 +31,16 @@ import tm.alashow.datmusic.ui.downloads.audio.audioDownloadItemActionHandler
 import tm.alashow.datmusic.ui.playback.PlaybackHost
 import tm.alashow.datmusic.ui.settings.LocalAppVersion
 import tm.alashow.navigation.NavigatorHost
+import tm.alashow.navigation.rememberBottomSheetNavigator
 import tm.alashow.ui.ThemeViewModel
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.DefaultTheme
 
+@OptIn(ExperimentalMaterialNavigationApi::class)
 @Composable
 fun DatmusicApp(
     scaffoldState: ScaffoldState = rememberScaffoldState(),
+    navController: NavHostController = rememberNavController(),
     analytics: FirebaseAnalytics = FirebaseAnalytics.getInstance(LocalContext.current),
 ) {
     CompositionLocalProvider(
@@ -42,7 +50,11 @@ fun DatmusicApp(
     ) {
         ProvideWindowInsets(consumeWindowInsets = false) {
             DatmusicCore {
-                Home()
+                val bottomSheetNavigator = rememberBottomSheetNavigator()
+                navController.navigatorProvider += bottomSheetNavigator
+                ModalBottomSheetLayout(bottomSheetNavigator) {
+                    Home(navController)
+                }
             }
         }
     }

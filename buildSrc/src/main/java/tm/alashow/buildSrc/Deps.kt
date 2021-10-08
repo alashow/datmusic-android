@@ -76,6 +76,7 @@ object Deps {
             const val placeholder = "com.google.accompanist:accompanist-placeholder-material:$version"
             const val swiperefresh = "com.google.accompanist:accompanist-swiperefresh:$version"
             const val systemUiController = "com.google.accompanist:accompanist-systemuicontroller:$version"
+            const val navigationMaterial = "com.google.accompanist:accompanist-navigation-material:$version"
         }
 
         object Lifecycle {

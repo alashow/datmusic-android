@@ -56,7 +56,7 @@ import tm.alashow.ui.theme.AppTheme
 @Composable
 fun AlbumDetail(navigator: Navigator = LocalNavigator.current) {
     AlbumDetail(viewModel = hiltViewModel()) {
-        navigator.back()
+        navigator.goBack()
     }
 }
 

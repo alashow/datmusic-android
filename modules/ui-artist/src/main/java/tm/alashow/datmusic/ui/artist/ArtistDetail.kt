@@ -60,7 +60,7 @@ import tm.alashow.ui.theme.AppTheme
 @Composable
 fun ArtistDetail(navigator: Navigator = LocalNavigator.current) {
     ArtistDetail(viewModel = hiltViewModel()) {
-        navigator.back()
+        navigator.goBack()
     }
 }
 

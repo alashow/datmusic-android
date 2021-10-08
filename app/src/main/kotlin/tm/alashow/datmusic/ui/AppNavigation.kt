@@ -16,6 +16,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navigation
+import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import timber.log.Timber
 import tm.alashow.common.compose.collectEvent
@@ -29,9 +30,10 @@ import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.NavigationEvent
 import tm.alashow.navigation.Navigator
 import tm.alashow.navigation.RootScreen
+import tm.alashow.navigation.bottomSheetScreen
 import tm.alashow.navigation.composableScreen
 
-@OptIn(InternalCoroutinesApi::class)
+@OptIn(InternalCoroutinesApi::class, ExperimentalMaterialNavigationApi::class)
 @Composable
 internal fun AppNavigation(
     navController: NavHostController,
@@ -84,6 +86,7 @@ private fun NavGraphBuilder.addLibraryRoot(navController: NavController) {
     ) {
         addSearch(navController)
         addLibrary(navController)
+        addCreatePlaylist(navController)
         addArtistDetails(navController, RootScreen.Library)
         addAlbumDetails(navController, RootScreen.Library)
     }
@@ -119,6 +122,12 @@ private fun NavGraphBuilder.addDownloads(navController: NavController) {
 private fun NavGraphBuilder.addLibrary(navController: NavController) {
     composableScreen(LeafScreen.Library) {
         Library()
+    }
+}
+
+private fun NavGraphBuilder.addCreatePlaylist(navController: NavController) {
+    bottomSheetScreen(LeafScreen.CreatePlaylist) {
+        CreatePlaylist()
     }
 }
 

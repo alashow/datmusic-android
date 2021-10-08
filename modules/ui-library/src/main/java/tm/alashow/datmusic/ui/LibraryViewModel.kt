@@ -16,11 +16,13 @@ import tm.alashow.datmusic.data.repos.playlist.PlaylistsRepo
 import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.domain.models.Success
 import tm.alashow.domain.models.Uninitialized
+import tm.alashow.navigation.Navigator
 
 @HiltViewModel
 class LibraryViewModel @Inject constructor(
     private val handle: SavedStateHandle,
-    private val playlistsRepo: PlaylistsRepo
+    private val playlistsRepo: PlaylistsRepo,
+    private val navigator: Navigator
 ) : ViewModel() {
 
     val libraryItems = playlistsRepo.entries()
@@ -32,6 +34,7 @@ class LibraryViewModel @Inject constructor(
 
         viewModelScope.launch {
             playlistsRepo.createPlaylist(Playlist(name = name))
+            navigator.goBack()
         }
     }
 }

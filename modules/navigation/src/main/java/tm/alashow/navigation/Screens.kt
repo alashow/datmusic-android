@@ -4,6 +4,7 @@
  */
 package tm.alashow.navigation
 
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -17,6 +18,8 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
+import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+import com.google.accompanist.navigation.material.bottomSheet
 import tm.alashow.Config
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams.BackendType.Companion.toQueryParam
@@ -48,14 +51,16 @@ sealed class RootScreen(
 
 sealed class LeafScreen(
     override val route: String,
+    val defaultRoot: RootScreen,
     val arguments: List<NamedNavArgument> = emptyList(),
-    val deepLinks: List<NavDeepLink> = emptyList()
+    val deepLinks: List<NavDeepLink> = emptyList(),
 ) : Screen {
 
-    fun createRoute(root: RootScreen) = "${root.route}/$route"
+    fun createRoute(root: RootScreen = defaultRoot) = "${root.route}/$route"
 
     object Search : LeafScreen(
         "search/?$QUERY_KEY={$QUERY_KEY}&$SEARCH_BACKENDS_KEY={$SEARCH_BACKENDS_KEY}",
+        RootScreen.Search,
         arguments = listOf(
             navArgument(QUERY_KEY) {
                 type = NavType.StringType
@@ -78,14 +83,17 @@ sealed class LeafScreen(
         fun buildUri(query: String) = "${Config.BASE_URL}search?q=$query".toUri()
     }
 
-    object Downloads : LeafScreen("downloads")
+    object Downloads : LeafScreen("downloads", RootScreen.Downloads)
 
-    object Library : LeafScreen("library")
+    object Library : LeafScreen("library", RootScreen.Library)
 
-    object Settings : LeafScreen("settings")
+    object CreatePlaylist : LeafScreen("create_playlist", RootScreen.Library)
+
+    object Settings : LeafScreen("settings", RootScreen.Settings)
 
     data class ArtistDetails(override val route: String = "artists/{$ARTIST_ID_KEY}") : LeafScreen(
         route,
+        RootScreen.Search,
         arguments = listOf(
             navArgument(ARTIST_ID_KEY) {
                 type = NavType.StringType
@@ -98,7 +106,6 @@ sealed class LeafScreen(
         )
     ) {
         companion object {
-
             fun createRoute(root: RootScreen) = ArtistDetails().let { it.copy(route = "${root.route}/${it.route}") }
             fun buildRoute(id: ArtistId, root: RootScreen = RootScreen.Search) = "${root.route}/artists/$id"
             fun buildUri(id: ArtistId) = "${Config.BASE_URL}artists/$id".toUri()
@@ -107,6 +114,7 @@ sealed class LeafScreen(
 
     data class AlbumDetails(override val route: String = "albums/{$ALBUM_ID_KEY}/{$ALBUM_OWNER_ID_KEY}/{$ALBUM_ACCESS_KEY}") : LeafScreen(
         route,
+        RootScreen.Search,
         arguments = listOf(
             navArgument(ALBUM_ID_KEY) {
                 type = NavType.LongType
@@ -129,6 +137,10 @@ sealed class LeafScreen(
 
 fun NavGraphBuilder.composableScreen(screen: LeafScreen, content: @Composable (NavBackStackEntry) -> Unit) =
     composable(screen.route, screen.arguments, screen.deepLinks, content)
+
+@OptIn(ExperimentalMaterialNavigationApi::class)
+fun NavGraphBuilder.bottomSheetScreen(screen: LeafScreen, content: @Composable ColumnScope.(NavBackStackEntry) -> Unit) =
+    bottomSheet(screen.createRoute(), screen.arguments, screen.deepLinks, content)
 
 // https://stackoverflow.com/a/64961032/2897341
 @Composable

@@ -47,7 +47,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
@@ -73,8 +72,8 @@ val HomeBottomNavigationHeight = 56.dp
 
 @Composable
 internal fun Home(
+    navController: NavHostController,
     scaffoldState: ScaffoldState = LocalScaffoldState.current,
-    navController: NavHostController = rememberNavController(),
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current
 ) {
     val playbackState by rememberFlowWithLifecycle(playbackConnection.playbackState).collectAsState(NONE_PLAYBACK_STATE)

@@ -35,7 +35,7 @@ class Navigator {
         navigationQueue.trySend(NavigationEvent.Destination(route))
     }
 
-    fun back() {
+    fun goBack() {
         navigationQueue.trySend(NavigationEvent.Back)
     }
 

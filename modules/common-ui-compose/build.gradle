@@ -72,6 +72,7 @@ dependencies {
 	api Deps.Android.Accompanist.placeholder
 	api Deps.Android.Accompanist.swiperefresh
 	api Deps.Android.Accompanist.systemUiController
+	api Deps.Android.Accompanist.navigationMaterial
 
 	// 3rd party
 	api Deps.Android.Compose.lottie
