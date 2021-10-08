@@ -174,9 +174,12 @@ private fun SearchListErrors(
     val captchaError = viewState.captchaError
     var captchaErrorShown by remember(captchaError) { mutableStateOf(true) }
     if (captchaError != null) {
-        CaptchaErrorDialog(captchaErrorShown, { captchaErrorShown = it }, captchaError) { solution ->
-            viewModel.submitAction(SearchAction.SubmitCaptcha(captchaError, solution))
-        }
+        CaptchaErrorDialog(
+            captchaErrorShown, { captchaErrorShown = it }, captchaError,
+            onCaptchaSubmit = { solution ->
+                viewModel.submitAction(SearchAction.SubmitCaptcha(captchaError, solution))
+            }
+        )
     }
 
     val message = stringResource(viewState.error.localizedMessage())

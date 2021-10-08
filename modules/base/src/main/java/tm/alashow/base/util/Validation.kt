@@ -4,10 +4,8 @@
  */
 package tm.alashow.base.util
 
-import androidx.annotation.StringRes
-
 class ValidationErrorException(val error: ValidationError) : Exception()
-open class ValidationError(@StringRes val errorRes: Int) {
+open class ValidationError(val message: UiMessage<*>) {
     fun error() = ValidationErrorException(this)
 }
 

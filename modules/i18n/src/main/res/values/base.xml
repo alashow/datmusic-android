@@ -38,6 +38,9 @@
     <string name="error.retry">Retry</string>
     <string name="error.serverUnavailable">Server unavailable</string>
 
+    <string name="error.validation.textShort">Entered value is too short</string>
+    <string name="error.validation.textLong">Entered value is too long</string>
+
     <string name="time.duration">%1$d hour %2$d min.</string>
     <string name="time.duration.minutes">%1$d minute</string>
 

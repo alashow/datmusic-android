@@ -15,6 +15,8 @@ import tm.alashow.domain.models.BaseEntity
 
 typealias PlaylistId = Long
 
+const val PLAYLIST_NAME_MAX_LENGTH = 100
+
 @Entity(tableName = "playlists")
 data class Playlist(
     @PrimaryKey(autoGenerate = true)

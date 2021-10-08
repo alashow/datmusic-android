@@ -37,7 +37,7 @@ fun Throwable?.localizedMessage(): Int = when (this) {
     is AuthenticationCanceledException -> R.string.error_noAuth
     is AppError -> messageRes
     is RuntimeException, is IOException -> R.string.error_network
-    is ValidationErrorException -> error.errorRes
+    is ValidationErrorException -> (error.message.value as Int) // TODO: fix this
 
     else -> R.string.error_unknown
 }
