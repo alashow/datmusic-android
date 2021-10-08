@@ -2,7 +2,7 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.datmusic.ui
+package tm.alashow.datmusic.ui.library
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel

@@ -2,7 +2,7 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.datmusic.ui.items
+package tm.alashow.datmusic.ui.library.items
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image

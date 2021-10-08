@@ -2,7 +2,7 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.datmusic.ui
+package tm.alashow.datmusic.ui.library
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -29,9 +29,8 @@ import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.LibraryItems
 import tm.alashow.datmusic.domain.entities.Playlist
-import tm.alashow.datmusic.ui.items.LibraryItemRow
-import tm.alashow.datmusic.ui.library.R
-import tm.alashow.datmusic.ui.playlists.PlaylistRow
+import tm.alashow.datmusic.ui.library.items.LibraryItemRow
+import tm.alashow.datmusic.ui.library.playlists.PlaylistRow
 import tm.alashow.domain.models.Success
 import tm.alashow.domain.models.Uninitialized
 import tm.alashow.navigation.LeafScreen

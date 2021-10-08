@@ -2,7 +2,7 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.datmusic.ui.playlists.detail
+package tm.alashow.datmusic.ui.library.playlists.detail
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
