@@ -54,8 +54,8 @@ data class PlaylistAudio(
     @ColumnInfo(name = "audio_id")
     val audioId: String = "",
 
-    @ColumnInfo(name = "index")
-    val index: Int,
+    @ColumnInfo(name = "position")
+    val position: Int,
 )
 
 data class PlaylistWithAudios(

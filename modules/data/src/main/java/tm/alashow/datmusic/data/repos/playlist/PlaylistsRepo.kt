@@ -4,7 +4,6 @@
  */
 package tm.alashow.datmusic.data.repos.playlist
 
-import javax.inject.Inject
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
@@ -16,6 +15,7 @@ import tm.alashow.datmusic.data.db.daos.PlaylistsWithAudiosDao
 import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.domain.entities.PlaylistAudio
 import tm.alashow.datmusic.domain.entities.PlaylistId
+import javax.inject.Inject
 
 class PlaylistsRepo @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
@@ -47,7 +47,7 @@ class PlaylistsRepo @Inject constructor(
                 PlaylistAudio(
                     playlistId = playlistId,
                     audioId = id,
-                    index = lastIndex + index
+                    position = lastIndex + index
                 )
             }
             insertedIds.addAll(playlistAudiosDao.insertAll(playlistWithAudios))
@@ -59,21 +59,21 @@ class PlaylistsRepo @Inject constructor(
     suspend fun swap(playlistId: PlaylistId, from: Int, to: Int) {
         withContext(dispatchers.io) {
             val playlistAudios = playlistAudiosDao.playlistAudios(playlistId).first()
-            val fromId = playlistAudios.first { it.index == from }.audioId
-            val toId = playlistAudios.first { it.index == to }.audioId
+            val fromId = playlistAudios.first { it.position == from }.audioId
+            val toId = playlistAudios.first { it.position == to }.audioId
 
             playlistAudiosDao.updatePlaylistAudio(
                 PlaylistAudio(
                     playlistId = playlistId,
                     audioId = fromId,
-                    index = to
+                    position = to
                 )
             )
             playlistAudiosDao.updatePlaylistAudio(
                 PlaylistAudio(
                     playlistId = playlistId,
                     audioId = toId,
-                    index = from
+                    position = from
                 )
             )
         }
