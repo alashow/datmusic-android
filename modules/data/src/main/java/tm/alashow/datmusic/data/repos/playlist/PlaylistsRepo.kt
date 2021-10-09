@@ -4,6 +4,7 @@
  */
 package tm.alashow.datmusic.data.repos.playlist
 
+import javax.inject.Inject
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
@@ -15,7 +16,6 @@ import tm.alashow.datmusic.data.db.daos.PlaylistsWithAudiosDao
 import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.domain.entities.PlaylistAudio
 import tm.alashow.datmusic.domain.entities.PlaylistId
-import javax.inject.Inject
 
 class PlaylistsRepo @Inject constructor(
     private val dispatchers: CoroutineDispatchers,

@@ -44,6 +44,6 @@ abstract class PlaylistsWithAudiosDao {
     abstract fun playlistsWithAudios(): Flow<List<PlaylistWithAudios>>
 
     @Transaction
-    @Query("SELECT * FROM playlists WHERE _id = :id")
+    @Query("SELECT * FROM playlists WHERE id = :id")
     abstract fun playlistWithAudios(id: PlaylistId): Flow<PlaylistWithAudios>
 }

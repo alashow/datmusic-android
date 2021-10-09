@@ -22,11 +22,8 @@ const val PLAYLIST_NAME_MAX_LENGTH = 100
 @Entity(tableName = "playlists")
 data class Playlist(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "_id")
-    val _id: PlaylistId = 0,
-
     @ColumnInfo(name = "id")
-    val id: String = _id.toString(),
+    val id: PlaylistId = 0,
 
     @ColumnInfo(name = "name")
     val name: String = "",
@@ -40,13 +37,12 @@ data class Playlist(
 
 @Entity(
     tableName = "playlist_audios",
-    primaryKeys = ["playlist_id", "audio_id"],
     indices = [Index("playlist_id"), Index("audio_id")]
 )
 data class PlaylistAudio(
-//    @PrimaryKey(autoGenerate = true)
-//    @ColumnInfo(name = "id", defaultValue = "0")
-//    val id: Long = 0,
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id", defaultValue = "0")
+    val id: Long = 0,
 
     @ColumnInfo(name = "playlist_id")
     val playlistId: PlaylistId = 0,
@@ -63,7 +59,7 @@ data class PlaylistWithAudios(
     val playlist: Playlist = Playlist(),
 
     @Relation(
-        parentColumn = "_id",
+        parentColumn = "id",
         entityColumn = "id",
         associateBy = Junction(
             PlaylistAudio::class,

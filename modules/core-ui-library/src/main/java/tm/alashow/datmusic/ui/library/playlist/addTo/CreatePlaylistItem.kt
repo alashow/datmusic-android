@@ -12,9 +12,9 @@ import tm.alashow.datmusic.ui.coreLibrary.R
 
 internal object CreatePlaylistItem {
     private const val ID = -1000L
-    private val ITEM @Composable get() = Playlist(_id = ID, name = stringResource(R.string.playlist_addTo_new))
+    private val ITEM @Composable get() = Playlist(id = ID, name = stringResource(R.string.playlist_addTo_new))
 
-    fun Playlist.isCreatePlaylistItem() = _id == ID
+    fun Playlist.isCreatePlaylistItem() = id == ID
 
     @Composable
     fun Playlists.withCreatePlaylistItem(): Playlists = toMutableList().apply { add(ITEM) }

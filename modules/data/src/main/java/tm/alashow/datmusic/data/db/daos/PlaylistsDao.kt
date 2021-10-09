@@ -18,15 +18,15 @@ import tm.alashow.domain.models.Params
 abstract class PlaylistsDao : EntityDao<Params, Playlist>() {
 
     @Transaction
-    @Query("SELECT * FROM playlists ORDER BY _id DESC")
+    @Query("SELECT * FROM playlists ORDER BY id DESC")
     abstract override fun entries(): Flow<List<Playlist>>
 
     @Transaction
-    @Query("SELECT * FROM playlists ORDER BY _id DESC LIMIT :count OFFSET :offset")
+    @Query("SELECT * FROM playlists ORDER BY id DESC LIMIT :count OFFSET :offset")
     abstract override fun entriesObservable(count: Int, offset: Int): Flow<List<Playlist>>
 
     @Transaction
-    @Query("SELECT * FROM playlists ORDER BY _id DESC")
+    @Query("SELECT * FROM playlists ORDER BY id DESC")
     abstract override fun entriesPagingSource(): PagingSource<Int, Playlist>
 
     @Transaction

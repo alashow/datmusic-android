@@ -22,7 +22,7 @@ class AddToPlaylist @Inject constructor(
 
     override suspend fun doWork(params: Params) = withContext(dispatchers.io) {
         repo.addAudiosToPlaylist(
-            playlistId = params.playlist._id,
+            playlistId = params.playlist.id,
             audioIds = params.audios.map { it.id }
         )
     }

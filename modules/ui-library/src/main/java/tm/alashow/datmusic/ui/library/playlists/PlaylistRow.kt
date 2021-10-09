@@ -24,7 +24,7 @@ fun PlaylistRow(
         modifier = modifier,
         typeRes = R.string.playlist_title,
         onClick = {
-            navigator.navigate(LeafScreen.PlaylistDetail.buildRoute(playlist._id))
+            navigator.navigate(LeafScreen.PlaylistDetail.buildRoute(playlist.id))
         }
     )
 }
