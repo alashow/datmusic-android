@@ -21,14 +21,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
-import tm.alashow.base.util.ValidationError
 import tm.alashow.base.util.asString
 import tm.alashow.datmusic.ui.library.R
+import tm.alashow.i18n.ValidationError
 import tm.alashow.ui.components.TextRoundedButton
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.outlinedTextFieldColors
@@ -49,7 +50,7 @@ fun CreatePlaylist(
             .padding(AppTheme.specs.padding),
     ) {
         Text(
-            text = stringResource(R.string.library_createPlaylist_label),
+            text = stringResource(R.string.playlist_create_label),
             style = MaterialTheme.typography.h6,
             textAlign = TextAlign.Center
         )
@@ -62,7 +63,7 @@ fun CreatePlaylist(
         )
 
         TextRoundedButton(
-            text = stringResource(R.string.library_createPlaylist),
+            text = stringResource(R.string.playlist_create),
             onClick = viewModel::createPlaylist,
         )
     }
@@ -79,7 +80,10 @@ private fun PlaylistNameInput(
         value = name,
         onValueChange = onSetName,
         isError = nameError != null,
-        textStyle = MaterialTheme.typography.h4.copy(textAlign = TextAlign.Center),
+        textStyle = MaterialTheme.typography.h4.copy(
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Bold
+        ),
         singleLine = true,
         maxLines = 1,
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done, keyboardType = KeyboardType.Text),

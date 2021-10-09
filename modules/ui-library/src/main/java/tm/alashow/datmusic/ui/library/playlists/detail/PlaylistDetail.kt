@@ -35,6 +35,7 @@ import tm.alashow.base.util.extensions.localizedTitle
 import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.Audio
+import tm.alashow.datmusic.domain.entities.CoverImageSize
 import tm.alashow.datmusic.domain.entities.PlaylistWithAudios
 import tm.alashow.datmusic.ui.audios.AudioRow
 import tm.alashow.datmusic.ui.components.CoverHeaderDefaults
@@ -77,7 +78,7 @@ private fun PlaylistDetail(viewModel: PlaylistDetailViewModel, onBackClick: () -
                     headerOffsetProgress.animateTo(round(progress.value))
                 }
                 CollapsingTopBar(
-                    title = stringResource(R.string.library_playlist),
+                    title = stringResource(R.string.playlist_title),
                     collapsed = !viewState.isEmptyPlaylist && headerOffsetProgress.value == 0f,
                     onNavigationClick = onBackClick,
                 )
@@ -119,7 +120,7 @@ private fun PlaylistDetailList(
                 item {
                     CoverHeaderRow(
                         title = playlist.name,
-                        imageRequest = "artist.largePhoto()",
+                        imageRequest = details()?.audios?.first()?.coverUri(CoverImageSize.LARGE),
                         modifier = Modifier.graphicsLayer {
                             scrolledY += listState.firstVisibleItemScrollOffset - previousOffset
                             translationY = scrolledY * parallax
@@ -201,8 +202,8 @@ private fun LazyListScope.playlistDetailsEmpty(
         item {
             EmptyErrorBox(
                 onRetryClick = onEmptyRetry,
-                message = stringResource(R.string.library_playlist_empty),
-                retryLabel = stringResource(R.string.library_playlist_empty_addSongs),
+                message = stringResource(R.string.playlist_empty),
+                retryLabel = stringResource(R.string.playlist_empty_addSongs),
                 modifier = Modifier
                     .fillParentMaxHeight()
                     .statusBarsPadding()

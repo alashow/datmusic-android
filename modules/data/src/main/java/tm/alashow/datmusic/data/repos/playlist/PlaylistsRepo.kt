@@ -23,16 +23,20 @@ class PlaylistsRepo @Inject constructor(
     private val playlistAudiosDao: PlaylistsWithAudiosDao,
 ) : RoomRepo<Playlist>(dao, dispatchers) {
 
-    suspend fun createPlaylist(playlist: Playlist, audioIds: List<String> = listOf()) {
+    suspend fun createPlaylist(playlist: Playlist, audioIds: List<String> = listOf()): PlaylistId? {
+        var playlistId: PlaylistId?
         withContext(dispatchers.io) {
-            val playlistId = dao.insert(playlist)
-            addAudiosToPlaylist(playlistId, audioIds)
+            playlistId = dao.insert(playlist)
+            playlistId?.let { addAudiosToPlaylist(it, audioIds) }
         }
+
+        return playlistId
     }
 
-    suspend fun addAudiosToPlaylist(playlistId: PlaylistId, audioIds: List<String>) {
+    suspend fun addAudiosToPlaylist(playlistId: PlaylistId, audioIds: List<String>): List<PlaylistId> {
+        val insertedIds = mutableListOf<PlaylistId>()
         withContext(dispatchers.io) {
-            if (dao.has(playlistId.toString()) > 0) {
+            if (dao.has(playlistId.toString()) <= 0) {
                 Timber.e("Playlist with id: $playlistId doesn't exist")
                 return@withContext
             }
@@ -40,10 +44,16 @@ class PlaylistsRepo @Inject constructor(
             val lastIndex = playlistAudiosDao.lastPlaylistAudioIndex(playlistId).firstOrNull() ?: 0
 
             val playlistWithAudios = audioIds.mapIndexed { index, id ->
-                PlaylistAudio(playlistId, id, lastIndex + index)
+                PlaylistAudio(
+                    playlistId = playlistId,
+                    audioId = id,
+                    index = lastIndex + index
+                )
             }
-            playlistAudiosDao.insertAll(playlistWithAudios)
+            insertedIds.addAll(playlistAudiosDao.insertAll(playlistWithAudios))
+            return@withContext
         }
+        return insertedIds
     }
 
     suspend fun swap(playlistId: PlaylistId, from: Int, to: Int) {
@@ -52,8 +62,20 @@ class PlaylistsRepo @Inject constructor(
             val fromId = playlistAudios.first { it.index == from }.audioId
             val toId = playlistAudios.first { it.index == to }.audioId
 
-            playlistAudiosDao.updatePlaylistAudio(PlaylistAudio(playlistId, fromId, to))
-            playlistAudiosDao.updatePlaylistAudio(PlaylistAudio(playlistId, toId, from))
+            playlistAudiosDao.updatePlaylistAudio(
+                PlaylistAudio(
+                    playlistId = playlistId,
+                    audioId = fromId,
+                    index = to
+                )
+            )
+            playlistAudiosDao.updatePlaylistAudio(
+                PlaylistAudio(
+                    playlistId = playlistId,
+                    audioId = toId,
+                    index = from
+                )
+            )
         }
     }
 

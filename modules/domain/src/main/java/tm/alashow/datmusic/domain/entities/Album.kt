@@ -26,7 +26,7 @@ data class Album(
 
     @Transient
     @ColumnInfo(name = "id")
-    override val id: String = albumId.toString(),
+    val id: String = albumId.toString(),
 
     @SerialName("access_key")
     @ColumnInfo(name = "access_key")
@@ -108,6 +108,7 @@ data class Album(
     val searchIndex: Int = 0,
 ) : BasePaginatedEntity(), Parcelable, LibraryItem {
 
+    override fun getIdentifier() = id
     override fun getLabel() = title
 
     @Serializable

@@ -30,6 +30,7 @@ import tm.alashow.datmusic.ui.downloads.audio.LocalAudioDownloadItemActionHandle
 import tm.alashow.datmusic.ui.downloads.audio.audioDownloadItemActionHandler
 import tm.alashow.datmusic.ui.playback.PlaybackHost
 import tm.alashow.datmusic.ui.settings.LocalAppVersion
+import tm.alashow.datmusic.ui.snackbar.SnackbarMessagesListener
 import tm.alashow.navigation.NavigatorHost
 import tm.alashow.navigation.rememberBottomSheetNavigator
 import tm.alashow.ui.ThemeViewModel
@@ -65,6 +66,7 @@ private fun DatmusicCore(
     themeViewModel: ThemeViewModel = hiltViewModel(),
     content: @Composable () -> Unit
 ) {
+    SnackbarMessagesListener()
     val themeState by rememberFlowWithLifecycle(themeViewModel.themeState).collectAsState(DefaultTheme)
     AppTheme(themeState) {
         NavigatorHost {

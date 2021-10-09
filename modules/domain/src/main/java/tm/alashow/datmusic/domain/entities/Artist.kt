@@ -25,7 +25,7 @@ typealias ArtistId = String
 data class Artist(
     @SerialName("id")
     @ColumnInfo(name = "id")
-    override val id: ArtistId = "",
+    val id: ArtistId = "",
 
     @SerialName("name")
     @ColumnInfo(name = "name")
@@ -67,6 +67,7 @@ data class Artist(
     val searchIndex: Int = 0,
 ) : BasePaginatedEntity(), Parcelable {
 
+    override fun getIdentifier() = id
     private fun sourcePhoto() = _photo.maxByOrNull { it.height }?.url
 
     fun photo() = sourcePhoto() ?: buildAlternatePhotoUrl("medium")

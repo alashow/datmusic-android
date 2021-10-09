@@ -2,7 +2,7 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.datmusic.data.observers
+package tm.alashow.datmusic.data.observers.playlist
 
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow

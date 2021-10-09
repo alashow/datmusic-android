@@ -20,7 +20,6 @@ import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
-import timber.log.Timber
 import tm.alashow.Config
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams.BackendType.Companion.toQueryParam
@@ -167,7 +166,6 @@ sealed class LeafScreen(
 }
 
 fun NavGraphBuilder.composableScreen(screen: LeafScreen, content: @Composable (NavBackStackEntry) -> Unit) {
-    Timber.d("Adding screen: ${screen.createRoute()}, ${screen.route}")
     composable(screen.createRoute(), screen.arguments, screen.deepLinks, content)
 }
 

@@ -18,19 +18,19 @@ import tm.alashow.domain.models.Params
 abstract class PlaylistsDao : EntityDao<Params, Playlist>() {
 
     @Transaction
-    @Query("SELECT * FROM playlists ORDER BY _id ASC")
+    @Query("SELECT * FROM playlists ORDER BY _id DESC")
     abstract override fun entries(): Flow<List<Playlist>>
 
     @Transaction
-    @Query("SELECT * FROM playlists ORDER BY _id ASC LIMIT :count OFFSET :offset")
+    @Query("SELECT * FROM playlists ORDER BY _id DESC LIMIT :count OFFSET :offset")
     abstract override fun entriesObservable(count: Int, offset: Int): Flow<List<Playlist>>
 
     @Transaction
-    @Query("SELECT * FROM playlists ORDER BY _id ASC")
+    @Query("SELECT * FROM playlists ORDER BY _id DESC")
     abstract override fun entriesPagingSource(): PagingSource<Int, Playlist>
 
     @Transaction
-    @Query("SELECT * FROM playlists WHERE params = :params ORDER BY _id ASC")
+    @Query("SELECT * FROM playlists WHERE params = :params ORDER BY id DESC")
     abstract override fun entriesPagingSource(params: Params): PagingSource<Int, Playlist>
 
     @Transaction
@@ -38,7 +38,7 @@ abstract class PlaylistsDao : EntityDao<Params, Playlist>() {
     abstract override fun entry(id: String): Flow<Playlist>
 
     @Transaction
-    @Query("SELECT * FROM playlists WHERE _id = :id")
+    @Query("SELECT * FROM playlists WHERE id = :id")
     abstract fun entry(id: PlaylistId): Flow<Playlist>
 
     @Transaction
@@ -57,6 +57,9 @@ abstract class PlaylistsDao : EntityDao<Params, Playlist>() {
 
     @Query("DELETE FROM playlists")
     abstract override suspend fun deleteAll(): Int
+
+    @Query("SELECT COUNT(*) from playlists ")
+    abstract override fun count(): Flow<Int>
 
     @Query("SELECT COUNT(*) from playlists where params = :params")
     abstract override suspend fun count(params: Params): Int

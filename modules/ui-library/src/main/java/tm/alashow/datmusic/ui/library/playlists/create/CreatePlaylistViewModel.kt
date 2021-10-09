@@ -12,21 +12,20 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
-import tm.alashow.base.util.ValidationError
-import tm.alashow.base.util.ValidationErrorBlank
-import tm.alashow.base.util.ValidationErrorTooLong
 import tm.alashow.base.util.extensions.getStateFlow
-import tm.alashow.datmusic.data.repos.playlist.PlaylistsRepo
-import tm.alashow.datmusic.domain.entities.PLAYLIST_NAME_MAX_LENGTH
-import tm.alashow.datmusic.domain.entities.Playlist
+import tm.alashow.datmusic.data.interactors.playlist.CreatePlaylist
+import tm.alashow.i18n.ValidationError
+import tm.alashow.i18n.asValidationError
 import tm.alashow.navigation.Navigator
 
 @HiltViewModel
 class CreatePlaylistViewModel @Inject constructor(
     private val handle: SavedStateHandle,
-    private val playlistsRepo: PlaylistsRepo,
+    private val createPlaylist: CreatePlaylist,
     private val navigator: Navigator
 ) : ViewModel() {
 
@@ -42,20 +41,16 @@ class CreatePlaylistViewModel @Inject constructor(
     }
 
     fun createPlaylist() {
-        val name = nameState.value?.text ?: ""
-
-        if (name.isBlank()) {
-            nameErrorState.value = ValidationErrorBlank()
-            return
-        }
-        if (name.length > PLAYLIST_NAME_MAX_LENGTH) {
-            nameErrorState.value = ValidationErrorTooLong()
-            return
-        }
-
+        val params = CreatePlaylist.Params(
+            name = nameState.value?.text ?: "",
+            generateNameIfEmpty = false
+        )
         viewModelScope.launch {
-            playlistsRepo.createPlaylist(Playlist(name = name))
-            navigator.goBack()
+            createPlaylist(params).catch {
+                nameErrorState.value = it.asValidationError()
+            }.collect {
+                navigator.goBack()
+            }
         }
     }
 }

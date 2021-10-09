@@ -68,7 +68,7 @@ fun LibraryItemRow(
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
-                        onClick = { },
+                        onClick = { onClick?.invoke() },
                     )
             )
         }

@@ -22,7 +22,7 @@ fun PlaylistRow(
     LibraryItemRow(
         libraryItem = playlist,
         modifier = modifier,
-        typeRes = R.string.library_playlist,
+        typeRes = R.string.playlist_title,
         onClick = {
             navigator.navigate(LeafScreen.PlaylistDetail.buildRoute(playlist._id))
         }

@@ -24,13 +24,15 @@ private val MULTIPLE_ARTIST_SPLIT_REGEX = Regex("((,)|(feat\\.)|(ft\\.))")
 fun String.artists() = split(MULTIPLE_ARTIST_SPLIT_REGEX, 10).map { it.trim() }
 fun String.mainArtist() = split(MULTIPLE_ARTIST_SPLIT_REGEX, 10).first().trim()
 
+typealias Audios = List<Audio>
+
 @Parcelize
 @Serializable
 @Entity(tableName = "audios")
 data class Audio(
     @SerialName("id")
     @ColumnInfo(name = "id")
-    override val id: String = "",
+    val id: String = "",
 
     @SerialName("key")
     @ColumnInfo(name = "key")
@@ -103,6 +105,8 @@ data class Audio(
     @ColumnInfo(name = "search_index")
     val searchIndex: Int = 0,
 ) : BasePaginatedEntity(), Parcelable {
+
+    override fun getIdentifier() = id
 
     @Ignore
     @Transient

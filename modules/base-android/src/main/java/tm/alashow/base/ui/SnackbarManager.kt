@@ -5,6 +5,7 @@
 package tm.alashow.base.ui
 
 import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -14,9 +15,14 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.receiveAsFlow
 import org.threeten.bp.Duration
+import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.base.util.extensions.delayFlow
+import tm.alashow.i18n.UiMessage
 
-class SnackbarManager @Inject constructor() {
+@Singleton
+class SnackbarManager @Inject constructor(
+    private val dispatchers: CoroutineDispatchers,
+) {
     private var maxDuration = Duration.ofSeconds(6).toMillis()
     private val maxQueue = 3
 
@@ -59,4 +65,12 @@ class SnackbarManager @Inject constructor() {
     suspend fun removeCurrentError() {
         removeErrorSignal.send(Unit)
     }
+
+    private val pendingMessages = Channel<UiMessage<*>>(Channel.CONFLATED)
+
+    fun addMessage(message: UiMessage<*>) {
+        pendingMessages.trySend(message)
+    }
+
+    val messages = pendingMessages.receiveAsFlow()
 }

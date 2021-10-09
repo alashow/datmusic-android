@@ -62,17 +62,24 @@
 
     <string name="library.title">Library</string>
     <string name="library.empty">No items</string>
-    <string name="library.playlist">Playlist</string>
-    <string name="library.playlist.empty">Playlist is empty</string>
-    <string name="library.playlist.empty.addSongs">Add Songs</string>
-    <string name="library.createPlaylist">Create playlist</string>
-    <string name="library.createPlaylist.label">Give your playlist a name</string>
+
+    <string name="playlist.title">Playlist</string>
+    <string name="playlist.empty">Playlist is empty</string>
+    <string name="playlist.empty.addSongs">Add Songs</string>
+
+    <string name="playlist.addTo">Add to playlist</string>
+    <string name="playlist.addTo.new">New playlist</string>
+    <string name="playlist.addTo.added">Added to %1$s</string>
+    <string name="playlist.create">Create playlist</string>
+    <string name="playlist.create.label">Give your playlist a name</string>
+    <string name="playlist.create.generatedTemplate">My Playlist #%1$d</string>
 
     <string name="playback.queueTitle.audio">Playing from queue</string>
     <string name="playback.queueTitle.downloads">Playing from downloads</string>
     <string name="playback.queueTitle.artist">Playing from artist</string>
     <string name="playback.queueTitle.artist.value">Playing from artist</string>
     <string name="playback.queueTitle.album">Playing from album</string>
+    <string name="playback.queueTitle.playlist">Playing from playlist</string>
     <string name="playback.queueTitle.search">Playing from search</string>
 
     <string name="settings.title">Settings</string>

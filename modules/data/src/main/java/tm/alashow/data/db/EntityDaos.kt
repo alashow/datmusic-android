@@ -31,7 +31,7 @@ abstract class BaseDao<E : BaseEntity> {
 
     @Update
     suspend fun updateOrInsert(entity: E) {
-        val entry = entry(entity.id).firstOrNull()
+        val entry = entry(entity.getIdentifier()).firstOrNull()
         if (entry == null) {
             insert(entity)
         } else update(entity)
@@ -58,6 +58,7 @@ abstract class BaseDao<E : BaseEntity> {
 
     abstract fun entriesById(ids: List<String>): Flow<List<E>>
 
+    abstract fun count(): Flow<Int>
     abstract suspend fun has(id: String): Int
 }
 
@@ -108,7 +109,7 @@ abstract class PaginatedEntryDao<Params : Any, E : PaginatedEntity> : EntityDao<
      */
     @Transaction
     open suspend fun insertMissing(entities: List<E>) {
-        val existingIds = entriesById(entities.map { it.id }).first().map { it.id }.toSet()
-        insertAll(entities.filterNot { entity -> existingIds.contains(entity.id) })
+        val existingIds = entriesById(entities.map { it.getIdentifier() }).first().map { it.getIdentifier() }.toSet()
+        insertAll(entities.filterNot { entity -> existingIds.contains(entity.getIdentifier()) })
     }
 }

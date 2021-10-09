@@ -5,8 +5,9 @@
 package tm.alashow.domain.models
 
 interface BaseEntity {
-    val id: String
     var params: String
+
+    fun getIdentifier(): String
 }
 
 interface PaginatedEntity : BaseEntity {

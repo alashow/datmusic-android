@@ -67,6 +67,9 @@ abstract class ArtistsDao : PaginatedEntryDao<DatmusicSearchParams, Artist>() {
     @Query("SELECT MAX(page) from artists WHERE params = :params")
     abstract override suspend fun getLastPage(params: DatmusicSearchParams): Int?
 
+    @Query("SELECT COUNT(*) from artists")
+    abstract override fun count(): Flow<Int>
+
     @Query("SELECT COUNT(*) from artists where params = :params")
     abstract override suspend fun count(params: DatmusicSearchParams): Int
 

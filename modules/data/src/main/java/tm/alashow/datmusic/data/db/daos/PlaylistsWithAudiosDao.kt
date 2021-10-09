@@ -22,7 +22,7 @@ abstract class PlaylistsWithAudiosDao {
     abstract suspend fun insert(entities: PlaylistAudio)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract suspend fun insertAll(entities: List<PlaylistAudio>)
+    abstract suspend fun insertAll(entities: List<PlaylistAudio>): List<Long>
 
     @Transaction
     @Query("SELECT * FROM playlist_audios WHERE playlist_id = :id")

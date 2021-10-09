@@ -41,6 +41,7 @@ import tm.alashow.base.imageloading.ImageLoading
 import tm.alashow.base.util.extensions.interpunctize
 import tm.alashow.base.util.millisToDuration
 import tm.alashow.datmusic.domain.entities.Audio
+import tm.alashow.datmusic.ui.library.playlist.addTo.AddToPlaylistMenu
 import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.components.shimmer
 import tm.alashow.ui.theme.AppTheme
@@ -92,6 +93,7 @@ fun AudioRow(
         )
 
         if (!isPlaceholder) {
+            val (addToPlaylistVisible, setAddToPlaylistVisible) = remember { mutableStateOf(false) }
             AudioDropdownMenu(
                 expanded = menuVisible,
                 onExpandedChange = { menuVisible = it },
@@ -102,10 +104,15 @@ fun AudioRow(
                     val action = AudioItemAction.from(it, audio)
                     when {
                         action is AudioItemAction.Play && onPlayAudio != null -> onPlayAudio(audio)
+                        action is AudioItemAction.AddToPlaylist -> setAddToPlaylistVisible(true)
                         else -> actionHandler(action)
                     }
                 },
             )
+
+            if (addToPlaylistVisible) {
+                AddToPlaylistMenu(audio, addToPlaylistVisible, setAddToPlaylistVisible)
+            }
         }
     }
 }

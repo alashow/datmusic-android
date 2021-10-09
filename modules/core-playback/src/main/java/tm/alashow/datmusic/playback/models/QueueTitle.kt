@@ -15,6 +15,7 @@ data class QueueTitle(val type: Type = Type.UNKNOWN, val value: String? = null) 
         Type.UNKNOWN, Type.AUDIO -> context.getString(R.string.playback_queueTitle_audio)
         Type.ARTIST -> context.getString(R.string.playback_queueTitle_artist)
         Type.ALBUM -> context.getString(R.string.playback_queueTitle_album)
+        Type.PLAYLIST -> context.getString(R.string.playback_queueTitle_playlist)
         Type.SEARCH -> context.getString(R.string.playback_queueTitle_search)
         Type.DOWNLOADS -> context.getString(R.string.playback_queueTitle_downloads)
     }
@@ -22,6 +23,7 @@ data class QueueTitle(val type: Type = Type.UNKNOWN, val value: String? = null) 
     fun localizeValue(context: Context): String = when (type) {
         Type.UNKNOWN, Type.AUDIO, Type.DOWNLOADS -> ""
         Type.ARTIST, Type.ALBUM -> value ?: ""
+        Type.PLAYLIST -> value ?: ""
         Type.SEARCH -> if (value != null) """"$value"""" else ""
     }
 
@@ -44,7 +46,7 @@ data class QueueTitle(val type: Type = Type.UNKNOWN, val value: String? = null) 
     }
 
     enum class Type {
-        UNKNOWN, AUDIO, ALBUM, ARTIST, SEARCH, DOWNLOADS;
+        UNKNOWN, AUDIO, ALBUM, ARTIST, SEARCH, DOWNLOADS, PLAYLIST;
 
         companion object {
             private val map = values().associateBy { it.name }

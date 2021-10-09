@@ -127,6 +127,7 @@ import tm.alashow.datmusic.ui.audios.AudioItemAction
 import tm.alashow.datmusic.ui.audios.AudioRow
 import tm.alashow.datmusic.ui.audios.LocalAudioActionHandler
 import tm.alashow.datmusic.ui.audios.currentPlayingMenuActionLabels
+import tm.alashow.datmusic.ui.library.playlist.addTo.AddToPlaylistMenu
 import tm.alashow.navigation.LeafScreen
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.Navigator
@@ -308,13 +309,22 @@ private fun PlaybackSheetTopBar(
         },
         actions = {
             CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
+                val (addToPlaylistVisible, setAddToPlaylistVisible) = remember { mutableStateOf(false) }
                 AudioDropdownMenu(
                     expanded = expanded,
                     onExpandedChange = setExpanded,
                     actionLabels = currentPlayingMenuActionLabels,
                 ) {
-                    if (playbackQueue.isValid)
-                        actionHandler(AudioItemAction.from(it, playbackQueue.currentAudio))
+                    val action = AudioItemAction.from(it, playbackQueue.currentAudio)
+                    if (playbackQueue.isValid) {
+                        if (action is AudioItemAction.AddToPlaylist) {
+                            setAddToPlaylistVisible(true)
+                        } else actionHandler(AudioItemAction.from(it, playbackQueue.currentAudio))
+                    }
+                }
+
+                if (addToPlaylistVisible && playbackQueue.isValid) {
+                    AddToPlaylistMenu(playbackQueue.currentAudio, addToPlaylistVisible, setAddToPlaylistVisible)
                 }
             }
         }

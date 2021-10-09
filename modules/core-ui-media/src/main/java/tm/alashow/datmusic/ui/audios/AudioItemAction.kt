@@ -13,6 +13,7 @@ sealed class AudioItemAction(open val audio: Audio) {
     data class Download(override val audio: Audio) : AudioItemAction(audio)
     data class DownloadById(override val audio: Audio) : AudioItemAction(audio)
     data class CopyLink(override val audio: Audio) : AudioItemAction(audio)
+    data class AddToPlaylist(override val audio: Audio) : AudioItemAction(audio)
 
     companion object {
         fun from(actionLabelRes: Int, audio: Audio) = when (actionLabelRes) {
@@ -21,6 +22,7 @@ sealed class AudioItemAction(open val audio: Audio) {
             R.string.audio_menu_download -> Download(audio)
             R.string.audio_menu_downloadById -> DownloadById(audio)
             R.string.audio_menu_copyLink -> CopyLink(audio)
+            R.string.playlist_addTo -> AddToPlaylist(audio)
             else -> error("Unknown action: $actionLabelRes")
         }
     }

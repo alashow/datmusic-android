@@ -202,7 +202,7 @@ class PlaybackConnectionImpl(
     }
 
     override fun playPlaylist(playlist: PlaylistWithAudios, index: Int) {
-        transportControls?.playFromMediaId(MediaId(MEDIA_TYPE_PLAYLIST, playlist.playlist.id, index).toString(), null)
+        transportControls?.playFromMediaId(MediaId(MEDIA_TYPE_PLAYLIST, playlist.playlist.getIdentifier(), index).toString(), null)
     }
 
     override fun playArtist(artist: Artist, index: Int) {

@@ -2,7 +2,7 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.base.util
+package tm.alashow.i18n
 
 import java.util.Collections.emptyList
 

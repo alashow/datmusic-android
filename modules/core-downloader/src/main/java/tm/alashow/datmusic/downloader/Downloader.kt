@@ -31,7 +31,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import timber.log.Timber
 import tm.alashow.base.util.CoroutineDispatchers
-import tm.alashow.base.util.UiMessage
 import tm.alashow.base.util.event
 import tm.alashow.data.PreferencesStore
 import tm.alashow.datmusic.data.db.daos.AudiosDao
@@ -44,6 +43,7 @@ import tm.alashow.datmusic.domain.entities.DownloadRequest
 import tm.alashow.domain.models.None
 import tm.alashow.domain.models.Optional
 import tm.alashow.domain.models.some
+import tm.alashow.i18n.UiMessage
 
 data class DownloadItems(val audios: List<AudioDownloadItem>)
 typealias AudioDownloadItems = List<AudioDownloadItem>

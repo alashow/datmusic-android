@@ -9,7 +9,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.serialization.json.Json
 import org.threeten.bp.LocalDateTime
-import tm.alashow.domain.models.BaseEntity as BaseEntity
+import tm.alashow.domain.models.BaseEntity
 
 @Entity(tableName = "download_requests")
 data class DownloadRequest(
@@ -30,11 +30,13 @@ data class DownloadRequest(
 
     @PrimaryKey
     @ColumnInfo(name = "id")
-    override val id: String = entityId,
+    val id: String = entityId,
 
     @ColumnInfo(name = "params")
     override var params: String = "",
 ) : BaseEntity {
+
+    override fun getIdentifier() = id
 
     val audio
         get() = run {

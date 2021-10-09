@@ -42,5 +42,6 @@ dependencies {
 	api project(":modules:common-ui-compose")
 	api project(":modules:common-ui-theme")
 	api project(":modules:common-ui-components")
-	api project(":modules:core-ui-downloader")
+	api project(":modules:core-ui-library")
+	api project(":modules:navigation")
 }

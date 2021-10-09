@@ -14,6 +14,8 @@ import androidx.room.Relation
 import tm.alashow.domain.models.BaseEntity
 
 typealias PlaylistId = Long
+typealias Playlists = List<Playlist>
+typealias PlaylistsWithAudios = List<PlaylistWithAudios>
 
 const val PLAYLIST_NAME_MAX_LENGTH = 100
 
@@ -24,7 +26,7 @@ data class Playlist(
     val _id: PlaylistId = 0,
 
     @ColumnInfo(name = "id")
-    override val id: String = _id.toString(),
+    val id: String = _id.toString(),
 
     @ColumnInfo(name = "name")
     val name: String = "",
@@ -32,6 +34,7 @@ data class Playlist(
     @ColumnInfo(name = "params")
     override var params: String = "",
 ) : BaseEntity, LibraryItem {
+    override fun getIdentifier() = id.toString()
     override fun getLabel() = name
 }
 
@@ -41,6 +44,10 @@ data class Playlist(
     indices = [Index("playlist_id"), Index("audio_id")]
 )
 data class PlaylistAudio(
+//    @PrimaryKey(autoGenerate = true)
+//    @ColumnInfo(name = "id", defaultValue = "0")
+//    val id: Long = 0,
+
     @ColumnInfo(name = "playlist_id")
     val playlistId: PlaylistId = 0,
 

@@ -25,12 +25,14 @@ private val defaultMenuActionLabels = listOf(
     R.string.audio_menu_play,
     R.string.audio_menu_playNext,
     R.string.audio_menu_download,
-    R.string.audio_menu_copyLink
+    R.string.audio_menu_copyLink,
+    R.string.playlist_addTo,
 )
 
 val currentPlayingMenuActionLabels = listOf(
     R.string.audio_menu_download,
-    R.string.audio_menu_copyLink
+    R.string.audio_menu_copyLink,
+    R.string.playlist_addTo,
 )
 
 @Composable

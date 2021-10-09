@@ -90,7 +90,7 @@ private fun LibraryTopBar(onCreatePlaylist: Callback = {}) {
             ) {
                 Icon(
                     Icons.Default.Add,
-                    contentDescription = stringResource(R.string.library_createPlaylist),
+                    contentDescription = stringResource(R.string.playlist_create),
                     modifier = Modifier.size(32.dp)
                 )
             }
