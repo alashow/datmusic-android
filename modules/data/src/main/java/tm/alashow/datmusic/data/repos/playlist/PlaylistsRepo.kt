@@ -42,12 +42,11 @@ class PlaylistsRepo @Inject constructor(
             }
 
             val lastIndex = playlistAudiosDao.lastPlaylistAudioIndex(playlistId).firstOrNull() ?: 0
-
             val playlistWithAudios = audioIds.mapIndexed { index, id ->
                 PlaylistAudio(
                     playlistId = playlistId,
                     audioId = id,
-                    position = lastIndex + index
+                    position = lastIndex + (index + 1)
                 )
             }
             insertedIds.addAll(playlistAudiosDao.insertAll(playlistWithAudios))
