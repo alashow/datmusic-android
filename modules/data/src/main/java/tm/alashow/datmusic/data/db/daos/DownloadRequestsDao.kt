@@ -57,5 +57,5 @@ abstract class DownloadRequestsDao : BaseDao<DownloadRequest>() {
     abstract override fun count(): Flow<Int>
 
     @Query("SELECT COUNT(*) from download_requests where id = :id")
-    abstract override suspend fun has(id: String): Int
+    abstract override suspend fun exists(id: String): Int
 }

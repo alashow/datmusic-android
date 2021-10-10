@@ -36,7 +36,7 @@ class PlaylistsRepo @Inject constructor(
     suspend fun addAudiosToPlaylist(playlistId: PlaylistId, audioIds: List<String>): List<PlaylistId> {
         val insertedIds = mutableListOf<PlaylistId>()
         withContext(dispatchers.io) {
-            if (dao.has(playlistId.toString()) <= 0) {
+            if (!exists(playlistId.toString())) {
                 Timber.e("Playlist with id: $playlistId doesn't exist")
                 return@withContext
             }

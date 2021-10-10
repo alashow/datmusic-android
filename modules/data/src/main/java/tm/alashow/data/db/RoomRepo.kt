@@ -21,6 +21,8 @@ abstract class RoomRepo<E : BaseEntity>(
     fun isEmpty(): Flow<Boolean> = dao.count().flowOn(dispatchers.io).map { it == 0 }
     fun count(): Flow<Int> = dao.count().flowOn(dispatchers.io)
 
+    suspend fun exists(id: String): Boolean = dao.exists(id) > 0
+
     suspend fun insert(item: E) = withContext(dispatchers.io) { dao.insert(item) }
     suspend fun insert(items: List<E>) = withContext(dispatchers.io) { dao.insertAll(items) }
     suspend fun update(item: E) = withContext(dispatchers.io) { dao.update(item) }

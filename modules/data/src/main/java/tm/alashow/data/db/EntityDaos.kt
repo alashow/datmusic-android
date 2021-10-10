@@ -59,7 +59,7 @@ abstract class BaseDao<E : BaseEntity> {
     abstract fun entriesById(ids: List<String>): Flow<List<E>>
 
     abstract fun count(): Flow<Int>
-    abstract suspend fun has(id: String): Int
+    abstract suspend fun exists(id: String): Int
 }
 
 abstract class EntityDao<Params : Any, E : BaseEntity> : BaseDao<E>() {

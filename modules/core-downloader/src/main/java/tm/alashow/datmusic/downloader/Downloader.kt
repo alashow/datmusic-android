@@ -45,8 +45,8 @@ import tm.alashow.domain.models.Optional
 import tm.alashow.domain.models.some
 import tm.alashow.i18n.UiMessage
 
-data class DownloadItems(val audios: List<AudioDownloadItem>)
 typealias AudioDownloadItems = List<AudioDownloadItem>
+data class DownloadItems(val audios: AudioDownloadItems)
 
 class Downloader @Inject constructor(
     @ApplicationContext private val appContext: Context,
@@ -166,7 +166,7 @@ class Downloader @Inject constructor(
      * @return false if not allowed to enqueue again, true otherwise
      */
     private suspend fun validateNewAudioRequest(downloadRequest: DownloadRequest): Boolean {
-        val existingRequest = dao.has(downloadRequest.id) > 0
+        val existingRequest = dao.exists(downloadRequest.id) > 0
 
         if (existingRequest) {
             val oldRequest = dao.entry(downloadRequest.id).first()
@@ -277,7 +277,7 @@ class Downloader @Inject constructor(
      * Builds [AudioDownloadItem] from given audio id if it exists and satisfies [allowedStatuses].
      */
     suspend fun getAudioDownload(audioId: String, vararg allowedStatuses: Status = arrayOf(Status.COMPLETED)): Optional<AudioDownloadItem> {
-        val existingRequest = dao.has(audioId) > 0
+        val existingRequest = dao.exists(audioId) > 0
         if (existingRequest) {
             val request = dao.entry(audioId).first()
             val downloadInfo = fetcher.downloadInfo(request.requestId)
