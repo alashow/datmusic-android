@@ -20,6 +20,7 @@ import tm.alashow.base.util.extensions.getStateFlow
 import tm.alashow.datmusic.data.interactors.playlist.CreatePlaylist
 import tm.alashow.i18n.ValidationError
 import tm.alashow.i18n.asValidationError
+import tm.alashow.navigation.LeafScreen
 import tm.alashow.navigation.Navigator
 
 @HiltViewModel
@@ -48,8 +49,8 @@ class CreatePlaylistViewModel @Inject constructor(
         viewModelScope.launch {
             createPlaylist(params).catch {
                 nameErrorState.value = it.asValidationError()
-            }.collect {
-                navigator.goBack()
+            }.collect { newPlaylist ->
+                navigator.navigate(LeafScreen.PlaylistDetail.buildRoute(newPlaylist.id))
             }
         }
     }
