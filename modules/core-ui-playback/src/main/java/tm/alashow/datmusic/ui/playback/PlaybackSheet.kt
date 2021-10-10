@@ -310,21 +310,21 @@ private fun PlaybackSheetTopBar(
         actions = {
             CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
                 val (addToPlaylistVisible, setAddToPlaylistVisible) = remember { mutableStateOf(false) }
+                if (playbackQueue.isValid) {
+                    AddToPlaylistMenu(playbackQueue.currentAudio, addToPlaylistVisible, setAddToPlaylistVisible)
+                }
                 AudioDropdownMenu(
                     expanded = expanded,
                     onExpandedChange = setExpanded,
                     actionLabels = currentPlayingMenuActionLabels,
-                ) {
-                    val action = AudioItemAction.from(it, playbackQueue.currentAudio)
+                ) { actionLabel ->
                     if (playbackQueue.isValid) {
+                        val audio = playbackQueue.currentAudio
+                        val action = AudioItemAction.from(actionLabel, audio)
                         if (action is AudioItemAction.AddToPlaylist) {
                             setAddToPlaylistVisible(true)
-                        } else actionHandler(AudioItemAction.from(it, playbackQueue.currentAudio))
+                        } else actionHandler(action)
                     }
-                }
-
-                if (addToPlaylistVisible && playbackQueue.isValid) {
-                    AddToPlaylistMenu(playbackQueue.currentAudio, addToPlaylistVisible, setAddToPlaylistVisible)
                 }
             }
         }

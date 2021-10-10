@@ -94,6 +94,7 @@ fun AudioRow(
 
         if (!isPlaceholder) {
             val (addToPlaylistVisible, setAddToPlaylistVisible) = remember { mutableStateOf(false) }
+            AddToPlaylistMenu(audio, addToPlaylistVisible, setAddToPlaylistVisible)
             AudioDropdownMenu(
                 expanded = menuVisible,
                 onExpandedChange = { menuVisible = it },
@@ -109,10 +110,6 @@ fun AudioRow(
                     }
                 },
             )
-
-            if (addToPlaylistVisible) {
-                AddToPlaylistMenu(audio, addToPlaylistVisible, setAddToPlaylistVisible)
-            }
         }
     }
 }

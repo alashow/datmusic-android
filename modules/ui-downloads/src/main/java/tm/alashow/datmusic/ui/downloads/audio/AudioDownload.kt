@@ -59,6 +59,7 @@ import tm.alashow.datmusic.ui.audios.AudioRowItem
 import tm.alashow.datmusic.ui.downloads.R
 import tm.alashow.datmusic.ui.downloads.fileSizeStatus
 import tm.alashow.datmusic.ui.downloads.statusLabel
+import tm.alashow.datmusic.ui.library.playlist.addTo.AddToPlaylistMenu
 import tm.alashow.ui.TimedVisibility
 import tm.alashow.ui.colorFilterDynamicProperty
 import tm.alashow.ui.components.IconButton
@@ -80,6 +81,7 @@ internal fun AudioDownload(
             .fillMaxWidth()
             .padding(AppTheme.specs.inputPaddings)
     ) {
+        val audio = audioDownloadItem.audio
         val downloadInfo = audioDownloadItem.downloadInfo
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -123,6 +125,8 @@ internal fun AudioDownload(
                 Text(text = footer, modifier = Modifier.weight(19f))
             }
 
+            val (addToPlaylistVisible, setAddToPlaylistVisible) = remember { mutableStateOf(false) }
+            AddToPlaylistMenu(audio, addToPlaylistVisible, setAddToPlaylistVisible)
             AudioDownloadDropdownMenu(
                 audioDownload = audioDownloadItem.copy(downloadInfo = downloadInfo),
                 expanded = menuVisible,
@@ -130,9 +134,10 @@ internal fun AudioDownload(
                 modifier = Modifier
                     .weight(1f)
                     .height(20.dp)
-            ) {
-                when (val action = AudioDownloadItemAction.from(it, audioDownloadItem)) {
+            ) { actionLabel ->
+                when (val action = AudioDownloadItemAction.from(actionLabel, audioDownloadItem)) {
                     is AudioDownloadItemAction.Play -> onAudioPlay(action.audio)
+                    is AudioDownloadItemAction.AddToPlaylist -> setAddToPlaylistVisible(true)
                     else -> actionHandler(action)
                 }
             }

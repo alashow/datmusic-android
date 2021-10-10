@@ -42,15 +42,16 @@ fun AddToPlaylistMenu(
 ) {
     val playlists by rememberFlowWithLifecycle(viewModel.playlists).collectAsState(emptyList())
 
-    AddToPlaylistDropdownMenu(
-        expanded = visible,
-        onExpandedChange = onVisibleChange,
-        playlists = playlists.withCreatePlaylistItem(),
-        onPlaylistSelect = {
-            viewModel.addTo(playlist = it, audio)
-        },
-        modifier = modifier,
-    )
+    if (visible)
+        AddToPlaylistDropdownMenu(
+            expanded = visible,
+            onExpandedChange = onVisibleChange,
+            playlists = playlists.withCreatePlaylistItem(),
+            onPlaylistSelect = {
+                viewModel.addTo(playlist = it, audio)
+            },
+            modifier = modifier,
+        )
 }
 
 @Composable
