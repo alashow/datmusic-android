@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.isSpecified
 import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
 import com.google.accompanist.placeholder.PlaceholderDefaults
@@ -82,7 +83,7 @@ fun CoverImage(
     image: @Composable (Modifier) -> Unit
 ) {
     val state = painter.state
-    val sizeMod = if (size != Dp.Unspecified) Modifier.size(size) else Modifier
+    val sizeMod = if (size.isSpecified) Modifier.size(size) else Modifier
     Surface(
         elevation = 2.dp,
         shape = shape,

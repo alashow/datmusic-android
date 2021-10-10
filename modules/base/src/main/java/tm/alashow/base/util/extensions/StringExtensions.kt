@@ -11,7 +11,7 @@ fun String?.orNA() = when (this.isNullOrEmpty()) {
 
 fun String?.orBlank() = when (this == null) {
     false -> this
-    else -> "N/A"
+    else -> ""
 }
 
 fun List<String?>.interpunctize(interpunct: String = " ꞏ ") = joinToString(interpunct)

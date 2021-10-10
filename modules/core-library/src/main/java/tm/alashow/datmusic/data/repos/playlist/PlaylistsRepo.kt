@@ -21,42 +21,61 @@ import tm.alashow.datmusic.data.db.daos.PlaylistsDao
 import tm.alashow.datmusic.data.db.daos.PlaylistsWithAudiosDao
 import tm.alashow.datmusic.data.repos.playlist.PlaylistArtworkUtils.savePlaylistArtwork
 import tm.alashow.datmusic.domain.entities.CoverImageSize
+import tm.alashow.datmusic.domain.entities.PLAYLIST_NAME_MAX_LENGTH
 import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.domain.entities.PlaylistAudio
 import tm.alashow.datmusic.domain.entities.PlaylistId
-import tm.alashow.i18n.DatabaseError
+import tm.alashow.i18n.DatabaseInsertError
 import tm.alashow.i18n.DatabaseValidationNotFound
 import tm.alashow.i18n.ValidationErrorBlank
+import tm.alashow.i18n.ValidationErrorTooLong
 
 class PlaylistsRepo @Inject constructor(
     private val context: Context,
     private val dispatchers: CoroutineDispatchers,
     private val dao: PlaylistsDao,
     private val playlistAudiosDao: PlaylistsWithAudiosDao,
-) : RoomRepo<Playlist>(dao, dispatchers), CoroutineScope by ProcessLifecycleOwner.get().lifecycleScope {
+) : RoomRepo<PlaylistId, Playlist>(dao, dispatchers), CoroutineScope by ProcessLifecycleOwner.get().lifecycleScope {
 
     private suspend fun validatePlaylistId(playlistId: PlaylistId) {
-        if (!exists(playlistId.toString())) {
+        if (!exists(playlistId)) {
             Timber.e("Playlist with id: $playlistId doesn't exist")
             throw DatabaseValidationNotFound.error()
         }
     }
 
-    suspend fun createPlaylist(playlist: Playlist, audioIds: List<String> = listOf()): PlaylistId {
+    private fun validatePlaylist(playlist: Playlist) {
         if (playlist.name.isBlank()) {
             throw ValidationErrorBlank().error()
         }
+        if (playlist.name.length > PLAYLIST_NAME_MAX_LENGTH) {
+            throw ValidationErrorTooLong().error()
+        }
+    }
+
+    suspend fun createPlaylist(playlist: Playlist, audioIds: List<String> = listOf()): PlaylistId {
+        validatePlaylist(playlist)
 
         var playlistId: PlaylistId
         withContext(dispatchers.io) {
             playlistId = dao.insert(playlist)
             if (playlistId < 0)
-                throw DatabaseError.error()
+                throw DatabaseInsertError.error()
 
             addAudiosToPlaylist(playlistId, audioIds)
         }
 
         return playlistId
+    }
+
+    suspend fun updatePlaylist(playlist: Playlist): Playlist {
+        validatePlaylist(playlist)
+        val updatedPlaylist: Playlist
+        withContext(dispatchers.io) {
+            updatedPlaylist = update(playlist)
+        }
+
+        return updatedPlaylist
     }
 
     suspend fun addAudiosToPlaylist(playlistId: PlaylistId, audioIds: List<String>): List<PlaylistId> {

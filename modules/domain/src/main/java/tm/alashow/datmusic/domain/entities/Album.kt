@@ -7,7 +7,9 @@ package tm.alashow.datmusic.domain.entities
 import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -107,6 +109,9 @@ data class Album(
     @ColumnInfo(name = "search_index")
     val searchIndex: Int = 0,
 ) : BasePaginatedEntity(), Parcelable, LibraryItem {
+
+    @Ignore @Transient @IgnoredOnParcel
+    override val isUpdatable = false
 
     override fun getIdentifier() = id
     override fun getLabel() = title

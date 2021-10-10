@@ -60,11 +60,11 @@ import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.isActive
 import tm.alashow.datmusic.ui.playback.PlaybackMiniControls
 import tm.alashow.datmusic.ui.playback.PlaybackMiniControlsDefaults
-import tm.alashow.navigation.RootScreen
-import tm.alashow.navigation.RootScreen.Downloads as DownloadsTab
-import tm.alashow.navigation.RootScreen.Library as LibraryTab
-import tm.alashow.navigation.RootScreen.Search as SearchTab
-import tm.alashow.navigation.RootScreen.Settings as SettingsTab
+import tm.alashow.navigation.screens.RootScreen
+import tm.alashow.navigation.screens.RootScreen.Downloads as DownloadsTab
+import tm.alashow.navigation.screens.RootScreen.Library as LibraryTab
+import tm.alashow.navigation.screens.RootScreen.Search as SearchTab
+import tm.alashow.navigation.screens.RootScreen.Settings as SettingsTab
 import tm.alashow.ui.DismissableSnackbarHost
 import tm.alashow.ui.theme.translucentSurfaceColor
 

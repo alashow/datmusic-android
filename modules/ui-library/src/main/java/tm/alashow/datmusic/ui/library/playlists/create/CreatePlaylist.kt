@@ -8,31 +8,23 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
-import tm.alashow.base.util.asString
 import tm.alashow.datmusic.ui.library.R
-import tm.alashow.i18n.ValidationError
+import tm.alashow.datmusic.ui.library.playlists.PlaylistNameInput
+import tm.alashow.ui.KeyboardSpacer
 import tm.alashow.ui.components.TextRoundedButton
 import tm.alashow.ui.theme.AppTheme
-import tm.alashow.ui.theme.outlinedTextFieldColors
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -58,7 +50,7 @@ fun CreatePlaylist(
         PlaylistNameInput(
             name = name,
             onSetName = viewModel::setPlaylistName,
-            onCreatePlaylist = viewModel::createPlaylist,
+            onDone = viewModel::createPlaylist,
             nameError = nameError,
         )
 
@@ -68,37 +60,7 @@ fun CreatePlaylist(
             text = stringResource(createText),
             onClick = viewModel::createPlaylist,
         )
-    }
-}
 
-@Composable
-internal fun PlaylistNameInput(
-    name: TextFieldValue = TextFieldValue(),
-    onSetName: (TextFieldValue) -> Unit = {},
-    onCreatePlaylist: () -> Unit = {},
-    nameError: ValidationError? = null
-) {
-    TextField(
-        value = name,
-        onValueChange = onSetName,
-        isError = nameError != null,
-        textStyle = MaterialTheme.typography.h4.copy(
-            textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Bold
-        ),
-        singleLine = true,
-        maxLines = 1,
-        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done, keyboardType = KeyboardType.Text),
-        keyboardActions = KeyboardActions(onDone = { onCreatePlaylist() }),
-        colors = outlinedTextFieldColors()
-    )
-
-    val context = LocalContext.current
-    nameError?.let {
-        Text(
-            it.message.asString(context),
-            color = MaterialTheme.colors.error,
-            style = MaterialTheme.typography.caption
-        )
+        KeyboardSpacer()
     }
 }

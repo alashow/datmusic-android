@@ -12,7 +12,6 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import tm.alashow.base.ui.SnackbarManager
 import tm.alashow.datmusic.data.interactors.playlist.AddToPlaylist
 import tm.alashow.datmusic.data.interactors.playlist.CreatePlaylist
@@ -38,9 +37,7 @@ class AddToPlaylistViewModel @Inject constructor(
     val playlists = observePlaylists.flow
 
     init {
-        viewModelScope.launch {
-            observePlaylists(Params())
-        }
+        observePlaylists(Params())
     }
 
     fun addTo(playlist: Playlist, vararg audios: Audio) {
@@ -50,7 +47,6 @@ class AddToPlaylistViewModel @Inject constructor(
                 targetPlaylist = createPlaylist(CreatePlaylist.Params(generateNameIfEmpty = true)).first()
             }
             addToPlaylist(AddToPlaylist.Params(targetPlaylist, audios.toList())).collect {
-                Timber.d("Added to playlist, ids: ${it.joinToString { it.toString() }}")
                 snackbarManager.addMessage(AddedToPlaylistMessage.copy(formatArgs = listOf(playlist.name)))
             }
         }

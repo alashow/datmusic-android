@@ -24,7 +24,7 @@ abstract class BaseDao<E : BaseEntity> {
     abstract suspend fun insertAll(vararg entity: E)
 
     @Insert
-    abstract suspend fun insertAll(entities: List<E>)
+    abstract suspend fun insertAll(entities: List<E>): List<Long>
 
     @Update
     abstract suspend fun update(entity: E)
@@ -86,7 +86,7 @@ abstract class PaginatedEntryDao<Params : Any, E : PaginatedEntity> : EntityDao<
     abstract override suspend fun insertAll(vararg entity: E)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract override suspend fun insertAll(entities: List<E>)
+    abstract override suspend fun insertAll(entities: List<E>): List<Long>
 
     abstract suspend fun delete(params: Params, page: Int): Int
     abstract suspend fun getLastPage(params: Params): Int?

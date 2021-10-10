@@ -2,7 +2,7 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.navigation
+package tm.alashow.navigation.screens
 
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
@@ -54,6 +54,7 @@ sealed class RootScreen(
 sealed class LeafScreen(
     override val route: String,
     open val root: RootScreen,
+    protected open val path: String = "",
     val arguments: List<NamedNavArgument> = emptyList(),
     val deepLinks: List<NavDeepLink> = emptyList(),
 ) : Screen {

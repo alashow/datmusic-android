@@ -48,12 +48,10 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.LocalWindowInsets
@@ -66,7 +64,7 @@ import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.common.compose.getNavArgument
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams.BackendType
-import tm.alashow.navigation.QUERY_KEY
+import tm.alashow.navigation.screens.QUERY_KEY
 import tm.alashow.ui.OffsetNotifyingBox
 import tm.alashow.ui.components.ChipsRow
 import tm.alashow.ui.theme.AppTheme
@@ -257,7 +255,11 @@ fun SearchTextField(
     onSearch: () -> Unit = {},
     hint: String,
     maxLength: Int = 50,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search, keyboardType = KeyboardType.Text),
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(
+        imeAction = ImeAction.Search,
+        keyboardType = KeyboardType.Text,
+        capitalization = KeyboardCapitalization.Sentences
+    ),
     keyboardActions: KeyboardActions = KeyboardActions(onSearch = { onSearch() }),
     analytics: FirebaseAnalytics = LocalAnalytics.current
 ) {
@@ -290,7 +292,6 @@ fun SearchTextField(
         keyboardActions = keyboardActions,
         singleLine = true,
         maxLines = 1,
-        visualTransformation = { text -> TransformedText(text.capitalize(), OffsetMapping.Identity) },
         modifier = modifier
             .padding(horizontal = AppTheme.specs.padding)
             .background(AppTheme.colors.onSurfaceInputBackground, MaterialTheme.shapes.small)

@@ -13,10 +13,8 @@ import tm.alashow.data.R
 import tm.alashow.data.ResultInteractor
 import tm.alashow.datmusic.data.repos.playlist.PlaylistsRepo
 import tm.alashow.datmusic.domain.entities.Audios
-import tm.alashow.datmusic.domain.entities.PLAYLIST_NAME_MAX_LENGTH
 import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.i18n.ValidationErrorBlank
-import tm.alashow.i18n.ValidationErrorTooLong
 
 class CreatePlaylist @Inject constructor(
     private val context: Context,
@@ -34,9 +32,6 @@ class CreatePlaylist @Inject constructor(
                 val playlistCount = repo.count().first() + 1
                 name = context.getString(R.string.playlist_create_generatedTemplate, playlistCount)
             } else throw ValidationErrorBlank().error()
-        }
-        if (name.length > PLAYLIST_NAME_MAX_LENGTH) {
-            throw ValidationErrorTooLong().error()
         }
 
         val playlistId = repo.createPlaylist(Playlist(name = name))

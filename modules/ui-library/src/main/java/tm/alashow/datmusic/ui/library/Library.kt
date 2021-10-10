@@ -33,9 +33,9 @@ import tm.alashow.datmusic.ui.library.items.LibraryItemRow
 import tm.alashow.datmusic.ui.library.playlists.PlaylistRow
 import tm.alashow.domain.models.Success
 import tm.alashow.domain.models.Uninitialized
-import tm.alashow.navigation.LeafScreen
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.Navigator
+import tm.alashow.navigation.screens.LeafScreen
 import tm.alashow.ui.components.AppTopBar
 import tm.alashow.ui.components.EmptyErrorBox
 import tm.alashow.ui.components.IconButton
@@ -112,7 +112,7 @@ fun LazyListScope.libraryList(
         }
     }
 
-    items(items) {
+    items(items, key = { it.getIdentifier() }) {
         when (it) {
             is Playlist -> PlaylistRow(playlist = it)
             is Album -> LibraryItemRow(libraryItem = it, typeRes = R.string.albums_detail_title)

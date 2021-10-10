@@ -10,15 +10,14 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.launch
 import tm.alashow.base.util.extensions.stateInDefault
 import tm.alashow.datmusic.data.interactors.GetAlbumDetails
 import tm.alashow.datmusic.data.observers.ObserveAlbum
 import tm.alashow.datmusic.data.observers.ObserveAlbumDetails
 import tm.alashow.datmusic.data.repos.album.DatmusicAlbumParams
-import tm.alashow.navigation.ALBUM_ACCESS_KEY
-import tm.alashow.navigation.ALBUM_ID_KEY
-import tm.alashow.navigation.ALBUM_OWNER_ID_KEY
+import tm.alashow.navigation.screens.ALBUM_ACCESS_KEY
+import tm.alashow.navigation.screens.ALBUM_ID_KEY
+import tm.alashow.navigation.screens.ALBUM_OWNER_ID_KEY
 
 @HiltViewModel
 class AlbumDetailViewModel @Inject constructor(
@@ -40,7 +39,7 @@ class AlbumDetailViewModel @Inject constructor(
         load()
     }
 
-    private fun load(forceRefresh: Boolean = false) = viewModelScope.launch {
+    private fun load(forceRefresh: Boolean = false) {
         albumObserver(albumParams)
         albumDetails(GetAlbumDetails.Params(albumParams, forceRefresh))
     }

@@ -62,9 +62,9 @@ import tm.alashow.datmusic.ui.artists.ArtistColumn
 import tm.alashow.datmusic.ui.artists.ArtistsDefaults
 import tm.alashow.datmusic.ui.audios.AudioRow
 import tm.alashow.domain.models.errors.EmptyResultException
-import tm.alashow.navigation.LeafScreen
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.Navigator
+import tm.alashow.navigation.screens.LeafScreen
 import tm.alashow.ui.Delayed
 import tm.alashow.ui.components.ErrorBox
 import tm.alashow.ui.components.ProgressIndicator

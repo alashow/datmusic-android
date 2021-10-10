@@ -7,18 +7,23 @@ package tm.alashow.datmusic.ui.library.playlists
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 import tm.alashow.datmusic.data.repos.playlist.PlaylistArtworkUtils.getPlaylistArtworkImageFile
 import tm.alashow.datmusic.domain.entities.Playlist
+import tm.alashow.datmusic.ui.library.LibraryViewModel
 import tm.alashow.datmusic.ui.library.R
+import tm.alashow.datmusic.ui.library.items.LibraryItemAction
 import tm.alashow.datmusic.ui.library.items.LibraryItemRow
-import tm.alashow.navigation.LeafScreen
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.Navigator
+import tm.alashow.navigation.screens.EditPlaylistScreen
+import tm.alashow.navigation.screens.LeafScreen
 
 @Composable
 fun PlaylistRow(
     playlist: Playlist,
     modifier: Modifier = Modifier,
+    viewModel: LibraryViewModel = hiltViewModel(),
     navigator: Navigator = LocalNavigator.current
 ) {
     val context = LocalContext.current
@@ -30,5 +35,10 @@ fun PlaylistRow(
             navigator.navigate(LeafScreen.PlaylistDetail.buildRoute(playlist.id))
         },
         imageData = playlist.id.getPlaylistArtworkImageFile(context)
-    )
+    ) {
+        when (it) {
+            is LibraryItemAction.Edit -> navigator.navigate(EditPlaylistScreen.buildRoute(playlist.id))
+            is LibraryItemAction.Delete -> viewModel.deletePlaylistItem(playlist.id)
+        }
+    }
 }

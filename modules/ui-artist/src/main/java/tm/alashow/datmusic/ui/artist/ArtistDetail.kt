@@ -47,9 +47,9 @@ import tm.alashow.domain.models.Fail
 import tm.alashow.domain.models.Incomplete
 import tm.alashow.domain.models.Loading
 import tm.alashow.domain.models.Success
-import tm.alashow.navigation.LeafScreen
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.Navigator
+import tm.alashow.navigation.screens.LeafScreen
 import tm.alashow.ui.OffsetNotifyingBox
 import tm.alashow.ui.components.CollapsingTopBar
 import tm.alashow.ui.components.EmptyErrorBox

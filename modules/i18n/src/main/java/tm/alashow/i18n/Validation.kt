@@ -4,9 +4,9 @@
  */
 package tm.alashow.i18n
 
-class ValidationErrorException(val error: ValidationError) : Exception()
+class ValidationErrorException(val error: ValidationError, override val message: String?) : Exception(message)
 open class ValidationError(val message: UiMessage<*>) {
-    fun error() = ValidationErrorException(this)
+    fun error(message: String? = null) = ValidationErrorException(this, message)
 }
 
 fun Throwable.asValidationError() = when (this) {

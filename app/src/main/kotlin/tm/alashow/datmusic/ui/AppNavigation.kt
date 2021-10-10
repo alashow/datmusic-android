@@ -26,15 +26,17 @@ import tm.alashow.datmusic.ui.downloads.Downloads
 import tm.alashow.datmusic.ui.library.Library
 import tm.alashow.datmusic.ui.library.playlists.create.CreatePlaylist
 import tm.alashow.datmusic.ui.library.playlists.detail.PlaylistDetail
+import tm.alashow.datmusic.ui.library.playlists.edit.EditPlaylist
 import tm.alashow.datmusic.ui.search.Search
 import tm.alashow.datmusic.ui.settings.Settings
-import tm.alashow.navigation.LeafScreen
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.NavigationEvent
 import tm.alashow.navigation.Navigator
-import tm.alashow.navigation.RootScreen
-import tm.alashow.navigation.bottomSheetScreen
-import tm.alashow.navigation.composableScreen
+import tm.alashow.navigation.screens.EditPlaylistScreen
+import tm.alashow.navigation.screens.LeafScreen
+import tm.alashow.navigation.screens.RootScreen
+import tm.alashow.navigation.screens.bottomSheetScreen
+import tm.alashow.navigation.screens.composableScreen
 
 @OptIn(InternalCoroutinesApi::class, ExperimentalMaterialNavigationApi::class)
 @Composable
@@ -89,6 +91,7 @@ private fun NavGraphBuilder.addLibraryRoot(navController: NavController) {
     ) {
         addLibrary(navController)
         addCreatePlaylist(navController)
+        addUpdatePlaylist(navController)
         addPlaylistDetails(navController, RootScreen.Library)
         addArtistDetails(navController, RootScreen.Library)
         addAlbumDetails(navController, RootScreen.Library)
@@ -131,6 +134,12 @@ private fun NavGraphBuilder.addLibrary(navController: NavController) {
 private fun NavGraphBuilder.addCreatePlaylist(navController: NavController) {
     bottomSheetScreen(LeafScreen.CreatePlaylist()) {
         CreatePlaylist()
+    }
+}
+
+private fun NavGraphBuilder.addUpdatePlaylist(navController: NavController) {
+    bottomSheetScreen(EditPlaylistScreen()) {
+        EditPlaylist()
     }
 }
 

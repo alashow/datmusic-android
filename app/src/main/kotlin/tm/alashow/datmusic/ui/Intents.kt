@@ -9,7 +9,7 @@ import android.app.TaskStackBuilder
 import android.content.Context
 import android.content.Intent
 import tm.alashow.datmusic.domain.entities.ArtistId
-import tm.alashow.navigation.LeafScreen
+import tm.alashow.navigation.screens.LeafScreen
 
 fun Context.buildSearchIntent(query: String): PendingIntent {
     val intent = Intent(Intent.ACTION_VIEW, LeafScreen.Search.buildUri(query), this, MainActivity::class.java)

@@ -19,16 +19,20 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
-import tm.alashow.base.imageloading.ImageLoading
+import tm.alashow.base.imageloading.ImageLoading.applyDefault
 import tm.alashow.datmusic.domain.entities.LibraryItem
 import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.theme.AppTheme
@@ -43,8 +47,10 @@ fun LibraryItemRow(
     @StringRes typeRes: Int,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
+    onImageClick: (() -> Unit)? = null,
     imageSize: Dp = LibraryItemRowDefaults.imageSize,
     imageData: Any? = null,
+    actionHandler: LibraryItemActionHandler = {},
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
@@ -57,7 +63,48 @@ fun LibraryItemRow(
             .fillMaxWidth()
             .padding(AppTheme.specs.inputPaddings)
     ) {
-        val image = rememberImagePainter(imageData, builder = ImageLoading.defaultConfig)
+        LibraryItemRow(imageSize, imageData, onImageClick, onClick, libraryItem, typeRes, modifier = Modifier.weight(19f))
+
+        var menuVisible by remember { mutableStateOf(false) }
+        LibraryItemDropdownMenu(
+            libraryItem = libraryItem,
+            expanded = menuVisible,
+            onExpandedChange = { menuVisible = it },
+            modifier = Modifier
+                .weight(1f)
+                .align(Alignment.CenterVertically),
+            onDropdownSelect = {
+                val action = LibraryItemAction.from(it, libraryItem)
+                actionHandler(action)
+            },
+        )
+    }
+}
+
+@Composable
+private fun LibraryItemRow(
+    imageSize: Dp,
+    imageData: Any?,
+    onImageClick: (() -> Unit)?,
+    onClick: (() -> Unit)?,
+    libraryItem: LibraryItem,
+    typeRes: Int,
+    modifier: Modifier = Modifier,
+) {
+    val imageSizePx = with(LocalDensity.current) { imageSize.roundToPx() }
+    val image = rememberImagePainter(
+        imageData,
+        builder = {
+            applyDefault()
+            size(imageSizePx, imageSizePx)
+        }
+    )
+
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+    ) {
         CoverImage(
             painter = image,
             size = imageSize,
@@ -69,7 +116,7 @@ fun LibraryItemRow(
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
-                        onClick = { onClick?.invoke() },
+                        onClick = { (onImageClick ?: onClick)?.invoke() },
                     )
             )
         }

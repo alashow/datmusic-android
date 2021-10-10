@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withTimeout
@@ -48,7 +49,7 @@ abstract class ResultInteractor<in P, R> {
         emit(doWork(params))
     }
 
-    suspend fun executeSync(params: P): R = doWork(params)
+    suspend fun execute(params: P): R = doWork(params)
 
     protected abstract suspend fun doWork(params: P): R
 }
@@ -97,6 +98,8 @@ abstract class SubjectInteractor<P : Any, T> {
         .distinctUntilChanged()
         .flatMapLatest { createObservable(it) }
         .distinctUntilChanged()
+
+    suspend fun get(): T = flow.first()
 
     private val errorState = MutableSharedFlow<Throwable>(
         replay = 1,

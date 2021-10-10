@@ -63,6 +63,10 @@
     <string name="library.title">Library</string>
     <string name="library.empty">No items</string>
 
+    <string name="library.item.menu.cd">Library item menu</string>
+    <string name="library.item.menu.edit">Edit</string>
+    <string name="library.item.menu.delete">Delete</string>
+
     <string name="playlist.title">Playlist</string>
     <string name="playlist.empty">Playlist is empty</string>
     <string name="playlist.empty.addSongs">Add Songs</string>
@@ -74,6 +78,9 @@
     <string name="playlist.create.skipName">Skip</string>
     <string name="playlist.create.label">Give your playlist a name</string>
     <string name="playlist.create.generatedTemplate">My Playlist #%1$d</string>
+    <string name="playlist.edit.label">Edit playlist</string>
+    <string name="playlist.edit.delete">Delete playlist</string>
+    <string name="playlist.edit.done">Save</string>
 
     <string name="playback.queueTitle.audio">Playing from queue</string>
     <string name="playback.queueTitle.downloads">Playing from downloads</string>

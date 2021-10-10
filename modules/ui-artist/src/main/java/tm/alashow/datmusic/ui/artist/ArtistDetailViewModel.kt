@@ -10,13 +10,12 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.launch
 import tm.alashow.base.util.extensions.stateInDefault
 import tm.alashow.datmusic.data.interactors.GetArtistDetails
 import tm.alashow.datmusic.data.observers.ObserveArtist
 import tm.alashow.datmusic.data.observers.ObserveArtistDetails
 import tm.alashow.datmusic.data.repos.artist.DatmusicArtistParams
-import tm.alashow.navigation.ARTIST_ID_KEY
+import tm.alashow.navigation.screens.ARTIST_ID_KEY
 
 @HiltViewModel
 class ArtistDetailViewModel @Inject constructor(
@@ -34,7 +33,7 @@ class ArtistDetailViewModel @Inject constructor(
         load()
     }
 
-    private fun load(forceRefresh: Boolean = false) = viewModelScope.launch {
+    private fun load(forceRefresh: Boolean = false) {
         artist(artistParams)
         artistDetails(GetArtistDetails.Params(artistParams, forceRefresh))
     }
