@@ -71,6 +71,7 @@
     <string name="playlist.addTo.new">New playlist</string>
     <string name="playlist.addTo.added">Added to %1$s</string>
     <string name="playlist.create">Create playlist</string>
+    <string name="playlist.create.skipName">Skip</string>
     <string name="playlist.create.label">Give your playlist a name</string>
     <string name="playlist.create.generatedTemplate">My Playlist #%1$d</string>
 

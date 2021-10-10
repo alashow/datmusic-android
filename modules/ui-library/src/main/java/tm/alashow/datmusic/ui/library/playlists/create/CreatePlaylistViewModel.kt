@@ -43,7 +43,7 @@ class CreatePlaylistViewModel @Inject constructor(
     fun createPlaylist() {
         val params = CreatePlaylist.Params(
             name = nameState.value?.text ?: "",
-            generateNameIfEmpty = false
+            generateNameIfEmpty = true
         )
         viewModelScope.launch {
             createPlaylist(params).catch {

@@ -62,19 +62,21 @@ fun CreatePlaylist(
             nameError = nameError,
         )
 
+        val nameIsBlank = name.text.isBlank()
+        val createText = if (nameIsBlank) R.string.playlist_create_skipName else R.string.playlist_create
         TextRoundedButton(
-            text = stringResource(R.string.playlist_create),
+            text = stringResource(createText),
             onClick = viewModel::createPlaylist,
         )
     }
 }
 
 @Composable
-private fun PlaylistNameInput(
-    name: TextFieldValue,
-    onSetName: (TextFieldValue) -> Unit,
-    onCreatePlaylist: () -> Unit,
-    nameError: ValidationError?
+internal fun PlaylistNameInput(
+    name: TextFieldValue = TextFieldValue(),
+    onSetName: (TextFieldValue) -> Unit = {},
+    onCreatePlaylist: () -> Unit = {},
+    nameError: ValidationError? = null
 ) {
     TextField(
         value = name,

@@ -77,8 +77,11 @@ private fun PlaylistDetail(viewModel: PlaylistDetailViewModel, onBackClick: () -
                 LaunchedEffect(progress.value) {
                     headerOffsetProgress.animateTo(round(progress.value))
                 }
+                // set playlist name as title if empty
+                // because cover row will be hidden when empty
+                val title = (if (viewState.isEmptyPlaylist) viewState.playlist?.name else null)
                 CollapsingTopBar(
-                    title = stringResource(R.string.playlist_title),
+                    title = title ?: stringResource(R.string.playlist_title),
                     collapsed = !viewState.isEmptyPlaylist && headerOffsetProgress.value == 0f,
                     onNavigationClick = onBackClick,
                 )
