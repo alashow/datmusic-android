@@ -16,6 +16,8 @@ import tm.alashow.datmusic.data.db.daos.PlaylistsWithAudiosDao
 import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.domain.entities.PlaylistAudio
 import tm.alashow.datmusic.domain.entities.PlaylistId
+import tm.alashow.i18n.DatabaseError
+import tm.alashow.i18n.ValidationErrorBlank
 
 class PlaylistsRepo @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
@@ -23,11 +25,18 @@ class PlaylistsRepo @Inject constructor(
     private val playlistAudiosDao: PlaylistsWithAudiosDao,
 ) : RoomRepo<Playlist>(dao, dispatchers) {
 
-    suspend fun createPlaylist(playlist: Playlist, audioIds: List<String> = listOf()): PlaylistId? {
-        var playlistId: PlaylistId?
+    suspend fun createPlaylist(playlist: Playlist, audioIds: List<String> = listOf()): PlaylistId {
+        if (playlist.name.isBlank()) {
+            throw ValidationErrorBlank().error()
+        }
+
+        var playlistId: PlaylistId
         withContext(dispatchers.io) {
             playlistId = dao.insert(playlist)
-            playlistId?.let { addAudiosToPlaylist(it, audioIds) }
+            if (playlistId < 0)
+                throw DatabaseError.error()
+
+            addAudiosToPlaylist(playlistId, audioIds)
         }
 
         return playlistId

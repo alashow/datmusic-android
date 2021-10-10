@@ -4,6 +4,8 @@
  */
 package tm.alashow.i18n
 
+object DatabaseError : ValidationError(UiMessage.Resource(R.string.error_unknown))
+
 object ValidationErrorUnknown : ValidationError(UiMessage.Resource(R.string.error_unknown))
 open class ValidationErrorBlank : ValidationError(UiMessage.Resource(R.string.error_blank))
 open class ValidationErrorTooShort : ValidationError(UiMessage.Resource(R.string.error_validation_textShort))

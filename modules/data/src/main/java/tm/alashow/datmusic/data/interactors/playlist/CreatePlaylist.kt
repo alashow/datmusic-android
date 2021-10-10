@@ -17,7 +17,6 @@ import tm.alashow.datmusic.domain.entities.PLAYLIST_NAME_MAX_LENGTH
 import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.i18n.ValidationErrorBlank
 import tm.alashow.i18n.ValidationErrorTooLong
-import tm.alashow.i18n.ValidationErrorUnknown
 
 class CreatePlaylist @Inject constructor(
     private val context: Context,
@@ -40,7 +39,7 @@ class CreatePlaylist @Inject constructor(
             throw ValidationErrorTooLong().error()
         }
 
-        val playlistId = repo.createPlaylist(Playlist(name = name)) ?: throw ValidationErrorUnknown.error()
+        val playlistId = repo.createPlaylist(Playlist(name = name))
         return@withContext repo.playlist(playlistId).first()
     }
 }
