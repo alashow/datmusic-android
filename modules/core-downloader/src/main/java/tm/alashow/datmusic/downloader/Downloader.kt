@@ -35,6 +35,7 @@ import tm.alashow.base.util.event
 import tm.alashow.data.PreferencesStore
 import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
+import tm.alashow.datmusic.data.db.daos.findAudio
 import tm.alashow.datmusic.domain.DownloadsSongsGrouping
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
@@ -42,10 +43,13 @@ import tm.alashow.datmusic.domain.entities.DownloadItem
 import tm.alashow.datmusic.domain.entities.DownloadRequest
 import tm.alashow.domain.models.None
 import tm.alashow.domain.models.Optional
+import tm.alashow.domain.models.orNone
+import tm.alashow.domain.models.orNull
 import tm.alashow.domain.models.some
 import tm.alashow.i18n.UiMessage
 
 typealias AudioDownloadItems = List<AudioDownloadItem>
+
 data class DownloadItems(val audios: AudioDownloadItems)
 
 class Downloader @Inject constructor(
@@ -271,6 +275,12 @@ class Downloader @Inject constructor(
         downloadItems.forEach {
             dao.delete(it.downloadRequest)
         }
+    }
+
+    suspend fun findAudioDownload(audioId: String): Optional<Audio> {
+        return (audiosDao to dao).findAudio(audioId)?.apply {
+            audioDownloadItem = getAudioDownload(id).orNull()
+        }.orNone()
     }
 
     /**

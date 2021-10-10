@@ -24,12 +24,12 @@ object ImageLoading {
     }
 }
 
-suspend fun Context.getBitmap(uri: Uri, size: Int): Bitmap? {
+suspend fun Context.getBitmap(uri: Uri, size: Int = Int.MAX_VALUE, allowHardware: Boolean = true): Bitmap? {
     val request = ImageRequest.Builder(this)
         .data(uri)
         .size(size)
         .precision(Precision.INEXACT)
-        .allowHardware(true)
+        .allowHardware(allowHardware)
         .build()
 
     return when (val result = imageLoader.execute(request)) {

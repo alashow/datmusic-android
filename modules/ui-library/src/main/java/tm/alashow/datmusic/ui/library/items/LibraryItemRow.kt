@@ -44,6 +44,7 @@ fun LibraryItemRow(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     imageSize: Dp = LibraryItemRowDefaults.imageSize,
+    imageData: Any? = null,
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
@@ -56,7 +57,7 @@ fun LibraryItemRow(
             .fillMaxWidth()
             .padding(AppTheme.specs.inputPaddings)
     ) {
-        val image = rememberImagePainter("", builder = ImageLoading.defaultConfig)
+        val image = rememberImagePainter(imageData, builder = ImageLoading.defaultConfig)
         CoverImage(
             painter = image,
             size = imageSize,

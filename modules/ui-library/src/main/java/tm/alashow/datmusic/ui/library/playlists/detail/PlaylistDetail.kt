@@ -24,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -34,8 +35,8 @@ import tm.alashow.base.util.extensions.localizedMessage
 import tm.alashow.base.util.extensions.localizedTitle
 import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.common.compose.rememberFlowWithLifecycle
+import tm.alashow.datmusic.data.repos.playlist.PlaylistArtworkUtils.getPlaylistArtworkImageFile
 import tm.alashow.datmusic.domain.entities.Audio
-import tm.alashow.datmusic.domain.entities.CoverImageSize
 import tm.alashow.datmusic.domain.entities.PlaylistWithAudios
 import tm.alashow.datmusic.ui.audios.AudioRow
 import tm.alashow.datmusic.ui.components.CoverHeaderDefaults
@@ -121,9 +122,10 @@ private fun PlaylistDetailList(
                 var previousOffset = 0
                 val parallax = 0.3f
                 item {
+                    val context = LocalContext.current
                     CoverHeaderRow(
                         title = playlist.name,
-                        imageRequest = details()?.audios?.first()?.coverUri(CoverImageSize.LARGE),
+                        imageRequest = playlist.id.getPlaylistArtworkImageFile(context),
                         modifier = Modifier.graphicsLayer {
                             scrolledY += listState.firstVisibleItemScrollOffset - previousOffset
                             translationY = scrolledY * parallax

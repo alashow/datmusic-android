@@ -5,7 +5,6 @@
 package tm.alashow.datmusic.playback
 
 import android.support.v4.media.session.MediaSessionCompat
-import com.tonyodev.fetch2.Status
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
@@ -16,7 +15,6 @@ import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.base.util.extensions.swap
 import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
-import tm.alashow.datmusic.data.db.daos.findAudio
 import tm.alashow.datmusic.data.db.daos.findAudios
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.downloader.Downloader
@@ -65,9 +63,7 @@ class AudioQueueManagerImpl @Inject constructor(
     override val currentAudioId get() = queue.getOrNull(currentAudioIndex) ?: ""
 
     override suspend fun refreshCurrentAudio(): Audio? {
-        currentAudio = (audiosDao to downloadsDao).findAudio(queue[currentAudioIndex])?.apply {
-            audioDownloadItem = downloader.getAudioDownload(id, Status.COMPLETED).orNull()
-        }
+        currentAudio = downloader.findAudioDownload(queue[currentAudioIndex]).orNull()
         return currentAudio
     }
 

@@ -6,6 +6,8 @@ package tm.alashow.datmusic.ui.library.playlists
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import tm.alashow.datmusic.data.repos.playlist.PlaylistArtworkUtils.getPlaylistArtworkImageFile
 import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.ui.library.R
 import tm.alashow.datmusic.ui.library.items.LibraryItemRow
@@ -19,12 +21,14 @@ fun PlaylistRow(
     modifier: Modifier = Modifier,
     navigator: Navigator = LocalNavigator.current
 ) {
+    val context = LocalContext.current
     LibraryItemRow(
         libraryItem = playlist,
         modifier = modifier,
         typeRes = R.string.playlist_title,
         onClick = {
             navigator.navigate(LeafScreen.PlaylistDetail.buildRoute(playlist.id))
-        }
+        },
+        imageData = playlist.id.getPlaylistArtworkImageFile(context)
     )
 }
