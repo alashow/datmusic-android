@@ -17,6 +17,7 @@ import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.domain.entities.PlaylistAudio
 import tm.alashow.datmusic.domain.entities.PlaylistId
 import tm.alashow.i18n.DatabaseError
+import tm.alashow.i18n.DatabaseValidationNotFound
 import tm.alashow.i18n.ValidationErrorBlank
 
 class PlaylistsRepo @Inject constructor(
@@ -24,6 +25,13 @@ class PlaylistsRepo @Inject constructor(
     private val dao: PlaylistsDao,
     private val playlistAudiosDao: PlaylistsWithAudiosDao,
 ) : RoomRepo<Playlist>(dao, dispatchers) {
+
+    private suspend fun validatePlaylistId(playlistId: PlaylistId) {
+        if (!exists(playlistId.toString())) {
+            Timber.e("Playlist with id: $playlistId doesn't exist")
+            throw DatabaseValidationNotFound.error()
+        }
+    }
 
     suspend fun createPlaylist(playlist: Playlist, audioIds: List<String> = listOf()): PlaylistId {
         if (playlist.name.isBlank()) {
@@ -45,10 +53,7 @@ class PlaylistsRepo @Inject constructor(
     suspend fun addAudiosToPlaylist(playlistId: PlaylistId, audioIds: List<String>): List<PlaylistId> {
         val insertedIds = mutableListOf<PlaylistId>()
         withContext(dispatchers.io) {
-            if (!exists(playlistId.toString())) {
-                Timber.e("Playlist with id: $playlistId doesn't exist")
-                return@withContext
-            }
+            validatePlaylistId(playlistId)
 
             val lastIndex = playlistAudiosDao.lastPlaylistAudioIndex(playlistId).firstOrNull() ?: 0
             val playlistWithAudios = audioIds.mapIndexed { index, id ->
@@ -66,6 +71,8 @@ class PlaylistsRepo @Inject constructor(
 
     suspend fun swap(playlistId: PlaylistId, from: Int, to: Int) {
         withContext(dispatchers.io) {
+            validatePlaylistId(playlistId)
+
             val playlistAudios = playlistAudiosDao.playlistAudios(playlistId).first()
             val fromId = playlistAudios.first { it.position == from }.audioId
             val toId = playlistAudios.first { it.position == to }.audioId

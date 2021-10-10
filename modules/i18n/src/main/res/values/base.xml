@@ -41,6 +41,9 @@
     <string name="error.validation.textShort">Entered value is too short</string>
     <string name="error.validation.textLong">Entered value is too long</string>
 
+    <string name="error.database">Database error</string>
+    <string name="error.database.validation.notFound">Item not found</string>
+
     <string name="time.duration">%1$d hour %2$d min.</string>
     <string name="time.duration.minutes">%1$d minute</string>
 
