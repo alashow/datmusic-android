@@ -14,7 +14,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -202,13 +201,7 @@ private fun RowScope.PlaybackNowPlaying(
             painter = artwork,
             size = maxHeight - 16.dp,
             modifier = Modifier.padding(AppTheme.specs.paddingSmall)
-        ) { imageMod ->
-            Image(
-                painter = artwork,
-                contentDescription = null,
-                modifier = imageMod
-            )
-        }
+        )
 
         PlaybackPager(nowPlaying) { audio, _, pagerMod ->
             PlaybackNowPlaying(audio, modifier = pagerMod)

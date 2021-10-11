@@ -20,7 +20,7 @@ import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.datmusic.data.db.daos.AlbumsDao
 import tm.alashow.datmusic.data.db.daos.ArtistsDao
 import tm.alashow.datmusic.data.db.daos.AudiosDao
-import tm.alashow.datmusic.data.db.daos.PlaylistsWithAudiosDao
+import tm.alashow.datmusic.data.repos.playlist.PlaylistsRepo
 import tm.alashow.datmusic.playback.MediaNotificationsImpl
 import tm.alashow.datmusic.playback.NEXT
 import tm.alashow.datmusic.playback.NOTIFICATION_ID
@@ -64,7 +64,7 @@ class PlayerService : MediaBrowserServiceCompat(), CoroutineScope by MainScope()
     protected lateinit var albumsDao: AlbumsDao
 
     @Inject
-    protected lateinit var playlistsWithAudiosDao: PlaylistsWithAudiosDao
+    protected lateinit var playlistsRepo: PlaylistsRepo
 
     private lateinit var becomingNoisyReceiver: BecomingNoisyReceiver
 
@@ -151,7 +151,7 @@ class PlayerService : MediaBrowserServiceCompat(), CoroutineScope by MainScope()
     private suspend fun loadChildren(parentId: String): MutableList<MediaBrowserCompat.MediaItem> {
         val list = mutableListOf<MediaBrowserCompat.MediaItem>()
         val mediaId = parentId.toMediaId()
-        list.addAll(mediaId.toAudioList(audiosDao, artistsDao, albumsDao, playlistsWithAudiosDao).toMediaItems())
+        list.addAll(mediaId.toAudioList(audiosDao, artistsDao, albumsDao, playlistsRepo).toMediaItems())
         return list
     }
 

@@ -4,7 +4,6 @@
  */
 package tm.alashow.datmusic.ui.library.playlists.edit
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ButtonDefaults.textButtonColors
@@ -78,13 +77,7 @@ fun EditPlaylist(
                     centerHorizontally()
                 }
                 .padding(AppTheme.specs.paddingLarge)
-        ) { imageMod ->
-            Image(
-                painter = imagePainter,
-                contentDescription = null,
-                modifier = imageMod
-            )
-        }
+        )
 
         PlaylistNameInput(
             name = name,

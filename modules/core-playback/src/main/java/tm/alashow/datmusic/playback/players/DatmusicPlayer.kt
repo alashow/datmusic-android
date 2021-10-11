@@ -35,8 +35,8 @@ import tm.alashow.datmusic.data.db.daos.AlbumsDao
 import tm.alashow.datmusic.data.db.daos.ArtistsDao
 import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
-import tm.alashow.datmusic.data.db.daos.PlaylistsWithAudiosDao
 import tm.alashow.datmusic.data.db.daos.findAudio
+import tm.alashow.datmusic.data.repos.playlist.PlaylistsRepo
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.domain.entities.CoverImageSize
@@ -122,7 +122,7 @@ class DatmusicPlayerImpl @Inject constructor(
     private val audiosDao: AudiosDao,
     private val artistsDao: ArtistsDao,
     private val albumsDao: AlbumsDao,
-    private val playlistsWithAudiosDao: PlaylistsWithAudiosDao,
+    private val playlistsRepo: PlaylistsRepo,
     private val downloadsDao: DownloadRequestsDao,
     private val preferences: PreferencesStore,
     private val analytics: FirebaseAnalytics,
@@ -491,11 +491,11 @@ class DatmusicPlayerImpl @Inject constructor(
         if (seekTo > 0) seekTo(seekTo)
 
         if (queue == null) {
-            queue = mediaId.toAudioList(audiosDao, artistsDao, albumsDao, playlistsWithAudiosDao)?.map { it.id }?.apply {
+            queue = mediaId.toAudioList(audiosDao, artistsDao, albumsDao, playlistsRepo)?.map { it.id }?.apply {
                 if (mediaId.hasIndex && isNotEmpty())
                     audioId = if (mediaId.index < size) get(mediaId.index) else first()
             }
-            queueTitle = mediaId.toQueueTitle(audiosDao, artistsDao, albumsDao, playlistsWithAudiosDao).toString()
+            queueTitle = mediaId.toQueueTitle(audiosDao, artistsDao, albumsDao, playlistsRepo).toString()
         }
 
         if (queue != null && queue.isNotEmpty()) {

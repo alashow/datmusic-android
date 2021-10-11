@@ -10,7 +10,7 @@ import timber.log.Timber
 import tm.alashow.datmusic.data.db.daos.AlbumsDao
 import tm.alashow.datmusic.data.db.daos.ArtistsDao
 import tm.alashow.datmusic.data.db.daos.AudiosDao
-import tm.alashow.datmusic.data.db.daos.PlaylistsWithAudiosDao
+import tm.alashow.datmusic.data.repos.playlist.PlaylistsRepo
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
 import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams.Companion.withTypes
 import tm.alashow.datmusic.domain.entities.Audio
@@ -71,13 +71,12 @@ suspend fun MediaId.toAudioList(
     audiosDao: AudiosDao,
     artistsDao: ArtistsDao,
     albumsDao: AlbumsDao,
-    playlistDao: PlaylistsWithAudiosDao
-):
-    List<Audio>? = when (type) {
+    playlistsRepo: PlaylistsRepo
+): List<Audio>? = when (type) {
     MEDIA_TYPE_AUDIO -> listOfNotNull(audiosDao.entry(value).firstOrNull())
     MEDIA_TYPE_ALBUM -> albumsDao.entry(value).firstOrNull()?.audios
     MEDIA_TYPE_ARTIST -> artistsDao.entry(value).firstOrNull()?.audios
-    MEDIA_TYPE_PLAYLIST -> playlistDao.playlistWithAudios(value.toLong()).firstOrNull()?.audios
+    MEDIA_TYPE_PLAYLIST -> playlistsRepo.playlistWithAudios(value.toLong()).firstOrNull()?.audios
     MEDIA_TYPE_AUDIO_QUERY, MEDIA_TYPE_AUDIO_MINERVA_QUERY, MEDIA_TYPE_AUDIO_FLACS_QUERY -> {
         val params = DatmusicSearchParams(value).run {
             when (type) {
@@ -95,12 +94,12 @@ suspend fun MediaId.toQueueTitle(
     audiosDao: AudiosDao,
     artistsDao: ArtistsDao,
     albumsDao: AlbumsDao,
-    playlistDao: PlaylistsWithAudiosDao
+    playlistsRepo: PlaylistsRepo
 ): QueueTitle = when (type) {
     MEDIA_TYPE_AUDIO -> QueueTitle(QueueTitle.Type.AUDIO, audiosDao.entry(value).firstOrNull()?.title)
     MEDIA_TYPE_ARTIST -> QueueTitle(QueueTitle.Type.ARTIST, artistsDao.entry(value).firstOrNull()?.name)
     MEDIA_TYPE_ALBUM -> QueueTitle(QueueTitle.Type.ALBUM, albumsDao.entry(value).firstOrNull()?.title)
-    MEDIA_TYPE_PLAYLIST -> QueueTitle(QueueTitle.Type.PLAYLIST, playlistDao.playlistWithAudios(value.toLong()).firstOrNull()?.playlist?.name)
+    MEDIA_TYPE_PLAYLIST -> QueueTitle(QueueTitle.Type.PLAYLIST, playlistsRepo.playlistWithAudios(value.toLong()).firstOrNull()?.playlist?.name)
     MEDIA_TYPE_AUDIO_QUERY, MEDIA_TYPE_AUDIO_MINERVA_QUERY, MEDIA_TYPE_AUDIO_FLACS_QUERY -> QueueTitle(QueueTitle.Type.SEARCH, value)
     else -> QueueTitle()
 }

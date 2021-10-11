@@ -90,6 +90,8 @@
     <string name="playback.queueTitle.playlist">Playing from playlist</string>
     <string name="playback.queueTitle.search">Playing from search</string>
 
+    <string name="songs.count">%1$d songs</string>
+
     <string name="settings.title">Settings</string>
 
     <string name="settings.theme">Theme</string>

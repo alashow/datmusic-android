@@ -70,11 +70,11 @@ data class Artist(
     override fun getIdentifier() = id
     private fun sourcePhoto() = _photo.maxByOrNull { it.height }?.url
 
-    fun photo() = sourcePhoto() ?: buildAlternatePhotoUrl("medium")
-    fun largePhoto() = buildAlternatePhotoUrl("large")
+    fun photo(size: CoverImageSize = CoverImageSize.MEDIUM) = sourcePhoto() ?: buildAlternatePhotoUrl(size)
+    fun largePhoto() = buildAlternatePhotoUrl(CoverImageSize.LARGE)
 
-    private fun buildAlternatePhotoUrl(size: String) =
-        Config.API_BASE_URL.toUri().buildUpon().encodedPath("cover/artists").appendPath(name).appendPath(size).build().toString()
+    private fun buildAlternatePhotoUrl(size: CoverImageSize) =
+        Config.API_BASE_URL.toUri().buildUpon().encodedPath("cover/artists").appendPath(name).appendPath(size.type).build().toString()
 
     @Serializable
     @Parcelize

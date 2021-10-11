@@ -9,7 +9,6 @@ import android.support.v4.media.session.PlaybackStateCompat
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -347,22 +346,16 @@ private fun PlaybackArtwork(
         bitmapPlaceholder = nowPlaying.artwork,
         modifier = Modifier
             .padding(horizontal = AppTheme.specs.paddingLarge)
-            .then(modifier)
-    ) { imageMod ->
-        Image(
-            painter = currentArtwork,
-            contentDescription = null,
-            modifier = Modifier
-                .coloredRippleClickable(
-                    onClick = {
-                        playbackConnection.mediaController?.playPause()
-                    },
-                    color = contentColor,
-                    rippleRadius = Dp.Unspecified,
-                )
-                .then(imageMod),
-        )
-    }
+            .then(modifier),
+        imageModifier = Modifier
+            .coloredRippleClickable(
+                onClick = {
+                    playbackConnection.mediaController?.playPause()
+                },
+                color = contentColor,
+                rippleRadius = Dp.Unspecified,
+            ),
+    )
 }
 
 @Composable

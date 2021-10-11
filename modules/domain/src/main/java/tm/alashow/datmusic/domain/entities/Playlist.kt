@@ -69,3 +69,10 @@ data class PlaylistWithAudios(
     )
     val audios: List<Audio> = emptyList(),
 )
+
+typealias PlaylistAudios = List<AudioOfPlaylist>
+
+data class AudioOfPlaylist(
+    @Embedded
+    val audio: Audio = Audio()
+)

@@ -4,7 +4,6 @@
  */
 package tm.alashow.datmusic.ui.artists
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,14 +18,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.google.accompanist.placeholder.material.placeholder
-import com.google.accompanist.placeholder.material.shimmer
 import com.google.firebase.analytics.FirebaseAnalytics
 import tm.alashow.base.imageloading.ImageLoading
 import tm.alashow.base.util.click
@@ -70,15 +67,9 @@ fun ArtistColumn(
             painter = image,
             icon = rememberVectorPainter(Icons.Default.Person),
             shape = CircleShape,
-            size = imageSize
-        ) { modifier ->
-            Image(
-                painter = image,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = modifier.then(loadingModifier)
-            )
-        }
+            size = imageSize,
+            imageModifier = loadingModifier,
+        )
 
         Text(
             artist.name,

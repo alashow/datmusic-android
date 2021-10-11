@@ -5,7 +5,6 @@
 package tm.alashow.datmusic.ui.audios
 
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -136,19 +135,14 @@ fun AudioRowItem(
         CoverImage(
             painter = image,
             size = imageSize,
-        ) { imageMod ->
-            Image(
-                painter = image,
-                contentDescription = null,
-                modifier = imageMod
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                        onClick = { onCoverClick(audio) },
-                    )
-                    .then(loadingModifier)
-            )
-        }
+            imageModifier = Modifier
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = { onCoverClick(audio) },
+                )
+                .then(loadingModifier),
+        )
 
         Column(verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingTiny)) {
             Text(

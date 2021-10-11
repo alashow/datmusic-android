@@ -9,8 +9,10 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -19,12 +21,14 @@ import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.data.db.RoomRepo
 import tm.alashow.datmusic.data.db.daos.PlaylistsDao
 import tm.alashow.datmusic.data.db.daos.PlaylistsWithAudiosDao
+import tm.alashow.datmusic.data.repos.playlist.PlaylistArtworkUtils.getPlaylistArtworkImageFile
 import tm.alashow.datmusic.data.repos.playlist.PlaylistArtworkUtils.savePlaylistArtwork
 import tm.alashow.datmusic.domain.entities.CoverImageSize
 import tm.alashow.datmusic.domain.entities.PLAYLIST_NAME_MAX_LENGTH
 import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.domain.entities.PlaylistAudio
 import tm.alashow.datmusic.domain.entities.PlaylistId
+import tm.alashow.datmusic.domain.entities.PlaylistWithAudios
 import tm.alashow.i18n.DatabaseInsertError
 import tm.alashow.i18n.DatabaseValidationNotFound
 import tm.alashow.i18n.ValidationErrorBlank
@@ -91,7 +95,7 @@ class PlaylistsRepo @Inject constructor(
                     position = lastIndex + (index + 1)
                 )
             }
-            insertedIds.addAll(playlistAudiosDao.insertAll(playlistWithAudios))
+            insertedIds += playlistAudiosDao.insertAll(playlistWithAudios)
             generatePlaylistArtwork(playlistId)
             return@withContext
         }
@@ -125,14 +129,24 @@ class PlaylistsRepo @Inject constructor(
 
     fun playlists() = dao.entries()
     fun playlist(id: PlaylistId) = dao.entry(id)
+    fun audiosOfPlaylist(id: PlaylistId) = playlistAudiosDao.audiosOfPlaylist(id).map { it.map { item -> item.audio } }
     fun playlistsWithAudios() = playlistAudiosDao.playlistsWithAudios()
-    fun playlistWithAudios(id: PlaylistId) = playlistAudiosDao.playlistWithAudios(id)
+    fun playlistWithAudios(id: PlaylistId) = combine(playlist(id), audiosOfPlaylist(id), ::PlaylistWithAudios)
+
+    override suspend fun delete(id: PlaylistId): Int {
+        id.getPlaylistArtworkImageFile(context).delete()
+        return super.delete(id)
+    }
+
+    override suspend fun clear(): Int {
+        ArtworkImageFolderType.PLAYLIST.getArtworkImageFolder(context).delete()
+        return super.clear()
+    }
 
     private fun generatePlaylistArtwork(playlistId: PlaylistId, maxArtworksNeeded: Int = 4) {
         launch(dispatchers.computation) {
             validatePlaylistId(playlistId)
-            val playlistWithAudios = playlistWithAudios(playlistId).first()
-            val playlistAudios = playlistWithAudios.audios
+            val playlistAudios = audiosOfPlaylist(playlistId).first()
 
             if (playlistAudios.isNotEmpty()) {
                 Timber.i("Generating artwork for playlist id=$playlistId")

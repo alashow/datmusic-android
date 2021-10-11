@@ -31,13 +31,14 @@ import tm.alashow.ui.theme.AppTheme
 @Composable
 fun EmptyErrorBox(
     modifier: Modifier = Modifier,
+    title: String = stringResource(R.string.error_empty_title),
     message: String = stringResource(R.string.error_empty),
     retryLabel: String = stringResource(R.string.error_retry),
     retryVisible: Boolean = true,
     onRetryClick: () -> Unit = {},
 ) {
     ErrorBox(
-        title = stringResource(R.string.error_empty_title),
+        title = title,
         message = message,
         retryLabel = retryLabel,
         retryVisible = retryVisible,

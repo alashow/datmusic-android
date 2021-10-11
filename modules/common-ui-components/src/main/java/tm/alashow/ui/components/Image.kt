@@ -6,7 +6,6 @@ package tm.alashow.ui.components
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -21,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.VectorPainter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -34,66 +32,40 @@ import coil.compose.rememberImagePainter
 import com.google.accompanist.placeholder.PlaceholderDefaults
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.color
-import com.google.accompanist.placeholder.material.fade
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.shimmer
-
-@Composable
-fun ImageWithPlaceholder(
-    painter: ImagePainter,
-    modifier: Modifier = Modifier,
-    shape: Shape = RectangleShape,
-    errorOrEmpty: @Composable () -> Unit = {},
-    image: @Composable (Modifier) -> Unit
-) {
-    Box(
-        modifier = modifier
-    ) {
-        image(
-            Modifier
-                .fillMaxSize()
-                .placeholder(
-                    visible = painter.state is ImagePainter.State.Loading,
-                    shape = shape,
-                    highlight = PlaceholderHighlight.fade()
-                )
-        )
-
-        when (painter.state) {
-            is ImagePainter.State.Error, ImagePainter.State.Empty -> {
-                errorOrEmpty()
-            }
-            else -> Unit
-        }
-    }
-}
 
 @Composable
 fun CoverImage(
     painter: ImagePainter,
     modifier: Modifier = Modifier,
+    imageModifier: Modifier = Modifier,
     size: Dp = Dp.Unspecified,
     backgroundColor: Color = PlaceholderDefaults.color(),
     contentColor: Color = MaterialTheme.colors.secondary,
-    contentScale: ContentScale = ContentScale.FillBounds,
+    contentScale: ContentScale = ContentScale.Crop,
     shape: Shape = MaterialTheme.shapes.small,
     icon: VectorPainter = rememberVectorPainter(Icons.Default.MusicNote),
     iconPadding: Dp = if (size != Dp.Unspecified) size * 0.25f else 24.dp,
     bitmapPlaceholder: Bitmap? = null,
-    image: @Composable (Modifier) -> Unit
+    contentDescription: String? = null,
+    elevation: Dp = 2.dp,
 ) {
     val state = painter.state
     val sizeMod = if (size.isSpecified) Modifier.size(size) else Modifier
     Surface(
-        elevation = 2.dp,
+        elevation = elevation,
         shape = shape,
         color = backgroundColor,
         modifier = modifier
             .then(sizeMod)
             .aspectRatio(1f)
     ) {
-        image(
-            Modifier
+        Image(
+            painter = painter,
+            contentDescription = contentDescription,
+            contentScale = contentScale,
+            modifier = imageModifier
                 .fillMaxSize()
                 .placeholder(
                     visible = state is ImagePainter.State.Loading,

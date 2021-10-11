@@ -121,7 +121,7 @@ fun CollapsingTopBar(
 ) {
     val appBarColor = translucentSurfaceColor()
     val backgroundColor = animateColorAsState(if (collapsed) appBarColor.copy(alpha = 0f) else appBarColor).value
-    val contentColor = animateColorAsState(if (collapsed) Color.White else contentColorFor(backgroundColor)).value
+    val contentColor = contentColorFor(backgroundColor)
     val contentShadow = if (collapsed) Modifier.coloredShadow(Color.Black) else Modifier
 
     TopAppBar(
