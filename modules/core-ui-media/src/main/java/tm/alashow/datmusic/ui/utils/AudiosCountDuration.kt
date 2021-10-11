@@ -20,7 +20,7 @@ data class AudiosCountDuration(val count: Int, val duration: Long = Long.MAX_VAL
 object AudiosCountDurationTextCreator : TextCreator<AudiosCountDuration> {
 
     override fun AudiosCountDuration.localize(resources: Resources): String {
-        val count = resources.getString(R.string.songs_count, count)
+        val count = resources.getQuantityString(R.plurals.songs_count, count, count)
         val duration = resources.localizeDuration(duration, true)
         return listOf(count, duration).interpunctize()
     }
