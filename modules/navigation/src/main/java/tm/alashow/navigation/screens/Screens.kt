@@ -83,8 +83,10 @@ sealed class LeafScreen(
         )
     ) {
         companion object {
-            fun buildRoute(query: String, vararg backends: DatmusicSearchParams.BackendType) =
-                "search/?$QUERY_KEY=$query&$SEARCH_BACKENDS_KEY=${backends.toSet().toQueryParam()}"
+            fun buildRoute(
+                query: String,
+                vararg backends: DatmusicSearchParams.BackendType
+            ) = "${RootScreen.Search.route}/search/?$QUERY_KEY=$query&$SEARCH_BACKENDS_KEY=${backends.toSet().toQueryParam()}"
 
             fun buildUri(query: String) = "${Config.BASE_URL}search?q=$query".toUri()
         }
