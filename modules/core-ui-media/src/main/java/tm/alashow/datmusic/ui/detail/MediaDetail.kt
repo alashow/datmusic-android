@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
 import kotlin.math.round
+import tm.alashow.base.util.extensions.Callback
 import tm.alashow.base.util.extensions.localizedMessage
 import tm.alashow.base.util.extensions.localizedTitle
 import tm.alashow.base.util.extensions.orNA
@@ -45,6 +46,7 @@ import tm.alashow.ui.components.CollapsingTopBar
 import tm.alashow.ui.components.EmptyErrorBox
 import tm.alashow.ui.components.ErrorBox
 import tm.alashow.ui.components.fullScreenLoading
+import tm.alashow.ui.simpleClickable
 import tm.alashow.ui.theme.AppTheme
 
 typealias MediaDetails<DetailType> = LazyListScope.(details: Async<DetailType>, detailsLoading: Boolean) -> Boolean
@@ -55,8 +57,9 @@ typealias MediaDetailsEmpty<DetailType> = LazyListScope.(details: Async<DetailTy
 fun <DetailType> MediaDetail(
     viewState: MediaDetailViewState<DetailType>,
     @StringRes titleRes: Int,
-    onFailRetry: () -> Unit,
-    onEmptyRetry: () -> Unit,
+    onFailRetry: Callback,
+    onEmptyRetry: Callback,
+    onTitleClick: Callback = {},
     mediaDetails: MediaDetails<DetailType>,
     mediaDetailsFail: MediaDetailsFail<DetailType> = { a, b -> defaultMediaDetailsFail(a, b) },
     mediaDetailsEmpty: MediaDetailsEmpty<DetailType> = { a, b, c -> defaultMediaDetailsEmpty(a, b, c) },
@@ -88,6 +91,7 @@ fun <DetailType> MediaDetail(
                 viewState = viewState,
                 onFailRetry = onFailRetry,
                 onEmptyRetry = onEmptyRetry,
+                onTitleClick = onTitleClick,
                 padding = padding,
                 listState = listState,
                 headerOffsetProgress = progress,
@@ -103,8 +107,9 @@ fun <DetailType> MediaDetail(
 @Composable
 private fun <DetailType, T : MediaDetailViewState<DetailType>> MediaDetailContent(
     viewState: T,
-    onFailRetry: () -> Unit,
-    onEmptyRetry: () -> Unit,
+    onFailRetry: Callback,
+    onEmptyRetry: Callback,
+    onTitleClick: Callback,
     listState: LazyListState,
     headerOffsetProgress: State<Float>,
     mediaDetails: MediaDetails<DetailType>,
@@ -148,6 +153,7 @@ private fun <DetailType, T : MediaDetailViewState<DetailType>> MediaDetailConten
                         title = viewState.title.orNA(),
                         imageData = artwork,
                         offsetProgress = headerOffsetProgress,
+                        titleModifier = Modifier.simpleClickable(onClick = onTitleClick)
                     )
                     extraHeaderContent()
                 }

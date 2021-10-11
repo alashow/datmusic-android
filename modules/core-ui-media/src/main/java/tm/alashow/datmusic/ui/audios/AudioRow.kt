@@ -6,7 +6,6 @@ package tm.alashow.datmusic.ui.audios
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -43,6 +42,7 @@ import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.ui.library.playlist.addTo.AddToPlaylistMenu
 import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.components.shimmer
+import tm.alashow.ui.simpleClickable
 import tm.alashow.ui.theme.AppTheme
 
 object AudiosDefaults {
@@ -136,11 +136,9 @@ fun AudioRowItem(
             painter = image,
             size = imageSize,
             imageModifier = Modifier
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
-                    onClick = { onCoverClick(audio) },
-                )
+                .simpleClickable {
+                    onCoverClick(audio)
+                }
                 .then(loadingModifier),
         )
 

@@ -28,6 +28,7 @@ import tm.alashow.base.util.extensions.interpunctize
 import tm.alashow.base.util.extensions.orNA
 import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.common.compose.rememberFlowWithLifecycle
+import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.CoverImageSize
@@ -36,7 +37,11 @@ import tm.alashow.datmusic.ui.detail.MediaDetail
 import tm.alashow.domain.models.Async
 import tm.alashow.domain.models.Loading
 import tm.alashow.domain.models.Success
+import tm.alashow.navigation.LocalNavigator
+import tm.alashow.navigation.Navigator
+import tm.alashow.navigation.screens.LeafScreen
 import tm.alashow.ui.components.CoverImage
+import tm.alashow.ui.simpleClickable
 import tm.alashow.ui.theme.AppTheme
 
 @Composable
@@ -63,15 +68,27 @@ private fun AlbumDetail(viewModel: AlbumDetailViewModel) {
 }
 
 @Composable
-private fun AlbumHeaderSubtitle(viewState: AlbumDetailViewState) {
+private fun AlbumHeaderSubtitle(viewState: AlbumDetailViewState, navigator: Navigator = LocalNavigator.current) {
 
     val artist = viewState.album?.artists?.firstOrNull()
     val albumSubtitle = listOf(stringResource(R.string.albums_detail_title), viewState.album?.year?.toString()).interpunctize()
+    val artistName = artist?.name.orNA()
 
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall)) {
         val painter = rememberImagePainter(artist?.photo(CoverImageSize.SMALL), builder = ImageLoading.defaultConfig)
         CoverImage(painter, shape = CircleShape, size = 20.dp)
-        Text(artist?.name.orNA(), style = MaterialTheme.typography.subtitle2)
+        Text(
+            artistName, style = MaterialTheme.typography.subtitle2,
+            modifier = Modifier.simpleClickable {
+                navigator.navigate(
+                    LeafScreen.Search.buildRoute(
+                        artistName,
+                        DatmusicSearchParams.BackendType.ARTISTS,
+                        DatmusicSearchParams.BackendType.ALBUMS
+                    )
+                )
+            }
+        )
     }
     Text(albumSubtitle, style = MaterialTheme.typography.caption)
 }

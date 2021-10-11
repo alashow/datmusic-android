@@ -41,6 +41,7 @@ object CoverHeaderDefaults {
 fun CoverHeaderRow(
     title: String,
     modifier: Modifier = Modifier,
+    titleModifier: Modifier = Modifier,
     imageData: Any? = null,
     height: Dp = CoverHeaderDefaults.height,
     offsetProgress: State<Float> = mutableStateOf(0f),
@@ -68,7 +69,7 @@ fun CoverHeaderRow(
             style = titleStyle,
             maxLines = 3,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.align(Alignment.Start)
+            modifier = titleModifier.align(Alignment.Start)
         )
     }
 }

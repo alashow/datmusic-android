@@ -26,6 +26,9 @@ import tm.alashow.datmusic.ui.utils.AudiosCountDurationTextCreator.localize
 import tm.alashow.domain.models.Async
 import tm.alashow.domain.models.Loading
 import tm.alashow.domain.models.Success
+import tm.alashow.navigation.LocalNavigator
+import tm.alashow.navigation.Navigator
+import tm.alashow.navigation.screens.EditPlaylistScreen
 import tm.alashow.ui.components.EmptyErrorBox
 
 @Composable
@@ -34,7 +37,7 @@ fun PlaylistDetail() {
 }
 
 @Composable
-private fun PlaylistDetail(viewModel: PlaylistDetailViewModel) {
+private fun PlaylistDetail(viewModel: PlaylistDetailViewModel, navigator: Navigator = LocalNavigator.current) {
     val viewState by rememberFlowWithLifecycle(viewModel.state).collectAsState(initial = PlaylistDetailViewState.Empty)
 
     MediaDetail(
@@ -42,6 +45,11 @@ private fun PlaylistDetail(viewModel: PlaylistDetailViewModel) {
         titleRes = R.string.playlist_title,
         onFailRetry = viewModel::refresh,
         onEmptyRetry = viewModel::addSongs,
+        onTitleClick = {
+            viewState.playlist?.id?.let { playlistId ->
+                navigator.navigate(EditPlaylistScreen.buildRoute(playlistId))
+            }
+        },
         mediaDetails = { a, b ->
             playlistDetails(a, b)
         },
