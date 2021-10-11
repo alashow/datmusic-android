@@ -35,7 +35,7 @@ abstract class PlaylistsWithAudiosDao {
     /**
      * Group by playlist_audios.id because there might be multiple instances of the same audio id
      */
-    @Query("SELECT * FROM playlist_audios PA LEFT JOIN audios A ON A.id = PA.audio_id WHERE PA.playlist_id = :id GROUP BY PA.id")
+    @Query("SELECT * FROM playlist_audios PA INNER JOIN audios A ON A.id = PA.audio_id WHERE PA.playlist_id = :id GROUP BY PA.id")
     abstract fun audiosOfPlaylist(id: PlaylistId): Flow<PlaylistAudios>
 
     @Query("SELECT distinct(audio_id) FROM playlist_audios ORDER BY position ASC")
