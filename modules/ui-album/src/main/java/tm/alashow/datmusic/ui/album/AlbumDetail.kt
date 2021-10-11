@@ -24,11 +24,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberImagePainter
 import tm.alashow.base.imageloading.ImageLoading
+import tm.alashow.base.util.extensions.Callback
 import tm.alashow.base.util.extensions.interpunctize
 import tm.alashow.base.util.extensions.orNA
 import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.common.compose.rememberFlowWithLifecycle
-import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.CoverImageSize
@@ -37,9 +37,6 @@ import tm.alashow.datmusic.ui.detail.MediaDetail
 import tm.alashow.domain.models.Async
 import tm.alashow.domain.models.Loading
 import tm.alashow.domain.models.Success
-import tm.alashow.navigation.LocalNavigator
-import tm.alashow.navigation.Navigator
-import tm.alashow.navigation.screens.LeafScreen
 import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.simpleClickable
 import tm.alashow.ui.theme.AppTheme
@@ -62,13 +59,13 @@ private fun AlbumDetail(viewModel: AlbumDetailViewModel) {
             albumAudios(viewState.album ?: Album(), a, b)
         },
         extraHeaderContent = {
-            AlbumHeaderSubtitle(viewState)
+            AlbumHeaderSubtitle(viewState, onArtistClick = viewModel::goToArtist)
         }
     )
 }
 
 @Composable
-private fun AlbumHeaderSubtitle(viewState: AlbumDetailViewState, navigator: Navigator = LocalNavigator.current) {
+private fun AlbumHeaderSubtitle(viewState: AlbumDetailViewState, onArtistClick: Callback) {
 
     val artist = viewState.album?.artists?.firstOrNull()
     val albumSubtitle = listOf(stringResource(R.string.albums_detail_title), viewState.album?.year?.toString()).interpunctize()
@@ -79,15 +76,7 @@ private fun AlbumHeaderSubtitle(viewState: AlbumDetailViewState, navigator: Navi
         CoverImage(painter, shape = CircleShape, size = 20.dp)
         Text(
             artistName, style = MaterialTheme.typography.subtitle2,
-            modifier = Modifier.simpleClickable {
-                navigator.navigate(
-                    LeafScreen.Search.buildRoute(
-                        artistName,
-                        DatmusicSearchParams.BackendType.ARTISTS,
-                        DatmusicSearchParams.BackendType.ALBUMS
-                    )
-                )
-            }
+            modifier = Modifier.simpleClickable(onClick = onArtistClick)
         )
     }
     Text(albumSubtitle, style = MaterialTheme.typography.caption)
