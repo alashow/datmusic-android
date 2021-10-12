@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.VectorPainter
 import com.google.accompanist.insets.statusBarsPadding
 import tm.alashow.base.util.extensions.Callback
 import tm.alashow.datmusic.ui.components.CoverHeaderRow
@@ -26,7 +27,8 @@ class MediaDetailHeader {
         artwork: Any?,
         headerOffsetProgress: State<Float>,
         onTitleClick: Callback,
-        extraHeaderContent: @Composable (ColumnScope.() -> Unit)
+        headerCoverIcon: VectorPainter? = null,
+        extraHeaderContent: @Composable (ColumnScope.() -> Unit),
     ) {
         list.item {
             Column(
@@ -38,8 +40,9 @@ class MediaDetailHeader {
                 CoverHeaderRow(
                     title = title,
                     imageData = artwork,
+                    icon = headerCoverIcon,
                     offsetProgress = headerOffsetProgress,
-                    titleModifier = Modifier.simpleClickable(onClick = onTitleClick)
+                    titleModifier = Modifier.simpleClickable(onClick = onTitleClick),
                 )
                 extraHeaderContent()
             }

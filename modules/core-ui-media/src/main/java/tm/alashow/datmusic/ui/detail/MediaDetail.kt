@@ -19,6 +19,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.VectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.google.accompanist.insets.ui.Scaffold
@@ -38,13 +39,14 @@ import tm.alashow.ui.components.fullScreenLoading
 fun <DetailType> MediaDetail(
     viewState: MediaDetailViewState<DetailType>,
     @StringRes titleRes: Int,
+    onTitleClick: Callback = {},
     onFailRetry: Callback,
     onEmptyRetry: Callback,
-    onTitleClick: Callback = {},
     mediaDetailContent: MediaDetailContent<DetailType>,
     mediaDetailHeader: MediaDetailHeader = MediaDetailHeader(),
     mediaDetailFail: MediaDetailFail<DetailType> = MediaDetailFail(),
     mediaDetailEmpty: MediaDetailEmpty<DetailType> = MediaDetailEmpty(),
+    headerCoverIcon: VectorPainter? = null,
     extraHeaderContent: @Composable ColumnScope.() -> Unit = {},
     navigator: Navigator = LocalNavigator.current,
 ) {
@@ -81,6 +83,7 @@ fun <DetailType> MediaDetail(
                 mediaDetailContent = mediaDetailContent,
                 mediaDetailFail = mediaDetailFail,
                 mediaDetailEmpty = mediaDetailEmpty,
+                headerCoverIcon = headerCoverIcon,
                 extraHeaderContent = extraHeaderContent,
             )
         }
@@ -99,6 +102,7 @@ private fun <DetailType, T : MediaDetailViewState<DetailType>> MediaDetailConten
     mediaDetailHeader: MediaDetailHeader,
     mediaDetailFail: MediaDetailFail<DetailType>,
     mediaDetailEmpty: MediaDetailEmpty<DetailType>,
+    headerCoverIcon: VectorPainter? = null,
     extraHeaderContent: @Composable ColumnScope.() -> Unit = {},
     padding: PaddingValues = PaddingValues(),
 ) {
@@ -133,7 +137,8 @@ private fun <DetailType, T : MediaDetailViewState<DetailType>> MediaDetailConten
                 artwork = artwork,
                 headerOffsetProgress = headerOffsetProgress,
                 onTitleClick = onTitleClick,
-                extraHeaderContent = extraHeaderContent
+                headerCoverIcon = headerCoverIcon,
+                extraHeaderContent = extraHeaderContent,
             )
 
             val isEmpty = mediaDetailContent(

@@ -47,8 +47,8 @@ fun CoverHeaderRow(
     modifier: Modifier = Modifier,
     titleModifier: Modifier = Modifier,
     imageData: Any? = null,
-    height: Dp = CoverHeaderDefaults.height,
     icon: VectorPainter? = null,
+    height: Dp = CoverHeaderDefaults.height,
     offsetProgress: State<Float> = mutableStateOf(0f),
     titleStyle: TextStyle = CoverHeaderDefaults.titleStyle,
 ) {
