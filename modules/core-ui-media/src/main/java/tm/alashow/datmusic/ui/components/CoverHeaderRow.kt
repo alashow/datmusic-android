@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -18,6 +20,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.vector.VectorPainter
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -44,6 +48,7 @@ fun CoverHeaderRow(
     titleModifier: Modifier = Modifier,
     imageData: Any? = null,
     height: Dp = CoverHeaderDefaults.height,
+    icon: VectorPainter? = null,
     offsetProgress: State<Float> = mutableStateOf(0f),
     titleStyle: TextStyle = CoverHeaderDefaults.titleStyle,
 ) {
@@ -59,6 +64,7 @@ fun CoverHeaderRow(
             painter = painter,
             shape = RectangleShape,
             elevation = 10.dp,
+            icon = icon ?: rememberVectorPainter(Icons.Default.MusicNote),
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .height(imageHeight),

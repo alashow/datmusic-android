@@ -7,14 +7,10 @@ package tm.alashow.datmusic.ui.detail
 import androidx.annotation.StringRes
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.MaterialTheme
@@ -25,33 +21,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
 import kotlin.math.round
 import tm.alashow.base.util.extensions.Callback
-import tm.alashow.base.util.extensions.localizedMessage
-import tm.alashow.base.util.extensions.localizedTitle
 import tm.alashow.base.util.extensions.orNA
 import tm.alashow.datmusic.ui.components.CoverHeaderDefaults
-import tm.alashow.datmusic.ui.components.CoverHeaderRow
-import tm.alashow.domain.models.Async
-import tm.alashow.domain.models.Fail
 import tm.alashow.domain.models.Incomplete
-import tm.alashow.domain.models.Success
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.Navigator
 import tm.alashow.ui.OffsetNotifyingBox
 import tm.alashow.ui.adaptiveColor
 import tm.alashow.ui.components.CollapsingTopBar
-import tm.alashow.ui.components.EmptyErrorBox
-import tm.alashow.ui.components.ErrorBox
 import tm.alashow.ui.components.fullScreenLoading
-import tm.alashow.ui.simpleClickable
-import tm.alashow.ui.theme.AppTheme
-
-typealias MediaDetails<DetailType> = LazyListScope.(details: Async<DetailType>, detailsLoading: Boolean) -> Boolean
-typealias MediaDetailsFail<DetailType> = LazyListScope.(details: Async<DetailType>, onFailRetry: () -> Unit) -> Unit
-typealias MediaDetailsEmpty<DetailType> = LazyListScope.(details: Async<DetailType>, detailsEmpty: Boolean, onEmptyRetry: () -> Unit) -> Unit
 
 @Composable
 fun <DetailType> MediaDetail(
@@ -60,9 +41,10 @@ fun <DetailType> MediaDetail(
     onFailRetry: Callback,
     onEmptyRetry: Callback,
     onTitleClick: Callback = {},
-    mediaDetails: MediaDetails<DetailType>,
-    mediaDetailsFail: MediaDetailsFail<DetailType> = { a, b -> defaultMediaDetailsFail(a, b) },
-    mediaDetailsEmpty: MediaDetailsEmpty<DetailType> = { a, b, c -> defaultMediaDetailsEmpty(a, b, c) },
+    mediaDetailContent: MediaDetailContent<DetailType>,
+    mediaDetailHeader: MediaDetailHeader = MediaDetailHeader(),
+    mediaDetailFail: MediaDetailFail<DetailType> = MediaDetailFail(),
+    mediaDetailEmpty: MediaDetailEmpty<DetailType> = MediaDetailEmpty(),
     extraHeaderContent: @Composable ColumnScope.() -> Unit = {},
     navigator: Navigator = LocalNavigator.current,
 ) {
@@ -95,9 +77,10 @@ fun <DetailType> MediaDetail(
                 padding = padding,
                 listState = listState,
                 headerOffsetProgress = progress,
-                mediaDetails = mediaDetails,
-                mediaDetailsFail = mediaDetailsFail,
-                mediaDetailsEmpty = mediaDetailsEmpty,
+                mediaDetailHeader = mediaDetailHeader,
+                mediaDetailContent = mediaDetailContent,
+                mediaDetailFail = mediaDetailFail,
+                mediaDetailEmpty = mediaDetailEmpty,
                 extraHeaderContent = extraHeaderContent,
             )
         }
@@ -112,9 +95,10 @@ private fun <DetailType, T : MediaDetailViewState<DetailType>> MediaDetailConten
     onTitleClick: Callback,
     listState: LazyListState,
     headerOffsetProgress: State<Float>,
-    mediaDetails: MediaDetails<DetailType>,
-    mediaDetailsFail: MediaDetailsFail<DetailType>,
-    mediaDetailsEmpty: MediaDetailsEmpty<DetailType>,
+    mediaDetailContent: MediaDetailContent<DetailType>,
+    mediaDetailHeader: MediaDetailHeader,
+    mediaDetailFail: MediaDetailFail<DetailType>,
+    mediaDetailEmpty: MediaDetailEmpty<DetailType>,
     extraHeaderContent: @Composable ColumnScope.() -> Unit = {},
     padding: PaddingValues = PaddingValues(),
 ) {
@@ -142,60 +126,36 @@ private fun <DetailType, T : MediaDetailViewState<DetailType>> MediaDetailConten
             val details = viewState.details()
             val detailsLoading = details is Incomplete
 
-            item {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall),
-                    modifier = headerBackgroundMod
-                        .padding(AppTheme.specs.padding)
-                        .statusBarsPadding(),
-                ) {
-                    CoverHeaderRow(
-                        title = viewState.title.orNA(),
-                        imageData = artwork,
-                        offsetProgress = headerOffsetProgress,
-                        titleModifier = Modifier.simpleClickable(onClick = onTitleClick)
-                    )
-                    extraHeaderContent()
-                }
-            }
+            mediaDetailHeader(
+                list = this,
+                headerBackgroundMod = headerBackgroundMod,
+                title = viewState.title.orNA(),
+                artwork = artwork,
+                headerOffsetProgress = headerOffsetProgress,
+                onTitleClick = onTitleClick,
+                extraHeaderContent = extraHeaderContent
+            )
 
-            val isEmpty = mediaDetails(details, detailsLoading)
+            val isEmpty = mediaDetailContent(
+                list = this,
+                details = details,
+                detailsLoading = detailsLoading
+            )
 
-            mediaDetailsFail(details, onFailRetry)
-            mediaDetailsEmpty(details, isEmpty, onEmptyRetry)
+            mediaDetailFail(
+                list = this,
+                details = details,
+                onFailRetry = onFailRetry
+            )
+
+            mediaDetailEmpty(
+                list = this,
+                details = details,
+                detailsEmpty = isEmpty,
+                onEmptyRetry = onEmptyRetry
+            )
         } else {
             fullScreenLoading()
-        }
-    }
-}
-
-private fun <T> LazyListScope.defaultMediaDetailsFail(
-    details: Async<T>,
-    onFailRetry: () -> Unit,
-) {
-    if (details is Fail) {
-        item {
-            ErrorBox(
-                title = stringResource(details.error.localizedTitle()),
-                message = stringResource(details.error.localizedMessage()),
-                onRetryClick = onFailRetry,
-                modifier = Modifier.fillParentMaxHeight(0.5f)
-            )
-        }
-    }
-}
-
-private fun <T> LazyListScope.defaultMediaDetailsEmpty(
-    details: Async<T>,
-    detailsEmpty: Boolean,
-    onEmptyRetry: () -> Unit,
-) {
-    if (details is Success && detailsEmpty) {
-        item {
-            EmptyErrorBox(
-                onRetryClick = onEmptyRetry,
-                modifier = Modifier.fillParentMaxHeight(0.5f)
-            )
         }
     }
 }

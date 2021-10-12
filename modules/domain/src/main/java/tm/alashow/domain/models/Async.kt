@@ -4,10 +4,7 @@
  */
 package tm.alashow.domain.models
 
-import androidx.lifecycle.MutableLiveData
 import tm.alashow.base.util.extensions.pass
-
-typealias LiveAsync<T> = MutableLiveData<Async<T>>
 
 /**
  * The T generic is unused for some classes but since it is sealed and useful for Success and Fail,
