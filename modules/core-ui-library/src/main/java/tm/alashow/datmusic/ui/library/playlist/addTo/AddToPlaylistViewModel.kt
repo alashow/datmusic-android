@@ -9,7 +9,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import tm.alashow.base.ui.SnackbarAction
@@ -60,9 +59,10 @@ class AddToPlaylistViewModel @Inject constructor(
             val addedIds = addToPlaylist.execute(AddToPlaylist.Params(targetPlaylist, audios.toList()))
             Timber.d("Added: ${addedIds.joinToString { it.toString() }}")
 
-            snackbarManager.addMessage(AddedToPlaylistMessage(targetPlaylist))
-            val message = snackbarManager.observeMessageActions { it is AddedToPlaylistMessage }.first() as AddedToPlaylistMessage
-            navigator.navigate(LeafScreen.PlaylistDetail.buildRoute(message.action?.argument as PlaylistId))
+            val addToPlaylist = AddedToPlaylistMessage(targetPlaylist)
+            snackbarManager.addMessage(addToPlaylist)
+            if (snackbarManager.observeMessageAction(addToPlaylist) != null)
+                navigator.navigate(LeafScreen.PlaylistDetail.buildRoute(targetPlaylist.id))
         }
     }
 }

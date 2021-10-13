@@ -83,7 +83,13 @@ class SnackbarManager @Inject constructor(
         performedActionsMessageChannel.trySend(message)
     }
 
-    fun observeMessageActions(predicate: (SnackbarMessage<*>) -> Boolean) = performedActionsMessageChannel.receiveAsFlow().filter {
-        predicate(it)
+    /**
+     * Listen for [performedActionsMessageChannel] for given [action] for limited time.
+     * Returns given action if it's performed on time, null otherwise.
+     */
+    suspend fun <T : SnackbarMessage<*>> observeMessageAction(action: T): T? {
+        val result = merge(performedActionsMessageChannel.receiveAsFlow().filter { it == action }, delayFlow(4000L, Unit))
+            .firstOrNull()
+        return if (result == action) action else null
     }
 }

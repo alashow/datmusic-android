@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -107,10 +108,7 @@ class EditPlaylistViewModel @Inject constructor(
 
         // clear last removed state with delay unless list is empty now
         if (playlistItems.value.isNotEmpty())
-            viewModelScope.launch {
-                delay(RemovedFromPlaylist.SNACKBAR_DURATION_MILLIS)
-                clearLastRemovedPlaylistItem()
-            }
+            clearLastRemovedPlaylistItem(delay = true)
     }
 
     fun undoLastRemovedPlaylistItem() {
@@ -127,8 +125,16 @@ class EditPlaylistViewModel @Inject constructor(
         clearLastRemovedPlaylistItem()
     }
 
-    fun clearLastRemovedPlaylistItem() {
-        lastRemovedItemState.value = null
+    private var delayedClearLastRemovedJob: Job? = null
+
+    fun clearLastRemovedPlaylistItem(delay: Boolean = false) {
+        if (delay) {
+            delayedClearLastRemovedJob?.cancel()
+            delayedClearLastRemovedJob = viewModelScope.launch {
+                delay(RemovedFromPlaylist.SNACKBAR_DURATION_MILLIS)
+                clearLastRemovedPlaylistItem(delay = false)
+            }
+        } else lastRemovedItemState.value = null
     }
 
     fun movePlaylistItem(from: Int, to: Int) {

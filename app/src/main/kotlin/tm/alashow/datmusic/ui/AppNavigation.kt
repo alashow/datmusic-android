@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -47,7 +48,20 @@ internal fun AppNavigation(
     collectEvent(navigator.queue) { event ->
         Timber.i("Navigation event: $event")
         when (event) {
-            is NavigationEvent.Destination -> navController.navigate(event.route)
+            is NavigationEvent.Destination -> {
+                // switch tabs first because of a bug in navigation that doesn't allow
+                // changing tabs when destination is opened from a different tab
+                event.root?.let {
+                    navController.navigate(it) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+                navController.navigate(event.route)
+            }
             is NavigationEvent.Back -> navController.navigateUp()
             else -> Unit
         }
@@ -91,7 +105,7 @@ private fun NavGraphBuilder.addLibraryRoot(navController: NavController) {
     ) {
         addLibrary(navController)
         addCreatePlaylist(navController)
-        addUpdatePlaylist(navController)
+        addEditPlaylist(navController)
         addPlaylistDetails(navController, RootScreen.Library)
         addArtistDetails(navController, RootScreen.Library)
         addAlbumDetails(navController, RootScreen.Library)
@@ -137,7 +151,7 @@ private fun NavGraphBuilder.addCreatePlaylist(navController: NavController) {
     }
 }
 
-private fun NavGraphBuilder.addUpdatePlaylist(navController: NavController) {
+private fun NavGraphBuilder.addEditPlaylist(navController: NavController) {
     bottomSheetScreen(EditPlaylistScreen()) {
         EditPlaylist()
     }

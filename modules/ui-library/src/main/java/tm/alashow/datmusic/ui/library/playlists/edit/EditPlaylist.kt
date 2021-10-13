@@ -52,7 +52,6 @@ import org.burnoutcrew.reorderable.ReorderableState
 import org.burnoutcrew.reorderable.detectReorder
 import org.burnoutcrew.reorderable.rememberReorderState
 import org.burnoutcrew.reorderable.reorderable
-import timber.log.Timber
 import tm.alashow.base.imageloading.ImageLoading
 import tm.alashow.base.util.extensions.Callback
 import tm.alashow.common.compose.rememberFlowWithLifecycle
@@ -96,7 +95,6 @@ fun EditPlaylist(
                     state = reorderableState,
                     onMove = { from, to -> viewModel.movePlaylistItem(from - itemsBeforeContent, to - itemsBeforeContent) },
                     canDragOver = {
-                        Timber.d("Can drag over: $it, ${playlistItems.size}, ${it > itemsBeforeContent}, ${it <= (playlistItems.size - 1)}")
                         it >= itemsBeforeContent && (it - itemsBeforeContent) < (playlistItems.size)
                     }
                 ),

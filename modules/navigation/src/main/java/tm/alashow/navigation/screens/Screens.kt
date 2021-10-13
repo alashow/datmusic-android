@@ -39,6 +39,8 @@ interface Screen {
     val route: String
 }
 
+val ROOT_SCREENS = listOf(RootScreen.Search, RootScreen.Downloads, RootScreen.Library, RootScreen.Settings)
+
 sealed class RootScreen(
     override val route: String,
     val startScreen: LeafScreen,
