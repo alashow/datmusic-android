@@ -13,6 +13,7 @@ import tm.alashow.data.SubjectInteractor
 import tm.alashow.datmusic.data.repos.playlist.PlaylistsRepo
 import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.domain.entities.PlaylistId
+import tm.alashow.datmusic.domain.entities.PlaylistItems
 import tm.alashow.datmusic.domain.entities.PlaylistWithAudios
 import tm.alashow.domain.models.Async
 import tm.alashow.domain.models.Fail
@@ -33,6 +34,18 @@ class ObservePlaylistDetails @Inject constructor(
         emit(Loading())
         playlistsRepo.playlistWithAudios(params)
             .catch { error -> emit(Fail<PlaylistWithAudios>(error)) }
+            .collect { emit(Success(it)) }
+    }
+}
+
+class ObservePlaylistDetails2 @Inject constructor(
+    private val playlistsRepo: PlaylistsRepo
+) : SubjectInteractor<PlaylistId, Async<PlaylistItems>>() {
+
+    override fun createObservable(params: PlaylistId) = flow {
+        emit(Loading())
+        playlistsRepo.playlistAudios(params)
+            .catch { error -> emit(Fail<PlaylistItems>(error)) }
             .collect { emit(Success(it)) }
     }
 }

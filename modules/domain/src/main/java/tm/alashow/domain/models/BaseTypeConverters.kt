@@ -2,12 +2,11 @@
  * Copyright (C) 2019, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.data.db
+package tm.alashow.domain.models
 
 import androidx.room.TypeConverter
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.format.DateTimeFormatter
-import tm.alashow.domain.models.Params
 
 object BaseTypeConverters {
 
@@ -19,7 +18,10 @@ object BaseTypeConverters {
 
     @TypeConverter
     @JvmStatic
-    fun toLocalDateTime(value: String): LocalDateTime = LocalDateTime.parse(value, localDateFormat)
+    fun toLocalDateTime(value: String): LocalDateTime = when (value.isBlank()) {
+        true -> LocalDateTime.now()
+        else -> LocalDateTime.parse(value, localDateFormat)
+    }
 
     @TypeConverter
     @JvmStatic

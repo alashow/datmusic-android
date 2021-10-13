@@ -28,8 +28,8 @@ import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.ui.coreLibrary.R
-import tm.alashow.datmusic.ui.library.playlist.addTo.CreatePlaylistItem.isCreatePlaylistItem
-import tm.alashow.datmusic.ui.library.playlist.addTo.CreatePlaylistItem.withCreatePlaylistItem
+import tm.alashow.datmusic.ui.library.playlist.addTo.NewPlaylistItem.isNewPlaylistItem
+import tm.alashow.datmusic.ui.library.playlist.addTo.NewPlaylistItem.withNewPlaylistItem
 import tm.alashow.ui.theme.AppTheme
 
 @Composable
@@ -46,7 +46,7 @@ fun AddToPlaylistMenu(
         AddToPlaylistDropdownMenu(
             expanded = visible,
             onExpandedChange = onVisibleChange,
-            playlists = playlists.withCreatePlaylistItem(),
+            playlists = playlists.withNewPlaylistItem(),
             onPlaylistSelect = {
                 viewModel.addTo(playlist = it, audio)
             },
@@ -88,7 +88,7 @@ private fun AddToPlaylistDropdownMenu(
                     Text(
                         text = label,
                         overflow = TextOverflow.Ellipsis,
-                        fontWeight = if (item.isCreatePlaylistItem()) FontWeight.Bold else null,
+                        fontWeight = if (item.isNewPlaylistItem()) FontWeight.Bold else null,
                         maxLines = 1,
                     )
                 }

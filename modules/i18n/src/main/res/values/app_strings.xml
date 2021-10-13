@@ -74,13 +74,19 @@
     <string name="playlist.addTo">Add to playlist</string>
     <string name="playlist.addTo.new">New playlist</string>
     <string name="playlist.addTo.added">Added to %1$s</string>
+    <string name="playlist.addTo.open">Open</string>
+
     <string name="playlist.create">Create playlist</string>
     <string name="playlist.create.skipName">Skip</string>
     <string name="playlist.create.label">Give your playlist a name</string>
     <string name="playlist.create.generatedTemplate">My Playlist #%1$d</string>
+
     <string name="playlist.edit.label">Edit playlist</string>
+    <string name="playlist.edit.shuffle">Shuffle</string>
     <string name="playlist.edit.delete">Delete playlist</string>
     <string name="playlist.edit.done">Save</string>
+    <string name="playlist.edit.removed">Removed from playlist</string>
+    <string name="playlist.edit.removed.undo">Undo</string>
 
     <string name="playback.queueTitle.audio">Playing from queue</string>
     <string name="playback.queueTitle.downloads">Playing from downloads</string>

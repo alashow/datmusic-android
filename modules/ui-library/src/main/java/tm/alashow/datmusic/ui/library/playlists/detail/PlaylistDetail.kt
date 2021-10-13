@@ -42,7 +42,7 @@ private fun PlaylistDetail(viewModel: PlaylistDetailViewModel, navigator: Naviga
         mediaDetailEmpty = PlaylistDetailEmpty(),
         extraHeaderContent = {
             PlaylistHeaderSubtitle(viewState)
-        }
+        },
     )
 }
 

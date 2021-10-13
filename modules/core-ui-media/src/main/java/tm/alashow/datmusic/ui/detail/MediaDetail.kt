@@ -103,7 +103,7 @@ private fun <DetailType, T : MediaDetailViewState<DetailType>> MediaDetailConten
     mediaDetailFail: MediaDetailFail<DetailType>,
     mediaDetailEmpty: MediaDetailEmpty<DetailType>,
     headerCoverIcon: VectorPainter? = null,
-    extraHeaderContent: @Composable ColumnScope.() -> Unit = {},
+    extraHeaderContent: @Composable ColumnScope.() -> Unit,
     padding: PaddingValues = PaddingValues(),
 ) {
     val context = LocalContext.current
@@ -123,8 +123,8 @@ private fun <DetailType, T : MediaDetailViewState<DetailType>> MediaDetailConten
 
     LazyColumn(
         state = listState,
+        contentPadding = PaddingValues(bottom = padding.calculateTopPadding() + padding.calculateBottomPadding()),
         modifier = listBackgroundMod.fillMaxSize(),
-        contentPadding = PaddingValues(bottom = padding.calculateTopPadding() + padding.calculateBottomPadding())
     ) {
         if (viewState.isLoaded) {
             val details = viewState.details()

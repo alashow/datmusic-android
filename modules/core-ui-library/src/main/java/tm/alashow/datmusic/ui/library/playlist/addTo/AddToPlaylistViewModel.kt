@@ -9,22 +9,30 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import tm.alashow.base.ui.SnackbarAction
 import tm.alashow.base.ui.SnackbarManager
+import tm.alashow.base.ui.SnackbarMessage
 import tm.alashow.datmusic.data.interactors.playlist.AddToPlaylist
 import tm.alashow.datmusic.data.interactors.playlist.CreatePlaylist
 import tm.alashow.datmusic.data.observers.playlist.ObservePlaylists
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.Playlist
+import tm.alashow.datmusic.domain.entities.PlaylistId
 import tm.alashow.datmusic.ui.coreLibrary.R
-import tm.alashow.datmusic.ui.library.playlist.addTo.CreatePlaylistItem.isCreatePlaylistItem
+import tm.alashow.datmusic.ui.library.playlist.addTo.NewPlaylistItem.isNewPlaylistItem
 import tm.alashow.domain.models.Params
 import tm.alashow.i18n.UiMessage
+import tm.alashow.navigation.Navigator
+import tm.alashow.navigation.screens.LeafScreen
 
-val AddedToPlaylistMessage = UiMessage.Resource(R.string.playlist_addTo_added)
+data class AddedToPlaylistMessage(val playlist: Playlist) :
+    SnackbarMessage<PlaylistId>(
+        message = UiMessage.Resource(R.string.playlist_addTo_added, formatArgs = listOf(playlist.name)),
+        action = SnackbarAction(UiMessage.Resource(R.string.playlist_addTo_open), playlist.id)
+    )
 
 @HiltViewModel
 class AddToPlaylistViewModel @Inject constructor(
@@ -33,6 +41,7 @@ class AddToPlaylistViewModel @Inject constructor(
     private val addToPlaylist: AddToPlaylist,
     private val createPlaylist: CreatePlaylist,
     private val snackbarManager: SnackbarManager,
+    private val navigator: Navigator,
 ) : ViewModel() {
 
     val playlists = observePlaylists.flow
@@ -44,13 +53,16 @@ class AddToPlaylistViewModel @Inject constructor(
     fun addTo(playlist: Playlist, vararg audios: Audio) {
         viewModelScope.launch {
             var targetPlaylist = playlist
-            if (playlist.isCreatePlaylistItem()) {
-                targetPlaylist = createPlaylist(CreatePlaylist.Params(generateNameIfEmpty = true)).first()
+            if (playlist.isNewPlaylistItem()) {
+                targetPlaylist = createPlaylist.execute(CreatePlaylist.Params(generateNameIfEmpty = true))
             }
-            addToPlaylist(AddToPlaylist.Params(targetPlaylist, audios.toList())).collect {
-                Timber.d("Added: ${it.joinToString { it.toString() }}")
-                snackbarManager.addMessage(AddedToPlaylistMessage.copy(formatArgs = listOf(playlist.name)))
-            }
+
+            val addedIds = addToPlaylist.execute(AddToPlaylist.Params(targetPlaylist, audios.toList()))
+            Timber.d("Added: ${addedIds.joinToString { it.toString() }}")
+
+            snackbarManager.addMessage(AddedToPlaylistMessage(targetPlaylist))
+            val message = snackbarManager.observeMessageActions { it is AddedToPlaylistMessage }.first() as AddedToPlaylistMessage
+            navigator.navigate(LeafScreen.PlaylistDetail.buildRoute(message.action?.argument as PlaylistId))
         }
     }
 }

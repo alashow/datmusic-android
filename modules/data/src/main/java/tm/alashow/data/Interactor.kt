@@ -36,7 +36,7 @@ abstract class Interactor<in P> {
         }
     }
 
-    suspend fun executeSync(params: P) = doWork(params)
+    suspend fun execute(params: P) = doWork(params)
 
     protected abstract suspend fun doWork(params: P)
 

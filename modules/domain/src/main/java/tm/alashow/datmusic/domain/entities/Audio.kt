@@ -24,6 +24,7 @@ private val MULTIPLE_ARTIST_SPLIT_REGEX = Regex("((,)|(feat\\.)|(ft\\.))")
 fun String.artists() = split(MULTIPLE_ARTIST_SPLIT_REGEX, 10).map { it.trim() }
 fun String.mainArtist() = split(MULTIPLE_ARTIST_SPLIT_REGEX, 10).first().trim()
 
+typealias AudioId = String
 typealias Audios = List<Audio>
 
 @Parcelize
@@ -32,7 +33,7 @@ typealias Audios = List<Audio>
 data class Audio(
     @SerialName("id")
     @ColumnInfo(name = "id")
-    val id: String = "",
+    val id: AudioId = "",
 
     @SerialName("key")
     @ColumnInfo(name = "key")

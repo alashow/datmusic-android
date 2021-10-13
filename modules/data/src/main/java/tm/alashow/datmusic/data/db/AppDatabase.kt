@@ -11,7 +11,6 @@ import androidx.room.RenameColumn
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.AutoMigrationSpec
-import tm.alashow.data.db.BaseTypeConverters
 import tm.alashow.datmusic.data.db.daos.AlbumsDao
 import tm.alashow.datmusic.data.db.daos.ArtistsDao
 import tm.alashow.datmusic.data.db.daos.AudiosDao
@@ -24,9 +23,10 @@ import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.DownloadRequest
 import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.domain.entities.PlaylistAudio
+import tm.alashow.domain.models.BaseTypeConverters
 
 @Database(
-    version = 6,
+    version = 7,
     entities = [
         Audio::class,
         Artist::class,
@@ -40,6 +40,7 @@ import tm.alashow.datmusic.domain.entities.PlaylistAudio
         AutoMigration(from = 2, to = 3),
         AutoMigration(from = 4, to = 5, spec = AppDatabase.PlaylistRenameIdMigration::class),
         AutoMigration(from = 5, to = 6),
+        AutoMigration(from = 6, to = 7),
     ]
 )
 @TypeConverters(BaseTypeConverters::class, AppTypeConverters::class)

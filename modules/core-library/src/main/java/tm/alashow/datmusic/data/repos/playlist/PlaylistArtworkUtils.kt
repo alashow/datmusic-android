@@ -10,6 +10,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import java.io.File
 import java.io.FileOutputStream
+import tm.alashow.base.util.extensions.randomUUID
 import tm.alashow.datmusic.domain.entities.PlaylistId
 
 enum class ArtworkImageFolderType(private val path: String) {
@@ -24,6 +25,10 @@ enum class ArtworkImageFolderType(private val path: String) {
         }
         return folder
     }
+}
+
+enum class ArtworkImageFileType(val prefix: String?) {
+    PLAYLIST_AUTO_GENERATED("merged"), PLAYLIST_USER_SET("user_custom");
 }
 
 object PlaylistArtworkUtils {
@@ -66,13 +71,18 @@ object PlaylistArtworkUtils {
         return result
     }
 
-    fun PlaylistId.getPlaylistArtworkImageFile(context: Context, extension: String = ".webp"): File {
+    private fun PlaylistId.getPlaylistArtworkImageFile(context: Context, type: ArtworkImageFileType, extension: String = ".webp"): File {
         val folder = ArtworkImageFolderType.PLAYLIST.getArtworkImageFolder(context)
-        return File(folder, "$this$extension")
+        val random = randomUUID()
+        return File(folder, "${type.prefix}_${this}_${random}$extension")
     }
 
-    fun PlaylistId.savePlaylistArtwork(context: Context, bitmap: Bitmap): File {
-        val dest = getPlaylistArtworkImageFile(context)
+    fun PlaylistId.savePlaylistArtwork(
+        context: Context,
+        bitmap: Bitmap,
+        type: ArtworkImageFileType
+    ): File {
+        val dest = getPlaylistArtworkImageFile(context, type)
         val out = FileOutputStream(dest)
         bitmap.compress(Bitmap.CompressFormat.WEBP, 90, out)
         bitmap.recycle()

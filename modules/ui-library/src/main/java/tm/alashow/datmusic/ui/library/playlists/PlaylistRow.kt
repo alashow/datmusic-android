@@ -6,9 +6,7 @@ package tm.alashow.datmusic.ui.library.playlists
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import tm.alashow.datmusic.data.repos.playlist.PlaylistArtworkUtils.getPlaylistArtworkImageFile
 import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.ui.library.LibraryViewModel
 import tm.alashow.datmusic.ui.library.R
@@ -26,7 +24,6 @@ fun PlaylistRow(
     viewModel: LibraryViewModel = hiltViewModel(),
     navigator: Navigator = LocalNavigator.current
 ) {
-    val context = LocalContext.current
     LibraryItemRow(
         libraryItem = playlist,
         modifier = modifier,
@@ -34,7 +31,7 @@ fun PlaylistRow(
         onClick = {
             navigator.navigate(LeafScreen.PlaylistDetail.buildRoute(playlist.id))
         },
-        imageData = playlist.id.getPlaylistArtworkImageFile(context)
+        imageData = playlist.artworkFile()
     ) {
         when (it) {
             is LibraryItemAction.Edit -> navigator.navigate(EditPlaylistScreen.buildRoute(playlist.id))

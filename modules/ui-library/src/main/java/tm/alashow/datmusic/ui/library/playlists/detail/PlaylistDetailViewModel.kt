@@ -9,8 +9,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import tm.alashow.base.util.extensions.stateInDefault
 import tm.alashow.datmusic.data.observers.playlist.ObservePlaylist
@@ -31,8 +31,8 @@ class PlaylistDetailViewModel @Inject constructor(
 
     private val playlistId = handle.get<Long>(PLAYLIST_ID_KEY) as PlaylistId
 
-    val state = combine(playlist.flow, playlistDetails.flow, ::PlaylistDetailViewState)
-        .distinctUntilChanged()
+    private val lastMoveState = MutableStateFlow<DragMove?>(null)
+    val state = combine(playlist.flow, playlistDetails.flow, lastMoveState, ::PlaylistDetailViewState)
         .map {
             if (it.playlistDetails.complete && !it.isEmpty) {
                 it.copy(audiosCountDuration = AudiosCountDuration.from(it.playlistDetails.invoke()?.audios.orEmpty()))

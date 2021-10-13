@@ -7,9 +7,12 @@ package tm.alashow.datmusic.data.interactors.playlist
 import javax.inject.Inject
 import kotlinx.coroutines.withContext
 import tm.alashow.base.util.CoroutineDispatchers
+import tm.alashow.data.Interactor
 import tm.alashow.data.ResultInteractor
 import tm.alashow.datmusic.data.repos.playlist.PlaylistsRepo
 import tm.alashow.datmusic.domain.entities.Playlist
+import tm.alashow.datmusic.domain.entities.PlaylistId
+import tm.alashow.datmusic.domain.entities.PlaylistItems
 
 class UpdatePlaylist @Inject constructor(
     private val repo: PlaylistsRepo,
@@ -18,5 +21,39 @@ class UpdatePlaylist @Inject constructor(
 
     override suspend fun doWork(params: Playlist) = withContext(dispatchers.io) {
         return@withContext repo.updatePlaylist(params)
+    }
+}
+
+class ReorderPlaylist @Inject constructor(
+    private val repo: PlaylistsRepo,
+    private val dispatchers: CoroutineDispatchers,
+) : Interactor<Triple<PlaylistId, Int, Int>>() {
+
+    override suspend fun doWork(params: Triple<PlaylistId, Int, Int>) {
+        withContext(dispatchers.io) {
+            repo.swapPositions(params.first, params.second, params.third)
+        }
+    }
+}
+
+class UpdatePlaylistItems @Inject constructor(
+    private val repo: PlaylistsRepo,
+    private val dispatchers: CoroutineDispatchers,
+) : Interactor<PlaylistItems>() {
+
+    override suspend fun doWork(params: PlaylistItems) {
+        withContext(dispatchers.io) {
+            repo.updatePlaylistItems(params)
+        }
+    }
+}
+
+class DeletePlaylistItems @Inject constructor(
+    private val repo: PlaylistsRepo,
+    private val dispatchers: CoroutineDispatchers,
+) : ResultInteractor<PlaylistItems, Int>() {
+
+    override suspend fun doWork(params: PlaylistItems) = withContext(dispatchers.io) {
+        return@withContext repo.deletePlaylistItems(params)
     }
 }

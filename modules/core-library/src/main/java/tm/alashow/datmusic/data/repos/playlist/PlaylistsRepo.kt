@@ -21,13 +21,13 @@ import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.data.db.RoomRepo
 import tm.alashow.datmusic.data.db.daos.PlaylistsDao
 import tm.alashow.datmusic.data.db.daos.PlaylistsWithAudiosDao
-import tm.alashow.datmusic.data.repos.playlist.PlaylistArtworkUtils.getPlaylistArtworkImageFile
 import tm.alashow.datmusic.data.repos.playlist.PlaylistArtworkUtils.savePlaylistArtwork
 import tm.alashow.datmusic.domain.entities.CoverImageSize
 import tm.alashow.datmusic.domain.entities.PLAYLIST_NAME_MAX_LENGTH
 import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.domain.entities.PlaylistAudio
 import tm.alashow.datmusic.domain.entities.PlaylistId
+import tm.alashow.datmusic.domain.entities.PlaylistItems
 import tm.alashow.datmusic.domain.entities.PlaylistWithAudios
 import tm.alashow.i18n.DatabaseInsertError
 import tm.alashow.i18n.DatabaseValidationNotFound
@@ -76,7 +76,7 @@ class PlaylistsRepo @Inject constructor(
         validatePlaylist(playlist)
         val updatedPlaylist: Playlist
         withContext(dispatchers.io) {
-            updatedPlaylist = update(playlist)
+            updatedPlaylist = update(playlist.updatedCopy())
         }
 
         return updatedPlaylist
@@ -87,7 +87,7 @@ class PlaylistsRepo @Inject constructor(
         withContext(dispatchers.io) {
             validatePlaylistId(playlistId)
 
-            val lastIndex = playlistAudiosDao.lastPlaylistAudioIndex(playlistId).firstOrNull() ?: 0
+            val lastIndex = playlistAudiosDao.lastPlaylistAudioIndex(playlistId).firstOrNull() ?: -1
             val playlistWithAudios = audioIds.mapIndexed { index, id ->
                 PlaylistAudio(
                     playlistId = playlistId,
@@ -102,39 +102,41 @@ class PlaylistsRepo @Inject constructor(
         return insertedIds
     }
 
-    suspend fun swap(playlistId: PlaylistId, from: Int, to: Int) {
+    suspend fun swapPositions(playlistId: PlaylistId, from: Int, to: Int) {
         withContext(dispatchers.io) {
             validatePlaylistId(playlistId)
 
-            val playlistAudios = playlistAudiosDao.playlistAudios(playlistId).first()
-            val fromId = playlistAudios.first { it.position == from }.audioId
-            val toId = playlistAudios.first { it.position == to }.audioId
+            val fromAudio = playlistAudiosDao.getByPosition(playlistId, from)
+            val toAudio = playlistAudiosDao.getByPosition(playlistId, to)
 
-            playlistAudiosDao.updatePlaylistAudio(
-                PlaylistAudio(
-                    playlistId = playlistId,
-                    audioId = fromId,
-                    position = to
-                )
-            )
-            playlistAudiosDao.updatePlaylistAudio(
-                PlaylistAudio(
-                    playlistId = playlistId,
-                    audioId = toId,
-                    position = from
-                )
-            )
+            playlistAudiosDao.updatePosition(fromAudio.id, toPosition = to)
+            playlistAudiosDao.updatePosition(toAudio.id, toPosition = from)
+            generatePlaylistArtwork(playlistId)
         }
     }
 
-    fun playlists() = dao.entries()
+    suspend fun updatePlaylistItems(playlistItems: PlaylistItems) {
+        val playlistId = playlistItems.first().playlistAudio.playlistId
+        playlistAudiosDao.updateAll(playlistItems.map { it.playlistAudio })
+        if (playlistItems.isNotEmpty())
+            generatePlaylistArtwork(playlistId)
+    }
+
+    suspend fun deletePlaylistItems(playlistItems: PlaylistItems): Int {
+        return playlistAudiosDao.deletePlaylistItems(playlistItems.map { it.playlistAudio.id })
+    }
+
+    private fun audiosOfPlaylist(id: PlaylistId) = playlistAudiosDao.audiosOfPlaylist(id).map { it.map { item -> item.audio } }
     fun playlist(id: PlaylistId) = dao.entry(id)
-    fun audiosOfPlaylist(id: PlaylistId) = playlistAudiosDao.audiosOfPlaylist(id).map { it.map { item -> item.audio } }
-    fun playlistsWithAudios() = playlistAudiosDao.playlistsWithAudios()
+    fun playlistAudios(id: PlaylistId) = playlistAudiosDao.playlistItems(id)
     fun playlistWithAudios(id: PlaylistId) = combine(playlist(id), audiosOfPlaylist(id), ::PlaylistWithAudios)
 
+    fun playlists() = dao.entries()
+    fun playlistsWithAudios() = playlistAudiosDao.playlistsWithAudios()
+
     override suspend fun delete(id: PlaylistId): Int {
-        id.getPlaylistArtworkImageFile(context).delete()
+        validatePlaylistId(id)
+        playlist(id).first().artworkFile()?.delete()
         return super.delete(id)
     }
 
@@ -146,19 +148,34 @@ class PlaylistsRepo @Inject constructor(
     private fun generatePlaylistArtwork(playlistId: PlaylistId, maxArtworksNeeded: Int = 4) {
         launch(dispatchers.computation) {
             validatePlaylistId(playlistId)
+            val playlist = playlist(playlistId).first().updatedCopy()
             val playlistAudios = audiosOfPlaylist(playlistId).first()
 
             if (playlistAudios.isNotEmpty()) {
-                Timber.i("Generating artwork for playlist id=$playlistId")
-                val artworkUrls = playlistAudios.map { it.coverUri(CoverImageSize.LARGE) }
+                Timber.i("Considering to auto generate artwork for playlist id=$playlistId")
+                val artworkUrls = playlistAudios.map { it.coverUri(CoverImageSize.LARGE, allowAlternate = false) }
                     .filter { it.toString().isNotBlank() }
                     .toSet()
                     .take(maxArtworksNeeded)
+
+                val artworksHash = artworkUrls.hashCode().toString()
+
+                if (artworksHash == playlist.artworkSource) {
+                    Timber.i("Skipping generating artwork for id=$playlistId because it has the same hash = $artworksHash")
+                    return@launch
+                }
+
                 val artworkBitmaps = artworkUrls.mapNotNull { context.getBitmap(it, allowHardware = false) }
 
                 if (artworkBitmaps.isNotEmpty()) {
+                    playlist.artworkFile()?.delete()
                     val merged = PlaylistArtworkUtils.joinImages(artworkBitmaps)
-                    playlistId.savePlaylistArtwork(context, merged)
+                    val file = playlistId.savePlaylistArtwork(context, merged, ArtworkImageFileType.PLAYLIST_AUTO_GENERATED)
+
+                    Timber.d("Auto-generated artwork for playlist: hash=$artworksHash, file=$file, from urls=${artworkUrls.joinToString()}")
+
+                    val updatedPlaylist = playlist.copy(artworkPath = file.path, artworkSource = artworksHash)
+                    updatePlaylist(updatedPlaylist)
                 } else {
                     Timber.w("Playlist id=$playlistId doesn't have any audios with artwork")
                 }

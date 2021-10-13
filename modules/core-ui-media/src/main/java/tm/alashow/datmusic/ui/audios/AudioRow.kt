@@ -120,6 +120,7 @@ fun AudioRowItem(
     imageSize: Dp = AudiosDefaults.imageSize,
     onCoverClick: (Audio) -> Unit = {},
     isPlaceholder: Boolean = false,
+    includeCover: Boolean = true,
     maxLines: Int = AudiosDefaults.maxLines,
 ) {
     val loadingModifier = Modifier.placeholder(
@@ -131,16 +132,16 @@ fun AudioRowItem(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier.fillMaxWidth()
     ) {
-        val image = rememberImagePainter(audio.coverUrlSmall ?: audio.coverUrl, builder = ImageLoading.defaultConfig)
-        CoverImage(
-            painter = image,
-            size = imageSize,
-            imageModifier = Modifier
-                .simpleClickable {
-                    onCoverClick(audio)
-                }
-                .then(loadingModifier),
-        )
+        if (includeCover) {
+            val image = rememberImagePainter(audio.coverUrlSmall ?: audio.coverUrl, builder = ImageLoading.defaultConfig)
+            CoverImage(
+                painter = image,
+                size = imageSize,
+                imageModifier = Modifier
+                    .simpleClickable { onCoverClick(audio) }
+                    .then(loadingModifier),
+            )
+        }
 
         Column(verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingTiny)) {
             Text(

@@ -10,6 +10,7 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.merge
@@ -18,6 +19,9 @@ import org.threeten.bp.Duration
 import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.base.util.extensions.delayFlow
 import tm.alashow.i18n.UiMessage
+
+data class SnackbarAction<T>(val label: UiMessage<*>, val argument: T)
+open class SnackbarMessage<T>(val message: UiMessage<*>, val action: SnackbarAction<T>? = null)
 
 @Singleton
 class SnackbarManager @Inject constructor(
@@ -66,11 +70,20 @@ class SnackbarManager @Inject constructor(
         removeErrorSignal.send(Unit)
     }
 
-    private val pendingMessages = Channel<UiMessage<*>>(Channel.CONFLATED)
+    private val messagesChannel = Channel<SnackbarMessage<*>>(Channel.CONFLATED)
+    private val performedActionsMessageChannel = Channel<SnackbarMessage<*>>(Channel.CONFLATED)
 
-    fun addMessage(message: UiMessage<*>) {
-        pendingMessages.trySend(message)
+    val messages = messagesChannel.receiveAsFlow()
+
+    fun addMessage(message: SnackbarMessage<*>) {
+        messagesChannel.trySend(message)
     }
 
-    val messages = pendingMessages.receiveAsFlow()
+    fun onMessageActionPerformed(message: SnackbarMessage<*>) {
+        performedActionsMessageChannel.trySend(message)
+    }
+
+    fun observeMessageActions(predicate: (SnackbarMessage<*>) -> Boolean) = performedActionsMessageChannel.receiveAsFlow().filter {
+        predicate(it)
+    }
 }

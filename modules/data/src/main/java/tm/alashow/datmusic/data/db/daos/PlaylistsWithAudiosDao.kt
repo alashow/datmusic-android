@@ -12,8 +12,10 @@ import androidx.room.Transaction
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 import tm.alashow.datmusic.domain.entities.PlaylistAudio
+import tm.alashow.datmusic.domain.entities.PlaylistAudioId
 import tm.alashow.datmusic.domain.entities.PlaylistAudios
 import tm.alashow.datmusic.domain.entities.PlaylistId
+import tm.alashow.datmusic.domain.entities.PlaylistItem
 import tm.alashow.datmusic.domain.entities.PlaylistWithAudios
 
 @Dao
@@ -25,20 +27,33 @@ abstract class PlaylistsWithAudiosDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract suspend fun insertAll(entities: List<PlaylistAudio>): List<Long>
 
-    @Transaction
+    @Update(onConflict = OnConflictStrategy.ABORT)
+    abstract suspend fun updateAll(entities: List<PlaylistAudio>)
+
+    @Query("DELETE FROM playlist_audios WHERE id in (:ids)")
+    abstract suspend fun deletePlaylistItems(ids: List<PlaylistAudioId>): Int
+
     @Update
+    @Transaction
     abstract fun updatePlaylistAudio(audioOfPlaylist: PlaylistAudio)
 
-    @Query("SELECT * FROM playlist_audios WHERE playlist_id = :id")
-    abstract fun playlistAudios(id: PlaylistId): Flow<List<PlaylistAudio>>
+    @Query("SELECT * FROM playlist_audios WHERE playlist_id = :id ORDER BY position")
+    abstract fun playlistItems(id: PlaylistId): Flow<List<PlaylistItem>>
+
+    @Query("SELECT * FROM playlist_audios WHERE playlist_id = :id AND position = :position ")
+    abstract suspend fun getByPosition(id: PlaylistId, position: Int): PlaylistAudio
+
+    @Transaction
+    @Query("UPDATE playlist_audios SET position = :toPosition WHERE id = :id")
+    abstract fun updatePosition(id: Long, toPosition: Int)
 
     /**
      * Group by playlist_audios.id because there might be multiple instances of the same audio id
      */
-    @Query("SELECT * FROM playlist_audios PA INNER JOIN audios A ON A.id = PA.audio_id WHERE PA.playlist_id = :id GROUP BY PA.id")
+    @Query("SELECT * FROM playlist_audios PA INNER JOIN audios A ON A.id = PA.audio_id WHERE PA.playlist_id = :id GROUP BY PA.id ORDER BY position")
     abstract fun audiosOfPlaylist(id: PlaylistId): Flow<PlaylistAudios>
 
-    @Query("SELECT distinct(audio_id) FROM playlist_audios ORDER BY position ASC")
+    @Query("SELECT distinct(audio_id) FROM playlist_audios ORDER BY position")
     abstract fun distinctAudios(): Flow<List<String>>
 
     @Query("SELECT MAX(position) FROM playlist_audios WHERE playlist_id = :id")
