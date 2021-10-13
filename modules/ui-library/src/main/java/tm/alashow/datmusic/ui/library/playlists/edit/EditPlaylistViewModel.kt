@@ -9,6 +9,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.io.Serializable
 import javax.inject.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -23,7 +24,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.burnoutcrew.reorderable.move
-import tm.alashow.base.util.extensions.getStateFlow
 import tm.alashow.base.util.extensions.orBlank
 import tm.alashow.datmusic.data.interactors.playlist.DeletePlaylist
 import tm.alashow.datmusic.data.interactors.playlist.DeletePlaylistItems
@@ -41,6 +41,8 @@ import tm.alashow.i18n.asValidationError
 import tm.alashow.navigation.Navigator
 import tm.alashow.navigation.screens.PLAYLIST_ID_KEY
 
+data class TextValue(val value: TextFieldValue = TextFieldValue()) : Serializable
+
 @HiltViewModel
 class EditPlaylistViewModel @Inject constructor(
     handle: SavedStateHandle,
@@ -55,7 +57,7 @@ class EditPlaylistViewModel @Inject constructor(
 
     private val playlistId = requireNotNull(handle.get<PlaylistId>(PLAYLIST_ID_KEY))
 
-    private val nameState = handle.getStateFlow("playlist_name", viewModelScope, TextFieldValue())
+    private val nameState = MutableStateFlow(TextFieldValue())
     val name = nameState.filterNotNull()
 
     private val nameErrorState = MutableStateFlow<ValidationError?>(null)

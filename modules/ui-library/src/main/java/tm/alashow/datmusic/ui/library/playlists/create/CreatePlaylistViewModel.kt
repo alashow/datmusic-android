@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
-import tm.alashow.base.util.extensions.getStateFlow
 import tm.alashow.base.util.extensions.orBlank
 import tm.alashow.datmusic.data.interactors.playlist.CreatePlaylist
 import tm.alashow.i18n.ValidationError
@@ -31,7 +30,7 @@ class CreatePlaylistViewModel @Inject constructor(
     private val navigator: Navigator
 ) : ViewModel() {
 
-    private val nameState = handle.getStateFlow("playlist_name", viewModelScope, TextFieldValue())
+    private val nameState = MutableStateFlow(TextFieldValue())
     val name = nameState.filterNotNull()
 
     private val nameErrorState = MutableStateFlow<ValidationError?>(null)

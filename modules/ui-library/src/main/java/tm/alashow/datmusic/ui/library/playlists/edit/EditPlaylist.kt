@@ -99,7 +99,13 @@ fun EditPlaylist(
                     }
                 ),
         ) {
-            editPlaylistHeader(playlist, name, viewModel, nameError)
+            editPlaylistHeader(
+                playlist = playlist,
+                name = name,
+                onSetName = viewModel::setPlaylistName,
+                onSave = viewModel::save,
+                nameError = nameError
+            )
 
             editPlaylistExtraActions(
                 onShuffle = viewModel::shufflePlaylist,
@@ -156,7 +162,8 @@ fun PlaylistLastRemovedItemSnackbar(
 private fun LazyListScope.editPlaylistHeader(
     playlist: Playlist,
     name: TextFieldValue,
-    viewModel: EditPlaylistViewModel,
+    onSetName: (TextFieldValue) -> Unit,
+    onSave: Callback,
     nameError: ValidationError?
 ) {
     item {
@@ -183,14 +190,14 @@ private fun LazyListScope.editPlaylistHeader(
 
             PlaylistNameInput(
                 name = name,
-                onSetName = viewModel::setPlaylistName,
-                onDone = viewModel::save,
+                onSetName = onSetName,
+                onDone = onSave,
                 nameError = nameError
             )
 
             TextRoundedButton(
                 text = stringResource(R.string.playlist_edit_done),
-                onClick = viewModel::save,
+                onClick = onSave,
             )
         }
     }
