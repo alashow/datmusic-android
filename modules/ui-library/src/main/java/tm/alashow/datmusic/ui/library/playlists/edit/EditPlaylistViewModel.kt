@@ -61,7 +61,7 @@ class EditPlaylistViewModel @Inject constructor(
     private val nameErrorState = MutableStateFlow<ValidationError?>(null)
     val nameError = nameErrorState.asSharedFlow()
 
-    val playlist = observePlaylist.flow
+    val playlist = observePlaylist.flow.filterNotNull()
 
     private val playlistItems = MutableStateFlow<PlaylistItems>(emptyList())
     private val removedPlaylistItems = MutableStateFlow<Set<PlaylistItem>>(setOf())

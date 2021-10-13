@@ -65,5 +65,8 @@ abstract class PlaylistsDao : EntityDao<Params, Playlist>() {
     abstract override suspend fun count(params: Params): Int
 
     @Query("SELECT COUNT(*) from playlists where id = :id")
+    abstract override fun has(id: String): Flow<Int>
+
+    @Query("SELECT COUNT(*) from playlists where id = :id")
     abstract override suspend fun exists(id: String): Int
 }

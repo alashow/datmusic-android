@@ -74,5 +74,8 @@ abstract class AlbumsDao : PaginatedEntryDao<DatmusicSearchParams, Album>() {
     abstract override suspend fun count(params: DatmusicSearchParams): Int
 
     @Query("SELECT COUNT(*) from albums where id = :id")
+    abstract override fun has(id: String): Flow<Int>
+
+    @Query("SELECT COUNT(*) from albums where id = :id")
     abstract override suspend fun exists(id: String): Int
 }

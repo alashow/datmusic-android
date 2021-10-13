@@ -53,8 +53,11 @@ abstract class DownloadRequestsDao : BaseDao<DownloadRequest>() {
     @Query("DELETE FROM download_requests")
     abstract override suspend fun deleteAll(): Int
 
-    @Query("SELECT COUNT(*) from albums")
+    @Query("SELECT COUNT(*) from download_requests")
     abstract override fun count(): Flow<Int>
+
+    @Query("SELECT COUNT(*) from download_requests where id = :id")
+    abstract override fun has(id: String): Flow<Int>
 
     @Query("SELECT COUNT(*) from download_requests where id = :id")
     abstract override suspend fun exists(id: String): Int

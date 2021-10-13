@@ -10,11 +10,14 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import tm.alashow.base.util.extensions.stateInDefault
 import tm.alashow.datmusic.data.observers.playlist.ObservePlaylist
 import tm.alashow.datmusic.data.observers.playlist.ObservePlaylistDetails
+import tm.alashow.datmusic.data.observers.playlist.ObservePlaylistExistense
 import tm.alashow.datmusic.domain.entities.PlaylistId
 import tm.alashow.datmusic.ui.utils.AudiosCountDuration
 import tm.alashow.navigation.Navigator
@@ -25,6 +28,7 @@ import tm.alashow.navigation.screens.RootScreen
 class PlaylistDetailViewModel @Inject constructor(
     private val handle: SavedStateHandle,
     private val playlist: ObservePlaylist,
+    private val playlistExistense: ObservePlaylistExistense,
     private val playlistDetails: ObservePlaylistDetails,
     private val navigator: Navigator
 ) : ViewModel() {
@@ -47,6 +51,12 @@ class PlaylistDetailViewModel @Inject constructor(
     private fun load() {
         playlist(playlistId)
         playlistDetails(playlistId)
+        playlistExistense(playlistId)
+        viewModelScope.launch {
+            playlistExistense.flow.collect { exists ->
+                if (!exists) navigator.goBack()
+            }
+        }
     }
 
     fun refresh() = load()

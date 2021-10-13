@@ -116,6 +116,9 @@ class PlaylistsRepo @Inject constructor(
     }
 
     suspend fun updatePlaylistItems(playlistItems: PlaylistItems) {
+        if (playlistItems.isEmpty()) {
+            return
+        }
         val playlistId = playlistItems.first().playlistAudio.playlistId
         playlistAudiosDao.updateAll(playlistItems.map { it.playlistAudio })
         if (playlistItems.isNotEmpty())

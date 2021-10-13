@@ -26,6 +26,12 @@ class ObservePlaylist @Inject constructor(
     override fun createObservable(params: PlaylistId): Flow<Playlist> = playlistsRepo.playlist(params)
 }
 
+class ObservePlaylistExistense @Inject constructor(
+    private val playlistsRepo: PlaylistsRepo
+) : SubjectInteractor<PlaylistId, Boolean>() {
+    override fun createObservable(params: PlaylistId): Flow<Boolean> = playlistsRepo.has(params)
+}
+
 class ObservePlaylistDetails @Inject constructor(
     private val playlistsRepo: PlaylistsRepo
 ) : SubjectInteractor<PlaylistId, Async<PlaylistWithAudios>>() {
