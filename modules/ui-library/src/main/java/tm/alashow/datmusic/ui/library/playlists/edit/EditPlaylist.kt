@@ -12,8 +12,8 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -44,8 +45,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberImagePainter
+import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.imePadding
-import com.google.accompanist.insets.navigationBarsHeight
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.statusBarsPadding
 import org.burnoutcrew.reorderable.ReorderableState
@@ -86,8 +87,10 @@ fun EditPlaylist(
     val itemsBeforeContent = 2
 
     Box {
+        val navigationBarsBottom = with(LocalDensity.current) { LocalWindowInsets.current.navigationBars.bottom.toDp() }
         LazyColumn(
             state = reorderableState.listState,
+            contentPadding = PaddingValues(bottom = navigationBarsBottom),
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colors.background)
@@ -118,10 +121,6 @@ fun EditPlaylist(
                 onRemove = viewModel::removePlaylistItem,
                 audios = playlistItems
             )
-
-            item {
-                Spacer(Modifier.navigationBarsHeight())
-            }
         }
 
         PlaylistLastRemovedItemSnackbar(
