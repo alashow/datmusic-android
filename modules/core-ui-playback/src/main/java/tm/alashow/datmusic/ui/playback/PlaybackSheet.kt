@@ -217,7 +217,7 @@ internal fun PlaybackSheetContent(
             }
 
             item {
-                PlaybackNowPlayingWithControls(nowPlaying, playbackState, contentColor, onClose)
+                PlaybackNowPlayingWithControls(nowPlaying, playbackState, contentColor)
             }
 
             if (playbackQueue.isValid)
@@ -337,14 +337,13 @@ private fun PlaybackNowPlayingWithControls(
     nowPlaying: MediaMetadataCompat,
     playbackState: PlaybackStateCompat,
     contentColor: Color,
-    onClose: Callback,
     modifier: Modifier = Modifier
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier.padding(AppTheme.specs.paddingLarge)
     ) {
-        PlaybackNowPlaying(nowPlaying = nowPlaying, onClose = onClose)
+        PlaybackNowPlaying(nowPlaying = nowPlaying)
 
         PlaybackProgress(
             playbackState = playbackState,
@@ -361,7 +360,6 @@ private fun PlaybackNowPlayingWithControls(
 @Composable
 private fun PlaybackNowPlaying(
     nowPlaying: MediaMetadataCompat,
-    onClose: Callback,
     navigator: Navigator = LocalNavigator.current
 ) {
     val title = nowPlaying.title
@@ -372,7 +370,6 @@ private fun PlaybackNowPlaying(
         maxLines = 1,
         modifier = Modifier.simpleClickable {
             navigator.navigate(LeafScreen.Search.buildRoute(nowPlaying.toAlbumSearchQuery(), DatmusicSearchParams.BackendType.ALBUMS))
-            onClose()
         }
     )
     CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
@@ -389,7 +386,6 @@ private fun PlaybackNowPlaying(
                         DatmusicSearchParams.BackendType.ALBUMS
                     )
                 )
-                onClose()
             }
         )
     }
