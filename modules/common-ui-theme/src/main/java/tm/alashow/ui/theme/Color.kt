@@ -44,6 +44,11 @@ val Blue = Color(0xFF007AFF)
 val Purple = Color(0xFF5856D6)
 val Asphalt = Color(0xFF2c3e50)
 
+val Gray1000 = Color(0xFF121212)
+val BlueGrey = Color(0xFF263238)
+val Green600 = Color(0xFF1DB954)
+val Green900 = Color(0xFF468847)
+
 internal val DarkAppColors = appDarkColors(Primary, Secondary, PrimaryVariant, SecondaryVariant)
 internal val LightAppColors = appLightColors(Primary, Secondary, PrimaryVariant, SecondaryVariant)
 
