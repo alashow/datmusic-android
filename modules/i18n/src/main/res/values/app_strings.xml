@@ -71,6 +71,8 @@
     <string name="playlist.empty">Playlist is empty</string>
     <string name="playlist.empty.addSongs">Add Songs</string>
 
+    <string name="playlist.audio.menu.removeFromPlaylist">Remove from this playlist</string>
+
     <string name="playlist.addTo">Add to playlist</string>
     <string name="playlist.addTo.new">New playlist</string>
     <string name="playlist.addTo.added">Added to %1$s</string>

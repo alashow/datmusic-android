@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 7,
-    "identityHash": "f3ada65680a75074937bbd34f844d582",
+    "identityHash": "b62b970a5642d703862902e84f1921cc",
     "entities": [
       {
         "tableName": "audios",
@@ -468,7 +468,7 @@
       },
       {
         "tableName": "playlist_audios",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL DEFAULT 0, `playlist_id` INTEGER NOT NULL, `audio_id` TEXT NOT NULL, `position` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL DEFAULT 0, `playlist_id` INTEGER NOT NULL, `audio_id` TEXT NOT NULL, `position` INTEGER NOT NULL, FOREIGN KEY(`playlist_id`) REFERENCES `playlists`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -522,13 +522,25 @@
             "createSql": "CREATE INDEX IF NOT EXISTS `index_playlist_audios_audio_id` ON `${TABLE_NAME}` (`audio_id`)"
           }
         ],
-        "foreignKeys": []
+        "foreignKeys": [
+          {
+            "table": "playlists",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "playlist_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f3ada65680a75074937bbd34f844d582')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b62b970a5642d703862902e84f1921cc')"
     ]
   }
 }

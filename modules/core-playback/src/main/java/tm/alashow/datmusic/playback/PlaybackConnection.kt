@@ -34,7 +34,7 @@ import tm.alashow.datmusic.data.db.daos.findAudios
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
-import tm.alashow.datmusic.domain.entities.PlaylistWithAudios
+import tm.alashow.datmusic.domain.entities.PlaylistId
 import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.playback.models.MEDIA_TYPE_ALBUM
 import tm.alashow.datmusic.playback.models.MEDIA_TYPE_ARTIST
@@ -78,7 +78,7 @@ interface PlaybackConnection {
     fun playNextAudio(audio: Audio)
     fun playAudios(audios: List<Audio>, index: Int = 0, title: QueueTitle = QueueTitle())
     fun playArtist(artist: Artist, index: Int = 0)
-    fun playPlaylist(playlist: PlaylistWithAudios, index: Int = 0)
+    fun playPlaylist(playlistId: PlaylistId, index: Int = 0)
     fun playAlbum(album: Album, index: Int = 0)
     fun playWithQuery(query: String, audioId: String)
     fun playWithMinervaQuery(query: String, audioId: String)
@@ -201,8 +201,8 @@ class PlaybackConnectionImpl(
         )
     }
 
-    override fun playPlaylist(playlist: PlaylistWithAudios, index: Int) {
-        transportControls?.playFromMediaId(MediaId(MEDIA_TYPE_PLAYLIST, playlist.playlist.getIdentifier(), index).toString(), null)
+    override fun playPlaylist(playlistId: PlaylistId, index: Int) {
+        transportControls?.playFromMediaId(MediaId(MEDIA_TYPE_PLAYLIST, playlistId.toString(), index).toString(), null)
     }
 
     override fun playArtist(artist: Artist, index: Int) {

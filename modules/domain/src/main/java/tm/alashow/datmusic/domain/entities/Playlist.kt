@@ -7,6 +7,8 @@ package tm.alashow.datmusic.domain.entities
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.ForeignKey.CASCADE
 import androidx.room.Index
 import androidx.room.Junction
 import androidx.room.PrimaryKey
@@ -55,7 +57,15 @@ typealias PlaylistAudioId = Long
 
 @Entity(
     tableName = "playlist_audios",
-    indices = [Index("playlist_id"), Index("audio_id")]
+    indices = [Index("playlist_id"), Index("audio_id")],
+    foreignKeys = [
+        ForeignKey(
+            entity = Playlist::class,
+            parentColumns = ["id"],
+            childColumns = ["playlist_id"],
+            onDelete = CASCADE
+        )
+    ]
 )
 data class PlaylistAudio(
     @PrimaryKey(autoGenerate = true)
@@ -99,12 +109,18 @@ data class PlaylistItem(
     val audio: Audio = Audio()
 )
 
-typealias PlaylistAudios = List<AudioOfPlaylist>
+typealias PlaylistAudios = List<PlaylistAudio>
 typealias PlaylistItems = List<PlaylistItem>
+typealias PlaylistAudioIds = List<PlaylistAudioId>
+typealias AudiosOfPlaylist = List<AudioOfPlaylist>
+
+fun AudiosOfPlaylist.asAudios() = map { it.audio }
+fun AudiosOfPlaylist.playlistId() = first().playlistAudio.playlistId
 
 data class AudioOfPlaylist(
+    @Embedded(prefix = "item_")
+    val playlistAudio: PlaylistAudio = PlaylistAudio(),
+
     @Embedded
     val audio: Audio = Audio(),
-
-    val position: Int,
 )

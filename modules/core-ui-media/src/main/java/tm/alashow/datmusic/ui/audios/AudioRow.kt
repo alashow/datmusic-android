@@ -58,6 +58,7 @@ fun AudioRow(
     isPlaceholder: Boolean = false,
     onClick: ((Audio) -> Unit)? = null,
     onPlayAudio: ((Audio) -> Unit)? = null,
+    extraActionLabels: List<Int> = emptyList(),
     actionHandler: AudioActionHandler = LocalAudioActionHandler.current
 ) {
     var menuVisible by remember { mutableStateOf(false) }
@@ -97,6 +98,7 @@ fun AudioRow(
             AudioDropdownMenu(
                 expanded = menuVisible,
                 onExpandedChange = { menuVisible = it },
+                extraActionLabels = extraActionLabels,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
                     .weight(1f),

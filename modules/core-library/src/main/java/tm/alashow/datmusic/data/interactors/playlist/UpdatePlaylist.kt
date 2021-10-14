@@ -11,6 +11,7 @@ import tm.alashow.data.Interactor
 import tm.alashow.data.ResultInteractor
 import tm.alashow.datmusic.data.repos.playlist.PlaylistsRepo
 import tm.alashow.datmusic.domain.entities.Playlist
+import tm.alashow.datmusic.domain.entities.PlaylistAudioIds
 import tm.alashow.datmusic.domain.entities.PlaylistId
 import tm.alashow.datmusic.domain.entities.PlaylistItems
 
@@ -48,12 +49,12 @@ class UpdatePlaylistItems @Inject constructor(
     }
 }
 
-class DeletePlaylistItems @Inject constructor(
+class RemovePlaylistItems @Inject constructor(
     private val repo: PlaylistsRepo,
     private val dispatchers: CoroutineDispatchers,
-) : ResultInteractor<PlaylistItems, Int>() {
+) : ResultInteractor<PlaylistAudioIds, Int>() {
 
-    override suspend fun doWork(params: PlaylistItems) = withContext(dispatchers.io) {
-        return@withContext repo.deletePlaylistItems(params)
+    override suspend fun doWork(params: PlaylistAudioIds) = withContext(dispatchers.io) {
+        return@withContext repo.removePlaylistItems(params)
     }
 }

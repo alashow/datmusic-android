@@ -28,6 +28,7 @@ fun PlaylistDetail() {
 private fun PlaylistDetail(viewModel: PlaylistDetailViewModel, navigator: Navigator = LocalNavigator.current) {
     val viewState by rememberFlowWithLifecycle(viewModel.state).collectAsState(initial = PlaylistDetailViewState.Empty)
 
+    val context = LocalContext.current
     MediaDetail(
         viewState = viewState,
         titleRes = R.string.playlist_title,
@@ -38,7 +39,7 @@ private fun PlaylistDetail(viewModel: PlaylistDetailViewModel, navigator: Naviga
                 navigator.navigate(EditPlaylistScreen.buildRoute(playlistId))
             }
         },
-        mediaDetailContent = PlaylistDetailContent(),
+        mediaDetailContent = PlaylistDetailContent.create(onRemoveFromPlaylist = viewModel::removePlaylistItem),
         mediaDetailEmpty = PlaylistDetailEmpty(),
         extraHeaderContent = {
             PlaylistHeaderSubtitle(viewState)

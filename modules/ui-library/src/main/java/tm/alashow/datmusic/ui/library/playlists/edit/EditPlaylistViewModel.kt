@@ -26,11 +26,11 @@ import kotlinx.coroutines.launch
 import org.burnoutcrew.reorderable.move
 import tm.alashow.base.util.extensions.orBlank
 import tm.alashow.datmusic.data.interactors.playlist.DeletePlaylist
-import tm.alashow.datmusic.data.interactors.playlist.DeletePlaylistItems
+import tm.alashow.datmusic.data.interactors.playlist.RemovePlaylistItems
 import tm.alashow.datmusic.data.interactors.playlist.UpdatePlaylist
 import tm.alashow.datmusic.data.interactors.playlist.UpdatePlaylistItems
 import tm.alashow.datmusic.data.observers.playlist.ObservePlaylist
-import tm.alashow.datmusic.data.observers.playlist.ObservePlaylistDetails2
+import tm.alashow.datmusic.data.observers.playlist.ObservePlaylistItems
 import tm.alashow.datmusic.domain.entities.PlaylistAudioId
 import tm.alashow.datmusic.domain.entities.PlaylistId
 import tm.alashow.datmusic.domain.entities.PlaylistItem
@@ -47,11 +47,11 @@ data class TextValue(val value: TextFieldValue = TextFieldValue()) : Serializabl
 class EditPlaylistViewModel @Inject constructor(
     handle: SavedStateHandle,
     private val observePlaylist: ObservePlaylist,
-    private val observePlaylistDetails: ObservePlaylistDetails2,
+    private val observePlaylistDetails: ObservePlaylistItems,
     private val updatePlaylist: UpdatePlaylist,
     private val deletePlaylist: DeletePlaylist,
     private val reorderPlaylist: UpdatePlaylistItems,
-    private val deletePlaylistItems: DeletePlaylistItems,
+    private val removePlaylistItems: RemovePlaylistItems,
     private val navigator: Navigator
 ) : ViewModel() {
 
@@ -157,7 +157,7 @@ class EditPlaylistViewModel @Inject constructor(
 
     fun save() {
         viewModelScope.launch {
-            deletePlaylistItems.execute(removedPlaylistItems.value.toList())
+            removePlaylistItems.execute(removedPlaylistItems.value.map { it.playlistAudio.id })
 
             val repositionedItems = playlistItems.value.mapIndexed { index, it -> it.copy(playlistAudio = it.playlistAudio.copy(position = index)) }
             reorderPlaylist.execute(repositionedItems)

@@ -571,7 +571,7 @@ class DatmusicPlayerImpl @Inject constructor(
     override fun setCurrentAudioId(audioId: String, index: Int?) {
         val audioIndex = index ?: queueManager.queue.indexOfFirst { it == audioId }
         if (audioIndex < 0) {
-            Timber.e("Audio id isn't in the queue, what it do?")
+            error("Audio id isn't in the queue, what it do?")
         } else queueManager.currentAudioIndex = audioIndex
     }
 

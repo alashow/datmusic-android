@@ -15,10 +15,14 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import tm.alashow.base.util.extensions.stateInDefault
+import tm.alashow.datmusic.data.interactors.playlist.RemovePlaylistItems
 import tm.alashow.datmusic.data.observers.playlist.ObservePlaylist
 import tm.alashow.datmusic.data.observers.playlist.ObservePlaylistDetails
 import tm.alashow.datmusic.data.observers.playlist.ObservePlaylistExistense
+import tm.alashow.datmusic.domain.entities.AudioOfPlaylist
+import tm.alashow.datmusic.domain.entities.PlaylistAudioId
 import tm.alashow.datmusic.domain.entities.PlaylistId
+import tm.alashow.datmusic.domain.entities.asAudios
 import tm.alashow.datmusic.ui.utils.AudiosCountDuration
 import tm.alashow.navigation.Navigator
 import tm.alashow.navigation.screens.PLAYLIST_ID_KEY
@@ -30,6 +34,7 @@ class PlaylistDetailViewModel @Inject constructor(
     private val playlist: ObservePlaylist,
     private val playlistExistense: ObservePlaylistExistense,
     private val playlistDetails: ObservePlaylistDetails,
+    private val removePlaylistItems: RemovePlaylistItems,
     private val navigator: Navigator
 ) : ViewModel() {
 
@@ -39,7 +44,7 @@ class PlaylistDetailViewModel @Inject constructor(
     val state = combine(playlist.flow, playlistDetails.flow, lastMoveState, ::PlaylistDetailViewState)
         .map {
             if (it.playlistDetails.complete && !it.isEmpty) {
-                it.copy(audiosCountDuration = AudiosCountDuration.from(it.playlistDetails.invoke()?.audios.orEmpty()))
+                it.copy(audiosCountDuration = AudiosCountDuration.from(it.playlistDetails.invoke()?.asAudios().orEmpty()))
             } else it
         }
         .stateInDefault(viewModelScope, PlaylistDetailViewState.Empty)
@@ -61,4 +66,10 @@ class PlaylistDetailViewModel @Inject constructor(
 
     fun refresh() = load()
     fun addSongs() = navigator.navigate(RootScreen.Search.route)
+
+    fun removePlaylistItem(item: AudioOfPlaylist) = removePlaylistItem(item.playlistAudio.id)
+
+    fun removePlaylistItem(id: PlaylistAudioId) = viewModelScope.launch {
+        removePlaylistItems.execute(listOf(id))
+    }
 }

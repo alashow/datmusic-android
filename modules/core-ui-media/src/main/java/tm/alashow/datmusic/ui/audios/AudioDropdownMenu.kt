@@ -41,6 +41,7 @@ fun AudioDropdownMenu(
     onExpandedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     actionLabels: List<Int> = defaultMenuActionLabels,
+    extraActionLabels: List<Int> = emptyList(),
     onDropdownSelect: (Int) -> Unit = {}
 ) {
     IconButton(
@@ -61,7 +62,7 @@ fun AudioDropdownMenu(
                 .width(IntrinsicSize.Min)
                 .align(Alignment.Center)
         ) {
-            actionLabels.forEach { item ->
+            (actionLabels + extraActionLabels).forEach { item ->
                 val label = stringResource(item)
                 DropdownMenuItem(
                     onClick = {
