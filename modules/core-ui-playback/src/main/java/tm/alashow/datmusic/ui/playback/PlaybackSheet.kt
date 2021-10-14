@@ -6,7 +6,6 @@ package tm.alashow.datmusic.ui.playback
 
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
@@ -29,8 +28,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.BottomSheetScaffold
-import androidx.compose.material.BottomSheetState
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -52,7 +49,6 @@ import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material.icons.filled.ShuffleOn
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
-import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -125,6 +121,7 @@ import tm.alashow.datmusic.ui.audios.AudioDropdownMenu
 import tm.alashow.datmusic.ui.audios.AudioItemAction
 import tm.alashow.datmusic.ui.audios.AudioRow
 import tm.alashow.datmusic.ui.audios.LocalAudioActionHandler
+import tm.alashow.datmusic.ui.audios.audioActionHandler
 import tm.alashow.datmusic.ui.audios.currentPlayingMenuActionLabels
 import tm.alashow.datmusic.ui.library.playlist.addTo.AddToPlaylistMenu
 import tm.alashow.navigation.LocalNavigator
@@ -151,54 +148,31 @@ import tm.alashow.ui.theme.plainSurfaceColor
 fun PlaybackSheet(
     // override local theme color palette because we want simple colors for menus n' stuff
     sheetTheme: ThemeState = LocalThemeState.current.copy(colorPalettePreference = ColorPalettePreference.Black),
-    bottomSheetState: BottomSheetState = LocalPlaybackSheetState.current,
-    sheetContentWrapper: @Composable (@Composable () -> Unit) -> Unit = {},
-    content: @Composable () -> Unit
+    navigator: Navigator = LocalNavigator.current,
 ) {
     val listState = rememberLazyListState()
     val coroutine = rememberCoroutineScope()
-    val sheetScaffoldState = rememberBottomSheetScaffoldState(
-        bottomSheetState = rememberUpdatedState(bottomSheetState).value,
-    )
-    val isExpanded = sheetScaffoldState.bottomSheetState.isExpanded
 
     val scrollToTop: Callback = {
         coroutine.launch {
             listState.animateScrollToItem(0)
         }
     }
-    val collapse: Callback = {
-        coroutine.launch {
-            sheetScaffoldState.bottomSheetState.collapse()
-            scrollToTop()
+
+    val audioActionHandler = audioActionHandler()
+    CompositionLocalProvider(LocalAudioActionHandler provides audioActionHandler) {
+        AppTheme(theme = sheetTheme, changeSystemBar = false) {
+            PlaybackSheetContent(
+                onClose = { navigator.goBack() },
+                scrollToTop = scrollToTop,
+                listState = listState
+            )
         }
     }
-
-    if (isExpanded) {
-        BackHandler(onBack = collapse)
-    }
-
-    BottomSheetScaffold(
-        sheetPeekHeight = 0.dp,
-        backgroundColor = Color.Transparent,
-        scaffoldState = sheetScaffoldState,
-        sheetContent = {
-            sheetContentWrapper {
-                AppTheme(theme = sheetTheme, changeSystemBar = false) {
-                    PlaybackSheetContent(
-                        onClose = collapse,
-                        scrollToTop = scrollToTop,
-                        listState = listState
-                    )
-                }
-            }
-        },
-        content = { content() },
-    )
 }
 
 @Composable
-fun PlaybackSheetContent(
+internal fun PlaybackSheetContent(
     onClose: Callback,
     scrollToTop: Callback,
     listState: LazyListState,

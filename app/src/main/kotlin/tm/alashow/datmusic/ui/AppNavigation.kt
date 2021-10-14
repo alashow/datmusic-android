@@ -28,6 +28,7 @@ import tm.alashow.datmusic.ui.library.Library
 import tm.alashow.datmusic.ui.library.playlists.create.CreatePlaylist
 import tm.alashow.datmusic.ui.library.playlists.detail.PlaylistDetail
 import tm.alashow.datmusic.ui.library.playlists.edit.EditPlaylist
+import tm.alashow.datmusic.ui.playback.PlaybackSheet
 import tm.alashow.datmusic.ui.search.Search
 import tm.alashow.datmusic.ui.settings.Settings
 import tm.alashow.navigation.LocalNavigator
@@ -75,6 +76,8 @@ internal fun AppNavigation(
         addDownloadsRoot(navController)
         addLibraryRoot(navController)
         addSettingsRoot(navController)
+
+        addPlaybackSheet(navController)
     }
 }
 
@@ -172,6 +175,12 @@ private fun NavGraphBuilder.addArtistDetails(navController: NavController, root:
 private fun NavGraphBuilder.addAlbumDetails(navController: NavController, root: RootScreen) {
     composableScreen(LeafScreen.AlbumDetails(root = root)) {
         AlbumDetail()
+    }
+}
+
+private fun NavGraphBuilder.addPlaybackSheet(navController: NavController) {
+    bottomSheetScreen(LeafScreen.PlaybackSheet()) {
+        PlaybackSheet()
     }
 }
 

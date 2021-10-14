@@ -55,13 +55,16 @@ sealed class RootScreen(
 
 sealed class LeafScreen(
     override val route: String,
-    open val root: RootScreen,
+    open val root: RootScreen? = null,
     protected open val path: String = "",
     val arguments: List<NamedNavArgument> = emptyList(),
     val deepLinks: List<NavDeepLink> = emptyList(),
 ) : Screen {
 
-    fun createRoute(root: RootScreen? = null) = "${(root ?: this.root).route}/$route"
+    fun createRoute(root: RootScreen? = null) = when (val rootPath = (root ?: this.root)?.route) {
+        is String -> "$rootPath/$route"
+        else -> route
+    }
 
     data class Search(
         override val route: String = "search/?$QUERY_KEY={$QUERY_KEY}&$SEARCH_BACKENDS_KEY={$SEARCH_BACKENDS_KEY}"
@@ -97,6 +100,8 @@ sealed class LeafScreen(
     data class Downloads(override val route: String = "downloads") : LeafScreen(route, RootScreen.Downloads)
     data class Library(override val route: String = "library") : LeafScreen(route, RootScreen.Library)
     data class CreatePlaylist(override val route: String = "create_playlist") : LeafScreen(route, RootScreen.Library)
+
+    data class PlaybackSheet(override val route: String = "playback_sheet") : LeafScreen(route)
 
     data class PlaylistDetail(
         override val route: String = "local_playlist/{$PLAYLIST_ID_KEY}",
