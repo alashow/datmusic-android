@@ -7,15 +7,17 @@ package tm.alashow.datmusic.playback.models
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import timber.log.Timber
+import tm.alashow.datmusic.data.DatmusicSearchParams
+import tm.alashow.datmusic.data.DatmusicSearchParams.Companion.withTypes
 import tm.alashow.datmusic.data.db.daos.AlbumsDao
 import tm.alashow.datmusic.data.db.daos.ArtistsDao
 import tm.alashow.datmusic.data.db.daos.AudiosDao
-import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
-import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams.Companion.withTypes
+import tm.alashow.datmusic.data.repos.playlist.PlaylistsRepo
 import tm.alashow.datmusic.domain.entities.Audio
 
 const val MEDIA_TYPE_AUDIO = "Media.Audio"
 const val MEDIA_TYPE_ARTIST = "Media.Artist"
+const val MEDIA_TYPE_PLAYLIST = "Media.Playlist"
 const val MEDIA_TYPE_ALBUM = "Media.Album"
 const val MEDIA_TYPE_AUDIO_QUERY = "Media.AudioQuery"
 const val MEDIA_TYPE_AUDIO_MINERVA_QUERY = "Media.AudioMinervaQuery"
@@ -26,9 +28,11 @@ private const val MEDIA_ID_SEPARATOR = " | "
 data class MediaId(
     val type: String = MEDIA_TYPE_AUDIO,
     val value: String = "0",
-    val index: Int = 0,
+    val index: Int = -1,
     val caller: String = CALLER_SELF
 ) {
+
+    val hasIndex = index >= 0
 
     companion object {
         const val CALLER_SELF = "self"
@@ -50,7 +54,8 @@ fun String.toMediaId(): MediaId {
     val knownTypes = listOf(
         MEDIA_TYPE_AUDIO, MEDIA_TYPE_ARTIST,
         MEDIA_TYPE_ALBUM, MEDIA_TYPE_AUDIO_QUERY,
-        MEDIA_TYPE_AUDIO_MINERVA_QUERY, MEDIA_TYPE_AUDIO_FLACS_QUERY
+        MEDIA_TYPE_AUDIO_MINERVA_QUERY, MEDIA_TYPE_AUDIO_FLACS_QUERY,
+        MEDIA_TYPE_PLAYLIST,
     )
     if (type !in knownTypes) {
         Timber.e("Unknown media type: $type")
@@ -62,11 +67,16 @@ fun String.toMediaId(): MediaId {
     else MediaId()
 }
 
-suspend fun MediaId.toAudioList(audiosDao: AudiosDao, artistsDao: ArtistsDao, albumsDao: AlbumsDao):
-    List<Audio>? = when (type) {
+suspend fun MediaId.toAudioList(
+    audiosDao: AudiosDao,
+    artistsDao: ArtistsDao,
+    albumsDao: AlbumsDao,
+    playlistsRepo: PlaylistsRepo
+): List<Audio>? = when (type) {
     MEDIA_TYPE_AUDIO -> listOfNotNull(audiosDao.entry(value).firstOrNull())
     MEDIA_TYPE_ALBUM -> albumsDao.entry(value).firstOrNull()?.audios
     MEDIA_TYPE_ARTIST -> artistsDao.entry(value).firstOrNull()?.audios
+    MEDIA_TYPE_PLAYLIST -> playlistsRepo.playlistWithAudios(value.toLong()).firstOrNull()?.audios
     MEDIA_TYPE_AUDIO_QUERY, MEDIA_TYPE_AUDIO_MINERVA_QUERY, MEDIA_TYPE_AUDIO_FLACS_QUERY -> {
         val params = DatmusicSearchParams(value).run {
             when (type) {
@@ -80,10 +90,16 @@ suspend fun MediaId.toAudioList(audiosDao: AudiosDao, artistsDao: ArtistsDao, al
     else -> emptyList()
 }
 
-suspend fun MediaId.toQueueTitle(audiosDao: AudiosDao, artistsDao: ArtistsDao, albumsDao: AlbumsDao): QueueTitle = when (type) {
+suspend fun MediaId.toQueueTitle(
+    audiosDao: AudiosDao,
+    artistsDao: ArtistsDao,
+    albumsDao: AlbumsDao,
+    playlistsRepo: PlaylistsRepo
+): QueueTitle = when (type) {
     MEDIA_TYPE_AUDIO -> QueueTitle(QueueTitle.Type.AUDIO, audiosDao.entry(value).firstOrNull()?.title)
     MEDIA_TYPE_ARTIST -> QueueTitle(QueueTitle.Type.ARTIST, artistsDao.entry(value).firstOrNull()?.name)
     MEDIA_TYPE_ALBUM -> QueueTitle(QueueTitle.Type.ALBUM, albumsDao.entry(value).firstOrNull()?.title)
+    MEDIA_TYPE_PLAYLIST -> QueueTitle(QueueTitle.Type.PLAYLIST, playlistsRepo.playlistWithAudios(value.toLong()).firstOrNull()?.playlist?.name)
     MEDIA_TYPE_AUDIO_QUERY, MEDIA_TYPE_AUDIO_MINERVA_QUERY, MEDIA_TYPE_AUDIO_FLACS_QUERY -> QueueTitle(QueueTitle.Type.SEARCH, value)
     else -> QueueTitle()
 }

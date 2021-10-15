@@ -66,5 +66,5 @@ dependencies {
 	}
 
 	api project(":modules:base")
-	api project(":modules:data")
+	api project(":modules:core-media")
 }

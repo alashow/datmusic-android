@@ -31,11 +31,13 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import timber.log.Timber
 import tm.alashow.base.util.CoroutineDispatchers
-import tm.alashow.base.util.UiMessage
 import tm.alashow.base.util.event
 import tm.alashow.data.PreferencesStore
 import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
+import tm.alashow.datmusic.data.db.daos.findAudio
+import tm.alashow.datmusic.data.repos.audio.AudioSaveType
+import tm.alashow.datmusic.data.repos.audio.AudiosRepo
 import tm.alashow.datmusic.domain.DownloadsSongsGrouping
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
@@ -43,10 +45,14 @@ import tm.alashow.datmusic.domain.entities.DownloadItem
 import tm.alashow.datmusic.domain.entities.DownloadRequest
 import tm.alashow.domain.models.None
 import tm.alashow.domain.models.Optional
+import tm.alashow.domain.models.orNone
+import tm.alashow.domain.models.orNull
 import tm.alashow.domain.models.some
+import tm.alashow.i18n.UiMessage
 
-data class DownloadItems(val audios: List<AudioDownloadItem>)
 typealias AudioDownloadItems = List<AudioDownloadItem>
+
+data class DownloadItems(val audios: AudioDownloadItems)
 
 class Downloader @Inject constructor(
     @ApplicationContext private val appContext: Context,
@@ -54,6 +60,7 @@ class Downloader @Inject constructor(
     private val preferences: PreferencesStore,
     private val dao: DownloadRequestsDao,
     private val audiosDao: AudiosDao,
+    private val audiosRepo: AudiosRepo,
     private val fetcher: Fetch,
     private val analytics: FirebaseAnalytics,
 ) {
@@ -115,6 +122,8 @@ class Downloader @Inject constructor(
             return
         }
 
+        audiosRepo.saveAudios(AudioSaveType.Download, audio)
+
         val downloadRequest = DownloadRequest.fromAudio(audio)
         if (!validateNewAudioRequest(downloadRequest)) {
             return
@@ -166,7 +175,7 @@ class Downloader @Inject constructor(
      * @return false if not allowed to enqueue again, true otherwise
      */
     private suspend fun validateNewAudioRequest(downloadRequest: DownloadRequest): Boolean {
-        val existingRequest = dao.has(downloadRequest.id) > 0
+        val existingRequest = dao.exists(downloadRequest.id) > 0
 
         if (existingRequest) {
             val oldRequest = dao.entry(downloadRequest.id).first()
@@ -273,11 +282,17 @@ class Downloader @Inject constructor(
         }
     }
 
+    suspend fun findAudioDownload(audioId: String): Optional<Audio> {
+        return (audiosDao to dao).findAudio(audioId)?.apply {
+            audioDownloadItem = getAudioDownload(id).orNull()
+        }.orNone()
+    }
+
     /**
      * Builds [AudioDownloadItem] from given audio id if it exists and satisfies [allowedStatuses].
      */
     suspend fun getAudioDownload(audioId: String, vararg allowedStatuses: Status = arrayOf(Status.COMPLETED)): Optional<AudioDownloadItem> {
-        val existingRequest = dao.has(audioId) > 0
+        val existingRequest = dao.exists(audioId) > 0
         if (existingRequest) {
             val request = dao.entry(audioId).first()
             val downloadInfo = fetcher.downloadInfo(request.requestId)

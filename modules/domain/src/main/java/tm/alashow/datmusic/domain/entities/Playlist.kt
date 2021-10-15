@@ -7,44 +7,79 @@ package tm.alashow.datmusic.domain.entities
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.ForeignKey.CASCADE
 import androidx.room.Index
 import androidx.room.Junction
 import androidx.room.PrimaryKey
 import androidx.room.Relation
+import java.io.File
+import org.threeten.bp.LocalDateTime
 import tm.alashow.domain.models.BaseEntity
 
 typealias PlaylistId = Long
+typealias Playlists = List<Playlist>
+typealias PlaylistsWithAudios = List<PlaylistWithAudios>
+
+const val PLAYLIST_NAME_MAX_LENGTH = 100
 
 @Entity(tableName = "playlists")
 data class Playlist(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "_id")
-    val _id: PlaylistId = 0,
+    @ColumnInfo(name = "id")
+    val id: PlaylistId = 0,
 
     @ColumnInfo(name = "name")
     val name: String = "",
 
-    @ColumnInfo(name = "id")
-    override val id: String = _id.toString(),
+    @ColumnInfo(name = "artwork_path")
+    val artworkPath: String? = null,
+
+    @ColumnInfo(name = "artwork_source")
+    val artworkSource: String? = null,
+
+    @ColumnInfo(name = "updated_at", defaultValue = "")
+    val updatedAt: LocalDateTime = LocalDateTime.now(),
 
     @ColumnInfo(name = "params")
     override var params: String = "",
-) : BaseEntity
+) : BaseEntity, LibraryItem {
+
+    fun artworkFile() = artworkPath?.let { File(it) }
+
+    fun updatedCopy() = copy(updatedAt = LocalDateTime.now())
+
+    override fun getIdentifier() = id.toString()
+    override fun getLabel() = name
+}
+
+typealias PlaylistAudioId = Long
 
 @Entity(
     tableName = "playlist_audios",
-    primaryKeys = ["playlist_id", "audio_id"],
-    indices = [Index("playlist_id"), Index("audio_id")]
+    indices = [Index("playlist_id"), Index("audio_id")],
+    foreignKeys = [
+        ForeignKey(
+            entity = Playlist::class,
+            parentColumns = ["id"],
+            childColumns = ["playlist_id"],
+            onDelete = CASCADE
+        )
+    ]
 )
 data class PlaylistAudio(
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id", defaultValue = "0")
+    val id: PlaylistAudioId = 0,
+
     @ColumnInfo(name = "playlist_id")
     val playlistId: PlaylistId = 0,
 
     @ColumnInfo(name = "audio_id")
-    val audioId: String = "",
+    val audioId: AudioId = "",
 
-    @ColumnInfo(name = "index")
-    val index: Int,
+    @ColumnInfo(name = "position")
+    val position: Int = 0,
 )
 
 data class PlaylistWithAudios(
@@ -52,7 +87,7 @@ data class PlaylistWithAudios(
     val playlist: Playlist = Playlist(),
 
     @Relation(
-        parentColumn = "_id",
+        parentColumn = "id",
         entityColumn = "id",
         associateBy = Junction(
             PlaylistAudio::class,
@@ -61,4 +96,31 @@ data class PlaylistWithAudios(
         )
     )
     val audios: List<Audio> = emptyList(),
+)
+
+data class PlaylistItem(
+    @Embedded
+    val playlistAudio: PlaylistAudio = PlaylistAudio(),
+
+    @Relation(
+        parentColumn = "audio_id",
+        entityColumn = "id"
+    )
+    val audio: Audio = Audio()
+)
+
+typealias PlaylistAudios = List<PlaylistAudio>
+typealias PlaylistItems = List<PlaylistItem>
+typealias PlaylistAudioIds = List<PlaylistAudioId>
+typealias AudiosOfPlaylist = List<AudioOfPlaylist>
+
+fun AudiosOfPlaylist.asAudios() = map { it.audio }
+fun AudiosOfPlaylist.playlistId() = first().playlistAudio.playlistId
+
+data class AudioOfPlaylist(
+    @Embedded(prefix = "item_")
+    val playlistAudio: PlaylistAudio = PlaylistAudio(),
+
+    @Embedded
+    val audio: Audio = Audio(),
 )

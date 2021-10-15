@@ -32,8 +32,14 @@ fun AppTheme(
     val colors = when (theme.colorPalettePreference) {
         ColorPalettePreference.Asphalt -> if (isDarkTheme) appDarkColors(Asphalt, Orange) else appLightColors(Asphalt, Orange)
         ColorPalettePreference.Orange -> if (isDarkTheme) appDarkColors(Orange, Color.Black) else appLightColors(Orange, Orange)
+        ColorPalettePreference.Black_Yellow -> {
+            if (isDarkTheme) appDarkColors(Color.Black, Yellow, onSecondary = Color.Black)
+            else appLightColors(Primary, Yellow500, onSecondary = Color.Black)
+        }
+        ColorPalettePreference.Gray -> if (isDarkTheme) appDarkColors(Gray1000, Secondary) else appLightColors(Gray1000, Secondary)
+        ColorPalettePreference.Gray_Green -> if (isDarkTheme) appDarkColors(Gray1000, Green600) else appLightColors(Gray1000, Green600)
+        ColorPalettePreference.Blue_Grey -> if (isDarkTheme) appDarkColors(BlueGrey, Green900) else appLightColors(BlueGrey, Green900)
         ColorPalettePreference.Black -> if (isDarkTheme) appDarkColors(Color.Black, Secondary) else appLightColors(Primary, Secondary)
-        ColorPalettePreference.Black_Yellow -> if (isDarkTheme) appDarkColors(Color.Black, Yellow) else appLightColors(Primary, Yellow500)
         else -> if (isDarkTheme) DarkAppColors else LightAppColors
     }
 
@@ -52,7 +58,7 @@ fun AppTheme(
             colors = animate(colors.materialColors),
             typography = Typography,
             shapes = Shapes,
-            content = content
+            content = { MaterialThemePatches(content) }
         )
     }
 }

@@ -34,7 +34,7 @@ internal fun AudioDownloadDropdownMenu(
     expanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    onDropdownSelect: (Int) -> Unit
+    onDropdownSelect: (actionLabelRes: Int) -> Unit
 ) {
     val items = buildList {
         val downloadInfo = audioDownload.downloadInfo
@@ -54,6 +54,7 @@ internal fun AudioDownloadDropdownMenu(
         add(R.string.downloads_download_play)
         add(R.string.downloads_download_playNext)
         add(R.string.audio_menu_copyLink)
+        add(R.string.playlist_addTo)
 
         if (downloadInfo.isIncomplete()) {
             add(R.string.downloads_download_delete)

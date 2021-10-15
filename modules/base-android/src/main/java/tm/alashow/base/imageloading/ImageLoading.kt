@@ -7,7 +7,6 @@ package tm.alashow.base.imageloading
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
-import android.net.Uri
 import coil.imageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
@@ -24,12 +23,12 @@ object ImageLoading {
     }
 }
 
-suspend fun Context.getBitmap(uri: Uri, size: Int): Bitmap? {
+suspend fun Context.getBitmap(data: Any?, size: Int = Int.MAX_VALUE, allowHardware: Boolean = true): Bitmap? {
     val request = ImageRequest.Builder(this)
-        .data(uri)
+        .data(data)
         .size(size)
         .precision(Precision.INEXACT)
-        .allowHardware(true)
+        .allowHardware(allowHardware)
         .build()
 
     return when (val result = imageLoader.execute(request)) {

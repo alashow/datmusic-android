@@ -5,7 +5,7 @@
 package tm.alashow.base.util
 
 import android.content.res.Resources
-import java.util.Locale
+import java.util.*
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
@@ -69,15 +69,15 @@ fun LocalDate.localized(
 ): String = atStartOfDay().localized(resources, withYear, withMonth, false, withWeek, shortMonth)
 
 /**
- * @param duration duration in milliseconds
+ * @param durationMillis duration in milliseconds
  */
-fun Resources.localizeDuration(duration: Long): String {
-    val hours = ((duration / 1000) / 60) / 60
-    val minutes = ((duration / 1000) / 60) % 60
+fun Resources.localizeDuration(durationMillis: Long, short: Boolean = false): String {
+    val hours = ((durationMillis / 1000) / 60) / 60
+    val minutes = ((durationMillis / 1000) / 60) % 60
 
     return when (hours > 0) {
-        true -> getString(R.string.time_duration, hours, minutes)
-        else -> getString(R.string.time_duration_minutes, minutes)
+        true -> getString(if (short) R.string.time_duration_short else R.string.time_duration, hours, minutes)
+        else -> getString(if (short) R.string.time_duration_minutes_short else R.string.time_duration_minutes, minutes)
     }
 }
 

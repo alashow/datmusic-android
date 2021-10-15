@@ -4,7 +4,7 @@
  */
 package tm.alashow.datmusic.ui.search
 
-import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
+import tm.alashow.datmusic.data.DatmusicSearchParams
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.domain.models.errors.ApiCaptchaError
 

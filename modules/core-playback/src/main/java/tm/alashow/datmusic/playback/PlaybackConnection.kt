@@ -34,6 +34,7 @@ import tm.alashow.datmusic.data.db.daos.findAudios
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
+import tm.alashow.datmusic.domain.entities.PlaylistId
 import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.playback.models.MEDIA_TYPE_ALBUM
 import tm.alashow.datmusic.playback.models.MEDIA_TYPE_ARTIST
@@ -41,6 +42,7 @@ import tm.alashow.datmusic.playback.models.MEDIA_TYPE_AUDIO
 import tm.alashow.datmusic.playback.models.MEDIA_TYPE_AUDIO_FLACS_QUERY
 import tm.alashow.datmusic.playback.models.MEDIA_TYPE_AUDIO_MINERVA_QUERY
 import tm.alashow.datmusic.playback.models.MEDIA_TYPE_AUDIO_QUERY
+import tm.alashow.datmusic.playback.models.MEDIA_TYPE_PLAYLIST
 import tm.alashow.datmusic.playback.models.MediaId
 import tm.alashow.datmusic.playback.models.PlaybackModeState
 import tm.alashow.datmusic.playback.models.PlaybackProgressState
@@ -76,6 +78,7 @@ interface PlaybackConnection {
     fun playNextAudio(audio: Audio)
     fun playAudios(audios: List<Audio>, index: Int = 0, title: QueueTitle = QueueTitle())
     fun playArtist(artist: Artist, index: Int = 0)
+    fun playPlaylist(playlistId: PlaylistId, index: Int = 0)
     fun playAlbum(album: Album, index: Int = 0)
     fun playWithQuery(query: String, audioId: String)
     fun playWithMinervaQuery(query: String, audioId: String)
@@ -143,14 +146,14 @@ class PlaybackConnectionImpl(
     private suspend fun buildPlaybackQueue(data: Triple<MediaMetadataCompat, PlaybackStateCompat, PlaybackQueue>): PlaybackQueue {
         val (nowPlaying, state, queue) = data
         val nowPlayingId = nowPlaying.id.toMediaId().value
-        val audios = (audiosDao to downloadsDao).findAudios(queue.list.toMediaAudioIds()).map {
+        val audios = (audiosDao to downloadsDao).findAudios(queue.ids.toMediaAudioIds()).map {
             if (it.id == nowPlayingId) {
                 it.audioDownloadItem = downloader.getAudioDownload(nowPlayingId).orNull()
             }
             it
         }
 
-        return queue.copy(audiosList = audios, currentIndex = state.currentIndex).let {
+        return queue.copy(audios = audios, currentIndex = state.currentIndex).let {
             // check if now playing id and current audio's id by index matches
             val synced = when {
                 it.isEmpty() -> false
@@ -196,6 +199,10 @@ class PlaybackConnectionImpl(
                 QUEUE_MEDIA_ID_KEY to audio.id
             )
         )
+    }
+
+    override fun playPlaylist(playlistId: PlaylistId, index: Int) {
+        transportControls?.playFromMediaId(MediaId(MEDIA_TYPE_PLAYLIST, playlistId.toString(), index).toString(), null)
     }
 
     override fun playArtist(artist: Artist, index: Int) {

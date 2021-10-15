@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.graphics.isUnspecified
 import kotlin.random.Random
 
 fun parseColor(hexColor: String) = Color(AndroidColor.parseColor(hexColor))
@@ -43,6 +44,11 @@ val Blue = Color(0xFF007AFF)
 val Purple = Color(0xFF5856D6)
 val Asphalt = Color(0xFF2c3e50)
 
+val Gray1000 = Color(0xFF121212)
+val BlueGrey = Color(0xFF263238)
+val Green600 = Color(0xFF1DB954)
+val Green900 = Color(0xFF468847)
+
 internal val DarkAppColors = appDarkColors(Primary, Secondary, PrimaryVariant, SecondaryVariant)
 internal val LightAppColors = appLightColors(Primary, Secondary, PrimaryVariant, SecondaryVariant)
 
@@ -51,19 +57,24 @@ fun appDarkColors(
     secondary: Color,
     primaryVariant: Color = primary,
     secondaryVariant: Color = secondary,
-    _onSurfaceInputBackground: Color = Color(0x45706d86)
+    background: Color = primary,
+    surface: Color = primary,
+    onPrimary: Color = Color.White,
+    onSecondary: Color = Color.White,
+    onSurface: Color = Color.White,
+    onSurfaceInputBackground: Color = Color(0x45706d86),
 ) = AppColors(
-    _onSurfaceInputBackground = _onSurfaceInputBackground,
-    darkColors(
+    _onSurfaceInputBackground = onSurfaceInputBackground,
+    _materialColors = darkColors(
         primary = primary,
-        onPrimary = Color.White,
+        onPrimary = onPrimary,
         primaryVariant = primaryVariant,
         secondary = secondary,
-        onSecondary = Color.White,
+        onSecondary = onSecondary,
         secondaryVariant = secondaryVariant,
-        background = primary,
-        surface = primary,
-        onSurface = Color.White,
+        background = background,
+        surface = surface,
+        onSurface = onSurface,
     )
 )
 
@@ -72,19 +83,24 @@ fun appLightColors(
     secondary: Color,
     primaryVariant: Color = primary,
     secondaryVariant: Color = secondary,
-    _onSurfaceInputBackground: Color = Color(0x45c1bbc0)
+    background: Color = Color.White,
+    surface: Color = Color.White,
+    onPrimary: Color = Color.White,
+    onSecondary: Color = Color.White,
+    onSurface: Color = Color.Black,
+    onSurfaceInputBackground: Color = Color(0x45c1bbc0),
 ) = AppColors(
-    _onSurfaceInputBackground = _onSurfaceInputBackground,
-    lightColors(
+    _onSurfaceInputBackground = onSurfaceInputBackground,
+    _materialColors = lightColors(
         primary = primary,
-        onPrimary = Color.White,
+        onPrimary = onPrimary,
         primaryVariant = primaryVariant,
         secondary = secondary,
-        onSecondary = Color.White,
+        onSecondary = onSecondary,
         secondaryVariant = secondaryVariant,
-        background = Color.White,
-        surface = Color.White,
-        onSurface = Color.Black,
+        background = background,
+        surface = surface,
+        onSurface = onSurface,
     )
 )
 
@@ -136,3 +152,5 @@ fun Modifier.translucentSurface() = composed { background(translucentSurfaceColo
 fun Modifier.randomBackground(memoize: Boolean = true) = background(if (memoize) remember { randomColor() } else randomColor())
 
 fun randomColor() = Color(Random.nextInt(255), Random.nextInt(255), Random.nextInt(255), Random.nextInt(255))
+
+fun Color.fallbackTo(color: Color): Color = if (isUnspecified) color else this

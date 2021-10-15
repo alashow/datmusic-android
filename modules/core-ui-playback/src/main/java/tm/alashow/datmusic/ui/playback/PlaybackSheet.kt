@@ -6,10 +6,8 @@ package tm.alashow.datmusic.ui.playback
 
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,8 +28,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.BottomSheetScaffold
-import androidx.compose.material.BottomSheetState
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -53,7 +49,6 @@ import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material.icons.filled.ShuffleOn
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
-import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -77,6 +72,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
 import com.google.accompanist.insets.LocalWindowInsets
@@ -96,7 +92,7 @@ import tm.alashow.base.util.millisToDuration
 import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.common.compose.LocalScaffoldState
 import tm.alashow.common.compose.rememberFlowWithLifecycle
-import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
+import tm.alashow.datmusic.data.DatmusicSearchParams
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.CoverImageSize
 import tm.alashow.datmusic.downloader.audioHeader
@@ -114,7 +110,7 @@ import tm.alashow.datmusic.playback.isPlaying
 import tm.alashow.datmusic.playback.models.PlaybackModeState
 import tm.alashow.datmusic.playback.models.PlaybackProgressState
 import tm.alashow.datmusic.playback.models.PlaybackQueue
-import tm.alashow.datmusic.playback.models.QueueTitle
+import tm.alashow.datmusic.playback.models.QueueTitle.Companion.asQueueTitle
 import tm.alashow.datmusic.playback.models.toAlbumSearchQuery
 import tm.alashow.datmusic.playback.models.toArtistSearchQuery
 import tm.alashow.datmusic.playback.playPause
@@ -126,10 +122,12 @@ import tm.alashow.datmusic.ui.audios.AudioDropdownMenu
 import tm.alashow.datmusic.ui.audios.AudioItemAction
 import tm.alashow.datmusic.ui.audios.AudioRow
 import tm.alashow.datmusic.ui.audios.LocalAudioActionHandler
+import tm.alashow.datmusic.ui.audios.audioActionHandler
 import tm.alashow.datmusic.ui.audios.currentPlayingMenuActionLabels
-import tm.alashow.navigation.LeafScreen
+import tm.alashow.datmusic.ui.library.playlist.addTo.AddToPlaylistMenu
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.Navigator
+import tm.alashow.navigation.screens.LeafScreen
 import tm.alashow.ui.ADAPTIVE_COLOR_ANIMATION
 import tm.alashow.ui.Delayed
 import tm.alashow.ui.DismissableSnackbarHost
@@ -151,54 +149,31 @@ import tm.alashow.ui.theme.plainSurfaceColor
 fun PlaybackSheet(
     // override local theme color palette because we want simple colors for menus n' stuff
     sheetTheme: ThemeState = LocalThemeState.current.copy(colorPalettePreference = ColorPalettePreference.Black),
-    bottomSheetState: BottomSheetState = LocalPlaybackSheetState.current,
-    sheetContentWrapper: @Composable (@Composable () -> Unit) -> Unit = {},
-    content: @Composable () -> Unit
+    navigator: Navigator = LocalNavigator.current,
 ) {
     val listState = rememberLazyListState()
     val coroutine = rememberCoroutineScope()
-    val sheetScaffoldState = rememberBottomSheetScaffoldState(
-        bottomSheetState = rememberUpdatedState(bottomSheetState).value,
-    )
-    val isExpanded = sheetScaffoldState.bottomSheetState.isExpanded
 
     val scrollToTop: Callback = {
         coroutine.launch {
             listState.animateScrollToItem(0)
         }
     }
-    val collapse: Callback = {
-        coroutine.launch {
-            sheetScaffoldState.bottomSheetState.collapse()
-            scrollToTop()
+
+    val audioActionHandler = audioActionHandler()
+    CompositionLocalProvider(LocalAudioActionHandler provides audioActionHandler) {
+        AppTheme(theme = sheetTheme, changeSystemBar = false) {
+            PlaybackSheetContent(
+                onClose = { navigator.goBack() },
+                scrollToTop = scrollToTop,
+                listState = listState
+            )
         }
     }
-
-    if (isExpanded) {
-        BackHandler(onBack = collapse)
-    }
-
-    BottomSheetScaffold(
-        sheetPeekHeight = 0.dp,
-        backgroundColor = Color.Transparent,
-        scaffoldState = sheetScaffoldState,
-        sheetContent = {
-            sheetContentWrapper {
-                AppTheme(theme = sheetTheme, changeSystemBar = false) {
-                    PlaybackSheetContent(
-                        onClose = collapse,
-                        scrollToTop = scrollToTop,
-                        listState = listState
-                    )
-                }
-            }
-        },
-        content = { content() },
-    )
 }
 
 @Composable
-fun PlaybackSheetContent(
+internal fun PlaybackSheetContent(
     onClose: Callback,
     scrollToTop: Callback,
     listState: LazyListState,
@@ -243,7 +218,7 @@ fun PlaybackSheetContent(
             }
 
             item {
-                PlaybackNowPlayingWithControls(nowPlaying, playbackState, contentColor, onClose)
+                PlaybackNowPlayingWithControls(nowPlaying, playbackState, contentColor)
             }
 
             if (playbackQueue.isValid)
@@ -262,12 +237,15 @@ fun PlaybackSheetContent(
     }
 }
 
+private val SaveQueueAsPlaylist = R.string.playback_queue_saveAsPlaylist
+
 @Composable
 private fun PlaybackSheetTopBar(
     playbackQueue: PlaybackQueue,
     onClose: Callback,
     iconSize: Dp = 36.dp,
     actionHandler: AudioActionHandler = LocalAudioActionHandler.current,
+    viewModel: PlaybackSheetViewModel = hiltViewModel()
 ) {
     val (expanded, setExpanded) = remember { mutableStateOf(false) }
 
@@ -283,14 +261,14 @@ private fun PlaybackSheetTopBar(
                     .offset(x = -8.dp) // idk why this is needed for centering
             ) {
                 val context = LocalContext.current
-                val queueTitle = QueueTitle.from(playbackQueue.title ?: "")
+                val queueTitle = playbackQueue.title.asQueueTitle()
                 Text(
-                    queueTitle.localizeType(context).uppercase(),
+                    queueTitle.localizeType(context.resources).uppercase(),
                     style = MaterialTheme.typography.overline.copy(fontWeight = FontWeight.Light),
                     maxLines = 1,
                 )
                 Text(
-                    queueTitle.localizeValue(context), style = MaterialTheme.typography.body1,
+                    queueTitle.localizeValue(), style = MaterialTheme.typography.body1,
                     textAlign = TextAlign.Center,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 2,
@@ -308,13 +286,27 @@ private fun PlaybackSheetTopBar(
         },
         actions = {
             CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
+                val (addToPlaylistVisible, setAddToPlaylistVisible) = remember { mutableStateOf(false) }
+                if (playbackQueue.isValid) {
+                    AddToPlaylistMenu(playbackQueue.currentAudio, addToPlaylistVisible, setAddToPlaylistVisible)
+                }
                 AudioDropdownMenu(
                     expanded = expanded,
                     onExpandedChange = setExpanded,
                     actionLabels = currentPlayingMenuActionLabels,
-                ) {
-                    if (playbackQueue.isValid)
-                        actionHandler(AudioItemAction.from(it, playbackQueue.currentAudio))
+                    extraActionLabels = listOf(SaveQueueAsPlaylist)
+                ) { actionLabel ->
+                    if (playbackQueue.isValid) {
+                        val audio = playbackQueue.currentAudio
+                        val action = AudioItemAction.from(actionLabel, audio)
+                        if (action is AudioItemAction.AddToPlaylist) {
+                            setAddToPlaylistVisible(true)
+                        } else {
+                            action.handleExtraAction(SaveQueueAsPlaylist, actionHandler) {
+                                viewModel.saveQueueAsPlaylist()
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -337,22 +329,16 @@ private fun PlaybackArtwork(
         bitmapPlaceholder = nowPlaying.artwork,
         modifier = Modifier
             .padding(horizontal = AppTheme.specs.paddingLarge)
-            .then(modifier)
-    ) { imageMod ->
-        Image(
-            painter = currentArtwork,
-            contentDescription = null,
-            modifier = Modifier
-                .coloredRippleClickable(
-                    onClick = {
-                        playbackConnection.mediaController?.playPause()
-                    },
-                    color = contentColor,
-                    rippleRadius = Dp.Unspecified,
-                )
-                .then(imageMod),
-        )
-    }
+            .then(modifier),
+        imageModifier = Modifier
+            .coloredRippleClickable(
+                onClick = {
+                    playbackConnection.mediaController?.playPause()
+                },
+                color = contentColor,
+                rippleRadius = Dp.Unspecified,
+            ),
+    )
 }
 
 @Composable
@@ -360,14 +346,13 @@ private fun PlaybackNowPlayingWithControls(
     nowPlaying: MediaMetadataCompat,
     playbackState: PlaybackStateCompat,
     contentColor: Color,
-    onClose: Callback,
     modifier: Modifier = Modifier
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier.padding(AppTheme.specs.paddingLarge)
     ) {
-        PlaybackNowPlaying(nowPlaying = nowPlaying, onClose = onClose)
+        PlaybackNowPlaying(nowPlaying = nowPlaying)
 
         PlaybackProgress(
             playbackState = playbackState,
@@ -384,7 +369,6 @@ private fun PlaybackNowPlayingWithControls(
 @Composable
 private fun PlaybackNowPlaying(
     nowPlaying: MediaMetadataCompat,
-    onClose: Callback,
     navigator: Navigator = LocalNavigator.current
 ) {
     val title = nowPlaying.title
@@ -395,7 +379,6 @@ private fun PlaybackNowPlaying(
         maxLines = 1,
         modifier = Modifier.simpleClickable {
             navigator.navigate(LeafScreen.Search.buildRoute(nowPlaying.toAlbumSearchQuery(), DatmusicSearchParams.BackendType.ALBUMS))
-            onClose()
         }
     )
     CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
@@ -412,7 +395,6 @@ private fun PlaybackNowPlaying(
                         DatmusicSearchParams.BackendType.ALBUMS
                     )
                 )
-                onClose()
             }
         )
     }
@@ -675,9 +657,9 @@ private fun LazyListScope.playbackQueue(
     scrollToTop: Callback,
     playbackConnection: PlaybackConnection,
 ) {
-    val lastIndex = playbackQueue.audiosList.size
+    val lastIndex = playbackQueue.audios.size
     val firstIndex = (playbackQueue.currentIndex + 1).coerceAtMost(lastIndex)
-    val queue = playbackQueue.audiosList.subList(firstIndex, lastIndex)
+    val queue = playbackQueue.audios.subList(firstIndex, lastIndex)
     itemsIndexed(queue, key = { index, _ -> index }) { index, audio ->
         val realPosition = firstIndex + index
         AudioRow(

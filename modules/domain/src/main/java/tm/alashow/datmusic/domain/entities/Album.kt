@@ -7,7 +7,9 @@ package tm.alashow.datmusic.domain.entities
 import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -26,7 +28,7 @@ data class Album(
 
     @Transient
     @ColumnInfo(name = "id")
-    override val id: String = albumId.toString(),
+    val id: String = albumId.toString(),
 
     @SerialName("access_key")
     @ColumnInfo(name = "access_key")
@@ -106,7 +108,13 @@ data class Album(
     @Transient
     @ColumnInfo(name = "search_index")
     val searchIndex: Int = 0,
-) : BasePaginatedEntity(), Parcelable {
+) : BasePaginatedEntity(), Parcelable, LibraryItem {
+
+    @Ignore @Transient @IgnoredOnParcel
+    override val isUpdatable = false
+
+    override fun getIdentifier() = id
+    override fun getLabel() = title
 
     @Serializable
     @Parcelize

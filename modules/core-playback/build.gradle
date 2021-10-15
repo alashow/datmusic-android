@@ -34,6 +34,7 @@ repositories {
 
 dependencies {
 	api project(":modules:base-android")
+	implementation project(":modules:core-library")
 	implementation project(":modules:core-downloader")
 
 	implementation Deps.Dagger.hilt

@@ -4,7 +4,6 @@
  */
 package tm.alashow.datmusic.ui.albums
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -72,13 +71,8 @@ fun AlbumColumn(
             painter = image,
             size = imageSize,
             icon = rememberVectorPainter(Icons.Default.Album),
-        ) { modifier ->
-            Image(
-                painter = image,
-                contentDescription = null,
-                modifier = modifier.then(loadingModifier)
-            )
-        }
+            imageModifier = loadingModifier,
+        )
         Column(
             verticalArrangement = Arrangement.spacedBy(2.dp),
             modifier = Modifier.width(imageSize)

@@ -55,6 +55,10 @@ fun Audio.documentFile(parent: DocumentFile, songsGrouping: DownloadsSongsGroupi
     }
 }
 
+/**
+ * Tries to get bitmap from downloaded audio file.
+ * Depends on [Audio.audioDownloadItem] already being there
+ */
 fun Audio.artworkFromFile(context: Context): Bitmap? {
     try {
         val downloadInfo = audioDownloadItem?.downloadInfo ?: return null

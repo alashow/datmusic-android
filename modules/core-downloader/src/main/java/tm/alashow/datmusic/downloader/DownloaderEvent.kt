@@ -4,7 +4,7 @@
  */
 package tm.alashow.datmusic.downloader
 
-import tm.alashow.base.util.UiMessage
+import tm.alashow.i18n.UiMessage
 
 sealed class DownloaderEvent {
     object ChooseDownloadsLocation : DownloaderEvent()

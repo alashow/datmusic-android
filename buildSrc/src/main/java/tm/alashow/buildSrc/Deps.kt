@@ -21,7 +21,7 @@ object Deps {
     }
 
     object Android {
-        private const val gradleVersion = "7.0.2"
+        private const val gradleVersion = "7.0.3"
 
         const val gradle = "com.android.tools.build:gradle:$gradleVersion"
 
@@ -30,10 +30,10 @@ object Deps {
         const val activityVersion = "1.4.0-beta01"
         const val activityKtx = "androidx.activity:activity-ktx:$activityVersion"
 
-        private const val navigationVersion = "2.4.0-alpha04"
+        private const val navigationVersion = "2.4.0-SNAPSHOT"
         const val navigationFragment = "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
         const val navigationUi = "androidx.navigation:navigation-ui-ktx:$navigationVersion"
-        const val navigationSafeArgs = "androidx.navigation:navigation-safe-args-gradle-plugin:$navigationVersion"
+        const val navigationSafeArgs = "androidx.navigation:navigation-safe-args-gradle-plugin:2.4.0-alpha10"
         const val navigationCompose = "androidx.navigation:navigation-compose:$navigationVersion"
         const val navigationHiltCompose = "androidx.hilt:hilt-navigation-compose:1.0.0-alpha03"
 
@@ -64,6 +64,7 @@ object Deps {
             const val lottie = "com.airbnb.android:lottie-compose:$lottieVersion"
 
             const val coil = "io.coil-kt:coil-compose:${Utils.coilVersion}"
+            const val reorderable = "org.burnoutcrew.composereorderable:reorderable:0.6.2"
         }
 
         object Accompanist {
@@ -76,6 +77,7 @@ object Deps {
             const val placeholder = "com.google.accompanist:accompanist-placeholder-material:$version"
             const val swiperefresh = "com.google.accompanist:accompanist-swiperefresh:$version"
             const val systemUiController = "com.google.accompanist:accompanist-systemuicontroller:$version"
+            const val navigationMaterial = "com.google.accompanist:accompanist-navigation-material:$version"
         }
 
         object Lifecycle {
