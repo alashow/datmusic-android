@@ -25,6 +25,7 @@ fun String.artists() = split(MULTIPLE_ARTIST_SPLIT_REGEX, 10).map { it.trim() }
 fun String.mainArtist() = split(MULTIPLE_ARTIST_SPLIT_REGEX, 10).first().trim()
 
 typealias AudioId = String
+typealias AudioIds = List<AudioId>
 typealias Audios = List<Audio>
 
 @Parcelize

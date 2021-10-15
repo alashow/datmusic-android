@@ -17,7 +17,8 @@ abstract class RoomRepo<ID, E : BaseEntity>(
     private val dispatchers: CoroutineDispatchers
 ) {
     fun entries() = dao.entries().flowOn(dispatchers.io)
-    fun entry(id: String) = dao.entry(id).flowOn(dispatchers.io)
+    fun entries(ids: List<ID>) = dao.entriesById(ids.map { it.toString() }).flowOn(dispatchers.io)
+    fun entry(id: ID) = dao.entry(id.toString()).flowOn(dispatchers.io)
 
     suspend fun insert(item: E): Long = withContext(dispatchers.io) { dao.insert(item) }
     suspend fun insert(items: List<E>): List<Long> = withContext(dispatchers.io) { dao.insertAll(items) }

@@ -36,6 +36,8 @@ import tm.alashow.data.PreferencesStore
 import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
 import tm.alashow.datmusic.data.db.daos.findAudio
+import tm.alashow.datmusic.data.repos.audio.AudioSaveType
+import tm.alashow.datmusic.data.repos.audio.AudiosRepo
 import tm.alashow.datmusic.domain.DownloadsSongsGrouping
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
@@ -58,6 +60,7 @@ class Downloader @Inject constructor(
     private val preferences: PreferencesStore,
     private val dao: DownloadRequestsDao,
     private val audiosDao: AudiosDao,
+    private val audiosRepo: AudiosRepo,
     private val fetcher: Fetch,
     private val analytics: FirebaseAnalytics,
 ) {
@@ -118,6 +121,8 @@ class Downloader @Inject constructor(
             pendingEnqueableAudio = audio
             return
         }
+
+        audiosRepo.saveAudios(AudioSaveType.Download, audio)
 
         val downloadRequest = DownloadRequest.fromAudio(audio)
         if (!validateNewAudioRequest(downloadRequest)) {

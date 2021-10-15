@@ -20,10 +20,10 @@ abstract class BaseDao<E : BaseEntity> {
     @Insert
     abstract suspend fun insert(entity: E): Long
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract suspend fun insertAll(vararg entity: E)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract suspend fun insertAll(entities: List<E>): List<Long>
 
     @Update

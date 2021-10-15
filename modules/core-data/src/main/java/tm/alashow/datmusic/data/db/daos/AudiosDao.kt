@@ -17,15 +17,19 @@ import tm.alashow.datmusic.domain.entities.Audio
 abstract class AudiosDao : PaginatedEntryDao<DatmusicSearchParams, Audio>() {
 
     @Transaction
+    @Query("SELECT * FROM audios WHERE id IN (:ids) GROUP BY id")
+    abstract fun audiosById(ids: List<String>): Flow<List<Audio>>
+
+    @Transaction
     @Query("DELETE FROM audios WHERE id NOT IN (:ids)")
     abstract suspend fun deleteExcept(ids: List<String>): Int
+
+    @Query("SELECT * FROM audios WHERE params = :params ORDER BY page ASC, search_index ASC")
+    abstract fun entries(params: DatmusicSearchParams): Flow<List<Audio>>
 
     @Transaction
     @Query("SELECT * FROM audios ORDER BY page ASC, search_index ASC")
     abstract override fun entries(): Flow<List<Audio>>
-
-    @Query("SELECT * FROM audios WHERE params = :params ORDER BY page ASC, search_index ASC")
-    abstract fun entries(params: DatmusicSearchParams): Flow<List<Audio>>
 
     @Query("SELECT * FROM audios WHERE params = :params and page = :page ORDER BY page ASC, search_index ASC")
     abstract override fun entriesObservable(params: DatmusicSearchParams, page: Int): Flow<List<Audio>>

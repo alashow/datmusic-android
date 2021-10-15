@@ -18,10 +18,14 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 import tm.alashow.base.imageloading.getBitmap
 import tm.alashow.base.util.CoroutineDispatchers
+import tm.alashow.base.util.RemoteLogger
 import tm.alashow.data.db.RoomRepo
 import tm.alashow.datmusic.data.db.daos.PlaylistsDao
 import tm.alashow.datmusic.data.db.daos.PlaylistsWithAudiosDao
+import tm.alashow.datmusic.data.repos.audio.AudioSaveType
+import tm.alashow.datmusic.data.repos.audio.AudiosRepo
 import tm.alashow.datmusic.data.repos.playlist.PlaylistArtworkUtils.savePlaylistArtwork
+import tm.alashow.datmusic.domain.entities.AudioIds
 import tm.alashow.datmusic.domain.entities.CoverImageSize
 import tm.alashow.datmusic.domain.entities.PLAYLIST_NAME_MAX_LENGTH
 import tm.alashow.datmusic.domain.entities.Playlist
@@ -41,6 +45,7 @@ class PlaylistsRepo @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val dao: PlaylistsDao,
     private val playlistAudiosDao: PlaylistsWithAudiosDao,
+    private val audiosRepo: AudiosRepo,
 ) : RoomRepo<PlaylistId, Playlist>(dao, dispatchers), CoroutineScope by ProcessLifecycleOwner.get().lifecycleScope {
 
     private suspend fun validatePlaylistId(playlistId: PlaylistId) {
@@ -59,7 +64,7 @@ class PlaylistsRepo @Inject constructor(
         }
     }
 
-    suspend fun createPlaylist(playlist: Playlist, audioIds: List<String> = listOf()): PlaylistId {
+    suspend fun createPlaylist(playlist: Playlist, audioIds: AudioIds = emptyList()): PlaylistId {
         validatePlaylist(playlist)
 
         var playlistId: PlaylistId
@@ -68,7 +73,9 @@ class PlaylistsRepo @Inject constructor(
             if (playlistId < 0)
                 throw DatabaseInsertError.error()
 
-            addAudiosToPlaylist(playlistId, audioIds)
+            if (audioIds.isNotEmpty()) {
+                addAudiosToPlaylist(playlistId, audioIds)
+            }
         }
 
         return playlistId
@@ -84,10 +91,17 @@ class PlaylistsRepo @Inject constructor(
         return updatedPlaylist
     }
 
-    suspend fun addAudiosToPlaylist(playlistId: PlaylistId, audioIds: List<String>): List<PlaylistId> {
+    suspend fun addAudiosToPlaylist(playlistId: PlaylistId, audioIds: AudioIds): List<PlaylistId> {
         val insertedIds = mutableListOf<PlaylistId>()
         withContext(dispatchers.io) {
             validatePlaylistId(playlistId)
+
+            if (audioIds.isEmpty()) return@withContext
+
+            val savedCount = audiosRepo.saveAudiosById(AudioSaveType.Playlist, audioIds)
+            if (savedCount < audioIds.size) {
+                RemoteLogger.log("Some audios are missing from database: $audioIds")
+            }
 
             val lastIndex = playlistAudiosDao.lastPlaylistAudioIndex(playlistId).firstOrNull() ?: -1
             val playlistWithAudios = audioIds.mapIndexed { index, id ->
