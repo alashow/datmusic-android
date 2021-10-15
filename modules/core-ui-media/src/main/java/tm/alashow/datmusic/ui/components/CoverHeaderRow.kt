@@ -4,7 +4,6 @@
  */
 package tm.alashow.datmusic.ui.components
 
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,7 +51,7 @@ fun CoverHeaderRow(
     titleStyle: TextStyle = CoverHeaderDefaults.titleStyle,
 ) {
     // scale down as the header is scrolled away
-    val imageScale by animateFloatAsState(1 - offsetProgress.value.coerceAtMost(0.5f))
+    val imageScale = 1 - offsetProgress.value.coerceAtMost(0.5f)
     val imageHeight = height * 0.825f * imageScale
     Column(
         modifier = modifier.fillMaxWidth(),

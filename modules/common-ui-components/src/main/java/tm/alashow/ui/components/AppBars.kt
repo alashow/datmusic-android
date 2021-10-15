@@ -4,11 +4,7 @@
  */
 package tm.alashow.ui.components
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -31,7 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -39,7 +35,6 @@ import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.insets.ui.TopAppBar
-import tm.alashow.ui.coloredShadow
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.topAppBarTitleStyle
 import tm.alashow.ui.theme.topAppBarTitleStyleSmall
@@ -116,13 +111,12 @@ fun AppTopBar(
 fun CollapsingTopBar(
     title: String,
     modifier: Modifier = Modifier,
-    collapsed: Boolean = true,
+    collapsed: Float = 1f,
     onNavigationClick: () -> Unit = {},
 ) {
     val appBarColor = translucentSurfaceColor()
-    val backgroundColor = animateColorAsState(if (collapsed) appBarColor.copy(alpha = 0f) else appBarColor).value
+    val backgroundColor = appBarColor.copy(alpha = collapsed)
     val contentColor = contentColorFor(backgroundColor)
-    val contentShadow = if (collapsed) Modifier.coloredShadow(Color.Black) else Modifier
 
     TopAppBar(
         modifier = modifier,
@@ -131,16 +125,13 @@ fun CollapsingTopBar(
         contentColor = contentColor,
         contentPadding = rememberInsetsPaddingValues(LocalWindowInsets.current.statusBars),
         title = {
-            AnimatedVisibility(visible = !collapsed, enter = fadeIn(), exit = fadeOut()) {
-                Text(title, style = topAppBarTitleStyleSmall())
-            }
+            Text(title, style = topAppBarTitleStyleSmall(), modifier = Modifier.alpha(collapsed))
         },
         navigationIcon = {
             IconButton(onClick = onNavigationClick) {
                 Icon(
                     rememberVectorPainter(Icons.Filled.ArrowBack),
                     contentDescription = stringResource(R.string.generic_back),
-                    modifier = contentShadow
                 )
             }
         },
