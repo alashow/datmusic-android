@@ -59,6 +59,8 @@ fun AudioRow(
     onClick: ((Audio) -> Unit)? = null,
     onPlayAudio: ((Audio) -> Unit)? = null,
     extraActionLabels: List<Int> = emptyList(),
+    playOnClick: Boolean = false,
+    includeCover: Boolean = true,
     actionHandler: AudioActionHandler = LocalAudioActionHandler.current
 ) {
     var menuVisible by remember { mutableStateOf(false) }
@@ -69,9 +71,13 @@ fun AudioRow(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .clickable {
-                if (!isPlaceholder)
-                    if (onClick != null) onClick(audio)
-                    else menuVisible = true
+                if (!isPlaceholder) {
+                    when {
+                        playOnClick -> onPlayAudio?.invoke(audio)
+                        onClick != null -> onClick(audio)
+                        else -> menuVisible = true
+                    }
+                }
             }
             .fillMaxWidth()
             .padding(AppTheme.specs.inputPaddings)
@@ -80,6 +86,7 @@ fun AudioRow(
             audio = audio,
             isPlaceholder = isPlaceholder,
             imageSize = imageSize,
+            includeCover = includeCover,
             onCoverClick = {
                 if (onPlayAudio != null) onPlayAudio(audio)
                 else actionHandler(AudioItemAction.Play(audio))

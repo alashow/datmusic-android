@@ -51,9 +51,9 @@ class PlaylistDetailContent(
                 AudioRow(
                     audio = audioOfPlaylist.audio,
                     isPlaceholder = detailsLoading,
+                    playOnClick = true,
                     onPlayAudio = {
-                        if (details is Success)
-                            playbackConnection.playPlaylist(details().playlistId(), index)
+                        if (details is Success) playbackConnection.playPlaylist(details().playlistId(), index)
                     },
                     extraActionLabels = listOf(RemoveFromPlaylist),
                     actionHandler = {
