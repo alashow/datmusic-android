@@ -4,7 +4,10 @@
  */
 package tm.alashow.ui.theme
 
+import androidx.compose.foundation.text.selection.LocalTextSelectionColors
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.Colors
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Stable
@@ -71,4 +74,14 @@ data class AppColors(
         onSurfaceInputBackground = other.onSurfaceInputBackground
         materialColors = other.materialColors
     }
+}
+
+@Composable
+fun MaterialThemePatches(content: @Composable () -> Unit) {
+    // change selection color from primary to secondary
+    val textSelectionColors = TextSelectionColors(
+        handleColor = MaterialTheme.colors.secondary,
+        backgroundColor = MaterialTheme.colors.secondary.copy(alpha = 0.4f)
+    )
+    CompositionLocalProvider(LocalTextSelectionColors provides textSelectionColors, content = content)
 }
