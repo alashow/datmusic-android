@@ -113,7 +113,7 @@ fun EditPlaylist(
             editPlaylistExtraActions(
                 onShuffle = viewModel::shufflePlaylist,
                 onDelete = viewModel::deletePlaylist,
-                isAudiosEmpty = playlistItems.isEmpty()
+                shuffleEnabled = playlistItems.size > 1
             )
 
             editablePlaylistAudioList(
@@ -205,14 +205,14 @@ private fun LazyListScope.editPlaylistHeader(
 private fun LazyListScope.editPlaylistExtraActions(
     onShuffle: Callback,
     onDelete: Callback,
-    isAudiosEmpty: Boolean,
+    shuffleEnabled: Boolean,
 ) {
     item {
         Row(
             horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.padding, Alignment.CenterHorizontally),
             modifier = Modifier.fillMaxWidth()
         ) {
-            if (!isAudiosEmpty) {
+            if (shuffleEnabled) {
                 TextButton(
                     onClick = onShuffle,
                     colors = textButtonColors(contentColor = Orange),
