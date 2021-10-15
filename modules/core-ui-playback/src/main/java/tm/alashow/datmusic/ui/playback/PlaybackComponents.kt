@@ -64,11 +64,11 @@ fun PlaybackPager(
     }
 
     HorizontalPager(
-        count = playbackQueue.list.size,
+        count = playbackQueue.ids.size,
         state = pagerState,
         modifier = modifier
     ) { page ->
-        val currentAudio = playbackQueue.audiosList.getOrNull(page) ?: Audio()
+        val currentAudio = playbackQueue.audios.getOrNull(page) ?: Audio()
 
         val pagerMod = Modifier.graphicsLayer {
             val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue

@@ -146,14 +146,14 @@ class PlaybackConnectionImpl(
     private suspend fun buildPlaybackQueue(data: Triple<MediaMetadataCompat, PlaybackStateCompat, PlaybackQueue>): PlaybackQueue {
         val (nowPlaying, state, queue) = data
         val nowPlayingId = nowPlaying.id.toMediaId().value
-        val audios = (audiosDao to downloadsDao).findAudios(queue.list.toMediaAudioIds()).map {
+        val audios = (audiosDao to downloadsDao).findAudios(queue.ids.toMediaAudioIds()).map {
             if (it.id == nowPlayingId) {
                 it.audioDownloadItem = downloader.getAudioDownload(nowPlayingId).orNull()
             }
             it
         }
 
-        return queue.copy(audiosList = audios, currentIndex = state.currentIndex).let {
+        return queue.copy(audios = audios, currentIndex = state.currentIndex).let {
             // check if now playing id and current audio's id by index matches
             val synced = when {
                 it.isEmpty() -> false

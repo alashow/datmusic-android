@@ -22,7 +22,7 @@ import tm.alashow.domain.models.Async
 import tm.alashow.domain.models.Loading
 import tm.alashow.domain.models.Success
 
-private val RemoveFromPlaylist = R.string.playlist_audio_menu_removeFromPlaylist
+private val RemoveFromPlaylist = R.string.playlist_audio_removeFromPlaylist
 
 class PlaylistDetailContent(
     private val onRemoveFromPlaylist: (AudioOfPlaylist) -> Unit,

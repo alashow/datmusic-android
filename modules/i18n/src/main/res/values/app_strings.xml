@@ -71,7 +71,7 @@
     <string name="playlist.empty">Playlist is empty</string>
     <string name="playlist.empty.addSongs">Add Songs</string>
 
-    <string name="playlist.audio.menu.removeFromPlaylist">Remove from this playlist</string>
+    <string name="playlist.audio.removeFromPlaylist">Remove from this playlist</string>
 
     <string name="playlist.addTo">Add to playlist</string>
     <string name="playlist.addTo.new">New playlist</string>
@@ -89,6 +89,10 @@
     <string name="playlist.edit.done">Save</string>
     <string name="playlist.edit.removed">Removed from playlist</string>
     <string name="playlist.edit.removed.undo">Undo</string>
+
+    <string name="playback.queue.saveAsPlaylist">Save queue as playlist</string>
+    <string name="playback.queue.saveAsPlaylist.saved">Saved as %1$s</string>
+    <string name="playback.queue.saveAsPlaylist.open">Open</string>
 
     <string name="playback.queueTitle.audio">Playing from queue</string>
     <string name="playback.queueTitle.downloads">Playing from downloads</string>

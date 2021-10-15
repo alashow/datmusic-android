@@ -16,8 +16,16 @@ sealed class AudioItemAction(open val audio: Audio) {
     data class AddToPlaylist(override val audio: Audio) : AudioItemAction(audio)
     data class ExtraAction(val actionLabelRes: Int, override val audio: Audio) : AudioItemAction(audio)
 
-    fun handleExtraAction(extraActionLabelRes: Int, actionHandler: AudioActionHandler, onAction: (ExtraAction) -> Unit) = when (this is ExtraAction) {
-        true -> if (actionLabelRes == extraActionLabelRes) onAction(this) else actionHandler(this)
+    fun handleExtraAction(extraActionLabelRes: Int, actionHandler: AudioActionHandler, onExtraAction: (ExtraAction) -> Unit) =
+        handleExtraActions(actionHandler) {
+            when (it.actionLabelRes) {
+                extraActionLabelRes -> onExtraAction(it)
+                else -> actionHandler(it)
+            }
+        }
+
+    fun handleExtraActions(actionHandler: AudioActionHandler, onExtraAction: (ExtraAction) -> Unit) = when (this is ExtraAction) {
+        true -> onExtraAction(this)
         else -> actionHandler(this)
     }
 

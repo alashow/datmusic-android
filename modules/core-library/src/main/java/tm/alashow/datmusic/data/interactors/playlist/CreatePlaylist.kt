@@ -22,7 +22,7 @@ class CreatePlaylist @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
 ) : ResultInteractor<CreatePlaylist.Params, Playlist>() {
 
-    data class Params(val name: String = "", val generateNameIfEmpty: Boolean = false, var audios: Audios = emptyList())
+    data class Params(val name: String = "", val generateNameIfEmpty: Boolean = true, var audios: Audios = emptyList())
 
     override suspend fun doWork(params: Params) = withContext(dispatchers.io) {
         var name = params.name
@@ -34,7 +34,7 @@ class CreatePlaylist @Inject constructor(
             } else throw ValidationErrorBlank().error()
         }
 
-        val playlistId = repo.createPlaylist(Playlist(name = name))
+        val playlistId = repo.createPlaylist(Playlist(name = name), audioIds = params.audios.map { it.id })
         return@withContext repo.playlist(playlistId).first()
     }
 }

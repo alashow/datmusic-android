@@ -59,9 +59,9 @@ class AddToPlaylistViewModel @Inject constructor(
             val addedIds = addToPlaylist.execute(AddToPlaylist.Params(targetPlaylist, audios.toList()))
             Timber.d("Added: ${addedIds.joinToString { it.toString() }}")
 
-            val addToPlaylist = AddedToPlaylistMessage(targetPlaylist)
-            snackbarManager.addMessage(addToPlaylist)
-            if (snackbarManager.observeMessageAction(addToPlaylist) != null)
+            val addedToPlaylist = AddedToPlaylistMessage(targetPlaylist)
+            snackbarManager.addMessage(addedToPlaylist)
+            if (snackbarManager.observeMessageAction(addedToPlaylist) != null)
                 navigator.navigate(LeafScreen.PlaylistDetail.buildRoute(targetPlaylist.id))
         }
     }

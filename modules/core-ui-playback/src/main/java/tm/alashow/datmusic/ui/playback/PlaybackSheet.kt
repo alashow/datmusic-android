@@ -72,6 +72,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
 import com.google.accompanist.insets.LocalWindowInsets
@@ -109,7 +110,7 @@ import tm.alashow.datmusic.playback.isPlaying
 import tm.alashow.datmusic.playback.models.PlaybackModeState
 import tm.alashow.datmusic.playback.models.PlaybackProgressState
 import tm.alashow.datmusic.playback.models.PlaybackQueue
-import tm.alashow.datmusic.playback.models.QueueTitle
+import tm.alashow.datmusic.playback.models.QueueTitle.Companion.asQueueTitle
 import tm.alashow.datmusic.playback.models.toAlbumSearchQuery
 import tm.alashow.datmusic.playback.models.toArtistSearchQuery
 import tm.alashow.datmusic.playback.playPause
@@ -236,12 +237,15 @@ internal fun PlaybackSheetContent(
     }
 }
 
+private val SaveQueueAsPlaylist = R.string.playback_queue_saveAsPlaylist
+
 @Composable
 private fun PlaybackSheetTopBar(
     playbackQueue: PlaybackQueue,
     onClose: Callback,
     iconSize: Dp = 36.dp,
     actionHandler: AudioActionHandler = LocalAudioActionHandler.current,
+    viewModel: PlaybackSheetViewModel = hiltViewModel()
 ) {
     val (expanded, setExpanded) = remember { mutableStateOf(false) }
 
@@ -257,14 +261,14 @@ private fun PlaybackSheetTopBar(
                     .offset(x = -8.dp) // idk why this is needed for centering
             ) {
                 val context = LocalContext.current
-                val queueTitle = QueueTitle.from(playbackQueue.title ?: "")
+                val queueTitle = playbackQueue.title.asQueueTitle()
                 Text(
-                    queueTitle.localizeType(context).uppercase(),
+                    queueTitle.localizeType(context.resources).uppercase(),
                     style = MaterialTheme.typography.overline.copy(fontWeight = FontWeight.Light),
                     maxLines = 1,
                 )
                 Text(
-                    queueTitle.localizeValue(context), style = MaterialTheme.typography.body1,
+                    queueTitle.localizeValue(), style = MaterialTheme.typography.body1,
                     textAlign = TextAlign.Center,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 2,
@@ -290,13 +294,18 @@ private fun PlaybackSheetTopBar(
                     expanded = expanded,
                     onExpandedChange = setExpanded,
                     actionLabels = currentPlayingMenuActionLabels,
+                    extraActionLabels = listOf(SaveQueueAsPlaylist)
                 ) { actionLabel ->
                     if (playbackQueue.isValid) {
                         val audio = playbackQueue.currentAudio
                         val action = AudioItemAction.from(actionLabel, audio)
                         if (action is AudioItemAction.AddToPlaylist) {
                             setAddToPlaylistVisible(true)
-                        } else actionHandler(action)
+                        } else {
+                            action.handleExtraAction(SaveQueueAsPlaylist, actionHandler) {
+                                viewModel.saveQueueAsPlaylist()
+                            }
+                        }
                     }
                 }
             }
@@ -648,9 +657,9 @@ private fun LazyListScope.playbackQueue(
     scrollToTop: Callback,
     playbackConnection: PlaybackConnection,
 ) {
-    val lastIndex = playbackQueue.audiosList.size
+    val lastIndex = playbackQueue.audios.size
     val firstIndex = (playbackQueue.currentIndex + 1).coerceAtMost(lastIndex)
-    val queue = playbackQueue.audiosList.subList(firstIndex, lastIndex)
+    val queue = playbackQueue.audios.subList(firstIndex, lastIndex)
     itemsIndexed(queue, key = { index, _ -> index }) { index, audio ->
         val realPosition = firstIndex + index
         AudioRow(
