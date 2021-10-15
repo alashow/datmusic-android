@@ -4,6 +4,7 @@
  */
 package tm.alashow.datmusic.ui.library.playlists.create
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,7 +40,8 @@ fun CreatePlaylist(
         verticalArrangement = Arrangement.spacedBy(AppTheme.specs.padding, Alignment.CenterVertically),
         modifier = Modifier
             .fillMaxSize()
-            .padding(AppTheme.specs.padding),
+            .background(MaterialTheme.colors.background)
+            .padding(AppTheme.specs.padding)
     ) {
         Text(
             text = stringResource(R.string.playlist_create_label),
