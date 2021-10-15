@@ -63,7 +63,7 @@ import tm.alashow.base.util.click
 import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.common.compose.getNavArgument
 import tm.alashow.common.compose.rememberFlowWithLifecycle
-import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams.BackendType
+import tm.alashow.datmusic.data.DatmusicSearchParams.BackendType
 import tm.alashow.navigation.screens.QUERY_KEY
 import tm.alashow.ui.OffsetNotifyingBox
 import tm.alashow.ui.components.ChipsRow

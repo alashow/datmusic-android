@@ -32,7 +32,7 @@ repositories {
 }
 
 dependencies {
-	api project(":modules:data")
+	api project(":modules:core-media")
 
 	implementation Deps.Dagger.hilt
 	kapt Deps.Dagger.compiler

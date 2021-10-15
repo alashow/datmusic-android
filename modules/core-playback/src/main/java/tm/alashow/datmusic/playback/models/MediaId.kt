@@ -7,12 +7,12 @@ package tm.alashow.datmusic.playback.models
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import timber.log.Timber
+import tm.alashow.datmusic.data.DatmusicSearchParams
+import tm.alashow.datmusic.data.DatmusicSearchParams.Companion.withTypes
 import tm.alashow.datmusic.data.db.daos.AlbumsDao
 import tm.alashow.datmusic.data.db.daos.ArtistsDao
 import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.data.repos.playlist.PlaylistsRepo
-import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
-import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams.Companion.withTypes
 import tm.alashow.datmusic.domain.entities.Audio
 
 const val MEDIA_TYPE_AUDIO = "Media.Audio"

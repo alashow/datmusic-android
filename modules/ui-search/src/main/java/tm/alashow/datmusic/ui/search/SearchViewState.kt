@@ -6,10 +6,10 @@ package tm.alashow.datmusic.ui.search
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import tm.alashow.datmusic.data.repos.CaptchaSolution
-import tm.alashow.datmusic.data.repos.search.BackendTypes
-import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams.BackendType
-import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams.BackendType.Companion.asBackendTypes
+import tm.alashow.datmusic.data.BackendTypes
+import tm.alashow.datmusic.data.CaptchaSolution
+import tm.alashow.datmusic.data.DatmusicSearchParams.BackendType
+import tm.alashow.datmusic.data.DatmusicSearchParams.BackendType.Companion.asBackendTypes
 import tm.alashow.domain.models.errors.ApiCaptchaError
 
 @Parcelize

@@ -11,10 +11,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.combine
 import tm.alashow.base.util.extensions.stateInDefault
-import tm.alashow.datmusic.data.interactors.GetArtistDetails
-import tm.alashow.datmusic.data.observers.ObserveArtist
-import tm.alashow.datmusic.data.observers.ObserveArtistDetails
-import tm.alashow.datmusic.data.repos.artist.DatmusicArtistParams
+import tm.alashow.datmusic.data.DatmusicArtistParams
+import tm.alashow.datmusic.data.interactors.artist.GetArtistDetails
+import tm.alashow.datmusic.data.observers.artist.ObserveArtist
+import tm.alashow.datmusic.data.observers.artist.ObserveArtistDetails
 import tm.alashow.navigation.screens.ARTIST_ID_KEY
 
 @HiltViewModel

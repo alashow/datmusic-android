@@ -21,8 +21,8 @@ import androidx.navigation.navDeepLink
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
 import tm.alashow.Config
-import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
-import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams.BackendType.Companion.toQueryParam
+import tm.alashow.datmusic.data.DatmusicSearchParams
+import tm.alashow.datmusic.data.DatmusicSearchParams.BackendType.Companion.toQueryParam
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.ArtistId
 import tm.alashow.datmusic.domain.entities.PlaylistId
