@@ -19,9 +19,9 @@ import tm.alashow.datmusic.data.interactors.playlist.RemovePlaylistItems
 import tm.alashow.datmusic.data.observers.playlist.ObservePlaylist
 import tm.alashow.datmusic.data.observers.playlist.ObservePlaylistDetails
 import tm.alashow.datmusic.data.observers.playlist.ObservePlaylistExistense
-import tm.alashow.datmusic.domain.entities.AudioOfPlaylist
 import tm.alashow.datmusic.domain.entities.PlaylistAudioId
 import tm.alashow.datmusic.domain.entities.PlaylistId
+import tm.alashow.datmusic.domain.entities.PlaylistItem
 import tm.alashow.datmusic.domain.entities.asAudios
 import tm.alashow.datmusic.ui.utils.AudiosCountDuration
 import tm.alashow.navigation.Navigator
@@ -67,7 +67,7 @@ class PlaylistDetailViewModel @Inject constructor(
     fun refresh() = load()
     fun addSongs() = navigator.navigate(RootScreen.Search.route)
 
-    fun removePlaylistItem(item: AudioOfPlaylist) = removePlaylistItem(item.playlistAudio.id)
+    fun removePlaylistItem(item: PlaylistItem) = removePlaylistItem(item.playlistAudio.id)
 
     fun removePlaylistItem(id: PlaylistAudioId) = viewModelScope.launch {
         removePlaylistItems.execute(listOf(id))

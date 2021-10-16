@@ -66,6 +66,7 @@
     <string name="library.item.menu.cd">Library item menu</string>
     <string name="library.item.menu.edit">Edit</string>
     <string name="library.item.menu.delete">Delete</string>
+    <string name="library.item.menu.download">Download</string>
 
     <string name="playlist.title">Playlist</string>
     <string name="playlist.empty">Playlist is empty</string>

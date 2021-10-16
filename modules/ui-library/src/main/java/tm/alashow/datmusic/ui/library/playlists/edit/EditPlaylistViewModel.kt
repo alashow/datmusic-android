@@ -9,7 +9,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.io.Serializable
 import javax.inject.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -40,8 +39,6 @@ import tm.alashow.i18n.ValidationError
 import tm.alashow.i18n.asValidationError
 import tm.alashow.navigation.Navigator
 import tm.alashow.navigation.screens.PLAYLIST_ID_KEY
-
-data class TextValue(val value: TextFieldValue = TextFieldValue()) : Serializable
 
 @HiltViewModel
 class EditPlaylistViewModel @Inject constructor(

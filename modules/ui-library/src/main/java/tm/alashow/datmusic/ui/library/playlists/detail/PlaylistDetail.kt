@@ -27,8 +27,6 @@ fun PlaylistDetail() {
 @Composable
 private fun PlaylistDetail(viewModel: PlaylistDetailViewModel, navigator: Navigator = LocalNavigator.current) {
     val viewState by rememberFlowWithLifecycle(viewModel.state).collectAsState(initial = PlaylistDetailViewState.Empty)
-
-    val context = LocalContext.current
     MediaDetail(
         viewState = viewState,
         titleRes = R.string.playlist_title,
