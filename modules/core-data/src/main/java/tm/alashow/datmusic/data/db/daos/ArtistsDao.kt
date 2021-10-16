@@ -41,7 +41,7 @@ abstract class ArtistsDao : PaginatedEntryDao<DatmusicSearchParams, Artist>() {
     abstract override fun entriesPagingSource(params: DatmusicSearchParams): PagingSource<Int, Artist>
 
     @Transaction
-    @Query("SELECT * FROM artists WHERE id = :id ORDER BY details_fetched")
+    @Query("SELECT * FROM artists WHERE id = :id ORDER BY details_fetched DESC")
     abstract override fun entry(id: String): Flow<Artist>
 
     @Transaction
