@@ -35,6 +35,7 @@ import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.insets.ui.TopAppBar
+import tm.alashow.ui.theme.AppBarAlphas
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.topAppBarTitleStyle
 import tm.alashow.ui.theme.topAppBarTitleStyleSmall
@@ -115,7 +116,7 @@ fun CollapsingTopBar(
     onNavigationClick: () -> Unit = {},
 ) {
     val appBarColor = translucentSurfaceColor()
-    val backgroundColor = appBarColor.copy(alpha = collapsed)
+    val backgroundColor = appBarColor.copy(alpha = collapsed.coerceAtMost(AppBarAlphas.translucentBarAlpha()))
     val contentColor = contentColorFor(backgroundColor)
 
     TopAppBar(
