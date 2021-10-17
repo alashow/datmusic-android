@@ -16,6 +16,7 @@ import javax.inject.Singleton
 import kotlinx.coroutines.Dispatchers
 import tm.alashow.base.imageloading.CoilAppInitializer
 import tm.alashow.base.inititializer.AppInitializers
+import tm.alashow.base.inititializer.SubscriptionsInitializer
 import tm.alashow.base.inititializer.ThreeTenAbpInitializer
 import tm.alashow.base.inititializer.TimberInitializer
 import tm.alashow.base.ui.utils.extensions.androidId
@@ -64,6 +65,7 @@ class AppModule {
         coilAppInitializer: CoilAppInitializer,
         fcmTokenRegistrator: FcmTokenRegistrator,
         remoteConfigInitializer: RemoteConfigInitializer,
+        subscriptionsInitializer: SubscriptionsInitializer,
     ): AppInitializers {
         return AppInitializers(
             notifications,
@@ -71,7 +73,8 @@ class AppModule {
             threeTen,
             coilAppInitializer,
             fcmTokenRegistrator,
-            remoteConfigInitializer
+            remoteConfigInitializer,
+            subscriptionsInitializer
         )
     }
 }

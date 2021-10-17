@@ -8,6 +8,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import tm.alashow.base.util.extensions.stateInDefault
@@ -18,7 +19,6 @@ import tm.alashow.datmusic.domain.entities.PlaylistId
 import tm.alashow.domain.models.Params
 import tm.alashow.domain.models.Success
 import tm.alashow.domain.models.Uninitialized
-import javax.inject.Inject
 
 @HiltViewModel
 class LibraryViewModel @Inject constructor(

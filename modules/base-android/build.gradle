@@ -65,6 +65,8 @@ dependencies {
 		transitive = false
 	}
 
+	api Deps.Utils.qonversion
+
 	api project(":modules:base")
 	api project(":modules:core-media")
 }
