@@ -86,6 +86,7 @@
     <string name="playlist.create.generatedTemplate">My Playlist #%1$d</string>
 
     <string name="playlist.edit.label">Edit playlist</string>
+    <string name="playlist.edit.clearArtwork">Clear artwork</string>
     <string name="playlist.edit.shuffle">Shuffle</string>
     <string name="playlist.edit.delete">Delete playlist</string>
     <string name="playlist.edit.done">Save</string>

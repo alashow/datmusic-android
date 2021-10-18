@@ -4,6 +4,7 @@
  */
 package tm.alashow.datmusic.ui.library.playlists.edit
 
+import android.net.Uri
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -24,8 +25,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.burnoutcrew.reorderable.move
 import tm.alashow.base.util.extensions.orBlank
+import tm.alashow.datmusic.data.interactors.playlist.ClearPlaylistArtwork
 import tm.alashow.datmusic.data.interactors.playlist.DeletePlaylist
 import tm.alashow.datmusic.data.interactors.playlist.RemovePlaylistItems
+import tm.alashow.datmusic.data.interactors.playlist.SetCustomPlaylistArtwork
 import tm.alashow.datmusic.data.interactors.playlist.UpdatePlaylist
 import tm.alashow.datmusic.data.interactors.playlist.UpdatePlaylistItems
 import tm.alashow.datmusic.data.observers.playlist.ObservePlaylist
@@ -49,6 +52,8 @@ class EditPlaylistViewModel @Inject constructor(
     private val deletePlaylist: DeletePlaylist,
     private val reorderPlaylist: UpdatePlaylistItems,
     private val removePlaylistItems: RemovePlaylistItems,
+    private val setCustomPlaylistArtwork: SetCustomPlaylistArtwork,
+    private val clearPlaylistArtwork: ClearPlaylistArtwork,
     private val navigator: Navigator
 ) : ViewModel() {
 
@@ -152,6 +157,14 @@ class EditPlaylistViewModel @Inject constructor(
         }
     }
 
+    fun setPlaylistArtwork(uri: Uri) = viewModelScope.launch {
+        setCustomPlaylistArtwork.execute(SetCustomPlaylistArtwork.Params(playlistId, uri))
+    }
+
+    fun clearPlaylistArtwork() = viewModelScope.launch {
+        clearPlaylistArtwork.execute(playlistId)
+    }
+
     fun save() {
         viewModelScope.launch {
             removePlaylistItems.execute(removedPlaylistItems.value.map { it.playlistAudio.id })
@@ -159,7 +172,7 @@ class EditPlaylistViewModel @Inject constructor(
             val repositionedItems = playlistItems.value.mapIndexed { index, it -> it.copy(playlistAudio = it.playlistAudio.copy(position = index)) }
             reorderPlaylist.execute(repositionedItems)
 
-            val playlist = observePlaylist.get().copy(name = nameState.value?.text.orBlank())
+            val playlist = observePlaylist.get().copy(name = nameState.value.text.orBlank())
             updatePlaylist(playlist).catch {
                 nameErrorState.value = it.asValidationError()
             }.collect {
