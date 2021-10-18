@@ -1,3 +1,4 @@
-v2.0.5
-- Added new translations: Russian, Turkmen, Turkish (incomplete)
-- Other small UI changes
+v2.1.0-beta01
+- Playlists: create & edit local playlists. Add songs from search or create a playlist from any playback queue
+- Library tab: currently only playlists, more saveable items to come (artists, albums etc.)
+- Premium subscription: testing out first premium feature, a playlist downloader!
