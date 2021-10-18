@@ -134,9 +134,6 @@
     <string name="settings.about.author">Author</string>
     <string name="settings.about.author.text">Alashov Berkeli</string>
     <string name="settings.about.author.link">https://alashov.com</string>
-    <string name="settings.about.community">Community</string>
-    <string name="settings.about.community.text">t.me/datmusictesters</string>
-    <string name="settings.about.community.link">https://t.me/datmusictesters</string>
     <string name="settings.about.version">Version</string>
 
     <string name="subscriptions.required">Subscription required for this feature</string>

@@ -170,13 +170,6 @@ fun LazyListScope.settingsAboutSection() {
                 textRes = R.string.settings_about_author_text,
                 linkRes = R.string.settings_about_author_link
             )
-
-            SettingsLinkItem(
-                labelRes = R.string.settings_about_community,
-                textRes = R.string.settings_about_community_text,
-                linkRes = R.string.settings_about_community_link
-            )
-
             SettingsLinkItem(
                 label = stringResource(R.string.settings_about_version),
                 text = LocalAppVersion.current,
