@@ -26,7 +26,7 @@ typealias OnPermissionError = (SubscriptionError) -> Unit
  * Wrapper around Qonversion.
  */
 object Subscriptions {
-    const val KEY = ""
+    const val KEY = "SZSx0YJ1pXd-0iS_igNXNJ5PR6BDfi_a"
 
     private fun validateKey() {
         if (KEY.isBlank())
