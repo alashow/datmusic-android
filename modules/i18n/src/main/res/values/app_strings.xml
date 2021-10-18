@@ -136,6 +136,13 @@
     <string name="settings.about.author.link">https://alashov.com</string>
     <string name="settings.about.version">Version</string>
 
+    <string name="settings.general">General</string>
+
+    <string name="settings.premium">Premium</string>
+    <string name="settings.premium.subscribe">Subscribe</string>
+    <string name="settings.premium.view">View subscription</string>
+    <string name="settings.premium.disabled">Disabled</string>
+
     <string name="subscriptions.required">Subscription required for this feature</string>
 
     <string name="captcha.title">Captcha error</string>

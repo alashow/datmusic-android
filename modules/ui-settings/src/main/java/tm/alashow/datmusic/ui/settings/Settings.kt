@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
@@ -46,13 +45,16 @@ import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.DownloadsSongsGrouping
 import tm.alashow.datmusic.domain.entities.SettingsLinks
+import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.ui.downloader.LocalDownloader
+import tm.alashow.datmusic.ui.settings.premium.PremiumButton
 import tm.alashow.ui.ThemeViewModel
 import tm.alashow.ui.components.AppTopBar
 import tm.alashow.ui.components.SelectableDropdownMenu
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.DefaultTheme
 import tm.alashow.ui.theme.DefaultThemeDark
+import tm.alashow.ui.theme.outlinedButtonColors
 
 val LocalAppVersion = staticCompositionLocalOf { "Unknown" }
 
@@ -88,23 +90,34 @@ fun SettingsList(
     themeState: ThemeState,
     setThemeState: (ThemeState) -> Unit,
     settingsLinks: SettingsLinks,
-    paddings: PaddingValues
+    paddings: PaddingValues,
+    downloader: Downloader = LocalDownloader.current
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
         modifier = Modifier.fillMaxWidth(),
         contentPadding = paddings
     ) {
+        settingsGeneralSection()
         settingsThemeSection(themeState, setThemeState)
-        settingsDownloadsSection()
+        settingsDownloadsSection(downloader)
         settingsAboutSection()
         settingsLinksSection(settingsLinks)
     }
 }
 
-fun LazyListScope.settingsDownloadsSection() {
+fun LazyListScope.settingsGeneralSection() {
     item {
-        val downloader = LocalDownloader.current
+        SettingsSectionLabel(stringResource(R.string.settings_general))
+
+        SettingsItem(stringResource(R.string.settings_premium)) {
+            PremiumButton()
+        }
+    }
+}
+
+fun LazyListScope.settingsDownloadsSection(downloader: Downloader) {
+    item {
         val coroutine = rememberCoroutineScope()
         val downloadsLocationSelected by rememberFlowWithLifecycle(downloader.hasDownloadsLocation).collectAsState(initial = null)
         val downloadsSongsGrouping by rememberFlowWithLifecycle(downloader.downloadsSongsGrouping).collectAsState(initial = null)
@@ -114,7 +127,7 @@ fun LazyListScope.settingsDownloadsSection() {
             SettingsItem(stringResource(R.string.settings_downloads_location)) {
                 OutlinedButton(
                     onClick = { downloader.requestNewDownloadsLocations() },
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.onSurface)
+                    colors = outlinedButtonColors()
                 ) {
                     if (downloadsLocationSelected != null) {
                         Text(

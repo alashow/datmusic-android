@@ -40,9 +40,6 @@
     <string name="settings.about.author">Autor</string>
     <string name="settings.about.author.text">Alashov Berkeli</string>
     <string name="settings.about.author.link">https://alashov.com</string>
-    <string name="settings.about.community">Comunidad</string>
-    <string name="settings.about.community.text">t.me/datmusictesters</string>
-    <string name="settings.about.community.link">https://t.me/datmusictesters</string>
     <string name="settings.about.version">Versión</string>
     <string name="captcha.title">Error de CAPTCHA</string>
     <string name="captcha.hint">Escriba las letras encima</string>
