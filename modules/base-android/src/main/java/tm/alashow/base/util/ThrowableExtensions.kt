@@ -13,6 +13,7 @@ import tm.alashow.base.util.extensions.orNA
 import tm.alashow.domain.models.errors.ApiErrorException
 import tm.alashow.domain.models.errors.EmptyResultException
 import tm.alashow.i18n.UiMessage
+import tm.alashow.i18n.UiMessageConvertable
 import tm.alashow.i18n.ValidationErrorException
 
 @StringRes
@@ -42,9 +43,12 @@ fun Throwable?.localizedMessage(): Int = when (this) {
     else -> R.string.error_unknown
 }
 
-fun Throwable?.toUiMessage() = when (val message = localizedMessage()) {
-    R.string.error_unknown -> UiMessage.Plain(this?.message.orNA())
-    else -> UiMessage.Resource(message)
+fun Throwable?.toUiMessage() = when (this) {
+    is UiMessageConvertable -> toUiMessage()
+    else -> when (val message = localizedMessage()) {
+        R.string.error_unknown -> UiMessage.Plain(this?.message.orNA())
+        else -> UiMessage.Resource(message)
+    }
 }
 
 fun ApiErrorException.localizeApiError(): Int = when (val errorRes = errorRes) {

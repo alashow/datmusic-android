@@ -12,7 +12,6 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import tm.alashow.base.billing.SubscriptionError
 import tm.alashow.base.ui.SnackbarManager
 import tm.alashow.base.ui.SnackbarMessage
 import tm.alashow.base.util.extensions.stateInDefault
@@ -21,7 +20,6 @@ import tm.alashow.datmusic.data.interactors.playlist.DeletePlaylist
 import tm.alashow.datmusic.data.interactors.playlist.DownloadPlaylist
 import tm.alashow.datmusic.data.observers.playlist.ObservePlaylists
 import tm.alashow.datmusic.domain.entities.PlaylistId
-import tm.alashow.datmusic.downloader.DownloaderEventsError
 import tm.alashow.domain.models.Fail
 import tm.alashow.domain.models.Loading
 import tm.alashow.domain.models.Params
@@ -60,14 +58,7 @@ class LibraryViewModel @Inject constructor(
     fun downloadPlaylist(playlistId: PlaylistId) = viewModelScope.launch {
         playlistDownloader(playlistId).collect { result ->
             when (result) {
-                is Fail -> {
-                    val message = when (val error = result.error) {
-                        is SubscriptionError -> error.toUiMessage()
-                        is DownloaderEventsError -> error.events.first().toUiMessage()
-                        else -> error.toUiMessage()
-                    }
-                    snackbarManager.addMessage(message)
-                }
+                is Fail -> snackbarManager.addMessage(result.error.toUiMessage())
                 is Loading -> {
                     snackbarManager.addMessage(PlaylistDownloadQueued)
                     navigator.navigate(LeafScreen.Downloads().createRoute())

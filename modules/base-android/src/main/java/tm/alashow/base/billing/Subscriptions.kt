@@ -16,9 +16,10 @@ import kotlin.coroutines.suspendCoroutine
 import timber.log.Timber
 import tm.alashow.baseAndroid.R
 import tm.alashow.i18n.UiMessage
+import tm.alashow.i18n.UiMessageConvertable
 
-open class SubscriptionError(val qonversionError: QonversionError) : Throwable() {
-    open fun toUiMessage(): UiMessage<*> = UiMessage.Plain(qonversionError.additionalMessage)
+open class SubscriptionError(val qonversionError: QonversionError) : Throwable(), UiMessageConvertable {
+    override fun toUiMessage(): UiMessage<*> = UiMessage.Plain(qonversionError.additionalMessage)
 
     override fun toString() = "QonversionError: description=${qonversionError.description}, message=${qonversionError.additionalMessage}"
 }
