@@ -10,10 +10,15 @@ import kotlinx.coroutines.withContext
 import tm.alashow.base.billing.Subscriptions
 import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.data.AsyncInteractor
+import tm.alashow.datmusic.coreLibrary.R
 import tm.alashow.datmusic.data.repos.playlist.PlaylistsRepo
 import tm.alashow.datmusic.domain.entities.PlaylistId
 import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.downloader.DownloaderEventsError
+import tm.alashow.i18n.UiMessage
+import tm.alashow.i18n.ValidationError
+
+object PlaylistIsEmpty : ValidationError(UiMessage.Resource(R.string.playlist_download_error_empty))
 
 class DownloadPlaylist @Inject constructor(
     private val repo: PlaylistsRepo,
@@ -24,6 +29,8 @@ class DownloadPlaylist @Inject constructor(
     override suspend fun prepare(params: PlaylistId) {
         downloader.clearDownloaderEvents()
         Subscriptions.checkPremiumPermission()
+        if (repo.playlistAudios(params).first().isEmpty())
+            throw PlaylistIsEmpty.error()
     }
 
     override suspend fun doWork(params: PlaylistId) = withContext(dispatchers.io) {
