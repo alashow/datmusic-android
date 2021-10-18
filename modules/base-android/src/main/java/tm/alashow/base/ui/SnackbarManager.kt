@@ -75,6 +75,8 @@ class SnackbarManager @Inject constructor(
 
     val messages = messagesChannel.receiveAsFlow()
 
+    fun addMessage(message: UiMessage<*>) = addMessage(SnackbarMessage<Unit>(message))
+
     fun addMessage(message: SnackbarMessage<*>) {
         messagesChannel.trySend(message)
     }

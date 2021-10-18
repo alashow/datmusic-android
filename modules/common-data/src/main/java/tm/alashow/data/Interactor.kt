@@ -18,10 +18,15 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withTimeout
+import tm.alashow.domain.models.Async
+import tm.alashow.domain.models.Fail
 import tm.alashow.domain.models.InvokeError
 import tm.alashow.domain.models.InvokeStarted
 import tm.alashow.domain.models.InvokeStatus
 import tm.alashow.domain.models.InvokeSuccess
+import tm.alashow.domain.models.Loading
+import tm.alashow.domain.models.Success
+import tm.alashow.domain.models.Uninitialized
 
 abstract class Interactor<in P> {
     operator fun invoke(params: P, timeoutMs: Long = defaultTimeoutMs): Flow<InvokeStatus> {
@@ -43,6 +48,24 @@ abstract class Interactor<in P> {
     companion object {
         private val defaultTimeoutMs = TimeUnit.MINUTES.toMillis(5)
     }
+}
+
+abstract class AsyncInteractor<in P, T> {
+    operator fun invoke(params: P): Flow<Async<T>> {
+        return flow {
+            emit(Uninitialized)
+            prepare(params)
+            emit(Loading())
+            emit(Success(doWork(params)))
+        }.catch { t ->
+            emit(Fail(t))
+        }
+    }
+
+    suspend fun execute(params: P) = doWork(params)
+
+    protected abstract suspend fun prepare(params: P)
+    protected abstract suspend fun doWork(params: P): T
 }
 
 abstract class ResultInteractor<in P, R> {

@@ -5,8 +5,8 @@
 package tm.alashow.datmusic.ui.library.playlists.detail
 
 import android.content.Context
-import tm.alashow.datmusic.domain.entities.AudiosOfPlaylist
 import tm.alashow.datmusic.domain.entities.Playlist
+import tm.alashow.datmusic.domain.entities.PlaylistItems
 import tm.alashow.datmusic.ui.detail.MediaDetailViewState
 import tm.alashow.datmusic.ui.utils.AudiosCountDuration
 import tm.alashow.domain.models.Async
@@ -17,10 +17,10 @@ typealias DragMove = Pair<Int, Int>
 
 data class PlaylistDetailViewState(
     val playlist: Playlist? = null,
-    val playlistDetails: Async<AudiosOfPlaylist> = Uninitialized,
+    val playlistDetails: Async<PlaylistItems> = Uninitialized,
     val dragMove: DragMove? = null,
     val audiosCountDuration: AudiosCountDuration? = null,
-) : MediaDetailViewState<AudiosOfPlaylist> {
+) : MediaDetailViewState<PlaylistItems> {
 
     override val isLoaded = playlist != null
     override val isEmpty = playlistDetails is Success && playlistDetails.invoke().isEmpty()

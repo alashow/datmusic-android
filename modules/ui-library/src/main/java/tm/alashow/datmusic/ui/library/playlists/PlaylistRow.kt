@@ -35,7 +35,8 @@ fun PlaylistRow(
     ) {
         when (it) {
             is LibraryItemAction.Edit -> navigator.navigate(EditPlaylistScreen.buildRoute(playlist.id))
-            is LibraryItemAction.Delete -> viewModel.deletePlaylistItem(playlist.id)
+            is LibraryItemAction.Delete -> viewModel.deletePlaylist(playlist.id)
+            is LibraryItemAction.Download -> viewModel.downloadPlaylist(playlist.id)
         }
     }
 }

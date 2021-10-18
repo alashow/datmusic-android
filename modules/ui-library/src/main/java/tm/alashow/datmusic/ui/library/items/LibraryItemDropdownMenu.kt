@@ -34,6 +34,8 @@ internal fun LibraryItemDropdownMenu(
     val items = buildList {
         if (libraryItem.isUpdatable)
             add(R.string.library_item_menu_edit)
+        if (libraryItem.isDownloadable)
+            add(R.string.library_item_menu_download)
         if (libraryItem.isDeletable)
             add(R.string.library_item_menu_delete)
     }

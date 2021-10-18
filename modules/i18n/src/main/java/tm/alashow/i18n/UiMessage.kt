@@ -11,3 +11,7 @@ sealed class UiMessage<T : Any>(open val value: T) {
     data class Resource(override val value: Int, val formatArgs: List<Any> = emptyList()) : UiMessage<Int>(value)
     data class Error(override val value: Throwable) : UiMessage<Throwable>(value)
 }
+
+interface UiMessageConvertable {
+    fun toUiMessage(): UiMessage<*>
+}

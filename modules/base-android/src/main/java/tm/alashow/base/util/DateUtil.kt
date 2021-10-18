@@ -7,9 +7,11 @@ package tm.alashow.base.util
 import android.content.res.Resources
 import java.util.*
 import org.threeten.bp.DayOfWeek
+import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.Month
+import org.threeten.bp.ZoneId
 import org.threeten.bp.format.DateTimeFormatter
 import tm.alashow.base.util.date.HOUR_MINUTES_FORMAT
 import tm.alashow.base.util.date.apiDate
@@ -111,7 +113,7 @@ fun formatDate(
 fun timeAddZeros(number: Int?, ifZero: String = ""): String {
     return when (number) {
         0 -> ifZero
-        1, 2, 3, 4, 5, 6, 7, 8, 9 -> "0$number"
+        in 1..9 -> "0$number"
         else -> number.toString()
     }
 }
@@ -124,3 +126,7 @@ fun Long.millisToDuration(): String {
         return if (startsWith(":")) replaceFirst(":", "") else this
     }
 }
+
+fun Date.toLocalDateTime() = Instant.ofEpochMilli(time)
+    .atZone(ZoneId.systemDefault())
+    .toLocalDateTime()

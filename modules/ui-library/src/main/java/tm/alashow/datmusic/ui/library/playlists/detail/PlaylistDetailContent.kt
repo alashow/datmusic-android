@@ -8,9 +8,9 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import tm.alashow.common.compose.LocalPlaybackConnection
-import tm.alashow.datmusic.domain.entities.AudioOfPlaylist
-import tm.alashow.datmusic.domain.entities.AudiosOfPlaylist
 import tm.alashow.datmusic.domain.entities.PlaylistAudio
+import tm.alashow.datmusic.domain.entities.PlaylistItem
+import tm.alashow.datmusic.domain.entities.PlaylistItems
 import tm.alashow.datmusic.domain.entities.playlistId
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.ui.audios.AudioActionHandler
@@ -25,31 +25,31 @@ import tm.alashow.domain.models.Success
 private val RemoveFromPlaylist = R.string.playlist_audio_removeFromPlaylist
 
 class PlaylistDetailContent(
-    private val onRemoveFromPlaylist: (AudioOfPlaylist) -> Unit,
+    private val onRemoveFromPlaylist: (PlaylistItem) -> Unit,
     private val playbackConnection: PlaybackConnection,
     private val audioActionHandler: AudioActionHandler
-) : MediaDetailContent<AudiosOfPlaylist>() {
+) : MediaDetailContent<PlaylistItems>() {
 
     companion object {
         @Composable
         fun create(
-            onRemoveFromPlaylist: (AudioOfPlaylist) -> Unit,
+            onRemoveFromPlaylist: (PlaylistItem) -> Unit,
             playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
             audioActionHandler: AudioActionHandler = LocalAudioActionHandler.current,
         ) = PlaylistDetailContent(onRemoveFromPlaylist, playbackConnection, audioActionHandler)
     }
 
-    override fun invoke(list: LazyListScope, details: Async<AudiosOfPlaylist>, detailsLoading: Boolean): Boolean {
+    override fun invoke(list: LazyListScope, details: Async<PlaylistItems>, detailsLoading: Boolean): Boolean {
         val playlistAudios = when (details) {
             is Success -> details()
-            is Loading -> (1..5).map { AudioOfPlaylist(playlistAudio = PlaylistAudio(id = it.toLong())) }
+            is Loading -> (1..5).map { PlaylistItem(PlaylistAudio(it.toLong())) }
             else -> emptyList()
         }
 
         if (playlistAudios.isNotEmpty()) {
-            list.itemsIndexed(playlistAudios, key = { i, it -> it.playlistAudio.id }) { index, audioOfPlaylist ->
+            list.itemsIndexed(playlistAudios, key = { i, it -> it.playlistAudio.id }) { index, item ->
                 AudioRow(
-                    audio = audioOfPlaylist.audio,
+                    audio = item.audio,
                     isPlaceholder = detailsLoading,
                     playOnClick = true,
                     onPlayAudio = {
@@ -58,7 +58,7 @@ class PlaylistDetailContent(
                     extraActionLabels = listOf(RemoveFromPlaylist),
                     actionHandler = {
                         it.handleExtraAction(RemoveFromPlaylist, audioActionHandler) {
-                            onRemoveFromPlaylist(audioOfPlaylist)
+                            onRemoveFromPlaylist(item)
                         }
                     }
                 )

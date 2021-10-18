@@ -65,17 +65,23 @@ fun adaptiveColor(
         }
     }
 
-    return adaptiveColor(bitmap, fallback, animationSpec, gradientEndColor)
+    return adaptiveColor(
+        image = bitmap,
+        fallback = fallback,
+        animationSpec = animationSpec,
+        gradientEndColor = gradientEndColor
+    )
 }
 
 @Composable
 fun adaptiveColor(
     image: Bitmap? = null,
     fallback: Color = MaterialTheme.colors.secondary.contrastComposite(),
+    initial: Color = fallback,
     animationSpec: AnimationSpec<Color> = ADAPTIVE_COLOR_ANIMATION,
     gradientEndColor: Color = if (MaterialTheme.colors.isLight) Color.White else Color.Black,
 ): AdaptiveColorResult {
-    var accent by remember { mutableStateOf(fallback) }
+    var accent by remember { mutableStateOf(initial) }
     val accentAnimated by animateColorAsState(accent, animationSpec)
     val contentColor by derivedStateOf { accent.contentColor() }
 

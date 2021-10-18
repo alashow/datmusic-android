@@ -5,7 +5,6 @@
 package tm.alashow.base.util
 
 import android.content.Context
-import tm.alashow.base.util.extensions.localizedMessage
 import tm.alashow.i18n.UiMessage
 import tm.alashow.i18n.UiMessage.*
 

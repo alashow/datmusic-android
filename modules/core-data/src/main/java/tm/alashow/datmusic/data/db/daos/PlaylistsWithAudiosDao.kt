@@ -11,7 +11,6 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
-import tm.alashow.datmusic.domain.entities.AudiosOfPlaylist
 import tm.alashow.datmusic.domain.entities.PlaylistAudio
 import tm.alashow.datmusic.domain.entities.PlaylistAudioId
 import tm.alashow.datmusic.domain.entities.PlaylistAudioIds
@@ -54,19 +53,6 @@ abstract class PlaylistsWithAudiosDao {
     @Transaction
     @Query("UPDATE playlist_audios SET position = :toPosition WHERE id = :id")
     abstract fun updatePosition(id: Long, toPosition: Int)
-
-    /**
-     * Group by playlist_audios.id because there might be multiple instances of the same audio id
-     */
-    @Transaction
-    @Query(
-        "SELECT PA.id as 'item_id', PA.playlist_id as 'item_playlist_id', PA.audio_id as 'item_audio_id', PA.position as 'item_position', A.* " +
-            "FROM playlist_audios PA INNER JOIN audios A ON A.id = PA.audio_id " +
-            "WHERE PA.playlist_id = :id " +
-            "GROUP BY PA.id " +
-            "ORDER BY position"
-    )
-    abstract fun audiosOfPlaylist(id: PlaylistId): Flow<AudiosOfPlaylist>
 
     @Query("SELECT distinct(audio_id) FROM playlist_audios ORDER BY position")
     abstract fun distinctAudios(): Flow<List<String>>

@@ -32,6 +32,7 @@
     <string name="downloader.downloadsLocationSelect.text">Click Next to select downloads folder location</string>
     <string name="downloader.downloadsLocationSelect.next">Next</string>
 
+    <string name="downloader.enqueue.downloadsLocationNotSelected">Downloads location not selected yet</string>
     <string name="downloader.enqueue.downloadsNotFound">Selected downloads folder not found</string>
     <string name="downloader.enqueue.audio.queued">Added to download queue</string>
     <string name="downloader.enqueue.audio.error.invalidUrl">Audio has invalid download url</string>
@@ -66,6 +67,7 @@
     <string name="library.item.menu.cd">Library item menu</string>
     <string name="library.item.menu.edit">Edit</string>
     <string name="library.item.menu.delete">Delete</string>
+    <string name="library.item.menu.download">Download</string>
 
     <string name="playlist.title">Playlist</string>
     <string name="playlist.empty">Playlist is empty</string>
@@ -89,6 +91,10 @@
     <string name="playlist.edit.done">Save</string>
     <string name="playlist.edit.removed">Removed from playlist</string>
     <string name="playlist.edit.removed.undo">Undo</string>
+
+    <string name="playlist.download.queued">Playlist queued to download</string>
+    <string name="playlist.download.queuedCount">%1$d songs were queued to download</string>
+    <string name="playlist.download.error.empty">Playlist is empty</string>
 
     <string name="playback.queue.saveAsPlaylist">Save queue as playlist</string>
     <string name="playback.queue.saveAsPlaylist.saved">Saved as %1$s</string>
@@ -129,10 +135,16 @@
     <string name="settings.about.author">Author</string>
     <string name="settings.about.author.text">Alashov Berkeli</string>
     <string name="settings.about.author.link">https://alashov.com</string>
-    <string name="settings.about.community">Community</string>
-    <string name="settings.about.community.text">t.me/datmusictesters</string>
-    <string name="settings.about.community.link">https://t.me/datmusictesters</string>
     <string name="settings.about.version">Version</string>
+
+    <string name="settings.general">General</string>
+
+    <string name="settings.premium">Premium</string>
+    <string name="settings.premium.subscribe">Subscribe</string>
+    <string name="settings.premium.view">View subscription</string>
+    <string name="settings.premium.disabled">Disabled</string>
+
+    <string name="subscriptions.required">Subscription required for this feature</string>
 
     <string name="captcha.title">Captcha error</string>
     <string name="captcha.hint">Type letters above</string>

@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import tm.alashow.data.SubjectInteractor
 import tm.alashow.datmusic.data.repos.playlist.PlaylistsRepo
-import tm.alashow.datmusic.domain.entities.AudiosOfPlaylist
 import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.domain.entities.PlaylistId
 import tm.alashow.datmusic.domain.entities.PlaylistItems
@@ -34,12 +33,12 @@ class ObservePlaylistExistense @Inject constructor(
 
 class ObservePlaylistDetails @Inject constructor(
     private val playlistsRepo: PlaylistsRepo
-) : SubjectInteractor<PlaylistId, Async<AudiosOfPlaylist>>() {
+) : SubjectInteractor<PlaylistId, Async<PlaylistItems>>() {
 
     override fun createObservable(params: PlaylistId) = flow {
         emit(Loading())
-        playlistsRepo.audiosOfPlaylist(params)
-            .catch { error -> emit(Fail<AudiosOfPlaylist>(error)) }
+        playlistsRepo.playlistAudios(params)
+            .catch { error -> emit(Fail<PlaylistItems>(error)) }
             .collect { emit(Success(it)) }
     }
 }

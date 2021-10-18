@@ -149,11 +149,9 @@ class PlaylistsRepo @Inject constructor(
         return result
     }
 
-    fun audiosOfPlaylist(id: PlaylistId) = playlistAudiosDao.audiosOfPlaylist(id)
-
     fun playlist(id: PlaylistId) = dao.entry(id)
     fun playlistAudios(id: PlaylistId) = playlistAudiosDao.playlistItems(id)
-    fun playlistWithAudios(id: PlaylistId) = combine(playlist(id), audiosOfPlaylist(id).map { it.asAudios() }, ::PlaylistWithAudios)
+    fun playlistWithAudios(id: PlaylistId) = combine(playlist(id), playlistAudios(id).map { it.asAudios() }, ::PlaylistWithAudios)
 
     fun playlists() = dao.entries()
     fun playlistsWithAudios() = playlistAudiosDao.playlistsWithAudios()
@@ -173,7 +171,7 @@ class PlaylistsRepo @Inject constructor(
         launch(dispatchers.computation) {
             validatePlaylistId(playlistId)
             val playlist = playlist(playlistId).first().updatedCopy()
-            val audiosOfPlaylist = audiosOfPlaylist(playlistId).first()
+            val audiosOfPlaylist = playlistAudios(playlistId).first()
 
             if (audiosOfPlaylist.isNotEmpty()) {
                 Timber.i("Considering to auto generate artwork for playlist id=$playlistId")

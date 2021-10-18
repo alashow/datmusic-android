@@ -125,7 +125,7 @@ dependencies {
 	implementation project(":modules:core-playback")
 	implementation project(":modules:core-ui-playback")
 	implementation project(":modules:core-ui-downloader")
-	implementation project(':modules:ui-library')
+	implementation project(":modules:ui-library")
 	implementation project(":modules:navigation")
 	implementation project(":modules:ui-search")
 	implementation project(":modules:ui-settings")

@@ -47,8 +47,8 @@ import com.google.accompanist.insets.ui.LocalScaffoldPadding
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import tm.alashow.base.util.extensions.localizedMessage
-import tm.alashow.base.util.extensions.localizedTitle
+import tm.alashow.base.util.localizedMessage
+import tm.alashow.base.util.localizedTitle
 import tm.alashow.common.compose.LocalScaffoldState
 import tm.alashow.common.compose.LogCompositions
 import tm.alashow.common.compose.rememberFlowWithLifecycle

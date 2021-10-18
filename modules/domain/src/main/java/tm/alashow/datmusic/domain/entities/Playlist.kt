@@ -9,11 +9,14 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.CASCADE
+import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.Junction
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 import java.io.File
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.serialization.Transient
 import org.threeten.bp.LocalDateTime
 import tm.alashow.domain.models.BaseEntity
 
@@ -44,6 +47,9 @@ data class Playlist(
     @ColumnInfo(name = "params")
     override var params: String = "",
 ) : BaseEntity, LibraryItem {
+
+    @Ignore @Transient @IgnoredOnParcel
+    override val isDownloadable = true
 
     fun artworkFile() = artworkPath?.let { File(it) }
 
@@ -112,15 +118,6 @@ data class PlaylistItem(
 typealias PlaylistAudios = List<PlaylistAudio>
 typealias PlaylistItems = List<PlaylistItem>
 typealias PlaylistAudioIds = List<PlaylistAudioId>
-typealias AudiosOfPlaylist = List<AudioOfPlaylist>
 
-fun AudiosOfPlaylist.asAudios() = map { it.audio }
-fun AudiosOfPlaylist.playlistId() = first().playlistAudio.playlistId
-
-data class AudioOfPlaylist(
-    @Embedded(prefix = "item_")
-    val playlistAudio: PlaylistAudio = PlaylistAudio(),
-
-    @Embedded
-    val audio: Audio = Audio(),
-)
+fun PlaylistItems.asAudios() = map { it.audio }
+fun PlaylistItems.playlistId() = first().playlistAudio.playlistId

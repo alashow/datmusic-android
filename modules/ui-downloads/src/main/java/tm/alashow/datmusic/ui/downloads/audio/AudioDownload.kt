@@ -51,6 +51,7 @@ import com.tonyodev.fetch2.Status
 import tm.alashow.base.util.extensions.interpunctize
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.downloader.Downloader
+import tm.alashow.datmusic.downloader.isComplete
 import tm.alashow.datmusic.downloader.isPausable
 import tm.alashow.datmusic.downloader.isResumable
 import tm.alashow.datmusic.downloader.isRetriable
@@ -72,17 +73,20 @@ internal fun AudioDownload(
     onAudioPlay: (AudioDownloadItem) -> Unit,
     actionHandler: AudioDownloadItemActionHandler = LocalAudioDownloadItemActionHandler.current
 ) {
+    val audio = audioDownloadItem.audio
+    val downloadInfo = audioDownloadItem.downloadInfo
     var menuVisible by remember { mutableStateOf(false) }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
         modifier = Modifier
-            .clickable { menuVisible = true }
+            .clickable {
+                if (downloadInfo.isComplete()) onAudioPlay(audioDownloadItem)
+                else menuVisible = true
+            }
             .fillMaxWidth()
             .padding(AppTheme.specs.inputPaddings)
     ) {
-        val audio = audioDownloadItem.audio
-        val downloadInfo = audioDownloadItem.downloadInfo
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
