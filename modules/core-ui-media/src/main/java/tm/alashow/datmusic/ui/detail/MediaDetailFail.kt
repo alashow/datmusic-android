@@ -7,8 +7,8 @@ package tm.alashow.datmusic.ui.detail
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import tm.alashow.base.util.extensions.localizedMessage
-import tm.alashow.base.util.extensions.localizedTitle
+import tm.alashow.base.util.localizedMessage
+import tm.alashow.base.util.localizedTitle
 import tm.alashow.domain.models.Async
 import tm.alashow.domain.models.Fail
 import tm.alashow.ui.components.ErrorBox

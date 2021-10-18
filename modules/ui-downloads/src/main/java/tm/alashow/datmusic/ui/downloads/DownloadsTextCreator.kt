@@ -11,7 +11,7 @@ import com.tonyodev.fetch2.Status
 import java.util.Locale
 import kotlin.math.ln
 import kotlin.math.pow
-import tm.alashow.base.util.extensions.localizedMessage
+import tm.alashow.base.util.localizedMessage
 
 fun Download.downloadSpeed(): String = when {
     downloadedBytesPerSecond < 0 -> ""

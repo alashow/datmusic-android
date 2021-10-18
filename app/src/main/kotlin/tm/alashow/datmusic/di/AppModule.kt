@@ -14,9 +14,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import kotlinx.coroutines.Dispatchers
+import tm.alashow.base.billing.SubscriptionsInitializer
 import tm.alashow.base.imageloading.CoilAppInitializer
 import tm.alashow.base.inititializer.AppInitializers
-import tm.alashow.base.inititializer.SubscriptionsInitializer
 import tm.alashow.base.inititializer.ThreeTenAbpInitializer
 import tm.alashow.base.inititializer.TimberInitializer
 import tm.alashow.base.ui.utils.extensions.androidId

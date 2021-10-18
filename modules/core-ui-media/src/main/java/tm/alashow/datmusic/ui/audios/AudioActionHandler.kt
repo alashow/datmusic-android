@@ -57,8 +57,7 @@ fun audioActionHandler(
                 clipboardManager.setText(AnnotatedString(action.audio.downloadUrl ?: ""))
                 context.toast(R.string.generic_clipboard_copied)
             }
-            is AudioItemAction.AddToPlaylist -> {
-            }
+            else -> Timber.e("Unhandled audio action: $action")
         }
     }
 }

@@ -49,7 +49,7 @@ data class Playlist(
 ) : BaseEntity, LibraryItem {
 
     @Ignore @Transient @IgnoredOnParcel
-    override val isDownloadable = name.endsWith("#dl")
+    override val isDownloadable = true
 
     fun artworkFile() = artworkPath?.let { File(it) }
 

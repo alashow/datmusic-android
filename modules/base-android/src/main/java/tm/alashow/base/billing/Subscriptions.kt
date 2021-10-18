@@ -2,30 +2,42 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.base.inititializer
+package tm.alashow.base.billing
 
 import android.app.Activity
-import android.app.Application
 import com.qonversion.android.sdk.Qonversion
 import com.qonversion.android.sdk.QonversionError
 import com.qonversion.android.sdk.QonversionErrorCode
 import com.qonversion.android.sdk.QonversionPermissionsCallback
 import com.qonversion.android.sdk.dto.QPermission
-import javax.inject.Inject
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 import timber.log.Timber
-import tm.alashow.base.ui.utils.extensions.androidId
+import tm.alashow.baseAndroid.R
+import tm.alashow.i18n.UiMessage
 
-class SubscriptionsInitializer @Inject constructor() : AppInitializer {
-    private val key = ""
-    override fun init(application: Application) {
-        if (key.isNotBlank()) {
-            Qonversion.launch(application, key, false)
-            Qonversion.setUserID(application.androidId())
-        }
-    }
+open class SubscriptionError(val qonversionError: QonversionError) : Throwable() {
+    open fun toUiMessage(): UiMessage<*> = UiMessage.Plain(qonversionError.additionalMessage)
+
+    override fun toString() = "QonversionError: description=${qonversionError.description}, message=${qonversionError.additionalMessage}"
 }
 
+object SubscriptionNoPermissionsError : SubscriptionError(QonversionError(QonversionErrorCode.ProductNotOwned)) {
+    override fun toUiMessage() = UiMessage.Resource(R.string.subscriptions_required)
+}
+
+/**
+ * Wrapper around Qonversion.
+ */
 object Subscriptions {
+    const val KEY = ""
+
+    fun validateKey() {
+        if (KEY.isBlank())
+            error("Subscriptions Key isn't set")
+    }
+
     enum class Product(val id: String) {
         PremiumMonthly("premium_monthly")
     }
@@ -34,14 +46,18 @@ object Subscriptions {
         Premium("Premium")
     }
 
+    /**
+     * @param restoreOrPurchaseOnEmpty tries to restore or make a purchase if can't be restored in case there's no permissions and this is set to true
+     */
     fun checkPermissions(
         context: Activity,
         permission: Permission = Permission.Premium,
         product: Product = Product.PremiumMonthly,
         restoreOrPurchaseOnEmpty: Boolean = false,
         onPermissionActive: (QPermission) -> Unit = {},
-        onPermissionError: (QonversionError) -> Unit = { Timber.e(it.description) },
+        onPermissionError: (SubscriptionError) -> Unit = { Timber.e(it) },
     ) {
+        validateKey()
         Qonversion.checkPermissions(object : QonversionPermissionsCallback {
             override fun onSuccess(permissions: Map<String, QPermission>) {
                 val premiumPermission = permissions[permission.id]
@@ -51,11 +67,11 @@ object Subscriptions {
                 } else if (restoreOrPurchaseOnEmpty) {
                     Timber.d("Has no permission: $permission, trying to restore..")
                     restorePermissions(context, product, permission, true, onPermissionActive, onPermissionError)
-                } else onPermissionError(QonversionError(QonversionErrorCode.ProductNotOwned))
+                } else onPermissionError(SubscriptionNoPermissionsError)
             }
 
             override fun onError(error: QonversionError) {
-                onPermissionError(error)
+                onPermissionError(SubscriptionError(error))
             }
         })
     }
@@ -66,8 +82,9 @@ object Subscriptions {
         permission: Permission = Permission.Premium,
         purchaseIfNotOwned: Boolean = false,
         onPermissionActive: (QPermission) -> Unit = {},
-        onPermissionError: (QonversionError) -> Unit = { Timber.e(it.description) },
+        onPermissionError: (SubscriptionError) -> Unit = { Timber.e(it) },
     ) {
+        validateKey()
         Qonversion.restore(object : QonversionPermissionsCallback {
             override fun onSuccess(permissions: Map<String, QPermission>) {
                 val premiumPermission = permissions[permission.id]
@@ -84,7 +101,7 @@ object Subscriptions {
                         return
                     }
                 }
-                onPermissionError(error)
+                onPermissionError(SubscriptionError(error))
             }
         })
     }
@@ -94,8 +111,9 @@ object Subscriptions {
         product: Product = Product.PremiumMonthly,
         permission: Permission = Permission.Premium,
         onPermissionActive: (QPermission) -> Unit = {},
-        onPermissionError: (QonversionError) -> Unit = { Timber.e(it.description) },
+        onPermissionError: (SubscriptionError) -> Unit = { Timber.e(it) },
     ) {
+        validateKey()
         Qonversion.purchase(
             context, product.id,
             callback = object : QonversionPermissionsCallback {
@@ -107,9 +125,25 @@ object Subscriptions {
                 }
 
                 override fun onError(error: QonversionError) {
-                    onPermissionError(error)
+                    onPermissionError(SubscriptionError(error))
                 }
             }
         )
+    }
+
+    suspend fun checkPremiumPermission(permission: Permission = Permission.Premium): Any = suspendCoroutine { continuation ->
+        validateKey()
+        Qonversion.checkPermissions(object : QonversionPermissionsCallback {
+            override fun onSuccess(permissions: Map<String, QPermission>) {
+                val premiumPermission = permissions[permission.id]
+                if (premiumPermission != null && premiumPermission.isActive()) {
+                    continuation.resume(premiumPermission)
+                } else continuation.resumeWithException(SubscriptionNoPermissionsError)
+            }
+
+            override fun onError(error: QonversionError) {
+                continuation.resumeWithException(SubscriptionError(error))
+            }
+        })
     }
 }
