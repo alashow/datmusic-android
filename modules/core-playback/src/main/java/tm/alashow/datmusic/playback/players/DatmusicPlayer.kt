@@ -36,6 +36,7 @@ import tm.alashow.datmusic.data.db.daos.ArtistsDao
 import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
 import tm.alashow.datmusic.data.db.daos.findAudio
+import tm.alashow.datmusic.data.repos.playlist.PlaylistsRepo
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.domain.entities.CoverImageSize
@@ -121,6 +122,7 @@ class DatmusicPlayerImpl @Inject constructor(
     private val audiosDao: AudiosDao,
     private val artistsDao: ArtistsDao,
     private val albumsDao: AlbumsDao,
+    private val playlistsRepo: PlaylistsRepo,
     private val downloadsDao: DownloadRequestsDao,
     private val preferences: PreferencesStore,
     private val analytics: FirebaseAnalytics,
@@ -489,16 +491,16 @@ class DatmusicPlayerImpl @Inject constructor(
         if (seekTo > 0) seekTo(seekTo)
 
         if (queue == null) {
-            queue = mediaId.toAudioList(audiosDao, artistsDao, albumsDao)?.map { it.id }?.apply {
-                if (mediaId.index >= 0 && isNotEmpty())
+            queue = mediaId.toAudioList(audiosDao, artistsDao, albumsDao, playlistsRepo)?.map { it.id }?.apply {
+                if (mediaId.hasIndex && isNotEmpty())
                     audioId = if (mediaId.index < size) get(mediaId.index) else first()
             }
-            queueTitle = mediaId.toQueueTitle(audiosDao, artistsDao, albumsDao).toString()
+            queueTitle = mediaId.toQueueTitle(audiosDao, artistsDao, albumsDao, playlistsRepo).toString()
         }
 
         if (queue != null && queue.isNotEmpty()) {
             setData(queue, queueTitle)
-            playAudio(audioId, queue.indexOf(audioId))
+            playAudio(audioId, if (mediaId.hasIndex) mediaId.index else queue.indexOf(audioId))
             // delay for new queue to apply first
             delay(2000)
             saveQueueState()
@@ -569,7 +571,7 @@ class DatmusicPlayerImpl @Inject constructor(
     override fun setCurrentAudioId(audioId: String, index: Int?) {
         val audioIndex = index ?: queueManager.queue.indexOfFirst { it == audioId }
         if (audioIndex < 0) {
-            Timber.e("Audio id isn't in the queue, what it do?")
+            error("Audio id isn't in the queue, what it do?")
         } else queueManager.currentAudioIndex = audioIndex
     }
 

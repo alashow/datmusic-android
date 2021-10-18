@@ -5,9 +5,7 @@
 package tm.alashow.datmusic.ui.audios
 
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -41,8 +39,10 @@ import tm.alashow.base.imageloading.ImageLoading
 import tm.alashow.base.util.extensions.interpunctize
 import tm.alashow.base.util.millisToDuration
 import tm.alashow.datmusic.domain.entities.Audio
+import tm.alashow.datmusic.ui.library.playlist.addTo.AddToPlaylistMenu
 import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.components.shimmer
+import tm.alashow.ui.simpleClickable
 import tm.alashow.ui.theme.AppTheme
 
 object AudiosDefaults {
@@ -58,6 +58,9 @@ fun AudioRow(
     isPlaceholder: Boolean = false,
     onClick: ((Audio) -> Unit)? = null,
     onPlayAudio: ((Audio) -> Unit)? = null,
+    extraActionLabels: List<Int> = emptyList(),
+    playOnClick: Boolean = false,
+    includeCover: Boolean = true,
     actionHandler: AudioActionHandler = LocalAudioActionHandler.current
 ) {
     var menuVisible by remember { mutableStateOf(false) }
@@ -68,9 +71,13 @@ fun AudioRow(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .clickable {
-                if (!isPlaceholder)
-                    if (onClick != null) onClick(audio)
-                    else menuVisible = true
+                if (!isPlaceholder) {
+                    when {
+                        playOnClick -> onPlayAudio?.invoke(audio)
+                        onClick != null -> onClick(audio)
+                        else -> menuVisible = true
+                    }
+                }
             }
             .fillMaxWidth()
             .padding(AppTheme.specs.inputPaddings)
@@ -79,6 +86,7 @@ fun AudioRow(
             audio = audio,
             isPlaceholder = isPlaceholder,
             imageSize = imageSize,
+            includeCover = includeCover,
             onCoverClick = {
                 if (onPlayAudio != null) onPlayAudio(audio)
                 else actionHandler(AudioItemAction.Play(audio))
@@ -92,9 +100,12 @@ fun AudioRow(
         )
 
         if (!isPlaceholder) {
+            val (addToPlaylistVisible, setAddToPlaylistVisible) = remember { mutableStateOf(false) }
+            AddToPlaylistMenu(audio, addToPlaylistVisible, setAddToPlaylistVisible)
             AudioDropdownMenu(
                 expanded = menuVisible,
                 onExpandedChange = { menuVisible = it },
+                extraActionLabels = extraActionLabels,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
                     .weight(1f),
@@ -102,6 +113,7 @@ fun AudioRow(
                     val action = AudioItemAction.from(it, audio)
                     when {
                         action is AudioItemAction.Play && onPlayAudio != null -> onPlayAudio(audio)
+                        action is AudioItemAction.AddToPlaylist -> setAddToPlaylistVisible(true)
                         else -> actionHandler(action)
                     }
                 },
@@ -117,6 +129,7 @@ fun AudioRowItem(
     imageSize: Dp = AudiosDefaults.imageSize,
     onCoverClick: (Audio) -> Unit = {},
     isPlaceholder: Boolean = false,
+    includeCover: Boolean = true,
     maxLines: Int = AudiosDefaults.maxLines,
 ) {
     val loadingModifier = Modifier.placeholder(
@@ -128,21 +141,14 @@ fun AudioRowItem(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier.fillMaxWidth()
     ) {
-        val image = rememberImagePainter(audio.coverUrlSmall ?: audio.coverUrl, builder = ImageLoading.defaultConfig)
-        CoverImage(
-            painter = image,
-            size = imageSize,
-        ) { imageMod ->
-            Image(
+        if (includeCover) {
+            val image = rememberImagePainter(audio.coverUrlSmall ?: audio.coverUrl, builder = ImageLoading.defaultConfig)
+            CoverImage(
                 painter = image,
-                contentDescription = null,
-                modifier = imageMod
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                        onClick = { onCoverClick(audio) },
-                    )
-                    .then(loadingModifier)
+                size = imageSize,
+                imageModifier = Modifier
+                    .simpleClickable { onCoverClick(audio) }
+                    .then(loadingModifier),
             )
         }
 

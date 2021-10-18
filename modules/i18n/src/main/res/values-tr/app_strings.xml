@@ -15,9 +15,6 @@
     <string name="settings.downloads.songsGrouping.byArtist">Sanatçıya göre</string>
     <string name="settings.about">Hakkında</string>
     <string name="settings.about.author.link">https://alashov.com</string>
-    <string name="settings.about.community">Topluluk</string>
-    <string name="settings.about.community.text">t.me/datmusictesters</string>
-    <string name="settings.about.community.link">https://t.me/datmusictesters</string>
     <string name="settings.about.version">Versiyon</string>
     <string name="captcha.submit">Gönder</string>
     <string name="error.keyError">Anahtar hatası, uygulamayı güncelleyin veya geliştiriciyle iletişime geçin</string>

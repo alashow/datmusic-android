@@ -5,13 +5,11 @@
 package tm.alashow.base.util
 
 import android.content.Context
-import tm.alashow.base.util.UiMessage.Error
-import tm.alashow.base.util.UiMessage.Plain
-import tm.alashow.base.util.UiMessage.Resource
-import tm.alashow.base.util.extensions.localizedMessage
+import tm.alashow.i18n.UiMessage
+import tm.alashow.i18n.UiMessage.*
 
 fun UiMessage<*>.asString(context: Context): String = when (this) {
     is Plain -> value
-    is Resource -> context.getString(value, formatArgs)
+    is Resource -> context.getString(value, *formatArgs.toTypedArray())
     is Error -> context.getString(value.localizedMessage())
 }

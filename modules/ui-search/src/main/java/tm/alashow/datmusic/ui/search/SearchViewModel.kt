@@ -26,18 +26,18 @@ import timber.log.Timber
 import tm.alashow.base.ui.SnackbarManager
 import tm.alashow.base.util.event
 import tm.alashow.base.util.extensions.getStateFlow
-import tm.alashow.datmusic.data.observers.ObservePagedDatmusicSearch
-import tm.alashow.datmusic.data.repos.CaptchaSolution
-import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams
-import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams.BackendType
-import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams.Companion.withTypes
+import tm.alashow.datmusic.data.CaptchaSolution
+import tm.alashow.datmusic.data.DatmusicSearchParams
+import tm.alashow.datmusic.data.DatmusicSearchParams.BackendType
+import tm.alashow.datmusic.data.DatmusicSearchParams.Companion.withTypes
+import tm.alashow.datmusic.data.observers.search.ObservePagedDatmusicSearch
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.domain.models.errors.ApiCaptchaError
-import tm.alashow.navigation.QUERY_KEY
-import tm.alashow.navigation.SEARCH_BACKENDS_KEY
+import tm.alashow.navigation.screens.QUERY_KEY
+import tm.alashow.navigation.screens.SEARCH_BACKENDS_KEY
 
 const val SEARCH_DEBOUNCE_MILLIS = 400L
 

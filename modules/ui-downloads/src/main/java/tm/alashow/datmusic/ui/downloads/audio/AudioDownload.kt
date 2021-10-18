@@ -51,6 +51,7 @@ import com.tonyodev.fetch2.Status
 import tm.alashow.base.util.extensions.interpunctize
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.downloader.Downloader
+import tm.alashow.datmusic.downloader.isComplete
 import tm.alashow.datmusic.downloader.isPausable
 import tm.alashow.datmusic.downloader.isResumable
 import tm.alashow.datmusic.downloader.isRetriable
@@ -59,6 +60,7 @@ import tm.alashow.datmusic.ui.audios.AudioRowItem
 import tm.alashow.datmusic.ui.downloads.R
 import tm.alashow.datmusic.ui.downloads.fileSizeStatus
 import tm.alashow.datmusic.ui.downloads.statusLabel
+import tm.alashow.datmusic.ui.library.playlist.addTo.AddToPlaylistMenu
 import tm.alashow.ui.TimedVisibility
 import tm.alashow.ui.colorFilterDynamicProperty
 import tm.alashow.ui.components.IconButton
@@ -71,16 +73,20 @@ internal fun AudioDownload(
     onAudioPlay: (AudioDownloadItem) -> Unit,
     actionHandler: AudioDownloadItemActionHandler = LocalAudioDownloadItemActionHandler.current
 ) {
+    val audio = audioDownloadItem.audio
+    val downloadInfo = audioDownloadItem.downloadInfo
     var menuVisible by remember { mutableStateOf(false) }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
         modifier = Modifier
-            .clickable { menuVisible = true }
+            .clickable {
+                if (downloadInfo.isComplete()) onAudioPlay(audioDownloadItem)
+                else menuVisible = true
+            }
             .fillMaxWidth()
             .padding(AppTheme.specs.inputPaddings)
     ) {
-        val downloadInfo = audioDownloadItem.downloadInfo
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
@@ -123,6 +129,8 @@ internal fun AudioDownload(
                 Text(text = footer, modifier = Modifier.weight(19f))
             }
 
+            val (addToPlaylistVisible, setAddToPlaylistVisible) = remember { mutableStateOf(false) }
+            AddToPlaylistMenu(audio, addToPlaylistVisible, setAddToPlaylistVisible)
             AudioDownloadDropdownMenu(
                 audioDownload = audioDownloadItem.copy(downloadInfo = downloadInfo),
                 expanded = menuVisible,
@@ -130,9 +138,10 @@ internal fun AudioDownload(
                 modifier = Modifier
                     .weight(1f)
                     .height(20.dp)
-            ) {
-                when (val action = AudioDownloadItemAction.from(it, audioDownloadItem)) {
+            ) { actionLabel ->
+                when (val action = AudioDownloadItemAction.from(actionLabel, audioDownloadItem)) {
                     is AudioDownloadItemAction.Play -> onAudioPlay(action.audio)
+                    is AudioDownloadItemAction.AddToPlaylist -> setAddToPlaylistVisible(true)
                     else -> actionHandler(action)
                 }
             }

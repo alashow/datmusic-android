@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import tm.alashow.base.util.IntentUtils
 import tm.alashow.base.util.event
 import tm.alashow.base.util.extensions.simpleName
@@ -56,6 +57,7 @@ fun audioDownloadItemActionHandler(
                 clipboardManager.setText(AnnotatedString(action.audio.audio.downloadUrl ?: ""))
                 context.toast(R.string.generic_clipboard_copied)
             }
+            else -> Timber.e("Unhandled action: $action")
         }
     }
 }

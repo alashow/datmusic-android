@@ -32,6 +32,7 @@
     <string name="downloader.downloadsLocationSelect.text">Click Next to select downloads folder location</string>
     <string name="downloader.downloadsLocationSelect.next">Next</string>
 
+    <string name="downloader.enqueue.downloadsLocationNotSelected">Downloads location not selected yet</string>
     <string name="downloader.enqueue.downloadsNotFound">Selected downloads folder not found</string>
     <string name="downloader.enqueue.audio.queued">Added to download queue</string>
     <string name="downloader.enqueue.audio.error.invalidUrl">Audio has invalid download url</string>
@@ -60,12 +61,57 @@
     <string name="downloads.download.remove">Remove</string>
     <string name="downloads.download.delete">Delete file</string>
 
+    <string name="library.title">Library</string>
+    <string name="library.empty">No items</string>
+
+    <string name="library.item.menu.cd">Library item menu</string>
+    <string name="library.item.menu.edit">Edit</string>
+    <string name="library.item.menu.delete">Delete</string>
+    <string name="library.item.menu.download">Download</string>
+
+    <string name="playlist.title">Playlist</string>
+    <string name="playlist.empty">Playlist is empty</string>
+    <string name="playlist.empty.addSongs">Add Songs</string>
+
+    <string name="playlist.audio.removeFromPlaylist">Remove from this playlist</string>
+
+    <string name="playlist.addTo">Add to playlist</string>
+    <string name="playlist.addTo.new">New playlist</string>
+    <string name="playlist.addTo.added">Added to %1$s</string>
+    <string name="playlist.addTo.open">Open</string>
+
+    <string name="playlist.create">Create playlist</string>
+    <string name="playlist.create.skipName">Skip</string>
+    <string name="playlist.create.label">Give your playlist a name</string>
+    <string name="playlist.create.generatedTemplate">My Playlist #%1$d</string>
+
+    <string name="playlist.edit.label">Edit playlist</string>
+    <string name="playlist.edit.shuffle">Shuffle</string>
+    <string name="playlist.edit.delete">Delete playlist</string>
+    <string name="playlist.edit.done">Save</string>
+    <string name="playlist.edit.removed">Removed from playlist</string>
+    <string name="playlist.edit.removed.undo">Undo</string>
+
+    <string name="playlist.download.queued">Playlist queued to download</string>
+    <string name="playlist.download.queuedCount">%1$d songs were queued to download</string>
+    <string name="playlist.download.error.empty">Playlist is empty</string>
+
+    <string name="playback.queue.saveAsPlaylist">Save queue as playlist</string>
+    <string name="playback.queue.saveAsPlaylist.saved">Saved as %1$s</string>
+    <string name="playback.queue.saveAsPlaylist.open">Open</string>
+
     <string name="playback.queueTitle.audio">Playing from queue</string>
     <string name="playback.queueTitle.downloads">Playing from downloads</string>
     <string name="playback.queueTitle.artist">Playing from artist</string>
     <string name="playback.queueTitle.artist.value">Playing from artist</string>
     <string name="playback.queueTitle.album">Playing from album</string>
+    <string name="playback.queueTitle.playlist">Playing from playlist</string>
     <string name="playback.queueTitle.search">Playing from search</string>
+
+    <plurals name="songs.count">
+        <item quantity="one">%1$d song</item>
+        <item quantity="other">%1$d songs</item>
+    </plurals>
 
     <string name="settings.title">Settings</string>
 
@@ -89,10 +135,16 @@
     <string name="settings.about.author">Author</string>
     <string name="settings.about.author.text">Alashov Berkeli</string>
     <string name="settings.about.author.link">https://alashov.com</string>
-    <string name="settings.about.community">Community</string>
-    <string name="settings.about.community.text">t.me/datmusictesters</string>
-    <string name="settings.about.community.link">https://t.me/datmusictesters</string>
     <string name="settings.about.version">Version</string>
+
+    <string name="settings.general">General</string>
+
+    <string name="settings.premium">Premium</string>
+    <string name="settings.premium.subscribe">Subscribe</string>
+    <string name="settings.premium.view">View subscription</string>
+    <string name="settings.premium.disabled">Disabled</string>
+
+    <string name="subscriptions.required">Subscription required for this feature</string>
 
     <string name="captcha.title">Captcha error</string>
     <string name="captcha.hint">Type letters above</string>

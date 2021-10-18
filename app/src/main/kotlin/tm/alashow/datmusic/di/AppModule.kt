@@ -14,6 +14,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import kotlinx.coroutines.Dispatchers
+import tm.alashow.base.billing.SubscriptionsInitializer
 import tm.alashow.base.imageloading.CoilAppInitializer
 import tm.alashow.base.inititializer.AppInitializers
 import tm.alashow.base.inititializer.ThreeTenAbpInitializer
@@ -64,6 +65,7 @@ class AppModule {
         coilAppInitializer: CoilAppInitializer,
         fcmTokenRegistrator: FcmTokenRegistrator,
         remoteConfigInitializer: RemoteConfigInitializer,
+        subscriptionsInitializer: SubscriptionsInitializer,
     ): AppInitializers {
         return AppInitializers(
             notifications,
@@ -71,7 +73,8 @@ class AppModule {
             threeTen,
             coilAppInitializer,
             fcmTokenRegistrator,
-            remoteConfigInitializer
+            remoteConfigInitializer,
+            subscriptionsInitializer
         )
     }
 }

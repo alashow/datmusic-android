@@ -14,7 +14,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,7 +24,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.BottomSheetState
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -45,7 +43,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -55,7 +52,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
-import kotlinx.coroutines.launch
 import tm.alashow.base.imageloading.ImageLoading
 import tm.alashow.base.util.extensions.orNA
 import tm.alashow.common.compose.LocalPlaybackConnection
@@ -74,6 +70,9 @@ import tm.alashow.datmusic.playback.isPlayEnabled
 import tm.alashow.datmusic.playback.isPlaying
 import tm.alashow.datmusic.playback.models.PlaybackProgressState
 import tm.alashow.datmusic.playback.playPause
+import tm.alashow.navigation.LocalNavigator
+import tm.alashow.navigation.Navigator
+import tm.alashow.navigation.screens.LeafScreen
 import tm.alashow.ui.ADAPTIVE_COLOR_ANIMATION
 import tm.alashow.ui.Dismissable
 import tm.alashow.ui.adaptiveColor
@@ -119,12 +118,13 @@ fun PlaybackMiniControls(
     onPlayPause: () -> Unit,
     height: Dp = PlaybackMiniControlsDefaults.height,
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
-    playbackSheetState: BottomSheetState = LocalPlaybackSheetState.current,
+    navigator: Navigator = LocalNavigator.current,
 ) {
-    val coroutine = rememberCoroutineScope()
-    val expand = { coroutine.launch { playbackSheetState.expand() } }
+    val expand = {
+        navigator.navigate(LeafScreen.PlaybackSheet().createRoute())
+    }
 
-    val adaptiveColor = adaptiveColor(nowPlaying.artwork)
+    val adaptiveColor = adaptiveColor(nowPlaying.artwork, initial = MaterialTheme.colors.background)
     val backgroundColor by animateColorAsState(adaptiveColor.color, ADAPTIVE_COLOR_ANIMATION)
     val contentColor by animateColorAsState(adaptiveColor.contentColor, ADAPTIVE_COLOR_ANIMATION)
 
@@ -202,13 +202,7 @@ private fun RowScope.PlaybackNowPlaying(
             painter = artwork,
             size = maxHeight - 16.dp,
             modifier = Modifier.padding(AppTheme.specs.paddingSmall)
-        ) { imageMod ->
-            Image(
-                painter = artwork,
-                contentDescription = null,
-                modifier = imageMod
-            )
-        }
+        )
 
         PlaybackPager(nowPlaying) { audio, _, pagerMod ->
             PlaybackNowPlaying(audio, modifier = pagerMod)

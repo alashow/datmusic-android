@@ -47,12 +47,12 @@ import com.google.accompanist.insets.ui.LocalScaffoldPadding
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import tm.alashow.base.util.extensions.localizedMessage
-import tm.alashow.base.util.extensions.localizedTitle
+import tm.alashow.base.util.localizedMessage
+import tm.alashow.base.util.localizedTitle
 import tm.alashow.common.compose.LocalScaffoldState
 import tm.alashow.common.compose.LogCompositions
 import tm.alashow.common.compose.rememberFlowWithLifecycle
-import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams.BackendType
+import tm.alashow.datmusic.data.DatmusicSearchParams.BackendType
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
@@ -62,9 +62,9 @@ import tm.alashow.datmusic.ui.artists.ArtistColumn
 import tm.alashow.datmusic.ui.artists.ArtistsDefaults
 import tm.alashow.datmusic.ui.audios.AudioRow
 import tm.alashow.domain.models.errors.EmptyResultException
-import tm.alashow.navigation.LeafScreen
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.Navigator
+import tm.alashow.navigation.screens.LeafScreen
 import tm.alashow.ui.Delayed
 import tm.alashow.ui.components.ErrorBox
 import tm.alashow.ui.components.ProgressIndicator
@@ -174,9 +174,12 @@ private fun SearchListErrors(
     val captchaError = viewState.captchaError
     var captchaErrorShown by remember(captchaError) { mutableStateOf(true) }
     if (captchaError != null) {
-        CaptchaErrorDialog(captchaErrorShown, { captchaErrorShown = it }, captchaError) { solution ->
-            viewModel.submitAction(SearchAction.SubmitCaptcha(captchaError, solution))
-        }
+        CaptchaErrorDialog(
+            captchaErrorShown, { captchaErrorShown = it }, captchaError,
+            onCaptchaSubmit = { solution ->
+                viewModel.submitAction(SearchAction.SubmitCaptcha(captchaError, solution))
+            }
+        )
     }
 
     val message = stringResource(viewState.error.localizedMessage())

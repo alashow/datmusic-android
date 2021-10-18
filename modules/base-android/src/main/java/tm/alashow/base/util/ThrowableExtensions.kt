@@ -2,17 +2,19 @@
  * Copyright (C) 2018, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.base.util.extensions
+package tm.alashow.base.util
 
 import android.content.res.Resources
 import androidx.annotation.StringRes
 import com.andretietz.retroauth.AuthenticationCanceledException
-import java.io.IOException
 import retrofit2.HttpException
 import tm.alashow.base.R
-import tm.alashow.base.util.ValidationErrorException
+import tm.alashow.base.util.extensions.orNA
 import tm.alashow.domain.models.errors.ApiErrorException
 import tm.alashow.domain.models.errors.EmptyResultException
+import tm.alashow.i18n.UiMessage
+import tm.alashow.i18n.UiMessageConvertable
+import tm.alashow.i18n.ValidationErrorException
 
 @StringRes
 fun Throwable?.localizedTitle(): Int = when (this) {
@@ -36,10 +38,17 @@ fun Throwable?.localizedMessage(): Int = when (this) {
     }
     is AuthenticationCanceledException -> R.string.error_noAuth
     is AppError -> messageRes
-    is RuntimeException, is IOException -> R.string.error_network
-    is ValidationErrorException -> error.errorRes
+    is ValidationErrorException -> (error.message.value as Int) // TODO: fix this
 
     else -> R.string.error_unknown
+}
+
+fun Throwable?.toUiMessage() = when (this) {
+    is UiMessageConvertable -> toUiMessage()
+    else -> when (val message = localizedMessage()) {
+        R.string.error_unknown -> UiMessage.Plain(this?.message.orNA())
+        else -> UiMessage.Resource(message)
+    }
 }
 
 fun ApiErrorException.localizeApiError(): Int = when (val errorRes = errorRes) {

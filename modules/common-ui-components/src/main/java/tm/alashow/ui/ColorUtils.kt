@@ -26,6 +26,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.graphics.ColorUtils
 import androidx.core.math.MathUtils
 import androidx.palette.graphics.Palette
@@ -35,6 +36,9 @@ import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import tm.alashow.base.imageloading.getBitmap
 import tm.alashow.ui.theme.contrastComposite
 import tm.alashow.ui.theme.toColor
 
@@ -44,11 +48,40 @@ data class AdaptiveColorResult(val color: Color, val contentColor: Color, val gr
 
 @Composable
 fun adaptiveColor(
+    imageData: Any?,
+    fallback: Color = MaterialTheme.colors.secondary.contrastComposite(),
+    animationSpec: AnimationSpec<Color> = ADAPTIVE_COLOR_ANIMATION,
+    gradientEndColor: Color = if (MaterialTheme.colors.isLight) Color.White else Color.Black,
+): AdaptiveColorResult {
+    val context = LocalContext.current
+
+    var bitmap by remember { mutableStateOf<Bitmap?>(null) }
+    LaunchedEffect(imageData) {
+        launch(Dispatchers.Unconfined) {
+            val result = context.getBitmap(imageData, size = 300, allowHardware = false)
+            if (result is Bitmap) {
+                bitmap = result
+            }
+        }
+    }
+
+    return adaptiveColor(
+        image = bitmap,
+        fallback = fallback,
+        animationSpec = animationSpec,
+        gradientEndColor = gradientEndColor
+    )
+}
+
+@Composable
+fun adaptiveColor(
     image: Bitmap? = null,
     fallback: Color = MaterialTheme.colors.secondary.contrastComposite(),
-    animationSpec: AnimationSpec<Color> = ADAPTIVE_COLOR_ANIMATION
+    initial: Color = fallback,
+    animationSpec: AnimationSpec<Color> = ADAPTIVE_COLOR_ANIMATION,
+    gradientEndColor: Color = if (MaterialTheme.colors.isLight) Color.White else Color.Black,
 ): AdaptiveColorResult {
-    var accent by remember { mutableStateOf(fallback) }
+    var accent by remember { mutableStateOf(initial) }
     val accentAnimated by animateColorAsState(accent, animationSpec)
     val contentColor by derivedStateOf { accent.contentColor() }
 
@@ -72,19 +105,20 @@ fun adaptiveColor(
                 }
     }
 
-    return AdaptiveColorResult(accent, contentColor, backgroundGradient(accentAnimated))
+    return AdaptiveColorResult(accent, contentColor, backgroundGradient(accentAnimated, gradientEndColor))
 }
 
 @Composable
 fun backgroundGradient(
     accent: Color,
-    endColor: Color = if (MaterialTheme.colors.isLight) Color.White else Color.Black
+    endColor: Color,
 ): Brush {
     val isDark = !MaterialTheme.colors.isLight
     val first = gradientShift(isDark, accent.toArgb(), 0.4f, 100)
-    val second = gradientShift(isDark, accent.toArgb(), 0.13f, 25)
+    val second = gradientShift(isDark, accent.toArgb(), 0.26f, 66)
+    val third = gradientShift(isDark, accent.toArgb(), 0.13f, 33)
 
-    return Brush.verticalGradient(listOf(first, second, endColor))
+    return Brush.verticalGradient(listOf(first, second, third, endColor))
 }
 
 /**
@@ -182,4 +216,16 @@ fun shiftColor(@ColorInt color: Int, @FloatRange(from = 0.0, to = 2.0) by: Float
         hsv[2] *= by
         (alpha shl 24) + (16777215 and AColor.HSVToColor(hsv))
     }
+}
+
+private fun Pair<Color, Color>.mergeColors(): Color {
+    val a = first
+    val b = second
+    var r = Color.Black
+
+    r = r.copy(alpha = 1 - (1 - b.alpha) * (1 - a.alpha))
+    r = r.copy(red = b.red * b.alpha / r.alpha + a.red * a.alpha * (1 - b.alpha) / r.alpha)
+    r = r.copy(green = b.green * b.alpha / r.alpha + a.green * a.alpha * (1 - b.alpha) / r.alpha)
+    r = r.copy(blue = b.blue * b.alpha / r.alpha + a.blue * a.alpha * (1 - b.alpha) / r.alpha)
+    return r
 }

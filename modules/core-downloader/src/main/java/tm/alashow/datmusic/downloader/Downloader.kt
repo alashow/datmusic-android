@@ -29,13 +29,16 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
+import okhttp3.internal.toImmutableList
 import timber.log.Timber
 import tm.alashow.base.util.CoroutineDispatchers
-import tm.alashow.base.util.UiMessage
 import tm.alashow.base.util.event
 import tm.alashow.data.PreferencesStore
 import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
+import tm.alashow.datmusic.data.db.daos.findAudio
+import tm.alashow.datmusic.data.repos.audio.AudioSaveType
+import tm.alashow.datmusic.data.repos.audio.AudiosRepo
 import tm.alashow.datmusic.domain.DownloadsSongsGrouping
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
@@ -43,10 +46,14 @@ import tm.alashow.datmusic.domain.entities.DownloadItem
 import tm.alashow.datmusic.domain.entities.DownloadRequest
 import tm.alashow.domain.models.None
 import tm.alashow.domain.models.Optional
+import tm.alashow.domain.models.orNone
+import tm.alashow.domain.models.orNull
 import tm.alashow.domain.models.some
+import tm.alashow.i18n.UiMessage
 
-data class DownloadItems(val audios: List<AudioDownloadItem>)
 typealias AudioDownloadItems = List<AudioDownloadItem>
+
+data class DownloadItems(val audios: AudioDownloadItems)
 
 class Downloader @Inject constructor(
     @ApplicationContext private val appContext: Context,
@@ -54,6 +61,7 @@ class Downloader @Inject constructor(
     private val preferences: PreferencesStore,
     private val dao: DownloadRequestsDao,
     private val audiosDao: AudiosDao,
+    private val audiosRepo: AudiosRepo,
     private val fetcher: Fetch,
     private val analytics: FirebaseAnalytics,
 ) {
@@ -65,11 +73,18 @@ class Downloader @Inject constructor(
     }
 
     private val downloaderEventsChannel = Channel<DownloaderEvent>(Channel.CONFLATED)
-
-    private fun downloaderEvent(event: DownloaderEvent) = downloaderEventsChannel.trySend(event)
-    private fun downloaderMessage(message: UiMessage<*>) = downloaderEventsChannel.trySend(DownloaderEvent.DownloaderMessage(message))
-
     val downloaderEvents = downloaderEventsChannel.receiveAsFlow()
+
+    private val downloaderEventsHistory = mutableListOf<DownloaderEvent>()
+    val downloaderEventsAll get() = downloaderEventsHistory.toImmutableList()
+    fun clearDownloaderEvents() = downloaderEventsHistory.clear()
+
+    private fun downloaderEvent(event: DownloaderEvent) {
+        downloaderEventsChannel.trySend(event)
+        downloaderEventsHistory.add(event)
+    }
+
+    private fun downloaderMessage(message: UiMessage<*>) = downloaderEvent(DownloaderEvent.DownloaderMessage(message))
 
     private val fetcherDownloads = flow {
         while (true) {
@@ -107,17 +122,19 @@ class Downloader @Inject constructor(
     /**
      * Tries to enqueue given audio or issues error events in case of failure.
      */
-    suspend fun enqueueAudio(audio: Audio) {
+    suspend fun enqueueAudio(audio: Audio): Boolean {
         Timber.d("Enqueue audio: $audio")
         val downloadsLocation = verifyAndGetDownloadsLocationUri()
         if (downloadsLocation == null) {
             pendingEnqueableAudio = audio
-            return
+            return false
         }
+
+        audiosRepo.saveAudios(AudioSaveType.Download, audio)
 
         val downloadRequest = DownloadRequest.fromAudio(audio)
         if (!validateNewAudioRequest(downloadRequest)) {
-            return
+            return false
         }
 
         val songsGrouping = downloadsSongsGrouping.first()
@@ -134,12 +151,12 @@ class Downloader @Inject constructor(
             } else {
                 downloaderMessage(AudioDownloadErrorFileCreate)
             }
-            return
+            return false
         }
 
         if (audio.downloadUrl == null) {
             downloaderMessage(AudioDownloadErrorInvalidUrl)
-            return
+            return false
         }
 
         val downloadUrl = Uri.parse(audio.downloadUrl).buildUpon()
@@ -147,15 +164,18 @@ class Downloader @Inject constructor(
             .build()
             .toString()
         val request = Request(downloadUrl, file.uri)
-        when (val enqueueResult = enqueue(downloadRequest, request)) {
+
+        return when (val enqueueResult = enqueue(downloadRequest, request)) {
             is FetchEnqueueSuccessful -> {
                 Timber.i("Successfully enqueued audio to download")
                 downloaderMessage(AudioDownloadQueued)
+                true
             }
             is FetchEnqueueFailed -> {
                 val error = enqueueResult.error.throwable ?: UnknownError("error while enqueuing")
                 Timber.e(error, "Failed to enqueue audio to download")
                 downloaderMessage(UiMessage.Error(error))
+                false
             }
         }
     }
@@ -166,7 +186,7 @@ class Downloader @Inject constructor(
      * @return false if not allowed to enqueue again, true otherwise
      */
     private suspend fun validateNewAudioRequest(downloadRequest: DownloadRequest): Boolean {
-        val existingRequest = dao.has(downloadRequest.id) > 0
+        val existingRequest = dao.exists(downloadRequest.id) > 0
 
         if (existingRequest) {
             val oldRequest = dao.entry(downloadRequest.id).first()
@@ -273,11 +293,17 @@ class Downloader @Inject constructor(
         }
     }
 
+    suspend fun findAudioDownload(audioId: String): Optional<Audio> {
+        return (audiosDao to dao).findAudio(audioId)?.apply {
+            audioDownloadItem = getAudioDownload(id).orNull()
+        }.orNone()
+    }
+
     /**
      * Builds [AudioDownloadItem] from given audio id if it exists and satisfies [allowedStatuses].
      */
     suspend fun getAudioDownload(audioId: String, vararg allowedStatuses: Status = arrayOf(Status.COMPLETED)): Optional<AudioDownloadItem> {
-        val existingRequest = dao.has(audioId) > 0
+        val existingRequest = dao.exists(audioId) > 0
         if (existingRequest) {
             val request = dao.entry(audioId).first()
             val downloadInfo = fetcher.downloadInfo(request.requestId)

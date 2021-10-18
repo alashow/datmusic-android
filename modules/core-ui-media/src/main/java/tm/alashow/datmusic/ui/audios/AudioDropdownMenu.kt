@@ -25,12 +25,14 @@ private val defaultMenuActionLabels = listOf(
     R.string.audio_menu_play,
     R.string.audio_menu_playNext,
     R.string.audio_menu_download,
-    R.string.audio_menu_copyLink
+    R.string.audio_menu_copyLink,
+    R.string.playlist_addTo,
 )
 
 val currentPlayingMenuActionLabels = listOf(
     R.string.audio_menu_download,
-    R.string.audio_menu_copyLink
+    R.string.audio_menu_copyLink,
+    R.string.playlist_addTo,
 )
 
 @Composable
@@ -39,6 +41,7 @@ fun AudioDropdownMenu(
     onExpandedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     actionLabels: List<Int> = defaultMenuActionLabels,
+    extraActionLabels: List<Int> = emptyList(),
     onDropdownSelect: (Int) -> Unit = {}
 ) {
     IconButton(
@@ -59,7 +62,7 @@ fun AudioDropdownMenu(
                 .width(IntrinsicSize.Min)
                 .align(Alignment.Center)
         ) {
-            actionLabels.forEach { item ->
+            (actionLabels + extraActionLabels).forEach { item ->
                 val label = stringResource(item)
                 DropdownMenuItem(
                     onClick = {

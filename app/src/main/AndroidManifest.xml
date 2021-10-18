@@ -11,6 +11,8 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.android.vending.BILLING" />
 
+    <uses-permission android:name="com.android.vending.BILLING" />
+
     <application
         android:name="tm.alashow.datmusic.App"
         android:allowBackup="true"
@@ -22,6 +24,7 @@
         <activity
             android:name="tm.alashow.datmusic.ui.MainActivity"
             android:theme="@style/Theme.App.Home"
+            android:windowSoftInputMode="adjustResize|adjustPan"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -4,196 +4,70 @@
  */
 package tm.alashow.datmusic.ui.album
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Album
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.insets.ui.Scaffold
-import kotlin.math.round
-import tm.alashow.base.util.extensions.localizedMessage
-import tm.alashow.base.util.extensions.localizedTitle
-import tm.alashow.common.compose.LocalPlaybackConnection
+import coil.compose.rememberImagePainter
+import tm.alashow.base.imageloading.ImageLoading
+import tm.alashow.base.util.extensions.Callback
+import tm.alashow.base.util.extensions.interpunctize
+import tm.alashow.base.util.extensions.orNA
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.Album
-import tm.alashow.datmusic.domain.entities.Audio
-import tm.alashow.datmusic.ui.audios.AudioRow
-import tm.alashow.datmusic.ui.components.CoverHeaderDefaults
-import tm.alashow.datmusic.ui.components.CoverHeaderRow
-import tm.alashow.domain.models.Async
-import tm.alashow.domain.models.Fail
-import tm.alashow.domain.models.Incomplete
-import tm.alashow.domain.models.Loading
-import tm.alashow.domain.models.Success
-import tm.alashow.navigation.LocalNavigator
-import tm.alashow.navigation.Navigator
-import tm.alashow.ui.OffsetNotifyingBox
-import tm.alashow.ui.components.CollapsingTopBar
-import tm.alashow.ui.components.EmptyErrorBox
-import tm.alashow.ui.components.ErrorBox
-import tm.alashow.ui.components.fullScreenLoading
+import tm.alashow.datmusic.domain.entities.CoverImageSize
+import tm.alashow.datmusic.ui.detail.MediaDetail
+import tm.alashow.ui.components.CoverImage
+import tm.alashow.ui.simpleClickable
 import tm.alashow.ui.theme.AppTheme
 
 @Composable
-fun AlbumDetail(navigator: Navigator = LocalNavigator.current) {
-    AlbumDetail(viewModel = hiltViewModel()) {
-        navigator.back()
-    }
+fun AlbumDetail() {
+    AlbumDetail(viewModel = hiltViewModel())
 }
 
 @Composable
-private fun AlbumDetail(viewModel: AlbumDetailViewModel, onBackClick: () -> Unit = {}) {
+private fun AlbumDetail(viewModel: AlbumDetailViewModel) {
     val viewState by rememberFlowWithLifecycle(viewModel.state).collectAsState(initial = AlbumDetailViewState.Empty)
-    val listState = rememberLazyListState()
 
-    val headerHeight = CoverHeaderDefaults.height
-    val headerVisibilityProgress = remember { Animatable(0f) }
-
-    OffsetNotifyingBox(headerHeight = headerHeight) { _, progress ->
-        Scaffold(
-            topBar = {
-                LaunchedEffect(progress.value) {
-                    headerVisibilityProgress.animateTo(round(progress.value))
-                }
-                CollapsingTopBar(
-                    title = stringResource(R.string.albums_detail_title),
-                    collapsed = headerVisibilityProgress.value == 0f,
-                    onNavigationClick = onBackClick,
-                )
-            }
-        ) { padding ->
-            AlbumDetailList(viewState, viewModel::refresh, listState, padding = padding)
-        }
-    }
+    MediaDetail(
+        viewState = viewState,
+        titleRes = R.string.albums_detail_title,
+        onFailRetry = viewModel::refresh,
+        onEmptyRetry = viewModel::refresh,
+        mediaDetailContent = AlbumDetailContent(viewState.album ?: Album()),
+        headerCoverIcon = rememberVectorPainter(Icons.Default.Album),
+        extraHeaderContent = {
+            AlbumHeaderSubtitle(viewState, onArtistClick = viewModel::goToArtist)
+        },
+    )
 }
 
 @Composable
-private fun AlbumDetailList(
-    viewState: AlbumDetailViewState,
-    onRetry: () -> Unit,
-    listState: LazyListState,
-    modifier: Modifier = Modifier,
-    padding: PaddingValues = PaddingValues(),
-) {
-    LazyColumn(
-        state = listState,
-        modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(bottom = padding.calculateTopPadding() + padding.calculateBottomPadding())
-    ) {
-        val album = viewState.album
-        if (album != null) {
-            item {
-                var scrolledY = 0f
-                var previousOffset = 0
-                val parallax = 0.6f
-                CoverHeaderRow(
-                    title = album.title,
-                    imageRequest = album.photo.mediumUrl,
-                    modifier = Modifier.graphicsLayer {
-                        scrolledY += listState.firstVisibleItemScrollOffset - previousOffset
-                        translationY = scrolledY * parallax
-                        previousOffset = listState.firstVisibleItemScrollOffset
-                    }
-                )
-            }
+private fun AlbumHeaderSubtitle(viewState: AlbumDetailViewState, onArtistClick: Callback) {
+    val artist = viewState.album?.artists?.firstOrNull()
+    val albumSubtitle = listOf(stringResource(R.string.albums_detail_title), viewState.album?.year?.toString()).interpunctize()
+    val artistName = artist?.name.orNA()
 
-            val details by derivedStateOf { viewState.albumDetails }
-            val detailsLoading = details is Incomplete
-
-            val albumAudios = albumAudios(album, details, detailsLoading)
-
-            albumDetailsFail(details, onRetry)
-            albumDetailsEmpty(details, albumAudios.isEmpty(), onRetry)
-        } else {
-            fullScreenLoading()
-        }
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall)) {
+        val painter = rememberImagePainter(artist?.photo(CoverImageSize.SMALL), builder = ImageLoading.defaultConfig)
+        CoverImage(painter, shape = CircleShape, size = 20.dp)
+        Text(
+            artistName, style = MaterialTheme.typography.subtitle2,
+            modifier = Modifier.simpleClickable(onClick = onArtistClick)
+        )
     }
-}
-
-private fun LazyListScope.albumAudios(
-    album: Album,
-    details: Async<List<Audio>>,
-    detailsLoading: Boolean,
-): List<Audio> {
-    val albumAudios = when (details) {
-        is Success -> details()
-        is Loading -> (1..album.songCount).map { Audio() }
-        else -> emptyList()
-    }
-
-    if (albumAudios.isNotEmpty()) {
-        item {
-            Text(
-                stringResource(R.string.search_audios), style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colors.background)
-                    .padding(AppTheme.specs.inputPaddings)
-            )
-        }
-
-        itemsIndexed(albumAudios) { index, audio ->
-            val playbackConnection = LocalPlaybackConnection.current
-            AudioRow(
-                audio = audio,
-                isPlaceholder = detailsLoading,
-                modifier = Modifier.background(MaterialTheme.colors.background),
-                onPlayAudio = {
-                    if (details is Success)
-                        playbackConnection.playAlbum(album, index)
-                }
-            )
-        }
-    }
-    return albumAudios
-}
-
-private fun LazyListScope.albumDetailsFail(
-    details: Async<List<Audio>>,
-    onRetry: () -> Unit,
-) {
-    if (details is Fail) {
-        item {
-            ErrorBox(
-                title = stringResource(details.error.localizedTitle()),
-                message = stringResource(details.error.localizedMessage()),
-                onRetryClick = onRetry,
-                modifier = Modifier.fillParentMaxHeight()
-            )
-        }
-    }
-}
-
-private fun LazyListScope.albumDetailsEmpty(
-    details: Async<List<Audio>>,
-    albumAudiosEmpty: Boolean,
-    onRetry: () -> Unit,
-) {
-    if (details is Success && albumAudiosEmpty) {
-        item {
-            EmptyErrorBox(
-                onRetryClick = onRetry,
-                modifier = Modifier.fillParentMaxHeight()
-            )
-        }
-    }
+    Text(albumSubtitle, style = MaterialTheme.typography.caption)
 }
