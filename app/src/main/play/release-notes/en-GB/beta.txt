@@ -1,13 +1,5 @@
-Hey! Thanks for using datmusic app!
-Please review the app if you like it!
-
-v2.0.0-rc05
-- New font
-- Alternate album arts in playback
-- Small audio menu changes
-
-v2.0.0-rc04
-- Playback queue bug fixes (+ allow multiple song instances via Play next)
-- Smoother adaptive color animation
-- Crash fix when network available
-- Settings layout fix
+v2.1.0-beta01
+- Playlists: create & edit local playlists. Add songs from search or create a playlist from any playback queue
+- Library tab: currently only playlists, more saveable items to come (artists, albums etc.)
+- Redesigned artist/album detail screens
+- Premium subscription: testing out first premium feature, a playlist downloader!
