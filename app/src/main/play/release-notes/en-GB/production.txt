@@ -1,3 +1,6 @@
+v2.1.02
+- Subscriptions bug fix
+
 v2.1.0
 - Playlists: create & edit local playlists. Add songs from search or create a playlist from any playback queue
 - Library tab: currently only playlists, more saveable items to come (artists, albums etc.)
