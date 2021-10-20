@@ -101,7 +101,7 @@ object Subscriptions {
                         Timber.d("Permission restored: $permission")
                         onPermissionActive(premiumPermission)
                     } else onRestoreFail()
-                }
+                } else onRestoreFail()
             }
 
             override fun onError(error: QonversionError) {
@@ -126,7 +126,7 @@ object Subscriptions {
                     val premiumPermission = permissions[permission.id]
                     if (premiumPermission != null && premiumPermission.isActive()) {
                         onPermissionActive(premiumPermission)
-                    }
+                    } else onPermissionError(SubscriptionNoPermissionsError)
                 }
 
                 override fun onError(error: QonversionError) {
