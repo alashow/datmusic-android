@@ -11,8 +11,6 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.android.vending.BILLING" />
 
-    <uses-permission android:name="com.android.vending.BILLING" />
-
     <application
         android:name="tm.alashow.datmusic.App"
         android:allowBackup="true"
