@@ -7,6 +7,7 @@ package tm.alashow.datmusic.ui.library
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.collect
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import tm.alashow.base.ui.SnackbarManager
 import tm.alashow.base.ui.SnackbarMessage
+import tm.alashow.base.util.event
 import tm.alashow.base.util.extensions.stateInDefault
 import tm.alashow.base.util.toUiMessage
 import tm.alashow.datmusic.data.interactors.playlist.DeletePlaylist
@@ -40,6 +42,7 @@ class LibraryViewModel @Inject constructor(
     private val playlistDeleter: DeletePlaylist,
     private val playlistDownloader: DownloadPlaylist,
     private val snackbarManager: SnackbarManager,
+    private val analytics: FirebaseAnalytics,
     private val navigator: Navigator,
 ) : ViewModel() {
 
@@ -52,10 +55,12 @@ class LibraryViewModel @Inject constructor(
     }
 
     fun deletePlaylist(playlistId: PlaylistId) = viewModelScope.launch {
+        analytics.event("playlist.row.delete", mapOf("playlistId" to playlistId))
         playlistDeleter.execute(playlistId)
     }
 
     fun downloadPlaylist(playlistId: PlaylistId) = viewModelScope.launch {
+        analytics.event("playlist.row.download", mapOf("playlistId" to playlistId))
         playlistDownloader(playlistId).collect { result ->
             when (result) {
                 is Fail -> snackbarManager.addMessage(result.error.toUiMessage())
