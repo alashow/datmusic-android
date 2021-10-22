@@ -83,7 +83,6 @@ class ArtistDetailContent : MediaDetailContent<Artist>() {
                 val playbackConnection = LocalPlaybackConnection.current
                 AudioRow(
                     audio = audio,
-                    audioIndex = index,
                     isPlaceholder = detailsLoading,
                     onPlayAudio = {
                         if (details is Success)

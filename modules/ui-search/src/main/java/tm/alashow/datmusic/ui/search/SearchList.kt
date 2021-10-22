@@ -348,7 +348,6 @@ internal fun LazyListScope.audioList(pagingItems: LazyPagingItems<Audio>, onPlay
         itemsIndexed(placeholders) { index, audio ->
             AudioRow(
                 audio = audio,
-                audioIndex = index,
                 isPlaceholder = true
             )
         }
@@ -357,7 +356,6 @@ internal fun LazyListScope.audioList(pagingItems: LazyPagingItems<Audio>, onPlay
     itemsIndexed(pagingItems, key = { _, item -> item.id }) { index, audio ->
         AudioRow(
             audio = audio ?: Audio(),
-            audioIndex = index,
             isPlaceholder = audio == null,
             playOnClick = false,
             onPlayAudio = onPlayAudio

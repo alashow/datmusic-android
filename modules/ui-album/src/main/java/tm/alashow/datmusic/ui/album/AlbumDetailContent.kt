@@ -48,7 +48,6 @@ class AlbumDetailContent(val album: Album) : MediaDetailContent<Audios>() {
                 val playbackConnection = LocalPlaybackConnection.current
                 AudioRow(
                     audio = audio,
-                    audioIndex = index,
                     isPlaceholder = detailsLoading,
                     includeCover = false,
                     onPlayAudio = {
