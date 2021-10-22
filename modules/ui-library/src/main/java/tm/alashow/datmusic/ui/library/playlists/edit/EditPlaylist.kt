@@ -299,6 +299,7 @@ private fun LazyListScope.editablePlaylistAudioList(
                     audio = playlistItem.audio,
                     modifier = Modifier.weight(19f),
                     includeCover = false,
+                    observeNowPlayingAudio = false,
                 )
 
                 Icon(

@@ -131,7 +131,7 @@ inline val PlaybackStateCompat.hasPrevious
 inline val PlaybackStateCompat.hasNext
     get() = (extras?.getBoolean(QUEUE_HAS_NEXT) ?: true)
 
-inline val MediaMetadataCompat.id: String get() = getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)
+inline val MediaMetadataCompat.id: String? get() = getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)
 
 inline val MediaMetadataCompat.title: String? get() = getString(MediaMetadataCompat.METADATA_KEY_TITLE)
 

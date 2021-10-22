@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarDuration
@@ -43,6 +44,7 @@ import androidx.paging.CombinedLoadStates
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemsIndexed
 import com.google.accompanist.insets.ui.LocalScaffoldPadding
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
@@ -343,14 +345,23 @@ internal fun LazyListScope.audioList(pagingItems: LazyPagingItems<Audio>, onPlay
 
     if (!hasItems && isLoading) {
         val placeholders = (1..20).map { Audio() }
-        items(placeholders) {
-            AudioRow(it, isPlaceholder = true)
+        itemsIndexed(placeholders) { index, audio ->
+            AudioRow(
+                audio = audio,
+                audioIndex = index,
+                isPlaceholder = true
+            )
         }
     }
 
-    items(pagingItems, key = { _, item -> item.id }) {
-        val audio = it ?: Audio()
-        AudioRow(audio, isPlaceholder = it == null, onPlayAudio = onPlayAudio)
+    itemsIndexed(pagingItems, key = { _, item -> item.id }) { index, audio ->
+        AudioRow(
+            audio = audio ?: Audio(),
+            audioIndex = index,
+            isPlaceholder = audio == null,
+            playOnClick = false,
+            onPlayAudio = onPlayAudio
+        )
     }
 
     loadingMore(pagingItems)

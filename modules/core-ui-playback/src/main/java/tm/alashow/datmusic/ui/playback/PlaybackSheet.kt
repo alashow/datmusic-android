@@ -664,6 +664,7 @@ private fun LazyListScope.playbackQueue(
         val realPosition = firstIndex + index
         AudioRow(
             audio = audio,
+            observeNowPlayingAudio = false,
             imageSize = 40.dp,
             onPlayAudio = {
                 playbackConnection.transportControls?.skipToQueueItem(realPosition.toLong())

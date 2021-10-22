@@ -47,11 +47,11 @@ class PlaylistDetailContent(
         }
 
         if (playlistAudios.isNotEmpty()) {
-            list.itemsIndexed(playlistAudios, key = { i, it -> it.playlistAudio.id }) { index, item ->
+            list.itemsIndexed(playlistAudios, key = { _, it -> it.playlistAudio.id }) { index, item ->
                 AudioRow(
                     audio = item.audio,
+                    audioIndex = index,
                     isPlaceholder = detailsLoading,
-                    playOnClick = true,
                     onPlayAudio = {
                         if (details is Success) playbackConnection.playPlaylist(details().playlistId(), index)
                     },
