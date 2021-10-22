@@ -101,6 +101,8 @@
     <string name="playback.queue.saveAsPlaylist.saved">Saved as %1$s</string>
     <string name="playback.queue.saveAsPlaylist.open">Open</string>
 
+    <string name="playback.queue.removeFromQueue">Remove from queue</string>
+
     <string name="playback.queueTitle.audio">Playing from queue</string>
     <string name="playback.queueTitle.downloads">Playing from downloads</string>
     <string name="playback.queueTitle.artist">Playing from artist</string>

@@ -63,11 +63,12 @@ fun AudioRow(
     isPlaceholder: Boolean = false,
     onClick: ((Audio) -> Unit)? = null,
     onPlayAudio: ((Audio) -> Unit)? = null,
-    extraActionLabels: List<Int> = emptyList(),
     playOnClick: Boolean = true,
     includeCover: Boolean = true,
     audioIndex: Int? = null,
     observeNowPlayingAudio: Boolean = true,
+    extraActionLabels: List<Int> = emptyList(),
+    onExtraAction: (AudioItemAction.ExtraAction) -> Unit = {},
     actionHandler: AudioActionHandler = LocalAudioActionHandler.current
 ) {
     var menuVisible by remember { mutableStateOf(false) }
@@ -123,7 +124,7 @@ fun AudioRow(
                     when {
                         action is AudioItemAction.Play && onPlayAudio != null -> onPlayAudio(audio)
                         action is AudioItemAction.AddToPlaylist -> setAddToPlaylistVisible(true)
-                        else -> actionHandler(action)
+                        else -> action.handleExtraActions(actionHandler, onExtraAction)
                     }
                 },
             )

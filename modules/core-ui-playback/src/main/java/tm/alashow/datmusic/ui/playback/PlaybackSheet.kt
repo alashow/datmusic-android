@@ -144,6 +144,9 @@ import tm.alashow.ui.theme.disabledAlpha
 import tm.alashow.ui.theme.plainBackgroundColor
 import tm.alashow.ui.theme.plainSurfaceColor
 
+private val RemoveFromPlaylist = R.string.playback_queue_removeFromQueue
+private val SaveQueueAsPlaylist = R.string.playback_queue_saveAsPlaylist
+
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun PlaybackSheet(
@@ -236,8 +239,6 @@ internal fun PlaybackSheetContent(
         }
     }
 }
-
-private val SaveQueueAsPlaylist = R.string.playback_queue_saveAsPlaylist
 
 @Composable
 private fun PlaybackSheetTopBar(
@@ -670,7 +671,9 @@ private fun LazyListScope.playbackQueue(
             onPlayAudio = {
                 playbackConnection.transportControls?.skipToQueueItem(realPosition.toLong())
                 scrollToTop()
-            }
+            },
+            extraActionLabels = listOf(RemoveFromPlaylist),
+            onExtraAction = { playbackConnection.removeByPosition(realPosition) }
         )
     }
 }
