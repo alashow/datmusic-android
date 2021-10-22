@@ -78,7 +78,6 @@ import tm.alashow.ui.theme.AppTheme
 
 object PlaybackMiniControlsDefaults {
     val height = 56.dp
-    val playPauseSize = 36.dp
 }
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -235,7 +234,7 @@ private fun PlaybackNowPlaying(audio: Audio, modifier: Modifier = Modifier) {
 @Composable
 private fun RowScope.PlaybackPlayPause(
     playbackState: PlaybackStateCompat,
-    size: Dp = PlaybackMiniControlsDefaults.playPauseSize,
+    size: Dp = AppTheme.specs.iconSize,
     onPlayPause: () -> Unit
 ) {
     IconButton(

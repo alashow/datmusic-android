@@ -245,79 +245,86 @@ internal fun PlaybackSheetContent(
 private fun PlaybackSheetTopBar(
     playbackQueue: PlaybackQueue,
     onClose: Callback,
-    iconSize: Dp = 36.dp,
-    actionHandler: AudioActionHandler = LocalAudioActionHandler.current,
-    viewModel: PlaybackSheetViewModel = hiltViewModel()
 ) {
-    val (expanded, setExpanded) = remember { mutableStateOf(false) }
-
     TopAppBar(
         elevation = 0.dp,
         backgroundColor = Color.Transparent,
         contentPadding = rememberInsetsPaddingValues(LocalWindowInsets.current.statusBars),
-        title = {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .offset(x = -8.dp) // idk why this is needed for centering
-            ) {
-                val context = LocalContext.current
-                val queueTitle = playbackQueue.title.asQueueTitle()
-                Text(
-                    queueTitle.localizeType(context.resources).uppercase(),
-                    style = MaterialTheme.typography.overline.copy(fontWeight = FontWeight.Light),
-                    maxLines = 1,
-                )
-                Text(
-                    queueTitle.localizeValue(), style = MaterialTheme.typography.body1,
-                    textAlign = TextAlign.Center,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 2,
-                )
-            }
-        },
+        title = { PlaybackSheetTopBarTitle(playbackQueue) },
+        actions = { PlaybackSheetTopBarActions(playbackQueue) },
         navigationIcon = {
             IconButton(onClick = onClose) {
                 Icon(
                     rememberVectorPainter(Icons.Default.KeyboardArrowDown),
-                    modifier = Modifier.size(iconSize),
+                    modifier = Modifier.size(AppTheme.specs.iconSize),
                     contentDescription = null,
                 )
             }
         },
-        actions = {
-            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
-                val (addToPlaylistVisible, setAddToPlaylistVisible) = remember { mutableStateOf(false) }
-                if (playbackQueue.isValid) {
-                    AddToPlaylistMenu(playbackQueue.currentAudio, addToPlaylistVisible, setAddToPlaylistVisible)
-                }
-                if (playbackQueue.isValid) {
-                    val (addQueueToPlaylistVisible, setAddQueueToPlaylistVisible) = remember { mutableStateOf(false) }
-                    AddToPlaylistMenu(playbackQueue.audios, addQueueToPlaylistVisible, setAddQueueToPlaylistVisible)
-                    AudioDropdownMenu(
-                        expanded = expanded,
-                        onExpandedChange = setExpanded,
-                        actionLabels = currentPlayingMenuActionLabels,
-                        extraActionLabels = listOf(AddQueueToPlaylist, SaveQueueAsPlaylist)
-                    ) { actionLabel ->
-                        val audio = playbackQueue.currentAudio
-                        when (val action = AudioItemAction.from(actionLabel, audio)) {
-                            is AudioItemAction.AddToPlaylist -> setAddToPlaylistVisible(true)
-                            else -> {
-                                action.handleExtraActions(actionHandler) {
-                                    when (it.actionLabelRes) {
-                                        AddQueueToPlaylist -> setAddQueueToPlaylistVisible(true)
-                                        SaveQueueAsPlaylist -> viewModel.saveQueueAsPlaylist()
-                                    }
-                                }
+    )
+}
+
+@Composable
+private fun PlaybackSheetTopBarTitle(playbackQueue: PlaybackQueue) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxWidth()
+            .offset(x = -8.dp) // idk why this is needed for centering
+    ) {
+        val context = LocalContext.current
+        val queueTitle = playbackQueue.title.asQueueTitle()
+        Text(
+            text = queueTitle.localizeType(context.resources).uppercase(),
+            style = MaterialTheme.typography.overline.copy(fontWeight = FontWeight.Light),
+            maxLines = 1,
+        )
+        Text(
+            text = queueTitle.localizeValue(),
+            style = MaterialTheme.typography.body1,
+            textAlign = TextAlign.Center,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 2,
+        )
+    }
+}
+
+@Composable
+private fun PlaybackSheetTopBarActions(
+    playbackQueue: PlaybackQueue,
+    actionHandler: AudioActionHandler = LocalAudioActionHandler.current,
+    viewModel: PlaybackSheetViewModel = hiltViewModel()
+) {
+    val (expanded, setExpanded) = remember { mutableStateOf(false) }
+    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
+        if (playbackQueue.isValid) {
+            val (addToPlaylistVisible, setAddToPlaylistVisible) = remember { mutableStateOf(false) }
+            val (addQueueToPlaylistVisible, setAddQueueToPlaylistVisible) = remember { mutableStateOf(false) }
+
+            AddToPlaylistMenu(playbackQueue.currentAudio, addToPlaylistVisible, setAddToPlaylistVisible)
+            AddToPlaylistMenu(playbackQueue.audios, addQueueToPlaylistVisible, setAddQueueToPlaylistVisible)
+
+            AudioDropdownMenu(
+                expanded = expanded,
+                onExpandedChange = setExpanded,
+                actionLabels = currentPlayingMenuActionLabels,
+                extraActionLabels = listOf(AddQueueToPlaylist, SaveQueueAsPlaylist)
+            ) { actionLabel ->
+                val audio = playbackQueue.currentAudio
+                when (val action = AudioItemAction.from(actionLabel, audio)) {
+                    is AudioItemAction.AddToPlaylist -> setAddToPlaylistVisible(true)
+                    else -> {
+                        action.handleExtraActions(actionHandler) {
+                            when (it.actionLabelRes) {
+                                AddQueueToPlaylist -> setAddQueueToPlaylistVisible(true)
+                                SaveQueueAsPlaylist -> viewModel.saveQueueAsPlaylist()
                             }
                         }
                     }
                 }
             }
         }
-    )
+    }
 }
 
 @Composable
