@@ -112,7 +112,7 @@ class PlaybackConnectionImpl(
 
     override val nowPlayingAudio = combine(playbackQueue, playbackState, ::Pair)
         .map { (queue, playbackState) ->
-            when (queue.isValid && playbackState.isPlayEnabled) {
+            when (queue.isValid && !playbackState.isIdle) {
                 true -> PlaybackQueue.NowPlayingAudio.from(queue)
                 else -> null
             }
