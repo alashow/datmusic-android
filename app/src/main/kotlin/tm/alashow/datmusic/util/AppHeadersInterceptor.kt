@@ -5,7 +5,7 @@
 package tm.alashow.datmusic.util
 
 import android.content.Context
-import java.util.Locale
+import java.util.*
 import okhttp3.Interceptor
 import okhttp3.Response
 import tm.alashow.Config as BaseConfig
@@ -17,7 +17,7 @@ internal class AppHeadersInterceptor(context: Context) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request().newBuilder()
-            .header("User-Agent", "UNJlh7droPEHeWSmunRB1f1D")
+            .header("User-Agent", "83cc41fd9ce3cdf3760d760d5c840e30de2764e8")
             .header("Accept-Language", Locale.getDefault().language)
             .run {
                 val host = chain.request().url.host
