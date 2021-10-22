@@ -18,7 +18,7 @@ import tm.alashow.base.util.event
 import tm.alashow.datmusic.data.interactors.playlist.AddToPlaylist
 import tm.alashow.datmusic.data.interactors.playlist.CreatePlaylist
 import tm.alashow.datmusic.data.observers.playlist.ObservePlaylists
-import tm.alashow.datmusic.domain.entities.Audio
+import tm.alashow.datmusic.domain.entities.Audios
 import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.domain.entities.PlaylistId
 import tm.alashow.datmusic.ui.coreLibrary.R
@@ -51,7 +51,7 @@ class AddToPlaylistViewModel @Inject constructor(
         observePlaylists(Params())
     }
 
-    fun addTo(playlist: Playlist, vararg audios: Audio) {
+    fun addTo(playlist: Playlist, audios: Audios) {
         analytics.event("playlists.addTo", mapOf("playlistId" to playlist.id, "audiosIds" to audios.joinToString { it.id }))
         viewModelScope.launch {
             var targetPlaylist = playlist
@@ -59,7 +59,7 @@ class AddToPlaylistViewModel @Inject constructor(
                 targetPlaylist = createPlaylist.execute(CreatePlaylist.Params(generateNameIfEmpty = true))
             }
 
-            addToPlaylist.execute(AddToPlaylist.Params(targetPlaylist, audios.toList()))
+            addToPlaylist.execute(AddToPlaylist.Params(targetPlaylist, audios))
 
             val addedToPlaylist = AddedToPlaylistMessage(targetPlaylist)
             snackbarManager.addMessage(addedToPlaylist)

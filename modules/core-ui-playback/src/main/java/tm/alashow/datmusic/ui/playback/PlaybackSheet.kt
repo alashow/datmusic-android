@@ -145,6 +145,7 @@ import tm.alashow.ui.theme.plainBackgroundColor
 import tm.alashow.ui.theme.plainSurfaceColor
 
 private val RemoveFromPlaylist = R.string.playback_queue_removeFromQueue
+private val AddQueueToPlaylist = R.string.playback_queue_addQueueToPlaylist
 private val SaveQueueAsPlaylist = R.string.playback_queue_saveAsPlaylist
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -291,20 +292,25 @@ private fun PlaybackSheetTopBar(
                 if (playbackQueue.isValid) {
                     AddToPlaylistMenu(playbackQueue.currentAudio, addToPlaylistVisible, setAddToPlaylistVisible)
                 }
-                AudioDropdownMenu(
-                    expanded = expanded,
-                    onExpandedChange = setExpanded,
-                    actionLabels = currentPlayingMenuActionLabels,
-                    extraActionLabels = listOf(SaveQueueAsPlaylist)
-                ) { actionLabel ->
-                    if (playbackQueue.isValid) {
+                if (playbackQueue.isValid) {
+                    val (addQueueToPlaylistVisible, setAddQueueToPlaylistVisible) = remember { mutableStateOf(false) }
+                    AddToPlaylistMenu(playbackQueue.audios, addQueueToPlaylistVisible, setAddQueueToPlaylistVisible)
+                    AudioDropdownMenu(
+                        expanded = expanded,
+                        onExpandedChange = setExpanded,
+                        actionLabels = currentPlayingMenuActionLabels,
+                        extraActionLabels = listOf(AddQueueToPlaylist, SaveQueueAsPlaylist)
+                    ) { actionLabel ->
                         val audio = playbackQueue.currentAudio
-                        val action = AudioItemAction.from(actionLabel, audio)
-                        if (action is AudioItemAction.AddToPlaylist) {
-                            setAddToPlaylistVisible(true)
-                        } else {
-                            action.handleExtraAction(SaveQueueAsPlaylist, actionHandler) {
-                                viewModel.saveQueueAsPlaylist()
+                        when (val action = AudioItemAction.from(actionLabel, audio)) {
+                            is AudioItemAction.AddToPlaylist -> setAddToPlaylistVisible(true)
+                            else -> {
+                                action.handleExtraActions(actionHandler) {
+                                    when (it.actionLabelRes) {
+                                        AddQueueToPlaylist -> setAddQueueToPlaylistVisible(true)
+                                        SaveQueueAsPlaylist -> viewModel.saveQueueAsPlaylist()
+                                    }
+                                }
                             }
                         }
                     }

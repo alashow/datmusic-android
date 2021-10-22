@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.Audio
+import tm.alashow.datmusic.domain.entities.Audios
 import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.ui.coreLibrary.R
 import tm.alashow.datmusic.ui.library.playlist.addTo.NewPlaylistItem.isNewPlaylistItem
@@ -37,6 +38,19 @@ fun AddToPlaylistMenu(
     audio: Audio,
     visible: Boolean,
     onVisibleChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) = AddToPlaylistMenu(
+    audios = listOf(audio),
+    visible = visible,
+    onVisibleChange = onVisibleChange,
+    modifier = modifier
+)
+
+@Composable
+fun AddToPlaylistMenu(
+    audios: Audios,
+    visible: Boolean,
+    onVisibleChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: AddToPlaylistViewModel = hiltViewModel()
 ) {
@@ -46,9 +60,10 @@ fun AddToPlaylistMenu(
         AddToPlaylistDropdownMenu(
             expanded = visible,
             onExpandedChange = onVisibleChange,
+            multiple = audios.size > 1,
             playlists = playlists.withNewPlaylistItem(),
             onPlaylistSelect = {
-                viewModel.addTo(playlist = it, audio)
+                viewModel.addTo(playlist = it, audios)
             },
             modifier = modifier,
         )
@@ -59,6 +74,7 @@ private fun AddToPlaylistDropdownMenu(
     expanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    multiple: Boolean = false,
     playlists: List<Playlist> = emptyList(),
     onPlaylistSelect: (Playlist) -> Unit = {}
 ) {
@@ -73,7 +89,7 @@ private fun AddToPlaylistDropdownMenu(
                 .align(Alignment.Center)
         ) {
             Text(
-                stringResource(R.string.playlist_addTo),
+                if (multiple) stringResource(R.string.playlist_addTo_multiple) else stringResource(R.string.playlist_addTo),
                 style = MaterialTheme.typography.caption.copy(color = MaterialTheme.colors.secondary),
                 modifier = Modifier.padding(AppTheme.specs.inputPaddings)
             )
