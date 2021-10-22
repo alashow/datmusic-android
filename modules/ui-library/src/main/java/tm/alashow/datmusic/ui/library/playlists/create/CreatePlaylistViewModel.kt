@@ -8,6 +8,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
+import tm.alashow.base.util.event
 import tm.alashow.base.util.extensions.orBlank
 import tm.alashow.datmusic.data.interactors.playlist.CreatePlaylist
 import tm.alashow.i18n.ValidationError
@@ -27,7 +29,8 @@ import tm.alashow.navigation.screens.LeafScreen
 class CreatePlaylistViewModel @Inject constructor(
     private val handle: SavedStateHandle,
     private val createPlaylist: CreatePlaylist,
-    private val navigator: Navigator
+    private val analytics: FirebaseAnalytics,
+    private val navigator: Navigator,
 ) : ViewModel() {
 
     private val nameState = MutableStateFlow(TextFieldValue())
@@ -42,8 +45,9 @@ class CreatePlaylistViewModel @Inject constructor(
     }
 
     fun createPlaylist() {
+        analytics.event("playlists.create")
         val params = CreatePlaylist.Params(
-            name = nameState.value?.text.orBlank(),
+            name = nameState.value.text.orBlank(),
             generateNameIfEmpty = true
         )
         viewModelScope.launch {

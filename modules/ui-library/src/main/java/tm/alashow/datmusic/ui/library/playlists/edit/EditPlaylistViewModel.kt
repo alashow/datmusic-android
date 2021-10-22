@@ -9,6 +9,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.Job
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.burnoutcrew.reorderable.move
+import tm.alashow.base.util.event
 import tm.alashow.base.util.extensions.orBlank
 import tm.alashow.datmusic.data.interactors.playlist.ClearPlaylistArtwork
 import tm.alashow.datmusic.data.interactors.playlist.DeletePlaylist
@@ -54,7 +56,8 @@ class EditPlaylistViewModel @Inject constructor(
     private val removePlaylistItems: RemovePlaylistItems,
     private val setCustomPlaylistArtwork: SetCustomPlaylistArtwork,
     private val clearPlaylistArtwork: ClearPlaylistArtwork,
-    private val navigator: Navigator
+    private val analytics: FirebaseAnalytics,
+    private val navigator: Navigator,
 ) : ViewModel() {
 
     private val playlistId = requireNotNull(handle.get<PlaylistId>(PLAYLIST_ID_KEY))
@@ -113,6 +116,7 @@ class EditPlaylistViewModel @Inject constructor(
         // clear last removed state with delay unless list is empty now
         if (playlistItems.value.isNotEmpty())
             clearLastRemovedPlaylistItem(delay = true)
+        analytics.event("playlists.edit.remove", mapOf("playlistId" to playlistId, "audioId" to removedItem.audio.id))
     }
 
     fun undoLastRemovedPlaylistItem() {
@@ -127,6 +131,7 @@ class EditPlaylistViewModel @Inject constructor(
             it.remove(removedItem)
         }
         clearLastRemovedPlaylistItem()
+        analytics.event("playlists.edit.undoRemove", mapOf("playlistId" to playlistId, "audioId" to removedItem.audio.id))
     }
 
     private var delayedClearLastRemovedJob: Job? = null
@@ -147,25 +152,30 @@ class EditPlaylistViewModel @Inject constructor(
     }
 
     fun shufflePlaylist() {
+        analytics.event("playlists.edit.shuffle", mapOf("playlistId" to playlistId))
         val updated = playlistItems.value.toMutableList().also { it.shuffle() }
         playlistItems.value = updated
     }
 
     fun deletePlaylist() = viewModelScope.launch {
+        analytics.event("playlists.edit.delete", mapOf("playlistId" to playlistId))
         deletePlaylist(playlistId).collect {
             navigator.goBack()
         }
     }
 
     fun setPlaylistArtwork(uri: Uri) = viewModelScope.launch {
+        analytics.event("playlists.edit.setArtwork", mapOf("playlistId" to playlistId))
         setCustomPlaylistArtwork.execute(SetCustomPlaylistArtwork.Params(playlistId, uri))
     }
 
     fun clearPlaylistArtwork() = viewModelScope.launch {
+        analytics.event("playlists.edit.clearArtwork", mapOf("playlistId" to playlistId))
         clearPlaylistArtwork.execute(playlistId)
     }
 
     fun save() {
+        analytics.event("playlists.edit.save", mapOf("playlistId" to playlistId))
         viewModelScope.launch {
             removePlaylistItems.execute(removedPlaylistItems.value.map { it.playlistAudio.id })
 

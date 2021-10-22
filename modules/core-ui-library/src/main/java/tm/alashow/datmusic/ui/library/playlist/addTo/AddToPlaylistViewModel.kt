@@ -7,17 +7,18 @@ package tm.alashow.datmusic.ui.library.playlist.addTo
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import tm.alashow.base.ui.SnackbarAction
 import tm.alashow.base.ui.SnackbarManager
 import tm.alashow.base.ui.SnackbarMessage
+import tm.alashow.base.util.event
 import tm.alashow.datmusic.data.interactors.playlist.AddToPlaylist
 import tm.alashow.datmusic.data.interactors.playlist.CreatePlaylist
 import tm.alashow.datmusic.data.observers.playlist.ObservePlaylists
-import tm.alashow.datmusic.domain.entities.Audio
+import tm.alashow.datmusic.domain.entities.Audios
 import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.domain.entities.PlaylistId
 import tm.alashow.datmusic.ui.coreLibrary.R
@@ -40,6 +41,7 @@ class AddToPlaylistViewModel @Inject constructor(
     private val addToPlaylist: AddToPlaylist,
     private val createPlaylist: CreatePlaylist,
     private val snackbarManager: SnackbarManager,
+    private val analytics: FirebaseAnalytics,
     private val navigator: Navigator,
 ) : ViewModel() {
 
@@ -49,15 +51,15 @@ class AddToPlaylistViewModel @Inject constructor(
         observePlaylists(Params())
     }
 
-    fun addTo(playlist: Playlist, vararg audios: Audio) {
+    fun addTo(playlist: Playlist, audios: Audios) {
+        analytics.event("playlists.addTo", mapOf("playlistId" to playlist.id, "audiosIds" to audios.joinToString { it.id }))
         viewModelScope.launch {
             var targetPlaylist = playlist
             if (playlist.isNewPlaylistItem()) {
                 targetPlaylist = createPlaylist.execute(CreatePlaylist.Params(generateNameIfEmpty = true))
             }
 
-            val addedIds = addToPlaylist.execute(AddToPlaylist.Params(targetPlaylist, audios.toList()))
-            Timber.d("Added: ${addedIds.joinToString { it.toString() }}")
+            addToPlaylist.execute(AddToPlaylist.Params(targetPlaylist, audios))
 
             val addedToPlaylist = AddedToPlaylistMessage(targetPlaylist)
             snackbarManager.addMessage(addedToPlaylist)

@@ -7,6 +7,7 @@ package tm.alashow.datmusic.ui.library.playlists.detail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import tm.alashow.base.util.event
 import tm.alashow.base.util.extensions.stateInDefault
 import tm.alashow.datmusic.data.interactors.playlist.RemovePlaylistItems
 import tm.alashow.datmusic.data.observers.playlist.ObservePlaylist
@@ -35,6 +37,7 @@ class PlaylistDetailViewModel @Inject constructor(
     private val playlistExistense: ObservePlaylistExistense,
     private val playlistDetails: ObservePlaylistDetails,
     private val removePlaylistItems: RemovePlaylistItems,
+    private val analytics: FirebaseAnalytics,
     private val navigator: Navigator
 ) : ViewModel() {
 
@@ -70,6 +73,7 @@ class PlaylistDetailViewModel @Inject constructor(
     fun removePlaylistItem(item: PlaylistItem) = removePlaylistItem(item.playlistAudio.id)
 
     fun removePlaylistItem(id: PlaylistAudioId) = viewModelScope.launch {
+        analytics.event("playlist.item.remove")
         removePlaylistItems.execute(listOf(id))
     }
 }

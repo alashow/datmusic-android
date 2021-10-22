@@ -50,7 +50,6 @@ class AlbumDetailContent(val album: Album) : MediaDetailContent<Audios>() {
                     audio = audio,
                     isPlaceholder = detailsLoading,
                     includeCover = false,
-                    playOnClick = true,
                     onPlayAudio = {
                         if (details is Success)
                             playbackConnection.playAlbum(album, index)

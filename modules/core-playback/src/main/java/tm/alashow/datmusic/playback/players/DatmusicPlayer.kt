@@ -94,7 +94,7 @@ interface DatmusicPlayer {
     fun removeFromQueue(position: Int)
     fun removeFromQueue(id: String)
     fun swapQueueAudios(from: Int, to: Int)
-    fun stop(byUser: Boolean = true)
+    fun stop(byUser: Boolean)
     fun release()
     fun onPlayingState(playing: OnIsPlaying<DatmusicPlayer>)
     fun onPrepared(prepared: OnPrepared<DatmusicPlayer>)
@@ -589,7 +589,7 @@ class DatmusicPlayerImpl @Inject constructor(
     private fun goToStart() {
         isInitialized = false
 
-        stop()
+        stop(byUser = false)
 
         if (queueManager.queue.isEmpty()) return
 

@@ -144,6 +144,10 @@ import tm.alashow.ui.theme.disabledAlpha
 import tm.alashow.ui.theme.plainBackgroundColor
 import tm.alashow.ui.theme.plainSurfaceColor
 
+private val RemoveFromPlaylist = R.string.playback_queue_removeFromQueue
+private val AddQueueToPlaylist = R.string.playback_queue_addQueueToPlaylist
+private val SaveQueueAsPlaylist = R.string.playback_queue_saveAsPlaylist
+
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun PlaybackSheet(
@@ -237,8 +241,6 @@ internal fun PlaybackSheetContent(
     }
 }
 
-private val SaveQueueAsPlaylist = R.string.playback_queue_saveAsPlaylist
-
 @Composable
 private fun PlaybackSheetTopBar(
     playbackQueue: PlaybackQueue,
@@ -290,20 +292,25 @@ private fun PlaybackSheetTopBar(
                 if (playbackQueue.isValid) {
                     AddToPlaylistMenu(playbackQueue.currentAudio, addToPlaylistVisible, setAddToPlaylistVisible)
                 }
-                AudioDropdownMenu(
-                    expanded = expanded,
-                    onExpandedChange = setExpanded,
-                    actionLabels = currentPlayingMenuActionLabels,
-                    extraActionLabels = listOf(SaveQueueAsPlaylist)
-                ) { actionLabel ->
-                    if (playbackQueue.isValid) {
+                if (playbackQueue.isValid) {
+                    val (addQueueToPlaylistVisible, setAddQueueToPlaylistVisible) = remember { mutableStateOf(false) }
+                    AddToPlaylistMenu(playbackQueue.audios, addQueueToPlaylistVisible, setAddQueueToPlaylistVisible)
+                    AudioDropdownMenu(
+                        expanded = expanded,
+                        onExpandedChange = setExpanded,
+                        actionLabels = currentPlayingMenuActionLabels,
+                        extraActionLabels = listOf(AddQueueToPlaylist, SaveQueueAsPlaylist)
+                    ) { actionLabel ->
                         val audio = playbackQueue.currentAudio
-                        val action = AudioItemAction.from(actionLabel, audio)
-                        if (action is AudioItemAction.AddToPlaylist) {
-                            setAddToPlaylistVisible(true)
-                        } else {
-                            action.handleExtraAction(SaveQueueAsPlaylist, actionHandler) {
-                                viewModel.saveQueueAsPlaylist()
+                        when (val action = AudioItemAction.from(actionLabel, audio)) {
+                            is AudioItemAction.AddToPlaylist -> setAddToPlaylistVisible(true)
+                            else -> {
+                                action.handleExtraActions(actionHandler) {
+                                    when (it.actionLabelRes) {
+                                        AddQueueToPlaylist -> setAddQueueToPlaylistVisible(true)
+                                        SaveQueueAsPlaylist -> viewModel.saveQueueAsPlaylist()
+                                    }
+                                }
                             }
                         }
                     }
@@ -442,7 +449,8 @@ private fun PlaybackProgressSlider(
         .fillMaxWidth(fraction = .99f) // reduce linearProgressIndicators width to match Slider's
         .clip(CircleShape) // because Slider is rounded
 
-    val bufferedProgress = progressState.bufferedProgress
+    val sliderProgress by animatePlaybackProgress(progressState.progress)
+    val bufferedProgress by animatePlaybackProgress(progressState.bufferedProgress)
     val isBuffering = playbackState.isBuffering
 
     Box(
@@ -458,7 +466,7 @@ private fun PlaybackProgressSlider(
             )
 
         Slider(
-            value = draggingProgress ?: progressState.progress,
+            value = draggingProgress ?: sliderProgress,
             onValueChange = {
                 if (!isBuffering) setDraggingProgress(it)
             },
@@ -664,11 +672,14 @@ private fun LazyListScope.playbackQueue(
         val realPosition = firstIndex + index
         AudioRow(
             audio = audio,
+            observeNowPlayingAudio = false,
             imageSize = 40.dp,
             onPlayAudio = {
                 playbackConnection.transportControls?.skipToQueueItem(realPosition.toLong())
                 scrollToTop()
-            }
+            },
+            extraActionLabels = listOf(RemoveFromPlaylist),
+            onExtraAction = { playbackConnection.removeByPosition(realPosition) }
         )
     }
 }

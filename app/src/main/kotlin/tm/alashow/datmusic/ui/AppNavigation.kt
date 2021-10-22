@@ -18,8 +18,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navigation
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.coroutines.InternalCoroutinesApi
-import timber.log.Timber
+import tm.alashow.base.util.event
+import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.common.compose.collectEvent
 import tm.alashow.datmusic.ui.album.AlbumDetail
 import tm.alashow.datmusic.ui.artist.ArtistDetail
@@ -45,9 +47,10 @@ import tm.alashow.navigation.screens.composableScreen
 internal fun AppNavigation(
     navController: NavHostController,
     navigator: Navigator = LocalNavigator.current,
+    analytics: FirebaseAnalytics = LocalAnalytics.current,
 ) {
     collectEvent(navigator.queue) { event ->
-        Timber.i("Navigation event: $event")
+        analytics.event("navigator.navigate", mapOf("route" to event.route))
         when (event) {
             is NavigationEvent.Destination -> {
                 // switch tabs first because of a bug in navigation that doesn't allow

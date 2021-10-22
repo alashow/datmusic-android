@@ -159,7 +159,7 @@ class PlayerService : MediaBrowserServiceCompat(), CoroutineScope by MainScope()
         launch {
             datmusicPlayer.pause()
             datmusicPlayer.saveQueueState()
-            datmusicPlayer.stop(false)
+            datmusicPlayer.stop(byUser = false)
         }
         super.onTaskRemoved(rootIntent)
     }

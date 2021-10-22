@@ -67,6 +67,7 @@ interface PlaybackConnection {
     val nowPlaying: StateFlow<MediaMetadataCompat>
 
     val playbackQueue: SharedFlow<PlaybackQueue>
+    val nowPlayingAudio: SharedFlow<PlaybackQueue.NowPlayingAudio?>
 
     val playbackProgress: StateFlow<PlaybackProgressState>
     val playbackMode: StateFlow<PlaybackModeState>
@@ -107,6 +108,15 @@ class PlaybackConnectionImpl(
     private val playbackQueueState = MutableStateFlow(PlaybackQueue())
 
     override val playbackQueue = combine(nowPlaying, playbackState, playbackQueueState, ::Triple).map(::buildPlaybackQueue)
+        .shareIn(this, SharingStarted.WhileSubscribed(), 1)
+
+    override val nowPlayingAudio = combine(playbackQueue, playbackState, ::Pair)
+        .map { (queue, playbackState) ->
+            when (queue.isValid && !playbackState.isIdle) {
+                true -> PlaybackQueue.NowPlayingAudio.from(queue)
+                else -> null
+            }
+        }
         .shareIn(this, SharingStarted.WhileSubscribed(), 1)
 
     private var playbackProgressInterval: Job = Job()

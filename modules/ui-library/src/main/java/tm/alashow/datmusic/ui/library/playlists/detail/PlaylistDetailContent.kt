@@ -13,9 +13,7 @@ import tm.alashow.datmusic.domain.entities.PlaylistItem
 import tm.alashow.datmusic.domain.entities.PlaylistItems
 import tm.alashow.datmusic.domain.entities.playlistId
 import tm.alashow.datmusic.playback.PlaybackConnection
-import tm.alashow.datmusic.ui.audios.AudioActionHandler
 import tm.alashow.datmusic.ui.audios.AudioRow
-import tm.alashow.datmusic.ui.audios.LocalAudioActionHandler
 import tm.alashow.datmusic.ui.detail.MediaDetailContent
 import tm.alashow.datmusic.ui.library.R
 import tm.alashow.domain.models.Async
@@ -27,7 +25,6 @@ private val RemoveFromPlaylist = R.string.playlist_audio_removeFromPlaylist
 class PlaylistDetailContent(
     private val onRemoveFromPlaylist: (PlaylistItem) -> Unit,
     private val playbackConnection: PlaybackConnection,
-    private val audioActionHandler: AudioActionHandler
 ) : MediaDetailContent<PlaylistItems>() {
 
     companion object {
@@ -35,8 +32,7 @@ class PlaylistDetailContent(
         fun create(
             onRemoveFromPlaylist: (PlaylistItem) -> Unit,
             playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
-            audioActionHandler: AudioActionHandler = LocalAudioActionHandler.current,
-        ) = PlaylistDetailContent(onRemoveFromPlaylist, playbackConnection, audioActionHandler)
+        ) = PlaylistDetailContent(onRemoveFromPlaylist, playbackConnection)
     }
 
     override fun invoke(list: LazyListScope, details: Async<PlaylistItems>, detailsLoading: Boolean): Boolean {
@@ -47,20 +43,17 @@ class PlaylistDetailContent(
         }
 
         if (playlistAudios.isNotEmpty()) {
-            list.itemsIndexed(playlistAudios, key = { i, it -> it.playlistAudio.id }) { index, item ->
+            list.itemsIndexed(playlistAudios, key = { _, it -> it.playlistAudio.id }) { index, item ->
                 AudioRow(
                     audio = item.audio,
+                    audioIndex = index,
                     isPlaceholder = detailsLoading,
-                    playOnClick = true,
                     onPlayAudio = {
-                        if (details is Success) playbackConnection.playPlaylist(details().playlistId(), index)
+                        if (details is Success)
+                            playbackConnection.playPlaylist(details().playlistId(), index)
                     },
                     extraActionLabels = listOf(RemoveFromPlaylist),
-                    actionHandler = {
-                        it.handleExtraAction(RemoveFromPlaylist, audioActionHandler) {
-                            onRemoveFromPlaylist(item)
-                        }
-                    }
+                    onExtraAction = { onRemoveFromPlaylist(item) }
                 )
             }
         }

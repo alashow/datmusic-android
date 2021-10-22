@@ -76,6 +76,7 @@
     <string name="playlist.audio.removeFromPlaylist">Remove from this playlist</string>
 
     <string name="playlist.addTo">Add to playlist</string>
+    <string name="playlist.addTo.multiple">Add songs to playlist</string>
     <string name="playlist.addTo.new">New playlist</string>
     <string name="playlist.addTo.added">Added to %1$s</string>
     <string name="playlist.addTo.open">Open</string>
@@ -97,9 +98,12 @@
     <string name="playlist.download.queuedCount">%1$d songs were queued to download</string>
     <string name="playlist.download.error.empty">Playlist is empty</string>
 
+    <string name="playback.queue.addQueueToPlaylist">Add queue to playlist</string>
     <string name="playback.queue.saveAsPlaylist">Save queue as playlist</string>
     <string name="playback.queue.saveAsPlaylist.saved">Saved as %1$s</string>
     <string name="playback.queue.saveAsPlaylist.open">Open</string>
+
+    <string name="playback.queue.removeFromQueue">Remove from queue</string>
 
     <string name="playback.queueTitle.audio">Playing from queue</string>
     <string name="playback.queueTitle.downloads">Playing from downloads</string>

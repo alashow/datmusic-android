@@ -7,10 +7,7 @@ package tm.alashow.datmusic.playback.players
 import android.media.AudioManager
 import android.os.Bundle
 import android.support.v4.media.session.MediaSessionCompat
-import android.support.v4.media.session.PlaybackStateCompat.Builder
-import android.support.v4.media.session.PlaybackStateCompat.SHUFFLE_MODE_ALL
-import android.support.v4.media.session.PlaybackStateCompat.SHUFFLE_MODE_NONE
-import android.support.v4.media.session.PlaybackStateCompat.STATE_NONE
+import android.support.v4.media.session.PlaybackStateCompat.*
 import androidx.core.os.bundleOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
@@ -136,7 +133,7 @@ class MediaSessionCallback(
 
     override fun onStop() {
         Timber.d("onStop()")
-        datmusicPlayer.stop()
+        datmusicPlayer.stop(byUser = true)
     }
 
     override fun onSetRepeatMode(repeatMode: Int) {

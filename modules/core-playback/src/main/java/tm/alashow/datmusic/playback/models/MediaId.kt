@@ -47,7 +47,10 @@ data class MediaId(
     }
 }
 
-fun String.toMediaId(): MediaId {
+fun String?.toMediaId(): MediaId {
+    if (this == null)
+        return MediaId()
+
     val parts = split(MEDIA_ID_SEPARATOR)
     val type = parts[0]
 

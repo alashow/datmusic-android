@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Explicit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,7 +39,11 @@ import com.google.accompanist.placeholder.material.placeholder
 import tm.alashow.base.imageloading.ImageLoading
 import tm.alashow.base.util.extensions.interpunctize
 import tm.alashow.base.util.millisToDuration
+import tm.alashow.common.compose.LocalPlaybackConnection
+import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.Audio
+import tm.alashow.datmusic.playback.PlaybackConnection
+import tm.alashow.datmusic.playback.models.PlaybackQueue.NowPlayingAudio.Companion.isCurrentAudio
 import tm.alashow.datmusic.ui.library.playlist.addTo.AddToPlaylistMenu
 import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.components.shimmer
@@ -58,9 +63,12 @@ fun AudioRow(
     isPlaceholder: Boolean = false,
     onClick: ((Audio) -> Unit)? = null,
     onPlayAudio: ((Audio) -> Unit)? = null,
-    extraActionLabels: List<Int> = emptyList(),
-    playOnClick: Boolean = false,
+    playOnClick: Boolean = true,
     includeCover: Boolean = true,
+    audioIndex: Int? = null,
+    observeNowPlayingAudio: Boolean = true,
+    extraActionLabels: List<Int> = emptyList(),
+    onExtraAction: (AudioItemAction.ExtraAction) -> Unit = {},
     actionHandler: AudioActionHandler = LocalAudioActionHandler.current
 ) {
     var menuVisible by remember { mutableStateOf(false) }
@@ -87,6 +95,8 @@ fun AudioRow(
             isPlaceholder = isPlaceholder,
             imageSize = imageSize,
             includeCover = includeCover,
+            audioIndex = audioIndex,
+            observeNowPlayingAudio = observeNowPlayingAudio,
             onCoverClick = {
                 if (onPlayAudio != null) onPlayAudio(audio)
                 else actionHandler(AudioItemAction.Play(audio))
@@ -114,7 +124,7 @@ fun AudioRow(
                     when {
                         action is AudioItemAction.Play && onPlayAudio != null -> onPlayAudio(audio)
                         action is AudioItemAction.AddToPlaylist -> setAddToPlaylistVisible(true)
-                        else -> actionHandler(action)
+                        else -> action.handleExtraActions(actionHandler, onExtraAction)
                     }
                 },
             )
@@ -131,7 +141,20 @@ fun AudioRowItem(
     isPlaceholder: Boolean = false,
     includeCover: Boolean = true,
     maxLines: Int = AudiosDefaults.maxLines,
+    audioIndex: Int? = null,
+    observeNowPlayingAudio: Boolean = true,
+    playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
 ) {
+    val isCurrentAudio = when (observeNowPlayingAudio) {
+        true -> {
+            val nowPlayingAudio by rememberFlowWithLifecycle(playbackConnection.nowPlayingAudio).collectAsState(null)
+            nowPlayingAudio.isCurrentAudio(audio, audioIndex)
+        }
+        else -> false
+    }
+
+    val titleTextColor = if (isCurrentAudio) MaterialTheme.colors.secondary else MaterialTheme.colors.onBackground
+
     val loadingModifier = Modifier.placeholder(
         visible = isPlaceholder,
         highlight = shimmer(),
@@ -158,6 +181,7 @@ fun AudioRowItem(
                 style = MaterialTheme.typography.body2.copy(fontSize = 15.sp),
                 maxLines = maxLines,
                 overflow = TextOverflow.Ellipsis,
+                color = titleTextColor,
                 modifier = loadingModifier
             )
             CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
