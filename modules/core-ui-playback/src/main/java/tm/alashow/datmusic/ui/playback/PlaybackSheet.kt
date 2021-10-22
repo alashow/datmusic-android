@@ -442,7 +442,8 @@ private fun PlaybackProgressSlider(
         .fillMaxWidth(fraction = .99f) // reduce linearProgressIndicators width to match Slider's
         .clip(CircleShape) // because Slider is rounded
 
-    val bufferedProgress = progressState.bufferedProgress
+    val sliderProgress by animatePlaybackProgress(progressState.progress)
+    val bufferedProgress by animatePlaybackProgress(progressState.bufferedProgress)
     val isBuffering = playbackState.isBuffering
 
     Box(
@@ -458,7 +459,7 @@ private fun PlaybackProgressSlider(
             )
 
         Slider(
-            value = draggingProgress ?: progressState.progress,
+            value = draggingProgress ?: sliderProgress,
             onValueChange = {
                 if (!isBuffering) setDraggingProgress(it)
             },
