@@ -53,6 +53,10 @@ internal fun AppNavigation(
         analytics.event("navigator.navigate", mapOf("route" to event.route))
         when (event) {
             is NavigationEvent.Destination -> {
+                // ugly fix: close playback before navigating away
+                // so it doesn't stay in the backstack when switching back to the same tab
+                if (navController.currentBackStackEntry?.destination?.route == LeafScreen.PlaybackSheet().route)
+                    navController.navigateUp()
                 // switch tabs first because of a bug in navigation that doesn't allow
                 // changing tabs when destination is opened from a different tab
                 event.root?.let {
