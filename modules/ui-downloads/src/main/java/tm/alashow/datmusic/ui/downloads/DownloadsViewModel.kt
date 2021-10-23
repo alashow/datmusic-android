@@ -17,9 +17,6 @@ import tm.alashow.base.util.extensions.stateInDefault
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.playback.PlaybackConnection
-import tm.alashow.datmusic.playback.models.MEDIA_TYPE_DOWNLOADS
-import tm.alashow.datmusic.playback.models.MediaId
-import tm.alashow.datmusic.playback.models.QueueTitle
 import tm.alashow.domain.models.Success
 import tm.alashow.domain.models.Uninitialized
 
@@ -45,12 +42,6 @@ class DownloadsViewModel @Inject constructor(
         } else {
             Timber.d("Audio download index found: $downloadIndex")
         }
-        // TODO: play via media id
-        val mediaId = MediaId(MEDIA_TYPE_DOWNLOADS, index = downloadIndex)
-        playbackConnection.playAudios(
-            audios = downloads.map { it.audio },
-            index = downloadIndex,
-            title = QueueTitle(mediaId, QueueTitle.Type.DOWNLOADS)
-        )
+        playbackConnection.playFromDownloads(downloadIndex)
     }
 }
