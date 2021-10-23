@@ -13,7 +13,7 @@ object Deps {
         const val stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$version"
         const val gradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:$version"
         const val serialization = "org.jetbrains.kotlin:kotlin-serialization:$version"
-        const val serializationRuntime = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2"
+        const val serializationRuntime = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0"
 
         const val coroutinesVersion = "1.5.2"
         const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
@@ -27,10 +27,10 @@ object Deps {
 
         const val multiDex = "androidx.multidex:multidex:2.0.1"
 
-        const val activityVersion = "1.4.0-beta01"
+        const val activityVersion = "1.4.0-rc01"
         const val activityKtx = "androidx.activity:activity-ktx:$activityVersion"
 
-        private const val navigationVersion = "2.4.0-SNAPSHOT"
+        private const val navigationVersion = "2.4.0-alpha10"
         const val navigationFragment = "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
         const val navigationUi = "androidx.navigation:navigation-ui-ktx:$navigationVersion"
         const val navigationSafeArgs = "androidx.navigation:navigation-safe-args-gradle-plugin:2.4.0-alpha10"
@@ -42,10 +42,10 @@ object Deps {
         const val documentFile = "androidx.documentfile:documentfile:1.1.0-alpha01"
 
         const val palette = "androidx.palette:palette-ktx:1.0.0"
-        const val media ="androidx.media:media:1.4.2"
+        const val media ="androidx.media:media:1.4.3"
 
         object Compose {
-            const val version = "1.1.0-alpha05"
+            const val version = "1.1.0-alpha06"
 
             const val ui = "androidx.compose.ui:ui:$version"
             const val uiUtil = "androidx.compose.ui:ui-util:$version"
@@ -54,11 +54,11 @@ object Deps {
             const val materialDesign = "androidx.compose.material:material:$version"
             const val materialDesignIcons = "androidx.compose.material:material-icons-core:$version"
             const val materialDesignIconsExtended = "androidx.compose.material:material-icons-extended:$version"
-            const val constraintLayout = "androidx.constraintlayout:constraintlayout-compose:1.0.0-beta02"
+            const val constraintLayout = "androidx.constraintlayout:constraintlayout-compose:1.0.0-rc01"
             const val liveData = "androidx.compose.runtime:runtime-livedata:$version"
             const val activity = "androidx.activity:activity-compose:$activityVersion"
             const val viewModels = "androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0-rc01"
-            const val paging = "androidx.paging:paging-compose:1.0.0-alpha13"
+            const val paging = "androidx.paging:paging-compose:1.0.0-alpha14"
 
             private const val lottieVersion = "4.2.0"
             const val lottie = "com.airbnb.android:lottie-compose:$lottieVersion"
@@ -68,7 +68,7 @@ object Deps {
         }
 
         object Accompanist {
-            private const val version = "0.19.0"
+            private const val version = "0.20.0"
 
             const val insets = "com.google.accompanist:accompanist-insets:$version"
             const val insetsUi = "com.google.accompanist:accompanist-insets-ui:$version"
@@ -93,7 +93,7 @@ object Deps {
         }
 
         object Room {
-            private const val roomVersion = "2.4.0-alpha05"
+            private const val roomVersion = "2.4.0-beta01"
 
             const val compiler = "androidx.room:room-compiler:$roomVersion"
             const val runtime = "androidx.room:room-runtime:$roomVersion"
@@ -102,7 +102,7 @@ object Deps {
         }
 
         object Paging {
-            private const val version = "3.1.0-alpha04"
+            private const val version = "3.1.0-beta01"
 
             const val common = "androidx.paging:paging-common-ktx:$version"
             const val runtime = "androidx.paging:paging-runtime-ktx:$version"
