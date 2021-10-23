@@ -12,6 +12,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.ButtonDefaults.textButtonColors
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -30,8 +32,11 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.RemoveCircleOutline
+import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -75,6 +80,7 @@ import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.components.DraggableItemSurface
 import tm.alashow.ui.components.IconButton
 import tm.alashow.ui.components.TextRoundedButton
+import tm.alashow.ui.components.textIconModifier
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.Orange
 
@@ -248,14 +254,20 @@ private fun LazyListScope.editPlaylistExtraActions(
 ) {
     item {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.padding, Alignment.CenterHorizontally),
-            modifier = Modifier.fillMaxWidth()
+            horizontalArrangement = Arrangement.spacedBy(
+                AppTheme.specs.paddingTiny,
+                Alignment.CenterHorizontally
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState()),
         ) {
             if (clearArtworkEnabled) {
                 TextButton(
                     onClick = onClearArtwork,
                     colors = textButtonColors(contentColor = Orange),
                 ) {
+                    Icon(Icons.Default.Clear, contentDescription = null, modifier = textIconModifier())
                     Text(stringResource(R.string.playlist_edit_clearArtwork))
                 }
             }
@@ -264,6 +276,7 @@ private fun LazyListScope.editPlaylistExtraActions(
                     onClick = onShuffle,
                     colors = textButtonColors(contentColor = Orange),
                 ) {
+                    Icon(Icons.Default.Shuffle, contentDescription = null, modifier = textIconModifier())
                     Text(stringResource(R.string.playlist_edit_shuffle))
                 }
             }
@@ -271,6 +284,7 @@ private fun LazyListScope.editPlaylistExtraActions(
                 onClick = onDelete,
                 colors = textButtonColors(contentColor = MaterialTheme.colors.error),
             ) {
+                Icon(Icons.Default.Delete, contentDescription = null, modifier = textIconModifier())
                 Text(stringResource(R.string.playlist_edit_delete))
             }
         }
