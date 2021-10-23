@@ -6,6 +6,7 @@ package tm.alashow.datmusic.playback.models
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.serialization.Serializable
 import timber.log.Timber
 import tm.alashow.datmusic.data.DatmusicSearchParams
 import tm.alashow.datmusic.data.DatmusicSearchParams.Companion.withTypes
@@ -17,6 +18,7 @@ import tm.alashow.datmusic.domain.entities.Audio
 
 const val MEDIA_TYPE_AUDIO = "Media.Audio"
 const val MEDIA_TYPE_ARTIST = "Media.Artist"
+const val MEDIA_TYPE_DOWNLOADS = "Media.Downloads"
 const val MEDIA_TYPE_PLAYLIST = "Media.Playlist"
 const val MEDIA_TYPE_ALBUM = "Media.Album"
 const val MEDIA_TYPE_AUDIO_QUERY = "Media.AudioQuery"
@@ -25,6 +27,7 @@ const val MEDIA_TYPE_AUDIO_FLACS_QUERY = "Media.AudioFlacsQuery"
 
 private const val MEDIA_ID_SEPARATOR = " | "
 
+@Serializable
 data class MediaId(
     val type: String = MEDIA_TYPE_AUDIO,
     val value: String = "0",
@@ -99,10 +102,10 @@ suspend fun MediaId.toQueueTitle(
     albumsDao: AlbumsDao,
     playlistsRepo: PlaylistsRepo
 ): QueueTitle = when (type) {
-    MEDIA_TYPE_AUDIO -> QueueTitle(QueueTitle.Type.AUDIO, audiosDao.entry(value).firstOrNull()?.title)
-    MEDIA_TYPE_ARTIST -> QueueTitle(QueueTitle.Type.ARTIST, artistsDao.entry(value).firstOrNull()?.name)
-    MEDIA_TYPE_ALBUM -> QueueTitle(QueueTitle.Type.ALBUM, albumsDao.entry(value).firstOrNull()?.title)
-    MEDIA_TYPE_PLAYLIST -> QueueTitle(QueueTitle.Type.PLAYLIST, playlistsRepo.playlistWithAudios(value.toLong()).firstOrNull()?.playlist?.name)
-    MEDIA_TYPE_AUDIO_QUERY, MEDIA_TYPE_AUDIO_MINERVA_QUERY, MEDIA_TYPE_AUDIO_FLACS_QUERY -> QueueTitle(QueueTitle.Type.SEARCH, value)
+    MEDIA_TYPE_AUDIO -> QueueTitle(this, QueueTitle.Type.AUDIO, audiosDao.entry(value).firstOrNull()?.title)
+    MEDIA_TYPE_ARTIST -> QueueTitle(this, QueueTitle.Type.ARTIST, artistsDao.entry(value).firstOrNull()?.name)
+    MEDIA_TYPE_ALBUM -> QueueTitle(this, QueueTitle.Type.ALBUM, albumsDao.entry(value).firstOrNull()?.title)
+    MEDIA_TYPE_PLAYLIST -> QueueTitle(this, QueueTitle.Type.PLAYLIST, playlistsRepo.playlistWithAudios(value.toLong()).firstOrNull()?.playlist?.name)
+    MEDIA_TYPE_AUDIO_QUERY, MEDIA_TYPE_AUDIO_MINERVA_QUERY, MEDIA_TYPE_AUDIO_FLACS_QUERY -> QueueTitle(this, QueueTitle.Type.SEARCH, value)
     else -> QueueTitle()
 }

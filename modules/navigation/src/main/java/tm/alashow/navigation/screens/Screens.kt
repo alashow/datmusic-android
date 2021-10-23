@@ -24,6 +24,7 @@ import tm.alashow.Config
 import tm.alashow.datmusic.data.DatmusicSearchParams
 import tm.alashow.datmusic.data.DatmusicSearchParams.BackendType.Companion.toQueryParam
 import tm.alashow.datmusic.domain.entities.Album
+import tm.alashow.datmusic.domain.entities.AlbumId
 import tm.alashow.datmusic.domain.entities.ArtistId
 import tm.alashow.datmusic.domain.entities.PlaylistId
 
@@ -170,7 +171,8 @@ sealed class LeafScreen(
             fun buildRoute(album: Album, root: RootScreen = RootScreen.Search) =
                 "${root.route}/albums/${album.id}/${album.ownerId}/${album.accessKey}"
 
-            fun buildUri(album: Album) = "${Config.BASE_URL}albums/${album.id}".toUri()
+            fun buildRoute(albumId: AlbumId, root: RootScreen = RootScreen.Search) = "${root.route}/albums/$albumId/-1/nokey"
+            fun buildUri(albumId: Album) = "${Config.BASE_URL}albums/$albumId".toUri()
         }
     }
 }

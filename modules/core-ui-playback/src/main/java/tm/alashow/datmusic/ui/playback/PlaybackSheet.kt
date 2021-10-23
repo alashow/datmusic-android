@@ -76,7 +76,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
 import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.navigationBarsHeight
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.ui.Scaffold
@@ -183,6 +182,7 @@ internal fun PlaybackSheetContent(
     listState: LazyListState,
     scaffoldState: ScaffoldState = rememberScaffoldState(snackbarHostState = LocalScaffoldState.current.snackbarHostState),
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
+    viewModel: PlaybackSheetViewModel = hiltViewModel(),
 ) {
     val playbackState by rememberFlowWithLifecycle(playbackConnection.playbackState).collectAsState(NONE_PLAYBACK_STATE)
     val playbackQueue by rememberFlowWithLifecycle(playbackConnection.playbackQueue).collectAsState(PlaybackQueue())
@@ -198,15 +198,21 @@ internal fun PlaybackSheetContent(
         snackbarHost = {
             DismissableSnackbarHost(it, modifier = Modifier.navigationBarsPadding())
         },
-    ) { paddingValues ->
+    ) {
         LazyColumn(
             state = listState,
-            contentPadding = paddingValues,
+            contentPadding = rememberInsetsPaddingValues(
+                insets = LocalWindowInsets.current.systemBars,
+                applyTop = true,
+                applyBottom = true,
+            ),
         ) {
             item {
                 PlaybackSheetTopBar(
                     playbackQueue = playbackQueue,
-                    onClose = onClose
+                    onClose = onClose,
+                    onTitleClick = viewModel::navigateToQueueSource,
+                    onSaveQueueAsPlaylist = viewModel::saveQueueAsPlaylist
                 )
                 Spacer(Modifier.height(AppTheme.specs.paddingTiny))
             }
@@ -235,8 +241,6 @@ internal fun PlaybackSheetContent(
                 scrollToTop = scrollToTop,
                 playbackConnection = playbackConnection,
             )
-
-            item { Spacer(Modifier.navigationBarsHeight()) }
         }
     }
 }
@@ -245,13 +249,14 @@ internal fun PlaybackSheetContent(
 private fun PlaybackSheetTopBar(
     playbackQueue: PlaybackQueue,
     onClose: Callback,
+    onTitleClick: Callback,
+    onSaveQueueAsPlaylist: Callback,
 ) {
     TopAppBar(
         elevation = 0.dp,
         backgroundColor = Color.Transparent,
-        contentPadding = rememberInsetsPaddingValues(LocalWindowInsets.current.statusBars),
-        title = { PlaybackSheetTopBarTitle(playbackQueue) },
-        actions = { PlaybackSheetTopBarActions(playbackQueue) },
+        title = { PlaybackSheetTopBarTitle(playbackQueue, onTitleClick) },
+        actions = { PlaybackSheetTopBarActions(playbackQueue, onSaveQueueAsPlaylist) },
         navigationIcon = {
             IconButton(onClick = onClose) {
                 Icon(
@@ -265,12 +270,17 @@ private fun PlaybackSheetTopBar(
 }
 
 @Composable
-private fun PlaybackSheetTopBarTitle(playbackQueue: PlaybackQueue) {
+private fun PlaybackSheetTopBarTitle(
+    playbackQueue: PlaybackQueue,
+    onTitleClick: Callback,
+    modifier: Modifier = Modifier
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .offset(x = -8.dp) // idk why this is needed for centering
+            .simpleClickable(onClick = onTitleClick)
     ) {
         val context = LocalContext.current
         val queueTitle = playbackQueue.title.asQueueTitle()
@@ -292,8 +302,8 @@ private fun PlaybackSheetTopBarTitle(playbackQueue: PlaybackQueue) {
 @Composable
 private fun PlaybackSheetTopBarActions(
     playbackQueue: PlaybackQueue,
+    onSaveQueueAsPlaylist: Callback,
     actionHandler: AudioActionHandler = LocalAudioActionHandler.current,
-    viewModel: PlaybackSheetViewModel = hiltViewModel()
 ) {
     val (expanded, setExpanded) = remember { mutableStateOf(false) }
     CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
@@ -317,7 +327,7 @@ private fun PlaybackSheetTopBarActions(
                         action.handleExtraActions(actionHandler) {
                             when (it.actionLabelRes) {
                                 AddQueueToPlaylist -> setAddQueueToPlaylistVisible(true)
-                                SaveQueueAsPlaylist -> viewModel.saveQueueAsPlaylist()
+                                SaveQueueAsPlaylist -> onSaveQueueAsPlaylist()
                             }
                         }
                     }

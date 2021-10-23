@@ -49,9 +49,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberImagePainter
-import com.google.accompanist.insets.imePadding
-import com.google.accompanist.insets.navigationBarsPadding
-import com.google.accompanist.insets.statusBarsPadding
+import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.navigationBarsWithImePadding
+import com.google.accompanist.insets.rememberInsetsPaddingValues
 import kotlinx.coroutines.launch
 import org.burnoutcrew.reorderable.ReorderableState
 import org.burnoutcrew.reorderable.detectReorder
@@ -93,11 +93,24 @@ fun EditPlaylist(
     val reorderableState = rememberReorderState()
     val itemsBeforeContent = 2
 
-    Scaffold { padding ->
+    Scaffold(
+        bottomBar = {
+            PlaylistLastRemovedItemSnackbar(
+                lastRemovedItem = lastRemovedItem,
+                onDismiss = viewModel::clearLastRemovedPlaylistItem,
+                onUndo = viewModel::undoLastRemovedPlaylistItem,
+                modifier = Modifier.navigationBarsWithImePadding()
+            )
+        }
+    ) {
         Box {
             LazyColumn(
                 state = reorderableState.listState,
-                contentPadding = padding,
+                contentPadding = rememberInsetsPaddingValues(
+                    insets = LocalWindowInsets.current.systemBars,
+                    applyTop = true,
+                    applyBottom = true,
+                ),
                 modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colors.background)
@@ -132,16 +145,6 @@ fun EditPlaylist(
                     audios = playlistItems
                 )
             }
-
-            PlaylistLastRemovedItemSnackbar(
-                lastRemovedItem = lastRemovedItem,
-                onDismiss = viewModel::clearLastRemovedPlaylistItem,
-                onUndo = viewModel::undoLastRemovedPlaylistItem,
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .navigationBarsPadding()
-                    .imePadding()
-            )
         }
     }
 }
@@ -183,7 +186,6 @@ private fun LazyListScope.editPlaylistHeader(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxWidth()
-                .statusBarsPadding()
                 .padding(bottom = AppTheme.specs.padding)
         ) {
             Text(
@@ -191,13 +193,15 @@ private fun LazyListScope.editPlaylistHeader(
                 style = MaterialTheme.typography.h6,
                 textAlign = TextAlign.Center,
             )
+
             EditablePlaylistArtwork(playlist, onSetPlaylistArtwork)
 
             PlaylistNameInput(
                 name = name,
                 onSetName = onSetName,
                 onDone = onSave,
-                nameError = nameError
+                nameError = nameError,
+                modifier = Modifier.padding(horizontal = AppTheme.specs.padding)
             )
 
             TextRoundedButton(

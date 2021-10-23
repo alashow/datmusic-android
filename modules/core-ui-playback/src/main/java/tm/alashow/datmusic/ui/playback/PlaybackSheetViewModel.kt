@@ -14,10 +14,18 @@ import kotlinx.coroutines.launch
 import tm.alashow.base.ui.SnackbarAction
 import tm.alashow.base.ui.SnackbarManager
 import tm.alashow.base.ui.SnackbarMessage
+import tm.alashow.datmusic.data.DatmusicSearchParams
 import tm.alashow.datmusic.data.interactors.playlist.CreatePlaylist
 import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.domain.entities.PlaylistId
 import tm.alashow.datmusic.playback.PlaybackConnection
+import tm.alashow.datmusic.playback.models.MEDIA_TYPE_ALBUM
+import tm.alashow.datmusic.playback.models.MEDIA_TYPE_ARTIST
+import tm.alashow.datmusic.playback.models.MEDIA_TYPE_AUDIO_FLACS_QUERY
+import tm.alashow.datmusic.playback.models.MEDIA_TYPE_AUDIO_MINERVA_QUERY
+import tm.alashow.datmusic.playback.models.MEDIA_TYPE_AUDIO_QUERY
+import tm.alashow.datmusic.playback.models.MEDIA_TYPE_DOWNLOADS
+import tm.alashow.datmusic.playback.models.MEDIA_TYPE_PLAYLIST
 import tm.alashow.datmusic.playback.models.QueueTitle.Companion.asQueueTitle
 import tm.alashow.datmusic.ui.coreLibrary.R
 import tm.alashow.i18n.UiMessage
@@ -49,5 +57,30 @@ class PlaybackSheetViewModel @Inject constructor(
         snackbarManager.addMessage(savedAsPlaylist)
         if (snackbarManager.observeMessageAction(savedAsPlaylist) != null)
             navigator.navigate(LeafScreen.PlaylistDetail.buildRoute(playlist.id))
+    }
+
+    fun navigateToQueueSource() = viewModelScope.launch {
+        val queue = playbackConnection.playbackQueue.first()
+        val (sourceMediaType, sourceMediaValue) = queue.title.asQueueTitle().sourceMediaId
+
+        when (sourceMediaType) {
+            MEDIA_TYPE_PLAYLIST -> navigator.navigate(LeafScreen.PlaylistDetail.buildRoute(sourceMediaValue.toLong()))
+            MEDIA_TYPE_DOWNLOADS -> navigator.navigate(LeafScreen.Downloads().createRoute())
+            MEDIA_TYPE_ARTIST -> navigator.navigate(LeafScreen.ArtistDetails.buildRoute(sourceMediaValue))
+            MEDIA_TYPE_ALBUM -> navigator.navigate(LeafScreen.AlbumDetails.buildRoute(sourceMediaValue.toLong()))
+            MEDIA_TYPE_AUDIO_QUERY -> navigator.navigate(LeafScreen.Search.buildRoute(sourceMediaValue))
+            MEDIA_TYPE_AUDIO_MINERVA_QUERY -> navigator.navigate(
+                LeafScreen.Search.buildRoute(
+                    sourceMediaValue,
+                    DatmusicSearchParams.BackendType.MINERVA
+                )
+            )
+            MEDIA_TYPE_AUDIO_FLACS_QUERY -> navigator.navigate(
+                LeafScreen.Search.buildRoute(
+                    sourceMediaValue,
+                    DatmusicSearchParams.BackendType.FLACS
+                )
+            )
+        }
     }
 }

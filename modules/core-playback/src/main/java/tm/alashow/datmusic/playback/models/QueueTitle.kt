@@ -5,12 +5,17 @@
 package tm.alashow.datmusic.playback.models
 
 import android.content.res.Resources
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import tm.alashow.base.util.extensions.orBlank
 import tm.alashow.datmusic.playback.R
 
-data class QueueTitle(val type: Type = Type.UNKNOWN, val value: String? = null) {
-
-    override fun toString() = type.name + separator + (value ?: "")
+@Serializable
+data class QueueTitle(
+    val sourceMediaId: MediaId = MediaId(),
+    val type: Type = Type.UNKNOWN,
+    val value: String? = null
+) {
 
     fun localizeType(resources: Resources): String = when (type) {
         Type.UNKNOWN, Type.AUDIO -> resources.getString(R.string.playback_queueTitle_audio)
@@ -26,18 +31,12 @@ data class QueueTitle(val type: Type = Type.UNKNOWN, val value: String? = null) 
         Type.ARTIST, Type.ALBUM, Type.PLAYLIST, Type.SEARCH -> value ?: ""
     }
 
-    companion object {
-        private const val separator = "$$"
+    override fun toString() = Json.encodeToString(serializer(), this)
 
-        fun String?.asQueueTitle() = orBlank().split(separator).let { parts ->
+    companion object {
+        fun String?.asQueueTitle() = orBlank().let { value ->
             try {
-                QueueTitle(
-                    Type.from(parts[0]),
-                    parts[1].let {
-                        if (it.isBlank()) null
-                        else it
-                    }
-                )
+                Json.decodeFromString(serializer(), value)
             } catch (e: Exception) {
                 QueueTitle()
             }
