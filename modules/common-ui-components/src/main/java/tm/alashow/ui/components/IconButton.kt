@@ -17,6 +17,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
@@ -53,7 +54,8 @@ fun IconButton(
     }
 }
 
-@Composable
-fun textIconModifier() = Modifier
-    .size(24.dp)
-    .padding(end = AppTheme.specs.paddingTiny)
+fun Modifier.textIconModifier() = composed {
+    Modifier
+        .size(24.dp)
+        .padding(end = AppTheme.specs.paddingTiny)
+}

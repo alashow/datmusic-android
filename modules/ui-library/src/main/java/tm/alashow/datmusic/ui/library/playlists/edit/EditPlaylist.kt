@@ -267,7 +267,7 @@ private fun LazyListScope.editPlaylistExtraActions(
                     onClick = onClearArtwork,
                     colors = textButtonColors(contentColor = Orange),
                 ) {
-                    Icon(Icons.Default.Clear, contentDescription = null, modifier = textIconModifier())
+                    Icon(Icons.Default.Clear, contentDescription = null, modifier = Modifier.textIconModifier())
                     Text(stringResource(R.string.playlist_edit_clearArtwork))
                 }
             }
@@ -276,7 +276,7 @@ private fun LazyListScope.editPlaylistExtraActions(
                     onClick = onShuffle,
                     colors = textButtonColors(contentColor = Orange),
                 ) {
-                    Icon(Icons.Default.Shuffle, contentDescription = null, modifier = textIconModifier())
+                    Icon(Icons.Default.Shuffle, contentDescription = null, modifier = Modifier.textIconModifier())
                     Text(stringResource(R.string.playlist_edit_shuffle))
                 }
             }
@@ -284,7 +284,7 @@ private fun LazyListScope.editPlaylistExtraActions(
                 onClick = onDelete,
                 colors = textButtonColors(contentColor = MaterialTheme.colors.error),
             ) {
-                Icon(Icons.Default.Delete, contentDescription = null, modifier = textIconModifier())
+                Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.textIconModifier())
                 Text(stringResource(R.string.playlist_edit_delete))
             }
         }

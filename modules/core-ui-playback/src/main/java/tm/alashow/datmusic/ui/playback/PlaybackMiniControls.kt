@@ -8,7 +8,6 @@ import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
@@ -43,7 +42,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -69,7 +67,6 @@ import tm.alashow.datmusic.playback.playPause
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.Navigator
 import tm.alashow.navigation.screens.LeafScreen
-import tm.alashow.ui.ADAPTIVE_COLOR_ANIMATION
 import tm.alashow.ui.Dismissable
 import tm.alashow.ui.adaptiveColor
 import tm.alashow.ui.components.CoverImage
@@ -120,8 +117,8 @@ fun PlaybackMiniControls(
     }
 
     val adaptiveColor = adaptiveColor(nowPlaying.artwork, initial = MaterialTheme.colors.background)
-    val backgroundColor by animateColorAsState(adaptiveColor.color, ADAPTIVE_COLOR_ANIMATION)
-    val contentColor by animateColorAsState(adaptiveColor.contentColor, ADAPTIVE_COLOR_ANIMATION)
+    val backgroundColor = adaptiveColor.color
+    val contentColor = adaptiveColor.contentColor
 
     Dismissable(onDismiss = { playbackConnection.transportControls?.stop() }) {
         Surface(
@@ -243,14 +240,12 @@ private fun RowScope.PlaybackPlayPause(
         modifier = Modifier.weight(1f)
     ) {
         Icon(
-            painter = rememberVectorPainter(
-                when {
-                    playbackState.isError -> Icons.Filled.ErrorOutline
-                    playbackState.isPlaying -> Icons.Filled.Pause
-                    playbackState.isPlayEnabled -> Icons.Filled.PlayArrow
-                    else -> Icons.Filled.HourglassBottom
-                }
-            ),
+            imageVector = when {
+                playbackState.isError -> Icons.Filled.ErrorOutline
+                playbackState.isPlaying -> Icons.Filled.Pause
+                playbackState.isPlayEnabled -> Icons.Filled.PlayArrow
+                else -> Icons.Filled.HourglassBottom
+            },
             modifier = Modifier.size(size),
             contentDescription = null
         )

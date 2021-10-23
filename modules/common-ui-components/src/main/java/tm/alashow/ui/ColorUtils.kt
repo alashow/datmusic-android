@@ -105,7 +105,7 @@ fun adaptiveColor(
                 }
     }
 
-    return AdaptiveColorResult(accent, contentColor, backgroundGradient(accentAnimated, gradientEndColor))
+    return AdaptiveColorResult(accentAnimated, contentColor, backgroundGradient(accentAnimated, gradientEndColor))
 }
 
 @Composable
