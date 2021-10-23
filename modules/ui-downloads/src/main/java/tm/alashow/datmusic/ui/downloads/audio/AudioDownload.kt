@@ -155,7 +155,7 @@ private fun DownloadRequestProgress(
     onClick: () -> Unit,
     progress: Float,
     modifier: Modifier = Modifier,
-    size: Dp = 36.dp,
+    size: Dp = AppTheme.specs.iconSize,
     strokeWidth: Dp = 1.dp,
 ) {
     val paused = downloadInfo.isResumable()

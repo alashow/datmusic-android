@@ -22,5 +22,7 @@ data class Specs(
     val paddingLarge: Dp = ContentPaddingLarge,
 
     val paddings: PaddingValues = PaddingValues(padding),
-    val inputPaddings: PaddingValues = PaddingValues(horizontal = padding, vertical = paddingSmall)
+    val inputPaddings: PaddingValues = PaddingValues(horizontal = padding, vertical = paddingSmall),
+
+    val iconSize: Dp = 36.dp,
 )

@@ -17,7 +17,6 @@ import tm.alashow.base.util.extensions.stateInDefault
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.playback.PlaybackConnection
-import tm.alashow.datmusic.playback.models.QueueTitle
 import tm.alashow.domain.models.Success
 import tm.alashow.domain.models.Uninitialized
 
@@ -43,10 +42,6 @@ class DownloadsViewModel @Inject constructor(
         } else {
             Timber.d("Audio download index found: $downloadIndex")
         }
-        playbackConnection.playAudios(
-            audios = downloads.map { it.audio },
-            index = downloadIndex,
-            title = QueueTitle(QueueTitle.Type.DOWNLOADS)
-        )
+        playbackConnection.playFromDownloads(downloadIndex)
     }
 }

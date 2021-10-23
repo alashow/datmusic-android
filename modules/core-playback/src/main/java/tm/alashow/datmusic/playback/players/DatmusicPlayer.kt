@@ -31,12 +31,7 @@ import tm.alashow.base.imageloading.getBitmap
 import tm.alashow.base.util.event
 import tm.alashow.base.util.extensions.plus
 import tm.alashow.data.PreferencesStore
-import tm.alashow.datmusic.data.db.daos.AlbumsDao
-import tm.alashow.datmusic.data.db.daos.ArtistsDao
-import tm.alashow.datmusic.data.db.daos.AudiosDao
-import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
-import tm.alashow.datmusic.data.db.daos.findAudio
-import tm.alashow.datmusic.data.repos.playlist.PlaylistsRepo
+import tm.alashow.datmusic.data.repos.audio.AudiosRepo
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.domain.entities.CoverImageSize
@@ -44,6 +39,7 @@ import tm.alashow.datmusic.downloader.artworkFromFile
 import tm.alashow.datmusic.playback.AudioFocusHelperImpl
 import tm.alashow.datmusic.playback.AudioQueueManagerImpl
 import tm.alashow.datmusic.playback.BY_UI_KEY
+import tm.alashow.datmusic.playback.MediaQueueBuilder
 import tm.alashow.datmusic.playback.R
 import tm.alashow.datmusic.playback.REPEAT_ALL
 import tm.alashow.datmusic.playback.REPEAT_ONE
@@ -52,10 +48,8 @@ import tm.alashow.datmusic.playback.isPlaying
 import tm.alashow.datmusic.playback.models.MEDIA_TYPE_AUDIO
 import tm.alashow.datmusic.playback.models.MediaId
 import tm.alashow.datmusic.playback.models.QueueState
-import tm.alashow.datmusic.playback.models.toAudioList
 import tm.alashow.datmusic.playback.models.toMediaId
 import tm.alashow.datmusic.playback.models.toMediaMetadata
-import tm.alashow.datmusic.playback.models.toQueueTitle
 import tm.alashow.datmusic.playback.position
 import tm.alashow.datmusic.playback.repeatMode
 import tm.alashow.datmusic.playback.shuffleMode
@@ -119,11 +113,8 @@ class DatmusicPlayerImpl @Inject constructor(
     private val audioPlayer: AudioPlayerImpl,
     private val queueManager: AudioQueueManagerImpl,
     private val audioFocusHelper: AudioFocusHelperImpl,
-    private val audiosDao: AudiosDao,
-    private val artistsDao: ArtistsDao,
-    private val albumsDao: AlbumsDao,
-    private val playlistsRepo: PlaylistsRepo,
-    private val downloadsDao: DownloadRequestsDao,
+    private val audiosRepo: AudiosRepo,
+    private val mediaQueueBuilder: MediaQueueBuilder,
     private val preferences: PreferencesStore,
     private val analytics: FirebaseAnalytics,
 ) : DatmusicPlayer, CoroutineScope by MainScope() {
@@ -263,7 +254,7 @@ class DatmusicPlayerImpl @Inject constructor(
 
     override suspend fun playAudio(id: String, index: Int?) {
         if (audioFocusHelper.requestPlayback()) {
-            val audio = (audiosDao to downloadsDao).findAudio(id)
+            val audio = audiosRepo.find(id)
             if (audio != null) playAudio(audio, index)
             else {
                 Timber.e("Audio by id: $id not found")
@@ -491,14 +482,14 @@ class DatmusicPlayerImpl @Inject constructor(
         if (seekTo > 0) seekTo(seekTo)
 
         if (queue == null) {
-            queue = mediaId.toAudioList(audiosDao, artistsDao, albumsDao, playlistsRepo)?.map { it.id }?.apply {
+            queue = mediaQueueBuilder.buildAudioList(mediaId).map { it.id }.apply {
                 if (mediaId.hasIndex && isNotEmpty())
                     audioId = if (mediaId.index < size) get(mediaId.index) else first()
             }
-            queueTitle = mediaId.toQueueTitle(audiosDao, artistsDao, albumsDao, playlistsRepo).toString()
+            queueTitle = mediaQueueBuilder.buildQueueTitle(mediaId).toString()
         }
 
-        if (queue != null && queue.isNotEmpty()) {
+        if (queue.isNotEmpty()) {
             setData(queue, queueTitle)
             playAudio(audioId, if (mediaId.hasIndex) mediaId.index else queue.indexOf(audioId))
             // delay for new queue to apply first

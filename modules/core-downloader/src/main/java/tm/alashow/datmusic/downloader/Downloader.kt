@@ -36,7 +36,6 @@ import tm.alashow.base.util.event
 import tm.alashow.data.PreferencesStore
 import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
-import tm.alashow.datmusic.data.db.daos.findAudio
 import tm.alashow.datmusic.data.repos.audio.AudioSaveType
 import tm.alashow.datmusic.data.repos.audio.AudiosRepo
 import tm.alashow.datmusic.domain.DownloadsSongsGrouping
@@ -114,7 +113,7 @@ class Downloader @Inject constructor(
 
     suspend fun enqueueAudio(audioId: String) {
         Timber.d("Enqueue requested for: $audioId")
-        audiosDao.entry(audioId).firstOrNull()?.apply {
+        audiosRepo.entry(audioId).firstOrNull()?.apply {
             enqueueAudio(this)
         }
     }
@@ -294,7 +293,7 @@ class Downloader @Inject constructor(
     }
 
     suspend fun findAudioDownload(audioId: String): Optional<Audio> {
-        return (audiosDao to dao).findAudio(audioId)?.apply {
+        return audiosRepo.find(audioId)?.apply {
             audioDownloadItem = getAudioDownload(id).orNull()
         }.orNone()
     }

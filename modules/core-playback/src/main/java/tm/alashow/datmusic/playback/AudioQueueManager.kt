@@ -13,9 +13,7 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.base.util.extensions.swap
-import tm.alashow.datmusic.data.db.daos.AudiosDao
-import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
-import tm.alashow.datmusic.data.db.daos.findAudios
+import tm.alashow.datmusic.data.repos.audio.AudiosRepo
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.playback.models.toQueueItems
@@ -47,8 +45,7 @@ interface AudioQueueManager {
 }
 
 class AudioQueueManagerImpl @Inject constructor(
-    private val audiosDao: AudiosDao,
-    private val downloadsDao: DownloadRequestsDao,
+    private val audiosRepo: AudiosRepo,
     private val downloader: Downloader,
     private val dispatchers: CoroutineDispatchers,
 ) : AudioQueueManager, CoroutineScope by MainScope() {
@@ -104,7 +101,7 @@ class AudioQueueManagerImpl @Inject constructor(
         if (ids.isNotEmpty()) {
             launch {
                 withContext(dispatchers.computation) {
-                    val audios = (audiosDao to downloadsDao).findAudios(ids).associateBy { it.id }
+                    val audios = audiosRepo.find(ids).associateBy { it.id }
                     val audiosOrdered = buildList {
                         ids.forEach { id ->
                             // map not found audios to empty ones to keep index integrity

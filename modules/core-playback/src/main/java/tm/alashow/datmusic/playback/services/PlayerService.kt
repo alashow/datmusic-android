@@ -17,11 +17,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import tm.alashow.base.util.CoroutineDispatchers
-import tm.alashow.datmusic.data.db.daos.AlbumsDao
-import tm.alashow.datmusic.data.db.daos.ArtistsDao
-import tm.alashow.datmusic.data.db.daos.AudiosDao
-import tm.alashow.datmusic.data.repos.playlist.PlaylistsRepo
 import tm.alashow.datmusic.playback.MediaNotificationsImpl
+import tm.alashow.datmusic.playback.MediaQueueBuilder
 import tm.alashow.datmusic.playback.NEXT
 import tm.alashow.datmusic.playback.NOTIFICATION_ID
 import tm.alashow.datmusic.playback.PLAY_PAUSE
@@ -31,7 +28,6 @@ import tm.alashow.datmusic.playback.isIdle
 import tm.alashow.datmusic.playback.models.MediaId
 import tm.alashow.datmusic.playback.models.MediaId.Companion.CALLER_OTHER
 import tm.alashow.datmusic.playback.models.MediaId.Companion.CALLER_SELF
-import tm.alashow.datmusic.playback.models.toAudioList
 import tm.alashow.datmusic.playback.models.toMediaId
 import tm.alashow.datmusic.playback.models.toMediaItems
 import tm.alashow.datmusic.playback.playPause
@@ -55,16 +51,7 @@ class PlayerService : MediaBrowserServiceCompat(), CoroutineScope by MainScope()
     protected lateinit var mediaNotifications: MediaNotificationsImpl
 
     @Inject
-    protected lateinit var audiosDao: AudiosDao
-
-    @Inject
-    protected lateinit var artistsDao: ArtistsDao
-
-    @Inject
-    protected lateinit var albumsDao: AlbumsDao
-
-    @Inject
-    protected lateinit var playlistsRepo: PlaylistsRepo
+    protected lateinit var mediaQueueBuilder: MediaQueueBuilder
 
     private lateinit var becomingNoisyReceiver: BecomingNoisyReceiver
 
@@ -151,7 +138,7 @@ class PlayerService : MediaBrowserServiceCompat(), CoroutineScope by MainScope()
     private suspend fun loadChildren(parentId: String): MutableList<MediaBrowserCompat.MediaItem> {
         val list = mutableListOf<MediaBrowserCompat.MediaItem>()
         val mediaId = parentId.toMediaId()
-        list.addAll(mediaId.toAudioList(audiosDao, artistsDao, albumsDao, playlistsRepo).toMediaItems())
+        list.addAll(mediaQueueBuilder.buildAudioList(mediaId).toMediaItems())
         return list
     }
 
