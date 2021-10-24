@@ -40,7 +40,7 @@ allprojects {
         maven { url 'https://jitpack.io' }
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
         jcenter()
-        maven { url 'https://androidx.dev/snapshots/builds/7818717/artifacts/repository' }
+        maven { url 'https://androidx.dev/snapshots/builds/7847492/artifacts/repository' }
     }
 
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {

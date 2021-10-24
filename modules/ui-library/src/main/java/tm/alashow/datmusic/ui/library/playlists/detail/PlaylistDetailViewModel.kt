@@ -10,7 +10,6 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -43,8 +42,7 @@ class PlaylistDetailViewModel @Inject constructor(
 
     private val playlistId = handle.get<Long>(PLAYLIST_ID_KEY) as PlaylistId
 
-    private val lastMoveState = MutableStateFlow<DragMove?>(null)
-    val state = combine(playlist.flow, playlistDetails.flow, lastMoveState, ::PlaylistDetailViewState)
+    val state = combine(playlist.flow, playlistDetails.flow, ::PlaylistDetailViewState)
         .map {
             if (it.playlistDetails.complete && !it.isEmpty) {
                 it.copy(audiosCountDuration = AudiosCountDuration.from(it.playlistDetails.invoke()?.asAudios().orEmpty()))
