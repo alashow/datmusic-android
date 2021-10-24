@@ -40,7 +40,6 @@ import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -57,7 +56,6 @@ import coil.compose.rememberImagePainter
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.google.accompanist.insets.rememberInsetsPaddingValues
-import kotlinx.coroutines.launch
 import org.burnoutcrew.reorderable.ReorderableState
 import org.burnoutcrew.reorderable.detectReorder
 import org.burnoutcrew.reorderable.rememberReorderState
@@ -225,7 +223,6 @@ private fun EditablePlaylistArtwork(
 ) {
     val imagePainter = rememberImagePainter(playlist.artworkFile(), builder = ImageLoading.defaultConfig)
     val adaptiveColor = adaptiveColor(playlist.artworkFile())
-    val coroutine = rememberCoroutineScope()
     val imagePickerLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) {
         if (it != null) onSetPlaylistArtwork(it)
     }
@@ -238,7 +235,7 @@ private fun EditablePlaylistArtwork(
             color = adaptiveColor.color,
             rippleRadius = Dp.Unspecified,
             onClick = {
-                coroutine.launch { imagePickerLauncher.launch("image/*") }
+                imagePickerLauncher.launch("image/*")
             }
         )
 

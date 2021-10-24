@@ -61,6 +61,8 @@ data class Playlist(
 
     override fun getIdentifier() = id.toString()
     override fun getLabel() = name
+
+    fun copyForBackup() = copy(artworkPath = "", artworkSource = "")
 }
 
 typealias PlaylistAudioId = Long

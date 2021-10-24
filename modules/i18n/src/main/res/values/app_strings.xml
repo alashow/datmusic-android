@@ -149,6 +149,12 @@
     <string name="settings.premium.view">View subscription</string>
     <string name="settings.premium.disabled">Disabled</string>
 
+    <string name="settings.database">Database</string>
+    <string name="settings.database.backup">Backup</string>
+    <string name="settings.database.backup.complete">Backup complete</string>
+    <string name="settings.database.restore">Restore</string>
+    <string name="settings.database.restore.complete">Restore complete</string>
+
     <string name="subscriptions.required">Subscription required for this feature</string>
 
     <string name="captcha.title">Captcha error</string>

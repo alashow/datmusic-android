@@ -47,6 +47,7 @@ import tm.alashow.datmusic.domain.DownloadsSongsGrouping
 import tm.alashow.datmusic.domain.entities.SettingsLinks
 import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.ui.downloader.LocalDownloader
+import tm.alashow.datmusic.ui.settings.backup.BackupRestoreButton
 import tm.alashow.datmusic.ui.settings.premium.PremiumButton
 import tm.alashow.ui.ThemeViewModel
 import tm.alashow.ui.components.AppTopBar
@@ -112,6 +113,9 @@ fun LazyListScope.settingsGeneralSection() {
 
         SettingsItem(stringResource(R.string.settings_premium)) {
             PremiumButton()
+        }
+        SettingsItem(stringResource(R.string.settings_database)) {
+            BackupRestoreButton()
         }
     }
 }
