@@ -62,4 +62,7 @@ abstract class PlaylistsWithAudiosDao {
 
     @Query("SELECT * FROM playlists")
     abstract fun playlistsWithAudios(): Flow<List<PlaylistWithAudios>>
+
+    @Query("SELECT * FROM playlist_audios")
+    abstract fun playlistAudios(): Flow<PlaylistAudios>
 }

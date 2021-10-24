@@ -16,8 +16,10 @@ import androidx.room.PrimaryKey
 import androidx.room.Relation
 import java.io.File
 import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import org.threeten.bp.LocalDateTime
+import tm.alashow.base.util.serializer.LocalDateTimeSerializer
 import tm.alashow.domain.models.BaseEntity
 
 typealias PlaylistId = Long
@@ -26,6 +28,7 @@ typealias PlaylistsWithAudios = List<PlaylistWithAudios>
 
 const val PLAYLIST_NAME_MAX_LENGTH = 100
 
+@Serializable
 @Entity(tableName = "playlists")
 data class Playlist(
     @PrimaryKey(autoGenerate = true)
@@ -42,6 +45,7 @@ data class Playlist(
     val artworkSource: String? = null,
 
     @ColumnInfo(name = "updated_at", defaultValue = "")
+    @Serializable(with = LocalDateTimeSerializer::class)
     val updatedAt: LocalDateTime = LocalDateTime.now(),
 
     @ColumnInfo(name = "params")
@@ -73,6 +77,8 @@ typealias PlaylistAudioId = Long
         )
     ]
 )
+
+@Serializable
 data class PlaylistAudio(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id", defaultValue = "0")

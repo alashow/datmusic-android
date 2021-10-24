@@ -2,7 +2,7 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.datmusic.data.repos
+package tm.alashow.datmusic.data.backup
 
 import javax.inject.Inject
 import kotlinx.coroutines.flow.first
@@ -31,10 +31,6 @@ class ClearUnusedEntities @Inject constructor(
         val audioIdsInPlaylists = playlistWithAudios.distinctAudios().first()
 
         val audioIds = downloadedAudioIds + audioIdsInPlaylists
-
-        // val downloadedAudios = audiosDao.entriesById(audioIds).first()
-        // val downloadedArtistNames = downloadedAudios.map { it.artists() }.flatten().toSet()
-        // val downloadedAlbumTitles = downloadedAudios.map { it.album }.filterNotNull().toSet()
 
         val deletedAudios = audiosDao.deleteExcept(audioIds)
         val deletedArtists = artistsDao.deleteAll()
