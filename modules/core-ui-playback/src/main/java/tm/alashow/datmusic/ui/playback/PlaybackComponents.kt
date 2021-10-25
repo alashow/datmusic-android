@@ -24,7 +24,6 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.calculateCurrentOffsetForPage
 import com.google.accompanist.pager.rememberPagerState
 import kotlin.math.absoluteValue
-import kotlin.math.roundToInt
 import kotlinx.coroutines.flow.collect
 import timber.log.Timber
 import tm.alashow.common.compose.LocalPlaybackConnection
@@ -102,7 +101,7 @@ internal fun animatePlaybackProgress(
 ) = animateFloatAsState(
     targetValue = targetValue,
     animationSpec = tween(
-        durationMillis = (PLAYBACK_PROGRESS_INTERVAL * 0.75).roundToInt(),
+        durationMillis = PLAYBACK_PROGRESS_INTERVAL.toInt(),
         easing = FastOutSlowInEasing
     ),
 )
