@@ -197,8 +197,18 @@ class PlaylistsRepo @Inject constructor(
     }
 
     override suspend fun clear(): Int {
-        ArtworkImageFolderType.PLAYLIST.getArtworkImageFolder(context).delete()
+        clearArtworksFolder()
         return super.clear()
+    }
+
+    fun clearArtworksFolder() {
+        ArtworkImageFolderType.PLAYLIST.getArtworkImageFolder(context).delete()
+    }
+
+    suspend fun regeneratePlaylistArtworks() {
+        for (playlist in playlists().first()) {
+            generatePlaylistArtwork(playlist.id)
+        }
     }
 
     private fun generatePlaylistArtwork(playlistId: PlaylistId, maxArtworksNeeded: Int = 4) {

@@ -19,21 +19,26 @@ import tm.alashow.datmusic.data.db.AppDatabaseNuke
 import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.data.db.daos.PlaylistsDao
 import tm.alashow.datmusic.data.db.daos.PlaylistsWithAudiosDao
+import tm.alashow.datmusic.data.repos.playlist.PlaylistsRepo
 
 class RestoreDatmusicBackup @Inject constructor(
     private val audiosDao: AudiosDao,
     private val playlistsDao: PlaylistsDao,
     private val playlistWithAudiosDao: PlaylistsWithAudiosDao,
+    private val playlistsRepo: PlaylistsRepo,
     private val dispatchers: CoroutineDispatchers,
     private val databaseNuke: AppDatabaseNuke,
 ) : ResultInteractor<DatmusicBackupData, Int>() {
     override suspend fun doWork(params: DatmusicBackupData) = withContext(dispatchers.io) {
         databaseNuke.nuke()
+        playlistsRepo.clearArtworksFolder()
 
         var insertedCount = 0
         insertedCount += audiosDao.insertAll(params.audios).size
         insertedCount += playlistsDao.insertAll(params.playlists).size
         insertedCount += playlistWithAudiosDao.insertAll(params.playlistAudios).size
+
+        playlistsRepo.regeneratePlaylistArtworks()
 
         return@withContext insertedCount
     }
