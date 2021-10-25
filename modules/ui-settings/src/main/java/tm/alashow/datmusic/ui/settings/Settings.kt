@@ -17,7 +17,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -88,6 +87,7 @@ fun SettingsList(
         settingsGeneralSection()
         settingsThemeSection(themeState, setThemeState)
         settingsDownloadsSection(downloader)
+        settingsDatabaseSection()
         settingsAboutSection()
         settingsLinksSection(settingsLinks)
     }
@@ -99,12 +99,6 @@ fun LazyListScope.settingsGeneralSection() {
 
         SettingsItem(stringResource(R.string.settings_premium)) {
             PremiumButton()
-        }
-        SettingsItem(
-            stringResource(R.string.settings_database),
-            verticalAlignment = Alignment.Top
-        ) {
-            BackupRestoreButton()
         }
     }
 }
@@ -197,6 +191,15 @@ fun LazyListScope.settingsLinksSection(settingsLinks: SettingsLinks) {
                 text = settingsLink.getLinkName(),
                 link = settingsLink.getLinkUrl()
             )
+        }
+    }
+}
+
+internal fun LazyListScope.settingsDatabaseSection() {
+    item {
+        SettingsSectionLabel(stringResource(R.string.settings_library))
+        SettingsItem(stringResource(R.string.settings_database)) {
+            BackupRestoreButton()
         }
     }
 }

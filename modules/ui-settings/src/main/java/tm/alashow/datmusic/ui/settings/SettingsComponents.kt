@@ -33,11 +33,11 @@ import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.outlinedButtonColors
 
 @Composable
-internal fun SettingsSectionLabel(text: String) {
+internal fun SettingsSectionLabel(text: String, modifier: Modifier = Modifier) {
     Text(
         text, style = MaterialTheme.typography.h6,
         color = MaterialTheme.colors.secondary,
-        modifier = Modifier.padding(AppTheme.specs.inputPaddings)
+        modifier = modifier.padding(AppTheme.specs.inputPaddings)
     )
 }
 
@@ -77,6 +77,7 @@ internal fun SettingsLinkItem(
 internal fun SettingsItem(
     label: String,
     modifier: Modifier = Modifier,
+    labelModifier: Modifier = Modifier,
     labelWeight: Float = 1f,
     contentWeight: Float = 1f,
     verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
@@ -92,7 +93,7 @@ internal fun SettingsItem(
         Text(
             label,
             style = MaterialTheme.typography.subtitle1,
-            modifier = Modifier
+            modifier = labelModifier
                 .padding(end = AppTheme.specs.paddingTiny)
                 .weight(labelWeight)
         )
@@ -107,18 +108,19 @@ internal fun SettingsItem(
 internal fun SettingsLoadingButton(
     isLoading: Boolean,
     text: String,
+    modifier: Modifier = Modifier,
     enabled: Boolean = true,
     colors: ButtonColors = outlinedButtonColors(),
     onClick: Callback,
 ) {
     OutlinedButton(
         onClick = onClick,
-        enabled = enabled,
+        enabled = enabled && !isLoading,
         colors = colors,
+        modifier = modifier,
     ) {
-        when (isLoading) {
-            true -> ProgressIndicatorSmall()
-            else -> Text(text)
-        }
+        if (isLoading)
+            ProgressIndicatorSmall(Modifier.padding(end = AppTheme.specs.paddingSmall))
+        Text(text, maxLines = 1)
     }
 }
