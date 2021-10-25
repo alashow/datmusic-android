@@ -8,9 +8,12 @@ import android.content.Context
 import android.net.Uri
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.withContext
 import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.base.util.extensions.readFromFile
+import tm.alashow.data.AsyncInteractor
 import tm.alashow.data.ResultInteractor
 import tm.alashow.datmusic.data.db.AppDatabaseNuke
 import tm.alashow.datmusic.data.db.daos.AudiosDao
@@ -40,11 +43,21 @@ class DatmusicRestoreFromFile @Inject constructor(
     @ApplicationContext private val context: Context,
     private val restoreDatmusicBackup: RestoreDatmusicBackup,
     private val dispatchers: CoroutineDispatchers,
-) : ResultInteractor<Uri, Int>() {
+) : AsyncInteractor<Uri, Int>() {
+
+    private val warningState = Channel<Throwable?>(Channel.CONFLATED)
+    val warnings = warningState.receiveAsFlow()
 
     override suspend fun doWork(params: Uri) = withContext(dispatchers.io) {
         val backupJson = context.readFromFile(params)
         val datmusicBackup = DatmusicBackupData.fromJson(backupJson)
+
+        runCatching {
+            datmusicBackup.checkVersion()
+        }.onFailure {
+            warningState.send(it)
+        }
+
         return@withContext restoreDatmusicBackup.execute(datmusicBackup)
     }
 }

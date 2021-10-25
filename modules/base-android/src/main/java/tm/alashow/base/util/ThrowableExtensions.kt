@@ -14,7 +14,6 @@ import tm.alashow.domain.models.errors.ApiErrorException
 import tm.alashow.domain.models.errors.EmptyResultException
 import tm.alashow.i18n.UiMessage
 import tm.alashow.i18n.UiMessageConvertable
-import tm.alashow.i18n.ValidationErrorException
 
 @StringRes
 fun Throwable?.localizedTitle(): Int = when (this) {
@@ -38,7 +37,6 @@ fun Throwable?.localizedMessage(): Int = when (this) {
     }
     is AuthenticationCanceledException -> R.string.error_noAuth
     is AppError -> messageRes
-    is ValidationErrorException -> (error.message.value as Int) // TODO: fix this
 
     else -> R.string.error_unknown
 }

@@ -26,6 +26,7 @@ import timber.log.Timber
 import tm.alashow.base.ui.SnackbarManager
 import tm.alashow.base.util.event
 import tm.alashow.base.util.extensions.getStateFlow
+import tm.alashow.base.util.extensions.stateInDefault
 import tm.alashow.datmusic.data.CaptchaSolution
 import tm.alashow.datmusic.data.DatmusicSearchParams
 import tm.alashow.datmusic.data.DatmusicSearchParams.BackendType
@@ -71,6 +72,7 @@ internal class SearchViewModel @Inject constructor(
     val pagedAlbumsList get() = albumsPager.flow.cachedIn(viewModelScope)
 
     val state = combine(searchFilter.filterNotNull(), snackbarManager.errors, captchaError, ::SearchViewState)
+        .stateInDefault(viewModelScope, SearchViewState.Empty)
 
     init {
         viewModelScope.launch {

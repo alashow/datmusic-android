@@ -16,6 +16,8 @@ import tm.alashow.base.util.extensions.pass
 sealed class Async<out T>(val complete: Boolean, val shouldLoad: Boolean) {
     open operator fun invoke(): T? = null
 
+    val isLoading get() = this is Loading
+
     fun success(block: (T) -> Unit) = if (this is Success) {
         block(this())
     } else pass

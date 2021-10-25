@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.base.util.extensions.writeToFile
+import tm.alashow.data.AsyncInteractor
 import tm.alashow.data.ResultInteractor
 import tm.alashow.datmusic.coreLibrary.R
 import tm.alashow.datmusic.data.db.daos.AudiosDao
@@ -52,7 +53,11 @@ class CreateDatmusicBackup @Inject constructor(
         val playlists = playlistsDao.entries().first().map { it.copyForBackup() }
         val playlistAudios = playlistWithAudiosDao.playlistAudios().first()
 
-        return@withContext DatmusicBackupData(audios, playlists, playlistAudios)
+        return@withContext DatmusicBackupData.create(
+            audios = audios,
+            playlists = playlists,
+            playlistAudios = playlistAudios
+        )
     }
 }
 
@@ -60,7 +65,8 @@ class DatmusicBackupToFile @Inject constructor(
     @ApplicationContext private val context: Context,
     private val createDatmusicBackup: CreateDatmusicBackup,
     private val dispatchers: CoroutineDispatchers,
-) : ResultInteractor<Uri, Unit>() {
+) : AsyncInteractor<Uri, Unit>() {
+
     override suspend fun doWork(params: Uri) = withContext(dispatchers.io) {
         val backup = createDatmusicBackup.execute(CreateDatmusicBackup.Params())
         val backupJsonBytes = backup.toJson().toByteArray()

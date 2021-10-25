@@ -5,8 +5,6 @@
 package tm.alashow.datmusic.ui.settings.premium
 
 import android.app.Activity
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -22,30 +20,24 @@ import tm.alashow.base.util.asString
 import tm.alashow.base.util.toast
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.ui.settings.R
-import tm.alashow.ui.components.ProgressIndicatorSmall
-import tm.alashow.ui.theme.outlinedButtonColors
+import tm.alashow.datmusic.ui.settings.SettingsLoadingButton
 
 @Composable
 fun PremiumButton(viewModel: PremiumSettingsViewModel = hiltViewModel()) {
     val premiumStatus by rememberFlowWithLifecycle(viewModel.premiumStatus).collectAsState(PremiumStatus.Unknown)
     val context = LocalContext.current
 
-    OutlinedButton(
+    SettingsLoadingButton(
         enabled = premiumStatus.isActionable,
-        onClick = {
-            if (premiumStatus is PremiumStatus.NotSubscribed) viewModel.fakeRefresh()
-            premiumStatus.handleClick(
-                context = context as Activity,
-                onPermissionActive = { viewModel.refreshPremiumStatus() },
-                onPermissionError = { context.toast(it.toUiMessage().asString(context)) }
-            )
-        },
-        colors = outlinedButtonColors()
+        isLoading = premiumStatus.isLoading,
+        text = premiumStatus.toButtonText()
     ) {
-        when (premiumStatus.isLoading) {
-            true -> ProgressIndicatorSmall()
-            else -> Text(premiumStatus.toButtonText())
-        }
+        if (premiumStatus is PremiumStatus.NotSubscribed) viewModel.fakeRefresh()
+        premiumStatus.handleClick(
+            context = context as Activity,
+            onPermissionActive = { viewModel.refreshPremiumStatus() },
+            onPermissionError = { context.toast(it.toUiMessage().asString(context)) }
+        )
     }
 }
 

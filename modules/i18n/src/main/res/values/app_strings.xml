@@ -152,10 +152,11 @@
     <string name="settings.premium.disabled">Disabled</string>
 
     <string name="settings.database">Database</string>
-    <string name="settings.database.backup">Backup</string>
+    <string name="settings.database.backup">Clean &amp; Backup</string>
     <string name="settings.database.backup.complete">Backup complete</string>
     <string name="settings.database.restore">Restore</string>
     <string name="settings.database.restore.complete">Restore complete</string>
+    <string name="settings.database.restore.NonMatchingVersion">Backup file has non-matching version with the app, restoration might fail (%1$d vs backup version %2$d).</string>
 
     <string name="subscriptions.required">Subscription required for this feature</string>
 

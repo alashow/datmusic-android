@@ -6,20 +6,21 @@ package tm.alashow.datmusic.ui.settings.backup
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import tm.alashow.base.util.CreateFileContract
+import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.ui.settings.R
-import tm.alashow.ui.theme.AppTheme
-import tm.alashow.ui.theme.outlinedButtonColors
+import tm.alashow.datmusic.ui.settings.SettingsLoadingButton
 
 @Composable
 fun BackupRestoreButton(viewModel: BackupRestoreViewModel = hiltViewModel()) {
+    val viewState by rememberFlowWithLifecycle(viewModel.state).collectAsState(BackupRestoreViewState.Empty)
 
     val backupOutputFilePickerLauncher = rememberLauncherForActivityResult(contract = CreateFileContract(BACKUP_FILE_PARAMS)) {
         if (it != null) viewModel.backupTo(it)
@@ -28,18 +29,17 @@ fun BackupRestoreButton(viewModel: BackupRestoreViewModel = hiltViewModel()) {
         if (it != null) viewModel.restoreFrom(it)
     }
 
-    Row(horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall)) {
-        OutlinedButton(
-            onClick = { backupOutputFilePickerLauncher.launch(arrayOf(BACKUP_FILE_PARAMS.fileMimeType)) },
-            colors = outlinedButtonColors(),
-        ) {
-            Text(stringResource(R.string.settings_database_backup))
-        }
-        OutlinedButton(
-            onClick = { restoreInputFilePickerLauncher.launch(BACKUP_FILE_PARAMS.fileMimeType) },
-            colors = outlinedButtonColors(),
-        ) {
-            Text(stringResource(R.string.settings_database_restore))
-        }
+    Column(horizontalAlignment = Alignment.End) {
+        SettingsLoadingButton(
+            isLoading = viewState.isBackingUp,
+            text = stringResource(R.string.settings_database_backup),
+            onClick = { backupOutputFilePickerLauncher.launch(arrayOf(BACKUP_FILE_PARAMS.fileMimeType)) }
+        )
+
+        SettingsLoadingButton(
+            isLoading = viewState.isRestoring,
+            text = stringResource(R.string.settings_database_restore),
+            onClick = { restoreInputFilePickerLauncher.launch(BACKUP_FILE_PARAMS.fileMimeType) }
+        )
     }
 }
