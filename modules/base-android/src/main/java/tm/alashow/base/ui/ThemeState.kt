@@ -15,7 +15,6 @@ enum class ColorPalettePreference {
     Asphalt,
     Black, Black_Yellow,
     Gray, Gray_Green, Blue_Grey,
-    Orange
 }
 
 /**
