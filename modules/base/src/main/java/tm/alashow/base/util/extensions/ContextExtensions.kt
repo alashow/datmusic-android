@@ -8,8 +8,16 @@ import android.content.Context
 import android.net.Uri
 
 fun Context.writeToFile(data: ByteArray, output: Uri) {
+    // try to reset file before writing
+    // non-local files aren't allowed to be opened with write-truncate (wt) mode so do it safely before writing data
     runCatching {
-        val outputStream = contentResolver.openOutputStream(output, "wt") ?: error("Failed to open output file stream")
+        contentResolver.openOutputStream(output, "wt")?.apply {
+            write(byteArrayOf())
+            close()
+        }
+    }
+    runCatching {
+        val outputStream = contentResolver.openOutputStream(output) ?: error("Failed to open output file stream")
         outputStream.write(data)
         outputStream.close()
     }.onFailure {
