@@ -466,9 +466,9 @@ private fun PlaybackProgressSlider(
         .fillMaxWidth(fraction = .99f) // reduce linearProgressIndicators width to match Slider's
         .clip(CircleShape) // because Slider is rounded
 
-    val sliderProgress by animatePlaybackProgress(progressState.progress)
     val bufferedProgress by animatePlaybackProgress(progressState.bufferedProgress)
     val isBuffering = playbackState.isBuffering
+    val sliderProgress = progressState.progress
 
     Box(
         modifier = Modifier.height(height),

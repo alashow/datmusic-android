@@ -86,6 +86,8 @@
     <string name="playlist.create.label">Give your playlist a name</string>
     <string name="playlist.create.generatedTemplate">My Playlist #%1$d</string>
 
+    <string name="playlist.create.downloadsBackupTemplate">Downloads</string>
+
     <string name="playlist.edit.label">Edit playlist</string>
     <string name="playlist.edit.clearArtwork">Clear artwork</string>
     <string name="playlist.edit.shuffle">Shuffle</string>
@@ -148,6 +150,14 @@
     <string name="settings.premium.subscribe">Subscribe</string>
     <string name="settings.premium.view">View subscription</string>
     <string name="settings.premium.disabled">Disabled</string>
+
+    <string name="settings.library">Library</string>
+    <string name="settings.database">Database</string>
+    <string name="settings.database.backup">Backup</string>
+    <string name="settings.database.backup.complete">Backup complete</string>
+    <string name="settings.database.restore">Restore</string>
+    <string name="settings.database.restore.complete">Restore complete</string>
+    <string name="settings.database.restore.NonMatchingVersion">Backup file has non-matching version with the app, restoration might fail (%1$d vs backup version %2$d).</string>
 
     <string name="subscriptions.required">Subscription required for this feature</string>
 

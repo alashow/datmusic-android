@@ -17,6 +17,7 @@ import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.AudioId
 import tm.alashow.datmusic.domain.entities.AudioIds
 import tm.alashow.datmusic.domain.entities.Audios
+import tm.alashow.datmusic.domain.entities.DownloadRequest
 
 enum class AudioSaveType {
     Download, Playlist;
@@ -38,15 +39,19 @@ class AudiosRepo @Inject constructor(
 
     suspend fun saveAudios(type: AudioSaveType, vararg audios: Audio): Int {
         val mapped = audios.map { it.copy(primaryKey = it.id, params = type.toAudioParams()) }
-        return insert(mapped).size
+        return insertAll(mapped).size
     }
+
+    private suspend fun findFromAudiosById(ids: AudioIds) = audiosById(ids).firstOrNull().orEmpty()
+    private suspend fun findAudioDownloadsById(ids: AudioIds) =
+        downloadsRequestsDao.entriesByIdAndType(ids, DownloadRequest.Type.Audio).firstOrNull().orEmpty()
 
     suspend fun find(audioId: String): Audio? = find(listOf(audioId)).firstOrNull()
 
     @OptIn(ExperimentalStdlibApi::class)
     suspend fun find(ids: AudioIds): List<Audio> {
-        val audios = audiosById(ids).firstOrNull().orEmpty().map { it.id to it }.toMap()
-        val downloads = downloadsRequestsDao.entriesById(ids).firstOrNull().orEmpty().map { it.audio.id to it.audio }.toMap()
+        val audios = findFromAudiosById(ids).map { it.id to it }.toMap()
+        val downloads = findAudioDownloadsById(ids).map { it.audio.id to it.audio }.toMap()
         return buildList {
             ids.forEach { id ->
                 val audio = audios[id] ?: downloads[id]
@@ -55,5 +60,19 @@ class AudiosRepo @Inject constructor(
                 } else add(audio)
             }
         }
+    }
+
+    /**
+     * Finds missing audio ids from given ids. Tries to recover missing ids from downloads via [findAudioDownloadsById].
+     */
+    suspend fun findMissingIds(ids: AudioIds): AudioIds {
+        val existingIds = findFromAudiosById(ids).map { it.id }.toSet()
+        val missingIds = ids.filterNot { existingIds.contains(it) }
+
+        val recoveredAudios = findAudioDownloadsById(missingIds).map { it.audio }
+        val recoveredAudioIds = recoveredAudios.map { it.id }.toSet()
+        insertAll(recoveredAudios)
+
+        return missingIds.filterNot { recoveredAudioIds.contains(it) }
     }
 }

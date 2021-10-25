@@ -26,6 +26,7 @@ import tm.alashow.datmusic.data.repos.audio.AudioSaveType
 import tm.alashow.datmusic.data.repos.audio.AudiosRepo
 import tm.alashow.datmusic.data.repos.playlist.ArtworkImageFileType.Companion.isUserSetArtworkPath
 import tm.alashow.datmusic.data.repos.playlist.PlaylistArtworkUtils.savePlaylistArtwork
+import tm.alashow.datmusic.domain.entities.AudioId
 import tm.alashow.datmusic.domain.entities.AudioIds
 import tm.alashow.datmusic.domain.entities.CoverImageSize
 import tm.alashow.datmusic.domain.entities.PLAYLIST_NAME_MAX_LENGTH
@@ -49,9 +50,11 @@ class PlaylistsRepo @Inject constructor(
     private val audiosRepo: AudiosRepo,
 ) : RoomRepo<PlaylistId, Playlist>(dao, dispatchers), CoroutineScope by ProcessLifecycleOwner.get().lifecycleScope {
 
+    fun playlistByName(name: String) = dao.playlistByName(name)
     fun playlist(id: PlaylistId) = dao.entry(id)
-    fun playlistAudios(id: PlaylistId) = playlistAudiosDao.playlistItems(id)
-    fun playlistWithAudios(id: PlaylistId) = combine(playlist(id), playlistAudios(id).map { it.asAudios() }, ::PlaylistWithAudios)
+
+    fun playlistItems(id: PlaylistId) = playlistAudiosDao.playlistItems(id)
+    fun playlistWithAudios(id: PlaylistId) = combine(playlist(id), playlistItems(id).map { it.asAudios() }, ::PlaylistWithAudios)
 
     fun playlists() = dao.entries()
     fun playlistsWithAudios() = playlistAudiosDao.playlistsWithAudios()
@@ -77,7 +80,7 @@ class PlaylistsRepo @Inject constructor(
 
         var playlistId: PlaylistId
         withContext(dispatchers.io) {
-            playlistId = dao.insert(playlist)
+            playlistId = insert(playlist)
             if (playlistId < 0)
                 throw DatabaseInsertError.error()
 
@@ -86,6 +89,17 @@ class PlaylistsRepo @Inject constructor(
             }
         }
 
+        return playlistId
+    }
+
+    suspend fun getOrCreatePlaylist(name: String, audioIds: AudioIds = emptyList(), ignoreExistingAudios: Boolean = true): PlaylistId {
+        val existingPlaylist = playlistByName(name).firstOrNull()
+        val playlistId = existingPlaylist?.id ?: createPlaylist(Playlist(name = name))
+        if (audioIds.isNotEmpty()) {
+            withContext(dispatchers.io) {
+                addAudiosToPlaylist(playlistId, audioIds, ignoreExisting = ignoreExistingAudios)
+            }
+        }
         return playlistId
     }
 
@@ -104,12 +118,19 @@ class PlaylistsRepo @Inject constructor(
         return updatePlaylist(updated(playlist(playlistId).first()))
     }
 
-    suspend fun addAudiosToPlaylist(playlistId: PlaylistId, audioIds: AudioIds): List<PlaylistId> {
+    suspend fun addAudiosToPlaylist(playlistId: PlaylistId, audioIds: AudioIds, ignoreExisting: Boolean = false): List<PlaylistId> {
         val insertedIds = mutableListOf<PlaylistId>()
+        val ignoredAudioIds = mutableListOf<AudioId>()
         withContext(dispatchers.io) {
             validatePlaylistId(playlistId)
 
             if (audioIds.isEmpty()) return@withContext
+
+            ignoredAudioIds += audiosRepo.findMissingIds(audioIds)
+
+            if (ignoreExisting) {
+                ignoredAudioIds += playlistItems(playlistId).first().map { it.audio.id }.toSet()
+            }
 
             val savedCount = audiosRepo.saveAudiosById(AudioSaveType.Playlist, audioIds)
             if (savedCount < audioIds.size) {
@@ -117,13 +138,15 @@ class PlaylistsRepo @Inject constructor(
             }
 
             val lastIndex = playlistAudiosDao.lastPlaylistAudioIndex(playlistId).firstOrNull() ?: -1
-            val playlistWithAudios = audioIds.mapIndexed { index, id ->
-                PlaylistAudio(
-                    playlistId = playlistId,
-                    audioId = id,
-                    position = lastIndex + (index + 1)
-                )
-            }
+            val playlistWithAudios = audioIds
+                .filterNot { ignoredAudioIds.contains(it) }
+                .mapIndexed { index, id ->
+                    PlaylistAudio(
+                        playlistId = playlistId,
+                        audioId = id,
+                        position = lastIndex + (index + 1)
+                    )
+                }
             insertedIds += playlistAudiosDao.insertAll(playlistWithAudios)
             generatePlaylistArtwork(playlistId)
             return@withContext
@@ -175,16 +198,26 @@ class PlaylistsRepo @Inject constructor(
         return super.delete(id)
     }
 
-    override suspend fun clear(): Int {
+    override suspend fun deleteAll(): Int {
+        clearArtworksFolder()
+        return super.deleteAll()
+    }
+
+    fun clearArtworksFolder() {
         ArtworkImageFolderType.PLAYLIST.getArtworkImageFolder(context).delete()
-        return super.clear()
+    }
+
+    suspend fun regeneratePlaylistArtworks() {
+        for (playlist in playlists().first()) {
+            generatePlaylistArtwork(playlist.id)
+        }
     }
 
     private fun generatePlaylistArtwork(playlistId: PlaylistId, maxArtworksNeeded: Int = 4) {
         launch(dispatchers.computation) {
             validatePlaylistId(playlistId)
             val playlist = playlist(playlistId).first().updatedCopy()
-            val audiosOfPlaylist = playlistAudios(playlistId).first()
+            val audiosOfPlaylist = playlistItems(playlistId).first()
 
             if (playlist.artworkPath.isUserSetArtworkPath()) {
                 Timber.i("Skipping generating artwork for id=$playlistId because it has non-auto generated artwork")

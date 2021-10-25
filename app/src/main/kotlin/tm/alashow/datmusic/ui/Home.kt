@@ -80,8 +80,9 @@ internal fun Home(
     val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying).collectAsState(NONE_PLAYING)
     val playerActive = (playbackState to nowPlaying).isActive
 
+    val bottomNavigationHeight = HomeBottomNavigationHeight * (if (playerActive) 1.1f else 1f)
     val sysNavBarHeight = with(LocalDensity.current) { LocalWindowInsets.current.navigationBars.bottom.toDp() }
-    val bottomBarHeight = sysNavBarHeight + HomeBottomNavigationHeight + (if (playerActive) PlaybackMiniControlsDefaults.height else 0.dp)
+    val bottomBarHeight = sysNavBarHeight + bottomNavigationHeight + (if (playerActive) PlaybackMiniControlsDefaults.height else 0.dp)
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -114,6 +115,7 @@ internal fun Home(
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.BottomCenter),
+                    height = bottomNavigationHeight
                 )
                 PlaybackMiniControls(modifier = Modifier.align(Alignment.TopCenter))
             }
@@ -191,12 +193,12 @@ internal fun HomeBottomNavigation(
 }
 
 @Composable
-private fun homeBottomNavigationGradient() = Brush.verticalGradient(
+private fun homeBottomNavigationGradient(color: Color = MaterialTheme.colors.surface) = Brush.verticalGradient(
     listOf(
-        MaterialTheme.colors.surface.copy(0.6f),
-        MaterialTheme.colors.surface.copy(0.8f),
-        MaterialTheme.colors.surface.copy(0.97f),
-        MaterialTheme.colors.surface,
+        color.copy(0.8f),
+        color.copy(0.9f),
+        color.copy(0.97f),
+        color,
     )
 )
 

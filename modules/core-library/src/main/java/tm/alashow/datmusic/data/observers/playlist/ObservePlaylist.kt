@@ -37,7 +37,7 @@ class ObservePlaylistDetails @Inject constructor(
 
     override fun createObservable(params: PlaylistId) = flow {
         emit(Loading())
-        playlistsRepo.playlistAudios(params)
+        playlistsRepo.playlistItems(params)
             .catch { error -> emit(Fail<PlaylistItems>(error)) }
             .collect { emit(Success(it)) }
     }
@@ -49,7 +49,7 @@ class ObservePlaylistItems @Inject constructor(
 
     override fun createObservable(params: PlaylistId) = flow {
         emit(Loading())
-        playlistsRepo.playlistAudios(params)
+        playlistsRepo.playlistItems(params)
             .catch { error -> emit(Fail<PlaylistItems>(error)) }
             .collect { emit(Success(it)) }
     }

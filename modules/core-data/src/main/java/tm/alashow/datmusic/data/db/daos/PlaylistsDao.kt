@@ -18,6 +18,10 @@ import tm.alashow.domain.models.Params
 abstract class PlaylistsDao : EntityDao<Params, Playlist>() {
 
     @Transaction
+    @Query("SELECT * FROM playlists WHERE name = :name")
+    abstract fun playlistByName(name: String): Flow<Playlist>
+
+    @Transaction
     @Query("SELECT * FROM playlists ORDER BY id DESC")
     abstract override fun entries(): Flow<List<Playlist>>
 

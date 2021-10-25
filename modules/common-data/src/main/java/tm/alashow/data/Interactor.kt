@@ -64,7 +64,7 @@ abstract class AsyncInteractor<in P, T> {
 
     suspend fun execute(params: P) = doWork(params)
 
-    protected abstract suspend fun prepare(params: P)
+    protected open suspend fun prepare(params: P) {}
     protected abstract suspend fun doWork(params: P): T
 }
 
