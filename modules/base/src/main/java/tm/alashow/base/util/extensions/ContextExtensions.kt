@@ -9,8 +9,9 @@ import android.net.Uri
 
 fun Context.writeToFile(data: ByteArray, output: Uri) {
     runCatching {
-        val outputStream = contentResolver.openOutputStream(output) ?: error("Failed to open output file stream")
+        val outputStream = contentResolver.openOutputStream(output, "wt") ?: error("Failed to open output file stream")
         outputStream.write(data)
+        outputStream.close()
     }.onFailure {
         error("Failed to write to file: $output")
     }
