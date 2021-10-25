@@ -34,6 +34,9 @@ abstract class PlaylistsWithAudiosDao {
     @Query("DELETE FROM playlist_audios WHERE id in (:ids)")
     abstract suspend fun deletePlaylistItems(ids: List<PlaylistAudioId>): Int
 
+    @Query("DELETE FROM playlist_audios")
+    abstract suspend fun deleteAll(): Int
+
     @Update
     @Transaction
     abstract fun updatePlaylistAudio(audioOfPlaylist: PlaylistAudio)

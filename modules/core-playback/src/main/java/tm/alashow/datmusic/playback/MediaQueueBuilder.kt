@@ -14,6 +14,7 @@ import tm.alashow.datmusic.data.db.daos.ArtistsDao
 import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.data.repos.playlist.PlaylistsRepo
 import tm.alashow.datmusic.domain.entities.Audio
+import tm.alashow.datmusic.domain.entities.asAudios
 import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.playback.models.MEDIA_TYPE_ALBUM
 import tm.alashow.datmusic.playback.models.MEDIA_TYPE_ARTIST
@@ -38,7 +39,7 @@ class MediaQueueBuilder @Inject constructor(
             MEDIA_TYPE_AUDIO -> listOfNotNull(audiosDao.entry(value).firstOrNull())
             MEDIA_TYPE_ALBUM -> albumsDao.entry(value).firstOrNull()?.audios
             MEDIA_TYPE_ARTIST -> artistsDao.entry(value).firstOrNull()?.audios
-            MEDIA_TYPE_PLAYLIST -> playlistsRepo.playlistWithAudios(value.toLong()).firstOrNull()?.audios
+            MEDIA_TYPE_PLAYLIST -> playlistsRepo.playlistItems(value.toLong()).firstOrNull()?.asAudios()
             MEDIA_TYPE_DOWNLOADS -> downloader.downloadRequests.first().audios.map { it.audio }
             MEDIA_TYPE_AUDIO_QUERY, MEDIA_TYPE_AUDIO_MINERVA_QUERY, MEDIA_TYPE_AUDIO_FLACS_QUERY -> {
                 val params = DatmusicSearchParams(value).run {

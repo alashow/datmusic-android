@@ -28,19 +28,21 @@ class RestoreDatmusicBackup @Inject constructor(
     private val playlistsRepo: PlaylistsRepo,
     private val dispatchers: CoroutineDispatchers,
     private val databaseNuke: AppDatabaseNuke,
-) : ResultInteractor<DatmusicBackupData, Int>() {
+) : ResultInteractor<DatmusicBackupData, Pair<Int, Int>>() {
     override suspend fun doWork(params: DatmusicBackupData) = withContext(dispatchers.io) {
-        databaseNuke.nuke()
-        playlistsRepo.clearArtworksFolder()
+        var (deletedCount, insertedCount) = 0 to 0
 
-        var insertedCount = 0
+        deletedCount += audiosDao.deleteAll()
+        deletedCount += playlistsDao.deleteAll()
+        deletedCount += playlistWithAudiosDao.deleteAll()
+
         insertedCount += audiosDao.insertAll(params.audios).size
         insertedCount += playlistsDao.insertAll(params.playlists).size
         insertedCount += playlistWithAudiosDao.insertAll(params.playlistAudios).size
 
         playlistsRepo.regeneratePlaylistArtworks()
 
-        return@withContext insertedCount
+        return@withContext deletedCount to insertedCount
     }
 }
 
@@ -48,7 +50,7 @@ class DatmusicRestoreFromFile @Inject constructor(
     @ApplicationContext private val context: Context,
     private val restoreDatmusicBackup: RestoreDatmusicBackup,
     private val dispatchers: CoroutineDispatchers,
-) : AsyncInteractor<Uri, Int>() {
+) : AsyncInteractor<Uri, Pair<Int, Int>>() {
 
     private val warningState = Channel<Throwable?>(Channel.CONFLATED)
     val warnings = warningState.receiveAsFlow()

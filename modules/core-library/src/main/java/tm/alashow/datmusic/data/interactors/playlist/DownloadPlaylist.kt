@@ -29,12 +29,12 @@ class DownloadPlaylist @Inject constructor(
     override suspend fun prepare(params: PlaylistId) {
         downloader.clearDownloaderEvents()
         Subscriptions.checkPremiumPermission()
-        if (repo.playlistAudios(params).first().isEmpty())
+        if (repo.playlistItems(params).first().isEmpty())
             throw PlaylistIsEmpty.error()
     }
 
     override suspend fun doWork(params: PlaylistId) = withContext(dispatchers.io) {
-        val audios = repo.playlistAudios(params).first().map { it.audio }
+        val audios = repo.playlistItems(params).first().map { it.audio }
         var enqueuedCount = 0
 
         audios.forEach {

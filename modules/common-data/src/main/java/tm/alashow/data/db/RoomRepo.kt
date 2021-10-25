@@ -34,5 +34,5 @@ abstract class RoomRepo<ID, E : BaseEntity>(
     suspend fun exists(id: ID): Boolean = dao.exists(id.toString()) > 0
 
     open suspend fun delete(id: ID) = withContext(dispatchers.io) { dao.delete(id.toString()) }
-    open suspend fun clear() = withContext(dispatchers.io) { dao.deleteAll() }
+    open suspend fun deleteAll() = withContext(dispatchers.io) { dao.deleteAll() }
 }

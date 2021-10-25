@@ -38,7 +38,7 @@ class CreateDatmusicBackup @Inject constructor(
     override suspend fun doWork(params: Params) = withContext(dispatchers.io) {
         clearUnusedEntities()
 
-        val downloadRequestAudios = downloadRequestsDao.entriesObservableByType(DownloadRequest.Type.Audio).first()
+        val downloadRequestAudios = downloadRequestsDao.entriesByType(DownloadRequest.Type.Audio).first()
         val downloadedAudioIds = downloadRequestAudios.map { it.entityId }
 
         createOrGetPlaylist.execute(

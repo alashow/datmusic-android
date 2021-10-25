@@ -95,7 +95,7 @@ class Downloader @Inject constructor(
     /**
      * Emits download requests mapped with download info from [fetcher].
      */
-    val downloadRequests: Flow<DownloadItems> = combine(dao.entriesObservable(), fetcherDownloads) { downloadRequests, downloads ->
+    val downloadRequests: Flow<DownloadItems> = combine(dao.entries(), fetcherDownloads) { downloadRequests, downloads ->
         val audioRequests = downloadRequests.filter { it.entityType == DownloadRequest.Type.Audio }
 
         val audioDownloads = audioRequests.map { request ->

@@ -53,8 +53,8 @@ class PlaylistsRepo @Inject constructor(
     fun playlistByName(name: String) = dao.playlistByName(name)
     fun playlist(id: PlaylistId) = dao.entry(id)
 
-    fun playlistAudios(id: PlaylistId) = playlistAudiosDao.playlistItems(id)
-    fun playlistWithAudios(id: PlaylistId) = combine(playlist(id), playlistAudios(id).map { it.asAudios() }, ::PlaylistWithAudios)
+    fun playlistItems(id: PlaylistId) = playlistAudiosDao.playlistItems(id)
+    fun playlistWithAudios(id: PlaylistId) = combine(playlist(id), playlistItems(id).map { it.asAudios() }, ::PlaylistWithAudios)
 
     fun playlists() = dao.entries()
     fun playlistsWithAudios() = playlistAudiosDao.playlistsWithAudios()
@@ -126,8 +126,10 @@ class PlaylistsRepo @Inject constructor(
 
             if (audioIds.isEmpty()) return@withContext
 
+            ignoredAudioIds += audiosRepo.findMissingIds(audioIds)
+
             if (ignoreExisting) {
-                ignoredAudioIds += playlistAudios(playlistId).first().map { it.audio.id }.toSet()
+                ignoredAudioIds += playlistItems(playlistId).first().map { it.audio.id }.toSet()
             }
 
             val savedCount = audiosRepo.saveAudiosById(AudioSaveType.Playlist, audioIds)
@@ -196,9 +198,9 @@ class PlaylistsRepo @Inject constructor(
         return super.delete(id)
     }
 
-    override suspend fun clear(): Int {
+    override suspend fun deleteAll(): Int {
         clearArtworksFolder()
-        return super.clear()
+        return super.deleteAll()
     }
 
     fun clearArtworksFolder() {
@@ -215,7 +217,7 @@ class PlaylistsRepo @Inject constructor(
         launch(dispatchers.computation) {
             validatePlaylistId(playlistId)
             val playlist = playlist(playlistId).first().updatedCopy()
-            val audiosOfPlaylist = playlistAudios(playlistId).first()
+            val audiosOfPlaylist = playlistItems(playlistId).first()
 
             if (playlist.artworkPath.isUserSetArtworkPath()) {
                 Timber.i("Skipping generating artwork for id=$playlistId because it has non-auto generated artwork")

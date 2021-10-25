@@ -26,7 +26,7 @@ class ClearUnusedEntities @Inject constructor(
      * To be modified to not delete downloaded audios artists/albums in the future.
      */
     suspend operator fun invoke() {
-        val downloadRequestAudios = downloadsRequestsDao.entriesObservableByType(DownloadRequest.Type.Audio).first()
+        val downloadRequestAudios = downloadsRequestsDao.entriesByType(DownloadRequest.Type.Audio).first()
         val downloadedAudioIds = downloadRequestAudios.map { it.entityId }
         val audioIdsInPlaylists = playlistWithAudios.distinctAudios().first()
 
