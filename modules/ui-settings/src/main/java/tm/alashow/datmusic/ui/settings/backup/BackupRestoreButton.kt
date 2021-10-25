@@ -18,27 +18,25 @@ import tm.alashow.datmusic.ui.settings.R
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.outlinedButtonColors
 
-val backupFileParams = CreateFileContract.Params(suggestedName = "datmusic-backup", fileExtension = "json", fileMimeType = "application/json")
-
 @Composable
 fun BackupRestoreButton(viewModel: BackupRestoreViewModel = hiltViewModel()) {
 
-    val backupOutputFilePickerLauncher = rememberLauncherForActivityResult(contract = CreateFileContract(backupFileParams)) {
-        if (it != null) viewModel.backup(it)
+    val backupOutputFilePickerLauncher = rememberLauncherForActivityResult(contract = CreateFileContract(BACKUP_FILE_PARAMS)) {
+        if (it != null) viewModel.backupTo(it)
     }
     val restoreInputFilePickerLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) {
-        if (it != null) viewModel.restore(it)
+        if (it != null) viewModel.restoreFrom(it)
     }
 
     Row(horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall)) {
         OutlinedButton(
-            onClick = { backupOutputFilePickerLauncher.launch(arrayOf(backupFileParams.fileMimeType)) },
+            onClick = { backupOutputFilePickerLauncher.launch(arrayOf(BACKUP_FILE_PARAMS.fileMimeType)) },
             colors = outlinedButtonColors(),
         ) {
             Text(stringResource(R.string.settings_database_backup))
         }
         OutlinedButton(
-            onClick = { restoreInputFilePickerLauncher.launch(backupFileParams.fileMimeType) },
+            onClick = { restoreInputFilePickerLauncher.launch(BACKUP_FILE_PARAMS.fileMimeType) },
             colors = outlinedButtonColors(),
         ) {
             Text(stringResource(R.string.settings_database_restore))

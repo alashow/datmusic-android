@@ -13,22 +13,40 @@ import kotlinx.coroutines.withContext
 import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.base.util.extensions.writeToFile
 import tm.alashow.data.ResultInteractor
+import tm.alashow.datmusic.coreLibrary.R
 import tm.alashow.datmusic.data.db.daos.AudiosDao
+import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
 import tm.alashow.datmusic.data.db.daos.PlaylistsDao
 import tm.alashow.datmusic.data.db.daos.PlaylistsWithAudiosDao
+import tm.alashow.datmusic.data.interactors.playlist.CreateOrGetPlaylist
+import tm.alashow.datmusic.domain.entities.DownloadRequest
 
 class CreateDatmusicBackup @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val audiosDao: AudiosDao,
     private val playlistsDao: PlaylistsDao,
     private val playlistWithAudiosDao: PlaylistsWithAudiosDao,
+    private val downloadRequestsDao: DownloadRequestsDao,
     private val dispatchers: CoroutineDispatchers,
     private val clearUnusedEntities: ClearUnusedEntities,
+    private val createOrGetPlaylist: CreateOrGetPlaylist,
 ) : ResultInteractor<CreateDatmusicBackup.Params, DatmusicBackupData>() {
 
     data class Params(val clearEntities: Boolean = true)
 
     override suspend fun doWork(params: Params) = withContext(dispatchers.io) {
         clearUnusedEntities()
+
+        val downloadRequestAudios = downloadRequestsDao.entriesObservableByType(DownloadRequest.Type.Audio).first()
+        val downloadedAudioIds = downloadRequestAudios.map { it.entityId }
+
+        createOrGetPlaylist.execute(
+            CreateOrGetPlaylist.Params(
+                name = context.getString(R.string.playlist_create_downloadsBackupTemplate),
+                audioIds = downloadedAudioIds,
+                ignoreExistingAudios = true,
+            )
+        )
 
         val audios = audiosDao.entries().first()
         val playlists = playlistsDao.entries().first().map { it.copyForBackup() }

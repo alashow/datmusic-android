@@ -38,7 +38,7 @@ class AudiosRepo @Inject constructor(
 
     suspend fun saveAudios(type: AudioSaveType, vararg audios: Audio): Int {
         val mapped = audios.map { it.copy(primaryKey = it.id, params = type.toAudioParams()) }
-        return insert(mapped).size
+        return insertAll(mapped).size
     }
 
     suspend fun find(audioId: String): Audio? = find(listOf(audioId)).firstOrNull()

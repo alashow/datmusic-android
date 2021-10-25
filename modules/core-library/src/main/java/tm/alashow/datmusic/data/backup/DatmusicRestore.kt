@@ -41,6 +41,7 @@ class DatmusicRestoreFromFile @Inject constructor(
     private val restoreDatmusicBackup: RestoreDatmusicBackup,
     private val dispatchers: CoroutineDispatchers,
 ) : ResultInteractor<Uri, Int>() {
+
     override suspend fun doWork(params: Uri) = withContext(dispatchers.io) {
         val backupJson = context.readFromFile(params)
         val datmusicBackup = DatmusicBackupData.fromJson(backupJson)

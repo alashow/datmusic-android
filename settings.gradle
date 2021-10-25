@@ -27,4 +27,4 @@ include ":modules:ui-settings"
 include ":modules:ui-artist"
 include ":modules:ui-album"
 include ":modules:ui-downloads"
-include ':modules:ui-library'
+include ":modules:ui-library"
