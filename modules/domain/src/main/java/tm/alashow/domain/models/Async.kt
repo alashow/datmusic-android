@@ -4,10 +4,7 @@
  */
 package tm.alashow.domain.models
 
-import androidx.lifecycle.MutableLiveData
 import tm.alashow.base.util.extensions.pass
-
-typealias LiveAsync<T> = MutableLiveData<Async<T>>
 
 /**
  * The T generic is unused for some classes but since it is sealed and useful for Success and Fail,
@@ -18,6 +15,8 @@ typealias LiveAsync<T> = MutableLiveData<Async<T>>
  */
 sealed class Async<out T>(val complete: Boolean, val shouldLoad: Boolean) {
     open operator fun invoke(): T? = null
+
+    val isLoading get() = this is Loading
 
     fun success(block: (T) -> Unit) = if (this is Success) {
         block(this())

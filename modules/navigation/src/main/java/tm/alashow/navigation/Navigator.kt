@@ -10,6 +10,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
+import tm.alashow.navigation.screens.ROOT_SCREENS
 
 val LocalNavigator = staticCompositionLocalOf<Navigator> {
     error("No LocalNavigator given")
@@ -25,17 +26,21 @@ fun NavigatorHost(
 
 sealed class NavigationEvent(open val route: String) {
     object Back : NavigationEvent("Back")
-    data class Destination(override val route: String) : NavigationEvent(route)
+    data class Destination(override val route: String, val root: String? = null) : NavigationEvent(route)
+
+    override fun toString() = route
 }
 
 class Navigator {
     private val navigationQueue = Channel<NavigationEvent>(Channel.CONFLATED)
 
     fun navigate(route: String) {
-        navigationQueue.trySend(NavigationEvent.Destination(route))
+        val basePath = route.split("/").firstOrNull()
+        val root = if (ROOT_SCREENS.any { it.route == basePath }) basePath else null
+        navigationQueue.trySend(NavigationEvent.Destination(route, root))
     }
 
-    fun back() {
+    fun goBack() {
         navigationQueue.trySend(NavigationEvent.Back)
     }
 

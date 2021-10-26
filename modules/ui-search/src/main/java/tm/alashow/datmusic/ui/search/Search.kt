@@ -39,6 +39,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -48,26 +49,26 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
 import com.google.firebase.analytics.FirebaseAnalytics
-import kotlin.math.round
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import tm.alashow.base.util.click
 import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.common.compose.getNavArgument
 import tm.alashow.common.compose.rememberFlowWithLifecycle
-import tm.alashow.datmusic.data.repos.search.DatmusicSearchParams.BackendType
-import tm.alashow.navigation.QUERY_KEY
-import tm.alashow.ui.OffsetNotifyingBox
+import tm.alashow.datmusic.data.DatmusicSearchParams.BackendType
+import tm.alashow.navigation.screens.QUERY_KEY
 import tm.alashow.ui.components.ChipsRow
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.borderlessTextFieldColors
@@ -107,38 +108,39 @@ private fun Search(
     viewModel: SearchViewModel,
     listState: LazyListState
 ) {
-    val searchBarHideThreshold = 4
+    val searchBarHideThreshold = 3
     val searchBarHeight = 200.dp
-    val searchBarOffset = remember { Animatable(0f) }
+    val searchBarHidden = remember { Animatable(0f) }
 
-    OffsetNotifyingBox(headerHeight = searchBarHeight) { _, progress ->
-        Scaffold(
-            topBar = {
-                LaunchedEffect(progress.value, listState.firstVisibleItemIndex) {
-                    if (listState.firstVisibleItemIndex > searchBarHideThreshold) {
-                        // rounding is important here because we don't searchBar to be stuck in between transitions
-                        searchBarOffset.animateTo(round(progress.value))
-                    } else searchBarOffset.animateTo(0f)
-                }
+    // hide search bar when scrolling after some scroll
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.isScrollInProgress }
+            .debounce(60)
+            .distinctUntilChanged()
+            .map { if (listState.firstVisibleItemIndex > searchBarHideThreshold) it else false }
+            .map { if (it) 1f else 0f }
+            .collect { searchBarHidden.animateTo(it) }
+    }
 
-                SearchAppBar(
-                    modifier = Modifier
-                        .graphicsLayer {
-                            alpha = 1 - searchBarOffset.value
-                            translationY = searchBarHeight.value * (-searchBarOffset.value)
-                        },
-                    state = viewState,
-                    onQueryChange = { actioner(SearchAction.QueryChange(it)) },
-                    onSearch = { actioner(SearchAction.Search) },
-                    onBackendTypeSelect = { actioner(it) }
-                )
-            }
-        ) {
-            SearchList(
-                viewModel = viewModel,
-                listState = listState,
+    Scaffold(
+        topBar = {
+            SearchAppBar(
+                modifier = Modifier
+                    .graphicsLayer {
+                        alpha = 1 - searchBarHidden.value
+                        translationY = searchBarHeight.value * (-searchBarHidden.value)
+                    },
+                state = viewState,
+                onQueryChange = { actioner(SearchAction.QueryChange(it)) },
+                onSearch = { actioner(SearchAction.Search) },
+                onBackendTypeSelect = { actioner(it) }
             )
         }
+    ) {
+        SearchList(
+            viewModel = viewModel,
+            listState = listState,
+        )
     }
 }
 
@@ -224,8 +226,8 @@ private fun ColumnScope.SearchFilterPanel(
 ) {
     AnimatedVisibility(
         visible = visible,
-        enter = expandIn(Alignment.TopCenter) + fadeIn(),
-        exit = shrinkOut(Alignment.BottomCenter) + fadeOut()
+        enter = expandIn(expandFrom = Alignment.TopCenter) + fadeIn(),
+        exit = shrinkOut(shrinkTowards = Alignment.BottomCenter) + fadeOut()
     ) {
         ChipsRow(
             items = BackendType.values().toList(),
@@ -257,7 +259,11 @@ fun SearchTextField(
     onSearch: () -> Unit = {},
     hint: String,
     maxLength: Int = 50,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search, keyboardType = KeyboardType.Text),
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(
+        imeAction = ImeAction.Search,
+        keyboardType = KeyboardType.Text,
+        capitalization = KeyboardCapitalization.Sentences
+    ),
     keyboardActions: KeyboardActions = KeyboardActions(onSearch = { onSearch() }),
     analytics: FirebaseAnalytics = LocalAnalytics.current
 ) {
@@ -268,8 +274,8 @@ fun SearchTextField(
         trailingIcon = {
             AnimatedVisibility(
                 visible = value.text.isNotEmpty(),
-                enter = expandIn(Alignment.Center),
-                exit = shrinkOut(Alignment.Center)
+                enter = expandIn(expandFrom = Alignment.Center),
+                exit = shrinkOut(shrinkTowards = Alignment.Center)
             ) {
                 IconButton(
                     onClick = {
@@ -290,7 +296,6 @@ fun SearchTextField(
         keyboardActions = keyboardActions,
         singleLine = true,
         maxLines = 1,
-        visualTransformation = { text -> TransformedText(text.capitalize(), OffsetMapping.Identity) },
         modifier = modifier
             .padding(horizontal = AppTheme.specs.padding)
             .background(AppTheme.colors.onSurfaceInputBackground, MaterialTheme.shapes.small)

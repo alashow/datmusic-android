@@ -5,18 +5,28 @@
 package tm.alashow.base.ui
 
 import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.receiveAsFlow
 import org.threeten.bp.Duration
+import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.base.util.extensions.delayFlow
+import tm.alashow.i18n.UiMessage
 
-class SnackbarManager @Inject constructor() {
+data class SnackbarAction<T>(val label: UiMessage<*>, val argument: T)
+open class SnackbarMessage<T>(val message: UiMessage<*>, val action: SnackbarAction<T>? = null)
+
+@Singleton
+class SnackbarManager @Inject constructor(
+    private val dispatchers: CoroutineDispatchers,
+) {
     private var maxDuration = Duration.ofSeconds(6).toMillis()
     private val maxQueue = 3
 
@@ -58,5 +68,30 @@ class SnackbarManager @Inject constructor() {
      */
     suspend fun removeCurrentError() {
         removeErrorSignal.send(Unit)
+    }
+
+    private val messagesChannel = Channel<SnackbarMessage<*>>(Channel.CONFLATED)
+    private val performedActionsMessageChannel = Channel<SnackbarMessage<*>>(Channel.CONFLATED)
+
+    val messages = messagesChannel.receiveAsFlow()
+
+    fun addMessage(message: UiMessage<*>) = addMessage(SnackbarMessage<Unit>(message))
+
+    fun addMessage(message: SnackbarMessage<*>) {
+        messagesChannel.trySend(message)
+    }
+
+    fun onMessageActionPerformed(message: SnackbarMessage<*>) {
+        performedActionsMessageChannel.trySend(message)
+    }
+
+    /**
+     * Listen for [performedActionsMessageChannel] for given [action] for limited time.
+     * Returns given action if it's performed on time, null otherwise.
+     */
+    suspend fun <T : SnackbarMessage<*>> observeMessageAction(action: T): T? {
+        val result = merge(performedActionsMessageChannel.receiveAsFlow().filter { it == action }, delayFlow(4000L, Unit))
+            .firstOrNull()
+        return if (result == action) action else null
     }
 }

@@ -43,7 +43,6 @@ import androidx.core.net.toUri
 import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
 import com.google.accompanist.placeholder.material.placeholder
-import com.google.accompanist.placeholder.material.shimmer
 import com.google.firebase.analytics.FirebaseAnalytics
 import kotlin.random.Random
 import tm.alashow.base.imageloading.ImageLoading
@@ -63,8 +62,8 @@ internal fun CaptchaErrorDialog(
     captchaErrorShown: Boolean,
     setCaptchaErrorShown: (Boolean) -> Unit,
     captchaError: ApiCaptchaError,
-    analytics: FirebaseAnalytics = LocalAnalytics.current,
     onCaptchaSubmit: (String) -> Unit,
+    analytics: FirebaseAnalytics = LocalAnalytics.current,
 ) {
     var captchaVersion by remember(captchaError) { mutableStateOf(Random.nextInt()) }
     val (captchaKey, setCaptchaKey) = remember(captchaError) { mutableStateOf(TextFieldValue()) }

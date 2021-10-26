@@ -54,9 +54,6 @@
     <string name="settings.about.author">Awtor</string>
     <string name="settings.about.author.text">Alaşow Berkeli</string>
     <string name="settings.about.author.link">https://alashov.com</string>
-    <string name="settings.about.community">Jemgyýet</string>
-    <string name="settings.about.community.text">t.me/datmusictesters</string>
-    <string name="settings.about.community.link">https://t.me/datmusictesters</string>
     <string name="settings.about.version">Wersiýa</string>
     <string name="captcha.title">Kapça ýalňyşlygy</string>
     <string name="captcha.hint">Ýokardaky harplary ýazyň</string>

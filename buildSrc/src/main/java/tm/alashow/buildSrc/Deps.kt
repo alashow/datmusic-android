@@ -8,44 +8,44 @@ object Deps {
     }
 
     object Kotlin {
-        const val version = "1.5.21"
+        const val version = "1.5.31"
 
         const val stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$version"
         const val gradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:$version"
         const val serialization = "org.jetbrains.kotlin:kotlin-serialization:$version"
-        const val serializationRuntime = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2"
+        const val serializationRuntime = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0"
 
-        const val coroutinesVersion = "1.5.1"
+        const val coroutinesVersion = "1.5.2"
         const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
         const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
     }
 
     object Android {
-        private const val gradleVersion = "7.0.0"
+        private const val gradleVersion = "7.0.3"
 
         const val gradle = "com.android.tools.build:gradle:$gradleVersion"
 
         const val multiDex = "androidx.multidex:multidex:2.0.1"
 
-        const val activityVersion = "1.3.1"
+        const val activityVersion = "1.4.0-rc01"
         const val activityKtx = "androidx.activity:activity-ktx:$activityVersion"
 
-        private const val navigationVersion = "2.4.0-alpha04"
+        private const val navigationVersion = "2.4.0-SNAPSHOT"
         const val navigationFragment = "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
         const val navigationUi = "androidx.navigation:navigation-ui-ktx:$navigationVersion"
-        const val navigationSafeArgs = "androidx.navigation:navigation-safe-args-gradle-plugin:$navigationVersion"
+        const val navigationSafeArgs = "androidx.navigation:navigation-safe-args-gradle-plugin:2.4.0-alpha10"
         const val navigationCompose = "androidx.navigation:navigation-compose:$navigationVersion"
         const val navigationHiltCompose = "androidx.hilt:hilt-navigation-compose:1.0.0-alpha03"
 
         const val dataStore = "androidx.datastore:datastore-preferences:1.0.0"
 
-        const val documentFile = "androidx.documentfile:documentfile:1.0.1"
+        const val documentFile = "androidx.documentfile:documentfile:1.1.0-alpha01"
 
         const val palette = "androidx.palette:palette-ktx:1.0.0"
-        const val media ="androidx.media:media:1.4.1"
+        const val media ="androidx.media:media:1.4.3"
 
         object Compose {
-            const val version = "1.1.0-alpha01"
+            const val version = "1.1.0-alpha06"
 
             const val ui = "androidx.compose.ui:ui:$version"
             const val uiUtil = "androidx.compose.ui:ui-util:$version"
@@ -54,20 +54,21 @@ object Deps {
             const val materialDesign = "androidx.compose.material:material:$version"
             const val materialDesignIcons = "androidx.compose.material:material-icons-core:$version"
             const val materialDesignIconsExtended = "androidx.compose.material:material-icons-extended:$version"
-            const val constraintLayout = "androidx.constraintlayout:constraintlayout-compose:1.0.0-beta02"
+            const val constraintLayout = "androidx.constraintlayout:constraintlayout-compose:1.0.0-rc01"
             const val liveData = "androidx.compose.runtime:runtime-livedata:$version"
             const val activity = "androidx.activity:activity-compose:$activityVersion"
-            const val viewModels = "androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha07"
-            const val paging = "androidx.paging:paging-compose:1.0.0-alpha12"
+            const val viewModels = "androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0-rc01"
+            const val paging = "androidx.paging:paging-compose:1.0.0-alpha14"
 
-            private const val lottieVersion = "4.0.0"
+            private const val lottieVersion = "4.2.0"
             const val lottie = "com.airbnb.android:lottie-compose:$lottieVersion"
 
             const val coil = "io.coil-kt:coil-compose:${Utils.coilVersion}"
+            const val reorderable = "org.burnoutcrew.composereorderable:reorderable:0.6.2"
         }
 
         object Accompanist {
-            private const val version = "0.16.1"
+            private const val version = "0.20.0"
 
             const val insets = "com.google.accompanist:accompanist-insets:$version"
             const val insetsUi = "com.google.accompanist:accompanist-insets-ui:$version"
@@ -76,11 +77,13 @@ object Deps {
             const val placeholder = "com.google.accompanist:accompanist-placeholder-material:$version"
             const val swiperefresh = "com.google.accompanist:accompanist-swiperefresh:$version"
             const val systemUiController = "com.google.accompanist:accompanist-systemuicontroller:$version"
+            const val navigationMaterial = "com.google.accompanist:accompanist-navigation-material:$version"
+            const val navigationFlowlayout = "com.google.accompanist:accompanist-flowlayout:$version"
         }
 
         object Lifecycle {
-            private const val version = "2.4.0-alpha03"
-            private const val vmSavedStateVersion = "2.4.0-alpha03"
+            private const val version = "2.4.0-rc01"
+            private const val vmSavedStateVersion = "2.4.0-rc01"
 
             const val runtime = "androidx.lifecycle:lifecycle-runtime:$version"
             const val runtimeKtx = "androidx.lifecycle:lifecycle-runtime-ktx:$version"
@@ -91,15 +94,16 @@ object Deps {
         }
 
         object Room {
-            private const val roomVersion = "2.4.0-alpha04"
+            private const val roomVersion = "2.4.0-beta01"
 
             const val compiler = "androidx.room:room-compiler:$roomVersion"
             const val runtime = "androidx.room:room-runtime:$roomVersion"
             const val ktx = "androidx.room:room-ktx:$roomVersion"
+            const val paging = "androidx.room:room-paging:$roomVersion"
         }
 
         object Paging {
-            private const val version = "3.1.0-alpha03"
+            private const val version = "3.1.0-beta01"
 
             const val common = "androidx.paging:paging-common-ktx:$version"
             const val runtime = "androidx.paging:paging-runtime-ktx:$version"
@@ -123,9 +127,11 @@ object Deps {
         const val fetch = "com.github.alashow:Fetch:3.1.62"
         const val fetchOkhttp = "com.github.alashow:xfetch2okhttp:3.1.62"
 
-        const val exoPlayer = "com.google.android.exoplayer:exoplayer-core:2.15.0"
+        const val exoPlayer = "com.google.android.exoplayer:exoplayer-core:2.15.1"
         const val exoPlayerOkhttp = "com.google.android.exoplayer:extension-okhttp:2.15.0"
         const val exoPlayerFlac = "com.github.alashow.ExoPlayer-Extensions:extension-flac:v2.15.1"
+
+        const val qonversion = "io.qonversion.android.sdk:sdk:3.1.3"
     }
 
     object OkHttp {
@@ -146,12 +152,12 @@ object Deps {
     }
 
     object Dagger {
-        private const val version = "2.38.1"
+        private const val version = "2.39.1"
 
         const val dagger = "com.google.dagger:dagger:$version"
         const val compiler = "com.google.dagger:dagger-compiler:$version"
 
-        const val hiltVersion = "2.38.1"
+        const val hiltVersion = "2.39.1"
         const val hilt = "com.google.dagger:hilt-android:$hiltVersion"
         const val hiltCompiler = "com.google.dagger:hilt-compiler:$hiltVersion"
         const val hiltGradle = "com.google.dagger:hilt-android-gradle-plugin:$hiltVersion"
@@ -165,7 +171,7 @@ object Deps {
 
     object Firebase {
 
-        const val bom = "com.google.firebase:firebase-bom:28.3.1"
+        const val bom = "com.google.firebase:firebase-bom:28.4.2"
         const val messaging = "com.google.firebase:firebase-messaging-ktx"
         const val remoteConfig = "com.google.firebase:firebase-config-ktx"
         const val analytics = "com.google.firebase:firebase-analytics-ktx"

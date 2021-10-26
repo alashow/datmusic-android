@@ -8,8 +8,8 @@
     <uses-permission android:name="android.permission.BROADCAST_STICKY" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.android.vending.BILLING" />
 
     <application
         android:name="tm.alashow.datmusic.App"
@@ -22,6 +22,7 @@
         <activity
             android:name="tm.alashow.datmusic.ui.MainActivity"
             android:theme="@style/Theme.App.Home"
+            android:windowSoftInputMode="adjustResize|adjustPan"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

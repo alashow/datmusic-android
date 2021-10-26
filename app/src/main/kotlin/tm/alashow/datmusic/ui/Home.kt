@@ -24,9 +24,11 @@ import androidx.compose.material.Text
 import androidx.compose.material.contentColorFor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.LibraryMusic
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Download
+import androidx.compose.material.icons.outlined.LibraryMusic
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.Composable
@@ -45,7 +47,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
@@ -59,10 +60,11 @@ import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.isActive
 import tm.alashow.datmusic.ui.playback.PlaybackMiniControls
 import tm.alashow.datmusic.ui.playback.PlaybackMiniControlsDefaults
-import tm.alashow.navigation.RootScreen
-import tm.alashow.navigation.RootScreen.Downloads as DownloadsTab
-import tm.alashow.navigation.RootScreen.Search as SearchTab
-import tm.alashow.navigation.RootScreen.Settings as SettingsTab
+import tm.alashow.navigation.screens.RootScreen
+import tm.alashow.navigation.screens.RootScreen.Downloads as DownloadsTab
+import tm.alashow.navigation.screens.RootScreen.Library as LibraryTab
+import tm.alashow.navigation.screens.RootScreen.Search as SearchTab
+import tm.alashow.navigation.screens.RootScreen.Settings as SettingsTab
 import tm.alashow.ui.DismissableSnackbarHost
 import tm.alashow.ui.theme.translucentSurfaceColor
 
@@ -70,16 +72,17 @@ val HomeBottomNavigationHeight = 56.dp
 
 @Composable
 internal fun Home(
+    navController: NavHostController,
     scaffoldState: ScaffoldState = LocalScaffoldState.current,
-    navController: NavHostController = rememberNavController(),
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current
 ) {
     val playbackState by rememberFlowWithLifecycle(playbackConnection.playbackState).collectAsState(NONE_PLAYBACK_STATE)
     val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying).collectAsState(NONE_PLAYING)
     val playerActive = (playbackState to nowPlaying).isActive
 
+    val bottomNavigationHeight = HomeBottomNavigationHeight * (if (playerActive) 1.1f else 1f)
     val sysNavBarHeight = with(LocalDensity.current) { LocalWindowInsets.current.navigationBars.bottom.toDp() }
-    val bottomBarHeight = sysNavBarHeight + HomeBottomNavigationHeight + (if (playerActive) PlaybackMiniControlsDefaults.height else 0.dp)
+    val bottomBarHeight = sysNavBarHeight + bottomNavigationHeight + (if (playerActive) PlaybackMiniControlsDefaults.height else 0.dp)
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -112,6 +115,7 @@ internal fun Home(
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.BottomCenter),
+                    height = bottomNavigationHeight
                 )
                 PlaybackMiniControls(modifier = Modifier.align(Alignment.TopCenter))
             }
@@ -169,6 +173,14 @@ internal fun HomeBottomNavigation(
                 selectedPainter = rememberVectorPainter(Icons.Filled.Download),
             )
             HomeBottomNavigationItem(
+                label = stringResource(R.string.library_title),
+                contentDescription = stringResource(R.string.library_title),
+                selected = selectedTab == LibraryTab,
+                onClick = { onNavigationSelected(LibraryTab) },
+                painter = rememberVectorPainter(Icons.Outlined.LibraryMusic),
+                selectedPainter = rememberVectorPainter(Icons.Filled.LibraryMusic),
+            )
+            HomeBottomNavigationItem(
                 label = stringResource(R.string.settings_title),
                 contentDescription = stringResource(R.string.settings_title),
                 selected = selectedTab == SettingsTab,
@@ -181,12 +193,12 @@ internal fun HomeBottomNavigation(
 }
 
 @Composable
-private fun homeBottomNavigationGradient() = Brush.verticalGradient(
+private fun homeBottomNavigationGradient(color: Color = MaterialTheme.colors.surface) = Brush.verticalGradient(
     listOf(
-        MaterialTheme.colors.surface.copy(0.6f),
-        MaterialTheme.colors.surface.copy(0.8f),
-        MaterialTheme.colors.surface.copy(0.97f),
-        MaterialTheme.colors.surface,
+        color.copy(0.8f),
+        color.copy(0.9f),
+        color.copy(0.97f),
+        color,
     )
 )
 

@@ -5,11 +5,13 @@
 package tm.alashow.base.util
 
 import android.content.res.Resources
-import java.util.Locale
+import java.util.*
 import org.threeten.bp.DayOfWeek
+import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.Month
+import org.threeten.bp.ZoneId
 import org.threeten.bp.format.DateTimeFormatter
 import tm.alashow.base.util.date.HOUR_MINUTES_FORMAT
 import tm.alashow.base.util.date.apiDate
@@ -69,15 +71,15 @@ fun LocalDate.localized(
 ): String = atStartOfDay().localized(resources, withYear, withMonth, false, withWeek, shortMonth)
 
 /**
- * @param duration duration in milliseconds
+ * @param durationMillis duration in milliseconds
  */
-fun Resources.localizeDuration(duration: Long): String {
-    val hours = ((duration / 1000) / 60) / 60
-    val minutes = ((duration / 1000) / 60) % 60
+fun Resources.localizeDuration(durationMillis: Long, short: Boolean = false): String {
+    val hours = ((durationMillis / 1000) / 60) / 60
+    val minutes = ((durationMillis / 1000) / 60) % 60
 
     return when (hours > 0) {
-        true -> getString(R.string.time_duration, hours, minutes)
-        else -> getString(R.string.time_duration_minutes, minutes)
+        true -> getString(if (short) R.string.time_duration_short else R.string.time_duration, hours, minutes)
+        else -> getString(if (short) R.string.time_duration_minutes_short else R.string.time_duration_minutes, minutes)
     }
 }
 
@@ -111,7 +113,7 @@ fun formatDate(
 fun timeAddZeros(number: Int?, ifZero: String = ""): String {
     return when (number) {
         0 -> ifZero
-        1, 2, 3, 4, 5, 6, 7, 8, 9 -> "0$number"
+        in 1..9 -> "0$number"
         else -> number.toString()
     }
 }
@@ -124,3 +126,7 @@ fun Long.millisToDuration(): String {
         return if (startsWith(":")) replaceFirst(":", "") else this
     }
 }
+
+fun Date.toLocalDateTime() = Instant.ofEpochMilli(time)
+    .atZone(ZoneId.systemDefault())
+    .toLocalDateTime()

@@ -72,8 +72,11 @@ dependencies {
 	api Deps.Android.Accompanist.placeholder
 	api Deps.Android.Accompanist.swiperefresh
 	api Deps.Android.Accompanist.systemUiController
+	api Deps.Android.Accompanist.navigationMaterial
+	api Deps.Android.Accompanist.navigationFlowlayout
 
 	// 3rd party
 	api Deps.Android.Compose.lottie
 	api Deps.Android.Compose.coil
+	api Deps.Android.Compose.reorderable
 }

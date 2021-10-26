@@ -34,7 +34,7 @@ fun DismissableSnackbarHost(hostState: SnackbarHostState, modifier: Modifier = M
 @Composable
 fun SwipeDismissSnackbar(
     data: SnackbarData,
-    onDismiss: () -> Unit,
+    onDismiss: () -> Unit = {},
     snackbar: @Composable (SnackbarData) -> Unit = { Snackbar(it) }
 ) {
     Dismissable(onDismiss = onDismiss) {

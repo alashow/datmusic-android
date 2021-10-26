@@ -5,6 +5,9 @@
 package tm.alashow.datmusic.ui.playback
 
 import android.support.v4.media.MediaMetadataCompat
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -26,13 +29,14 @@ import timber.log.Timber
 import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.Audio
+import tm.alashow.datmusic.playback.PLAYBACK_PROGRESS_INTERVAL
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.models.PlaybackQueue
 import tm.alashow.datmusic.playback.models.toAudio
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun PlaybackPager(
+internal fun PlaybackPager(
     nowPlaying: MediaMetadataCompat,
     modifier: Modifier = Modifier,
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
@@ -48,11 +52,7 @@ fun PlaybackPager(
         return
     }
 
-    val pagerState = rememberPagerState(
-        pageCount = playbackQueue.list.size,
-        initialPage = playbackCurrentIndex,
-        initialOffscreenLimit = 3
-    )
+    val pagerState = rememberPagerState(initialPage = playbackCurrentIndex)
 
     LaunchedEffect(playbackCurrentIndex, pagerState) {
         if (playbackCurrentIndex != pagerState.currentPage) {
@@ -67,8 +67,12 @@ fun PlaybackPager(
         }
     }
 
-    HorizontalPager(state = pagerState, modifier = modifier) { page ->
-        val currentAudio = playbackQueue.audiosList.getOrNull(page) ?: Audio()
+    HorizontalPager(
+        count = playbackQueue.ids.size,
+        state = pagerState,
+        modifier = modifier
+    ) { page ->
+        val currentAudio = playbackQueue.audios.getOrNull(page) ?: Audio()
 
         val pagerMod = Modifier.graphicsLayer {
             val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
@@ -90,3 +94,14 @@ fun PlaybackPager(
         content(currentAudio, page, pagerMod)
     }
 }
+
+@Composable
+internal fun animatePlaybackProgress(
+    targetValue: Float,
+) = animateFloatAsState(
+    targetValue = targetValue,
+    animationSpec = tween(
+        durationMillis = PLAYBACK_PROGRESS_INTERVAL.toInt(),
+        easing = FastOutSlowInEasing
+    ),
+)

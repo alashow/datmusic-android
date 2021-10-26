@@ -63,9 +63,6 @@
     <string name="settings.about.author">Автор</string>
     <string name="settings.about.author.text">Алашов Беркели</string>
     <string name="settings.about.author.link">https://alashov.com</string>
-    <string name="settings.about.community">Сообщество</string>
-    <string name="settings.about.community.text">t.me/datmusictesters</string>
-    <string name="settings.about.community.link">https://t.me/datmusictesters</string>
     <string name="settings.about.version">Версия</string>
     <string name="captcha.title">Ошибка капчи</string>
     <string name="captcha.hint">Введите буквы выше</string>
