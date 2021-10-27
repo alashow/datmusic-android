@@ -59,7 +59,7 @@
     <string name="downloader.enqueue.audio.existing.resuming">Reanudando la descarga existente</string>
     <string name="downloader.enqueue.audio.existing.alreadyQueued">Esta canción ya está en la cola de descarga</string>
     <string name="downloader.enqueue.audio.existing.completed">Esta canción ya se ha descargado</string>
-    <string name="downloader.enqueue.audio.existing.unknown">La solicitud de descarga existe, pero tiene un estado no gestionado:% 1 $ s</string>
+    <string name="downloader.enqueue.audio.existing.unknown">La solicitud de descarga existe, pero tiene un estado no gestionado: %1$s</string>
     <string name="downloads.title">Descargas</string>
     <string name="downloads.empty">Sin Descargas</string>
     <string name="downloads.download.status.paused">Pausado</string>
@@ -112,7 +112,7 @@
     <string name="playlist.download.error.empty">La lista de Reproducción está vacía</string>
     <string name="playback.queue.addQueueToPlaylist">Agregar cola a la lista de Reproducción</string>
     <string name="playback.queue.saveAsPlaylist">Guardar cola como lista de Reproducción</string>
-    <string name="playback.queue.saveAsPlaylist.saved">Guardado como % 1 $ s</string>
+    <string name="playback.queue.saveAsPlaylist.saved">Guardado como %1$s</string>
     <string name="playback.queue.saveAsPlaylist.open">Abrir</string>
     <string name="playback.queue.removeFromQueue">Quitar de la cola</string>
     <string name="playback.queueTitle.playlist">Reproduciendo desde la lista de Reproducción</string>
@@ -131,6 +131,6 @@
     <string name="settings.database.backup.complete">Copia de Seguridad Completada</string>
     <string name="settings.database.restore">Restaurar</string>
     <string name="settings.database.restore.complete">Restauración Completada</string>
-    <string name="settings.database.restore.NonMatchingVersion">El archivo de copia de seguridad tiene una versión que no coincide con la aplicación, la restauración puede fallar (% 1 $ d frente a la versión de copia de seguridad% 2 $ d).</string>
+    <string name="settings.database.restore.NonMatchingVersion">El archivo de copia de seguridad tiene una versión que no coincide con la aplicación, la restauración puede fallar (%1$d frente a la versión de copia de seguridad %2$d).</string>
     <string name="subscriptions.required">Se requiere suscripción para esta función</string>
 </resources>
