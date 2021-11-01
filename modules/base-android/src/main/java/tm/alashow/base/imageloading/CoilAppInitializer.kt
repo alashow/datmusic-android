@@ -10,12 +10,11 @@ import coil.Coil
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
 import coil.disk.DiskCache
-import coil.util.CoilUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
+import java.io.File
 import javax.inject.Inject
 import okhttp3.OkHttpClient
 import tm.alashow.base.inititializer.AppInitializer
-import java.io.File
 
 class CoilAppInitializer @OptIn(ExperimentalCoilApi::class)
 @Inject constructor(

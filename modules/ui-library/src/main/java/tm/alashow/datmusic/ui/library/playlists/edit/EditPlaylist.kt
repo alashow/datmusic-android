@@ -39,7 +39,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -53,7 +52,6 @@ import org.burnoutcrew.reorderable.ReorderableState
 import org.burnoutcrew.reorderable.detectReorder
 import org.burnoutcrew.reorderable.rememberReorderState
 import org.burnoutcrew.reorderable.reorderable
-import timber.log.Timber
 import tm.alashow.base.imageloading.ImageLoading
 import tm.alashow.base.util.extensions.Callback
 import tm.alashow.common.compose.rememberFlowWithLifecycle
