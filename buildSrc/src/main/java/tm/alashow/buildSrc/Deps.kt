@@ -64,7 +64,7 @@ object Deps {
             const val lottie = "com.airbnb.android:lottie-compose:$lottieVersion"
 
             const val coil = "io.coil-kt:coil-compose:${Utils.coilVersion}"
-            const val reorderable = "org.burnoutcrew.composereorderable:reorderable:0.6.2"
+            const val reorderable = "org.burnoutcrew.composereorderable:reorderable:0.7.0"
         }
 
         object Accompanist {
