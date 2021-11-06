@@ -3,7 +3,7 @@
     <string name="notifications.defaultChannel">Gaýybana kanal</string>
     <string name="generic.back">Yza</string>
     <string name="generic.close">Ýap</string>
-    <string name="generic.clipboard.copied">Nusgala</string>
+    <string name="generic.clipboard.copied">Nusgalandy</string>
     <string name="generic.clear">Poz</string>
     <string name="dialog.warning">Duýduryş</string>
     <string name="dialog.confirm">Tassykla</string>
@@ -32,4 +32,10 @@
     <string name="error.serverUnavailable">Serwer el ýeterli däl</string>
     <string name="time.duration">%1$d sag %2$d min.</string>
     <string name="time.duration.minutes">%1$d minut</string>
+    <string name="error.validation.textShort">Girizilen baha gaty gysga</string>
+    <string name="error.validation.textLong">Girizilen baha gaty uzyn</string>
+    <string name="error.database">Maglumat bazasynyň ýalňyşlygy</string>
+    <string name="error.database.validation.notFound">Element tapylmady</string>
+    <string name="time.duration.short">%1$ds %2$dmin</string>
+    <string name="time.duration.minutes.short">%1$d min</string>
 </resources>

@@ -32,4 +32,10 @@
     <string name="error.serverUnavailable">Сервер не доступен</string>
     <string name="time.duration">%1$d час %2$d мин.</string>
     <string name="time.duration.minutes">%1$d минут</string>
+    <string name="error.validation.textShort">Введено слишком короткое значение</string>
+    <string name="error.validation.textLong">Введено слишком длинное значение</string>
+    <string name="error.database">Ошибка базы данных</string>
+    <string name="error.database.validation.notFound">Предмет не найден</string>
+    <string name="time.duration.short">%1$dч %2$dмин</string>
+    <string name="time.duration.minutes.short">%1$d мин</string>
 </resources>
