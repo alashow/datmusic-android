@@ -127,7 +127,7 @@ data class Audio(
 
     fun fileDisplayName() = "$artist - $title"
 
-    fun isFlac() = searchKey == "flacs" || id.startsWith("dz.")
+    fun isFlac() = searchKey == "flacs"
 
     fun fileMimeType() = when {
         isFlac() -> "audio/flac"
