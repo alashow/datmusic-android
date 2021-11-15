@@ -1,2 +1,7 @@
+v2.1.6
+- Main audios backend change
+- Fix Edit playlist screen's re-ordering handle
+- Updated translations
+
 v2.1.5
 - Backup & restore library database in settings.

@@ -32,4 +32,10 @@
     <string name="time.duration">%1$d hora %2$d min.</string>
     <string name="time.duration.minutes">%1$d minuto</string>
     <string name="error.retry">Inténtalo otra vez</string>
+    <string name="error.validation.textShort">El valor introducido es demasiado corto</string>
+    <string name="error.validation.textLong">El valor introducido es demasiado largo</string>
+    <string name="error.database">Error de la base de datos</string>
+    <string name="error.database.validation.notFound">Objeto no encontrado</string>
+    <string name="time.duration.short">%1$dh %2$dmin</string>
+    <string name="time.duration.minutes.short">%1$d min</string>
 </resources>

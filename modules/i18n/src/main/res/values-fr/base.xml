@@ -1,2 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="dialog.dismiss">Fermer</string>
+    <string name="error.notFound">Non trouvé</string>
+    <string name="error.loading">Échec de connexion, toucher pour réessayer</string>
+    <string name="notifications.defaultChannel">Canal par défaut</string>
+    <string name="generic.back">Retour</string>
+    <string name="generic.close">Fermer</string>
+    <string name="generic.clear">Effacer</string>
+    <string name="generic.clipboard.copied">Copié</string>
+    <string name="dialog.warning">Attention</string>
+    <string name="dialog.confirm">Confirmer</string>
+    <string name="dialog.confirm.no">Non</string>
+    <string name="dialog.confirm.yes">Ok</string>
+    <string name="dialog.ok">Ok</string>
+    <string name="unknown">Inconnu</string>
+    <string name="error.title">Erreur</string>
+    <string name="error.subtitle">Oups :(</string>
+    <string name="error.tryAgain">Réessayer</string>
+    <string name="error.network">Erreur réseau</string>
+    <string name="error.server">Erreur de serveur</string>
+    <string name="error.auth">Erreur d\'autorisation</string>
+    <string name="error.noAuth">Vous devez vous connecter</string>
+    <string name="error.api">Erreur de l\'API</string>
+    <string name="error.empty.title">Vide</string>
+    <string name="error.empty">Aucun résultat</string>
+    <string name="error.blank">Ne doit pas être vide</string>
+    <string name="error.unknown">Erreur inconnu</string>
+    <string name="error.errorLogOut">Échec de déconnexion, essayez de réinitialiser les paramètres de l\'application</string>
+    <string name="error.alreadyLogined">Vous êtes connecté</string>
+    <string name="error.retry">Réessayer</string>
+    <string name="error.serverUnavailable">Serveur indisponible</string>
+    <string name="time.duration">%1$d heures %2$d min.</string>
+    <string name="time.duration.minutes">%1$d minute</string>
+    <string name="error.validation.textShort">La valeur entrée est trop courte</string>
+    <string name="error.validation.textLong">La valeur entrée est trop longue</string>
+    <string name="error.database">Erreur de base de données</string>
+    <string name="error.database.validation.notFound">Contenu introuvable</string>
+    <string name="time.duration.short">%1$dh %2$dmin</string>
+    <string name="time.duration.minutes.short">%1$d min</string>
+</resources>

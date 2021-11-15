@@ -13,13 +13,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
@@ -53,9 +47,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberImagePainter
-import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.navigationBarsWithImePadding
-import com.google.accompanist.insets.rememberInsetsPaddingValues
+import com.google.accompanist.insets.*
 import org.burnoutcrew.reorderable.ReorderableState
 import org.burnoutcrew.reorderable.detectReorder
 import org.burnoutcrew.reorderable.rememberReorderState
@@ -110,20 +102,13 @@ fun EditPlaylist(
         Box {
             LazyColumn(
                 state = reorderableState.listState,
-                contentPadding = rememberInsetsPaddingValues(
-                    insets = LocalWindowInsets.current.systemBars,
-                    applyTop = true,
-                    applyBottom = true,
-                ),
                 modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colors.background)
                     .reorderable(
                         state = reorderableState,
-                        onMove = { from, to -> viewModel.movePlaylistItem(from - itemsBeforeContent, to - itemsBeforeContent) },
-                        canDragOver = {
-                            it >= itemsBeforeContent && (it - itemsBeforeContent) < (playlistItems.size)
-                        }
+                        onMove = { from, to -> viewModel.movePlaylistItem(from.index - itemsBeforeContent, to.index - itemsBeforeContent) },
+                        canDragOver = { (it.index - itemsBeforeContent) in (0..playlistItems.size) }
                     ),
             ) {
                 editPlaylistHeader(
@@ -148,6 +133,10 @@ fun EditPlaylist(
                     onRemove = viewModel::removePlaylistItem,
                     audios = playlistItems
                 )
+
+                item {
+                    Spacer(Modifier.navigationBarsHeight())
+                }
             }
         }
     }
@@ -191,6 +180,7 @@ private fun LazyListScope.editPlaylistHeader(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = AppTheme.specs.padding)
+                .statusBarsPadding()
         ) {
             Text(
                 text = stringResource(R.string.playlist_edit_label),
