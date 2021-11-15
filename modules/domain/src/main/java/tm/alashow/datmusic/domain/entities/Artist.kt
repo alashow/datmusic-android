@@ -68,13 +68,17 @@ data class Artist(
 ) : BasePaginatedEntity(), Parcelable {
 
     override fun getIdentifier() = id
-    private fun sourcePhoto() = _photo.maxByOrNull { it.height }?.url
 
-    fun photo(size: CoverImageSize = CoverImageSize.MEDIUM) = sourcePhoto() ?: buildAlternatePhotoUrl(size)
-    fun largePhoto() = buildAlternatePhotoUrl(CoverImageSize.LARGE)
+    fun photo(size: CoverImageSize = CoverImageSize.SMALL) = when (size) {
+        CoverImageSize.SMALL -> _photo.minByOrNull { it.height }?.url
+        CoverImageSize.MEDIUM -> _photo.sortedBy { it.height }.getOrNull(1)?.url
+        CoverImageSize.LARGE -> _photo.maxByOrNull { it.height }?.url
+    }
 
-    private fun buildAlternatePhotoUrl(size: CoverImageSize) =
-        Config.API_BASE_URL.toUri().buildUpon().encodedPath("cover/artists").appendPath(name).appendPath(size.type).build().toString()
+    fun largePhoto() = photo(CoverImageSize.LARGE) ?: buildAlternatePhotoUrl()
+
+    private fun buildAlternatePhotoUrl() =
+        Config.API_BASE_URL.toUri().buildUpon().encodedPath("cover/artists").appendPath(name).appendPath(CoverImageSize.LARGE.type).build().toString()
 
     @Serializable
     @Parcelize

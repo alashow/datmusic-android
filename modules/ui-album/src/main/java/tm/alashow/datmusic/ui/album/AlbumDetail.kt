@@ -62,7 +62,7 @@ private fun AlbumHeaderSubtitle(viewState: AlbumDetailViewState, onArtistClick: 
     val artistName = artist?.name.orNA()
 
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall)) {
-        val painter = rememberImagePainter(artist?.photo(CoverImageSize.SMALL), builder = ImageLoading.defaultConfig)
+        val painter = rememberImagePainter(artist?.photo(), builder = ImageLoading.defaultConfig)
         CoverImage(painter, shape = CircleShape, size = 20.dp)
         Text(
             artistName, style = MaterialTheme.typography.subtitle2,
