@@ -79,28 +79,41 @@ fun AlbumColumn(
         ) {
             Text(album.title, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = loadingModifier, style = MaterialTheme.typography.body1)
             CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                Text(
-                    album.artists.firstOrNull()?.name ?: "",
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = loadingModifier,
-                    style = MaterialTheme.typography.body2
-                )
-
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingTiny),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (album.explicit)
-                        Icon(
-                            painter = rememberVectorPainter(Icons.Filled.Explicit),
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp),
-                            tint = MaterialTheme.colors.onBackground.copy(alpha = ContentAlpha.medium),
-                        )
-                    Text(album.year.toString(), modifier = loadingModifier, style = MaterialTheme.typography.body2)
+                    if (!album.hasYear && album.explicit)
+                        ExplicitIcon()
+                    Text(
+                        album.artists.firstOrNull()?.name ?: "",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = loadingModifier,
+                        style = MaterialTheme.typography.body2
+                    )
                 }
+
+                if (album.hasYear)
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingTiny),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        if (album.explicit)
+                            ExplicitIcon()
+                        Text(album.year.toString(), modifier = loadingModifier, style = MaterialTheme.typography.body2)
+                    }
             }
         }
     }
+}
+
+@Composable
+private fun ExplicitIcon() {
+    Icon(
+        painter = rememberVectorPainter(Icons.Filled.Explicit),
+        contentDescription = null,
+        modifier = Modifier.size(16.dp),
+        tint = MaterialTheme.colors.onBackground.copy(alpha = ContentAlpha.medium),
+    )
 }

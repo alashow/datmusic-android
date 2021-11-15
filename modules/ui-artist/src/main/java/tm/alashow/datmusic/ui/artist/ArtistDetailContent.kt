@@ -33,7 +33,7 @@ class ArtistDetailContent : MediaDetailContent<Artist>() {
     override fun invoke(list: LazyListScope, details: Async<Artist>, detailsLoading: Boolean): Boolean {
         val artistAlbums = when (details) {
             is Success -> details().albums
-            is Loading -> (1..5).map { Album() }
+            is Loading -> (1..5).map { Album.withLoadingYear() }
             else -> emptyList()
         }
         val artistAudios = when (details) {

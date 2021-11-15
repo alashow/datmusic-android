@@ -19,6 +19,9 @@ import tm.alashow.domain.models.BasePaginatedEntity
 
 typealias AlbumId = Long
 
+const val UNKNOWN_YEAR = 9999
+const val YEAR_LOADING = 9998
+
 @Parcelize
 @Serializable
 @Entity(tableName = "albums")
@@ -48,7 +51,7 @@ data class Album(
 
     @SerialName("year")
     @ColumnInfo(name = "year")
-    val year: Int = 1970,
+    val year: Int = UNKNOWN_YEAR,
 
     @SerialName("count")
     @ColumnInfo(name = "count")
@@ -110,11 +113,17 @@ data class Album(
     val searchIndex: Int = 0,
 ) : BasePaginatedEntity(), Parcelable, LibraryItem {
 
+    val hasYear get() = year != UNKNOWN_YEAR
+
     @Ignore @Transient @IgnoredOnParcel
     override val isUpdatable = false
 
     override fun getIdentifier() = id
     override fun getLabel() = title
+
+    companion object {
+        fun withLoadingYear() = Album(year = YEAR_LOADING)
+    }
 
     @Serializable
     @Parcelize
