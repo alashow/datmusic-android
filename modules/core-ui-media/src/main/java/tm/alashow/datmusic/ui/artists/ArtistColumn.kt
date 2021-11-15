@@ -29,6 +29,7 @@ import tm.alashow.base.imageloading.ImageLoading
 import tm.alashow.base.util.click
 import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.datmusic.domain.entities.Artist
+import tm.alashow.datmusic.domain.entities.CoverImageSize
 import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.components.shimmer
 import tm.alashow.ui.theme.AppTheme
