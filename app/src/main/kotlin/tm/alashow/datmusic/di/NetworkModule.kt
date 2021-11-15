@@ -45,7 +45,7 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun okHttpCache(app: Application) = Cache(app.cacheDir, 10 * 1024 * 1024)
+    fun okHttpCache(app: Application) = Cache(app.cacheDir, (10 * 1024 * 1024).toLong())
 
     @Provides
     @Singleton
