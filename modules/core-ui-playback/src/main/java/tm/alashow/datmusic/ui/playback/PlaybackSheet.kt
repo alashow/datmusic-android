@@ -73,8 +73,8 @@ import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.ui.Scaffold
 import com.google.accompanist.insets.ui.TopAppBar
-import kotlinx.coroutines.flow.collect
 import kotlin.math.roundToLong
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import tm.alashow.base.ui.ColorPalettePreference
 import tm.alashow.base.ui.ThemeState
@@ -85,17 +85,14 @@ import tm.alashow.base.util.millisToDuration
 import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.common.compose.LocalScaffoldState
 import tm.alashow.common.compose.rememberFlowWithLifecycle
-import tm.alashow.datmusic.data.DatmusicSearchParams
+import tm.alashow.datmusic.domain.CoverImageSize
 import tm.alashow.datmusic.domain.entities.Audio
-import tm.alashow.datmusic.domain.entities.CoverImageSize
 import tm.alashow.datmusic.downloader.audioHeader
 import tm.alashow.datmusic.playback.*
 import tm.alashow.datmusic.playback.models.PlaybackModeState
 import tm.alashow.datmusic.playback.models.PlaybackProgressState
 import tm.alashow.datmusic.playback.models.PlaybackQueue
 import tm.alashow.datmusic.playback.models.QueueTitle.Companion.asQueueTitle
-import tm.alashow.datmusic.playback.models.toAlbumSearchQuery
-import tm.alashow.datmusic.playback.models.toArtistSearchQuery
 import tm.alashow.datmusic.ui.audios.AudioActionHandler
 import tm.alashow.datmusic.ui.audios.AudioDropdownMenu
 import tm.alashow.datmusic.ui.audios.AudioItemAction
@@ -106,7 +103,6 @@ import tm.alashow.datmusic.ui.audios.currentPlayingMenuActionLabels
 import tm.alashow.datmusic.ui.library.playlist.addTo.AddToPlaylistMenu
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.Navigator
-import tm.alashow.navigation.screens.LeafScreen
 import tm.alashow.ui.ADAPTIVE_COLOR_ANIMATION
 import tm.alashow.ui.Delayed
 import tm.alashow.ui.DismissableSnackbarHost

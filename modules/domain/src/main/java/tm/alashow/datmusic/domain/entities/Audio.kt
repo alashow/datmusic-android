@@ -16,6 +16,7 @@ import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import tm.alashow.datmusic.domain.CoverImageSize
 import tm.alashow.datmusic.domain.UNKNOWN_ARTIST
 import tm.alashow.datmusic.domain.UNTITLED_SONG
 import tm.alashow.domain.models.BasePaginatedEntity
