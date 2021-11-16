@@ -114,6 +114,12 @@ data class Album(
 ) : BasePaginatedEntity(), Parcelable, LibraryItem {
 
     val hasYear get() = year != UNKNOWN_YEAR
+    val displayYear
+        get() = when (year) {
+            UNKNOWN_YEAR -> null
+            YEAR_LOADING -> "----"
+            else -> year.toString()
+        }
 
     @Ignore @Transient @IgnoredOnParcel
     override val isUpdatable = false

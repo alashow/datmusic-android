@@ -32,7 +32,7 @@ typealias DatmusicAlbumDetailsStore = Store<DatmusicAlbumParams, List<Audio>>
 @Module
 object DatmusicAlbumDetailsStoreModule {
 
-    private suspend fun <T> Result<List<T>>.fetcherDefaults(lastRequests: LastRequests, params: DatmusicAlbumParams) =
+    private suspend fun <T> Result<T>.fetcherDefaults(lastRequests: LastRequests, params: DatmusicAlbumParams) =
         onSuccess { lastRequests.save(params.toString()) }
             .onFailure { Timber.e(it) }
             .getOrThrow()
@@ -59,15 +59,21 @@ object DatmusicAlbumDetailsStoreModule {
         @Named("album_details") lastRequests: LastRequests
     ): DatmusicAlbumDetailsStore = StoreBuilder.from(
         fetcher = Fetcher.of { params: DatmusicAlbumParams ->
-            albums(params).map { it.data.audios }.fetcherDefaults(lastRequests, params)
+            albums(params).map { it.data.album to it.data.audios }.fetcherDefaults(lastRequests, params)
         },
         sourceOfTruth = SourceOfTruth.of(
             reader = { params: DatmusicAlbumParams -> dao.entry(params.id.toString()).sourceReaderFilter(lastRequests, params) },
-            writer = { params, response ->
+            writer = { params, (newEntry, audios) ->
                 dao.withTransaction {
-                    val entry = dao.entry(params.id.toString()).firstOrNull() ?: Album(id = params.id.toString())
-                    dao.updateOrInsert(entry.copy(audios = response, detailsFetched = true))
-                    audiosDao.insertMissing(response.mapIndexed { index, audio -> audio.copy(primaryKey = audio.id, searchIndex = index) })
+                    val entry = dao.entry(params.id.toString()).firstOrNull() ?: newEntry
+                    dao.updateOrInsert(
+                        entry.copy(
+                            audios = audios,
+                            detailsFetched = true,
+                            year = newEntry.year,
+                        )
+                    )
+                    audiosDao.insertMissing(audios.mapIndexed { index, audio -> audio.copy(primaryKey = audio.id, searchIndex = index) })
                 }
             },
             delete = { error("This store doesn't manage deletes") },
