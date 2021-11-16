@@ -6,7 +6,6 @@ package tm.alashow.datmusic.ui.settings.backup
 
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,6 +19,7 @@ import tm.alashow.base.util.CreateFileContract
 import tm.alashow.base.util.event
 import tm.alashow.base.util.extensions.stateInDefault
 import tm.alashow.base.util.toUiMessage
+import tm.alashow.common.compose.MoleculeViewModel
 import tm.alashow.datmusic.data.backup.DatmusicBackupToFile
 import tm.alashow.datmusic.data.backup.DatmusicRestoreFromFile
 import tm.alashow.datmusic.ui.settings.R
@@ -36,7 +36,7 @@ class BackupRestoreViewModel @Inject constructor(
     private val restoreFromFile: DatmusicRestoreFromFile,
     private val snackbarManager: SnackbarManager,
     private val analytics: FirebaseAnalytics,
-) : ViewModel() {
+) : MoleculeViewModel() {
 
     private val isBackingUp = MutableStateFlow(false)
     private val isRestoring = MutableStateFlow(false)

@@ -65,6 +65,8 @@ object Deps {
 
             const val coil = "io.coil-kt:coil-compose:${Utils.coilVersion}"
             const val reorderable = "org.burnoutcrew.composereorderable:reorderable:0.7.0"
+
+            const val moleculeGradle = "app.cash.molecule:molecule-gradle-plugin:0.1.0"
         }
 
         object Accompanist {

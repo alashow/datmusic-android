@@ -80,3 +80,5 @@ dependencies {
 	api Deps.Android.Compose.coil
 	api Deps.Android.Compose.reorderable
 }
+
+apply plugin: 'app.cash.molecule'

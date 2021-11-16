@@ -25,6 +25,7 @@ buildscript {
         classpath Deps.Firebase.crashlyticsGradle
         classpath Deps.Android.navigationSafeArgs
         classpath Deps.Dagger.hiltGradle
+        classpath Deps.Android.Compose.moleculeGradle
     }
 }
 

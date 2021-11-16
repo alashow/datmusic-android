@@ -51,3 +51,5 @@ dependencies {
 	kapt Deps.Dagger.compiler
 	kapt Deps.Dagger.hiltCompiler
 }
+
+apply plugin: 'app.cash.molecule'
