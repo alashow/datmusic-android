@@ -26,7 +26,7 @@ import tm.alashow.datmusic.domain.entities.PlaylistAudio
 import tm.alashow.domain.models.BaseTypeConverters
 
 @Database(
-    version = 7,
+    version = 9,
     entities = [
         Audio::class,
         Artist::class,
@@ -38,9 +38,11 @@ import tm.alashow.domain.models.BaseTypeConverters
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
-        AutoMigration(from = 4, to = 5, spec = AppDatabase.PlaylistRenameIdMigration::class),
+        AutoMigration(from = 4, to = 5, spec = PlaylistRenameIdMigration::class),
         AutoMigration(from = 5, to = 6),
         AutoMigration(from = 6, to = 7),
+        AutoMigration(from = 7, to = 8, spec = AlbumDeleteOldColumnsMigration::class),
+        AutoMigration(from = 8, to = 9),
     ]
 )
 @TypeConverters(BaseTypeConverters::class, AppTypeConverters::class)
@@ -54,12 +56,4 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun playlistsWithAudiosDao(): PlaylistsWithAudiosDao
 
     abstract fun downloadRequestsDao(): DownloadRequestsDao
-
-    @DeleteColumn(tableName = "playlists", columnName = "id")
-    @RenameColumn(
-        tableName = "playlists",
-        fromColumnName = "_id",
-        toColumnName = "id"
-    )
-    class PlaylistRenameIdMigration : AutoMigrationSpec
 }
