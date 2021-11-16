@@ -37,7 +37,6 @@ import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import tm.alashow.base.imageloading.getBitmap
 import tm.alashow.ui.theme.contrastComposite

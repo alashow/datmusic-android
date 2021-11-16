@@ -215,7 +215,13 @@ internal fun PlaybackSheetContent(
             }
 
             item {
-                PlaybackNowPlayingWithControls(nowPlaying, playbackState, contentColor)
+                PlaybackNowPlayingWithControls(
+                    nowPlaying = nowPlaying,
+                    playbackState = playbackState,
+                    contentColor = contentColor,
+                    onTitleClick = viewModel::onTitleClick,
+                    onArtistClick = viewModel::onArtistClick,
+                )
             }
 
             if (playbackQueue.isValid)
@@ -357,13 +363,19 @@ private fun PlaybackNowPlayingWithControls(
     nowPlaying: MediaMetadataCompat,
     playbackState: PlaybackStateCompat,
     contentColor: Color,
-    modifier: Modifier = Modifier
+    onTitleClick: Callback,
+    onArtistClick: Callback,
+    modifier: Modifier = Modifier,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier.padding(AppTheme.specs.paddingLarge)
     ) {
-        PlaybackNowPlaying(nowPlaying = nowPlaying)
+        PlaybackNowPlaying(
+            nowPlaying = nowPlaying,
+            onTitleClick = onTitleClick,
+            onArtistClick = onArtistClick
+        )
 
         PlaybackProgress(
             playbackState = playbackState,
@@ -380,7 +392,8 @@ private fun PlaybackNowPlayingWithControls(
 @Composable
 private fun PlaybackNowPlaying(
     nowPlaying: MediaMetadataCompat,
-    navigator: Navigator = LocalNavigator.current
+    onTitleClick: Callback,
+    onArtistClick: Callback,
 ) {
     val title = nowPlaying.title
     Text(
@@ -388,9 +401,7 @@ private fun PlaybackNowPlaying(
         style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold),
         overflow = TextOverflow.Ellipsis,
         maxLines = 1,
-        modifier = Modifier.simpleClickable {
-            navigator.navigate(LeafScreen.Search.buildRoute(nowPlaying.toAlbumSearchQuery(), DatmusicSearchParams.BackendType.ALBUMS))
-        }
+        modifier = Modifier.simpleClickable(onClick = onTitleClick)
     )
     CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
         Text(
@@ -398,15 +409,7 @@ private fun PlaybackNowPlaying(
             style = MaterialTheme.typography.subtitle1,
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,
-            modifier = Modifier.simpleClickable {
-                navigator.navigate(
-                    LeafScreen.Search.buildRoute(
-                        nowPlaying.toArtistSearchQuery(),
-                        DatmusicSearchParams.BackendType.ARTISTS,
-                        DatmusicSearchParams.BackendType.ALBUMS
-                    )
-                )
-            }
+            modifier = Modifier.simpleClickable(onClick = onArtistClick)
         )
     }
 }

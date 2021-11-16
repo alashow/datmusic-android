@@ -80,4 +80,4 @@ fun MediaMetadataCompat.toAudio() = Audio(
 )
 
 fun MediaMetadataCompat.toArtistSearchQuery() = "${artist?.mainArtist()}"
-fun MediaMetadataCompat.toAlbumSearchQuery() = "$album"
+fun MediaMetadataCompat.toAlbumSearchQuery() = "${artist?.mainArtist()} $album"
