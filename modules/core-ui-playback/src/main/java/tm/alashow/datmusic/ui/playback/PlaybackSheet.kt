@@ -50,14 +50,7 @@ import androidx.compose.material.icons.filled.ShuffleOn
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.rememberScaffoldState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -80,6 +73,7 @@ import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.ui.Scaffold
 import com.google.accompanist.insets.ui.TopAppBar
+import kotlinx.coroutines.flow.collect
 import kotlin.math.roundToLong
 import kotlinx.coroutines.launch
 import tm.alashow.base.ui.ColorPalettePreference
@@ -95,27 +89,13 @@ import tm.alashow.datmusic.data.DatmusicSearchParams
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.CoverImageSize
 import tm.alashow.datmusic.downloader.audioHeader
-import tm.alashow.datmusic.playback.NONE_PLAYBACK_STATE
-import tm.alashow.datmusic.playback.NONE_PLAYING
-import tm.alashow.datmusic.playback.PlaybackConnection
-import tm.alashow.datmusic.playback.artist
-import tm.alashow.datmusic.playback.artwork
-import tm.alashow.datmusic.playback.hasNext
-import tm.alashow.datmusic.playback.hasPrevious
-import tm.alashow.datmusic.playback.isBuffering
-import tm.alashow.datmusic.playback.isError
-import tm.alashow.datmusic.playback.isPlayEnabled
-import tm.alashow.datmusic.playback.isPlaying
+import tm.alashow.datmusic.playback.*
 import tm.alashow.datmusic.playback.models.PlaybackModeState
 import tm.alashow.datmusic.playback.models.PlaybackProgressState
 import tm.alashow.datmusic.playback.models.PlaybackQueue
 import tm.alashow.datmusic.playback.models.QueueTitle.Companion.asQueueTitle
 import tm.alashow.datmusic.playback.models.toAlbumSearchQuery
 import tm.alashow.datmusic.playback.models.toArtistSearchQuery
-import tm.alashow.datmusic.playback.playPause
-import tm.alashow.datmusic.playback.title
-import tm.alashow.datmusic.playback.toggleRepeatMode
-import tm.alashow.datmusic.playback.toggleShuffleMode
 import tm.alashow.datmusic.ui.audios.AudioActionHandler
 import tm.alashow.datmusic.ui.audios.AudioDropdownMenu
 import tm.alashow.datmusic.ui.audios.AudioItemAction
@@ -190,6 +170,12 @@ internal fun PlaybackSheetContent(
 
     val adaptiveColor = adaptiveColor(nowPlaying.artwork)
     val contentColor by animateColorAsState(adaptiveColor.color, ADAPTIVE_COLOR_ANIMATION)
+
+    LaunchedEffect(playbackConnection) {
+        playbackConnection.playbackState.collect {
+            if (it.isIdle) onClose()
+        }
+    }
 
     Scaffold(
         backgroundColor = Color.Transparent,
