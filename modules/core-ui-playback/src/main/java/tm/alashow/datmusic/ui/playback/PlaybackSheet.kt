@@ -114,6 +114,7 @@ import tm.alashow.ui.adaptiveColor
 import tm.alashow.ui.coloredRippleClickable
 import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.components.IconButton
+import tm.alashow.ui.components.MoreVerticalIcon
 import tm.alashow.ui.material.Slider
 import tm.alashow.ui.material.SliderDefaults
 import tm.alashow.ui.simpleClickable
@@ -319,7 +320,7 @@ private fun PlaybackSheetTopBarActions(
                     }
                 }
             }
-        }
+        } else MoreVerticalIcon()
     }
 }
 

@@ -9,15 +9,10 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.downloader.isCancelable
@@ -26,6 +21,7 @@ import tm.alashow.datmusic.downloader.isIncomplete
 import tm.alashow.datmusic.downloader.isResumable
 import tm.alashow.datmusic.downloader.isRetriable
 import tm.alashow.datmusic.ui.downloads.R
+import tm.alashow.ui.components.MoreVerticalIcon
 
 @OptIn(ExperimentalStdlibApi::class)
 @Composable
@@ -68,15 +64,7 @@ internal fun AudioDownloadDropdownMenu(
     }
 
     if (items.isNotEmpty()) {
-        IconButton(
-            onClick = { onExpandedChange(true) },
-            modifier = modifier
-        ) {
-            Icon(
-                painter = rememberVectorPainter(Icons.Default.MoreVert),
-                contentDescription = stringResource(R.string.audio_menu_cd),
-            )
-        }
+        MoreVerticalIcon(onClick = { onExpandedChange(true) }, modifier = modifier)
 
         Box {
             DropdownMenu(

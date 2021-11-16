@@ -23,6 +23,7 @@ import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -31,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import tm.alashow.ui.theme.AppTheme
 
@@ -86,5 +88,22 @@ fun <T> SelectableDropdownMenu(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun MoreVerticalIcon(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
+    contentDescription: String = stringResource(R.string.audio_menu_cd)
+) {
+    IconButton(
+        onClick = onClick,
+        modifier = modifier
+    ) {
+        Icon(
+            painter = rememberVectorPainter(Icons.Default.MoreVert),
+            contentDescription = contentDescription,
+        )
     }
 }

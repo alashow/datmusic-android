@@ -9,18 +9,14 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
 import tm.alashow.datmusic.domain.entities.LibraryItem
 import tm.alashow.datmusic.ui.library.R
+import tm.alashow.ui.components.MoreVerticalIcon
 
 @OptIn(ExperimentalStdlibApi::class)
 @Composable
@@ -41,15 +37,7 @@ internal fun LibraryItemDropdownMenu(
     }
 
     if (items.isNotEmpty()) {
-        IconButton(
-            onClick = { onExpandedChange(true) },
-            modifier = modifier
-        ) {
-            Icon(
-                painter = rememberVectorPainter(Icons.Default.MoreVert),
-                contentDescription = stringResource(R.string.library_item_menu_cd),
-            )
-        }
+        MoreVerticalIcon(onClick = { onExpandedChange(true) }, modifier = modifier)
 
         Box {
             DropdownMenu(
