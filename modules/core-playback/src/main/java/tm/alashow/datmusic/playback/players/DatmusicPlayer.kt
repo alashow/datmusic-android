@@ -32,9 +32,9 @@ import tm.alashow.base.util.event
 import tm.alashow.base.util.extensions.plus
 import tm.alashow.data.PreferencesStore
 import tm.alashow.datmusic.data.repos.audio.AudiosRepo
+import tm.alashow.datmusic.domain.CoverImageSize
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
-import tm.alashow.datmusic.domain.entities.CoverImageSize
 import tm.alashow.datmusic.downloader.artworkFromFile
 import tm.alashow.datmusic.playback.AudioFocusHelperImpl
 import tm.alashow.datmusic.playback.AudioQueueManagerImpl

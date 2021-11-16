@@ -22,6 +22,7 @@ import tm.alashow.base.util.extensions.stateInDefault
 import tm.alashow.base.util.toUiMessage
 import tm.alashow.datmusic.data.backup.DatmusicBackupToFile
 import tm.alashow.datmusic.data.backup.DatmusicRestoreFromFile
+import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.ui.settings.R
 import tm.alashow.domain.models.Fail
 import tm.alashow.domain.models.Success
@@ -36,6 +37,7 @@ class BackupRestoreViewModel @Inject constructor(
     private val restoreFromFile: DatmusicRestoreFromFile,
     private val snackbarManager: SnackbarManager,
     private val analytics: FirebaseAnalytics,
+    private val playbackConnection: PlaybackConnection,
 ) : ViewModel() {
 
     private val isBackingUp = MutableStateFlow(false)
@@ -51,7 +53,8 @@ class BackupRestoreViewModel @Inject constructor(
     }
 
     fun backupTo(file: Uri) = viewModelScope.launch {
-        analytics.event("settings.db.backup", mapOf("uri" to file))
+        analytics.event("settings.db.backup")
+        playbackConnection.transportControls?.stop()
         backupToFile(file).collect {
             isBackingUp.value = it.isLoading
             when (it) {
@@ -63,7 +66,8 @@ class BackupRestoreViewModel @Inject constructor(
     }
 
     fun restoreFrom(file: Uri) = viewModelScope.launch {
-        analytics.event("settings.db.restore", mapOf("uri" to file))
+        analytics.event("settings.db.restore")
+        playbackConnection.transportControls?.stop()
         restoreFromFile(file).collect {
             isRestoring.value = it.isLoading
             when (it) {

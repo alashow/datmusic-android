@@ -19,13 +19,7 @@ import tm.alashow.datmusic.data.interactors.playlist.CreatePlaylist
 import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.domain.entities.PlaylistId
 import tm.alashow.datmusic.playback.PlaybackConnection
-import tm.alashow.datmusic.playback.models.MEDIA_TYPE_ALBUM
-import tm.alashow.datmusic.playback.models.MEDIA_TYPE_ARTIST
-import tm.alashow.datmusic.playback.models.MEDIA_TYPE_AUDIO_FLACS_QUERY
-import tm.alashow.datmusic.playback.models.MEDIA_TYPE_AUDIO_MINERVA_QUERY
-import tm.alashow.datmusic.playback.models.MEDIA_TYPE_AUDIO_QUERY
-import tm.alashow.datmusic.playback.models.MEDIA_TYPE_DOWNLOADS
-import tm.alashow.datmusic.playback.models.MEDIA_TYPE_PLAYLIST
+import tm.alashow.datmusic.playback.models.*
 import tm.alashow.datmusic.playback.models.QueueTitle.Companion.asQueueTitle
 import tm.alashow.datmusic.ui.coreLibrary.R
 import tm.alashow.i18n.UiMessage
@@ -82,5 +76,22 @@ class PlaybackSheetViewModel @Inject constructor(
                 )
             )
         }
+    }
+
+    fun onTitleClick() = viewModelScope.launch {
+        val nowPlaying = playbackConnection.nowPlaying.value
+        navigator.navigate(LeafScreen.Search.buildRoute(nowPlaying.toAlbumSearchQuery(), DatmusicSearchParams.BackendType.ALBUMS))
+    }
+
+    fun onArtistClick() = viewModelScope.launch {
+        val nowPlaying = playbackConnection.nowPlaying.value
+
+        navigator.navigate(
+            LeafScreen.Search.buildRoute(
+                nowPlaying.toArtistSearchQuery(),
+                DatmusicSearchParams.BackendType.ARTISTS,
+                DatmusicSearchParams.BackendType.ALBUMS
+            )
+        )
     }
 }

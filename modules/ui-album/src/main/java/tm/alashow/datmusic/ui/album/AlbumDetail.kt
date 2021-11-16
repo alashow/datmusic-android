@@ -27,7 +27,6 @@ import tm.alashow.base.util.extensions.interpunctize
 import tm.alashow.base.util.extensions.orNA
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.Album
-import tm.alashow.datmusic.domain.entities.CoverImageSize
 import tm.alashow.datmusic.ui.detail.MediaDetail
 import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.simpleClickable
@@ -58,7 +57,7 @@ private fun AlbumDetail(viewModel: AlbumDetailViewModel) {
 @Composable
 private fun AlbumHeaderSubtitle(viewState: AlbumDetailViewState, onArtistClick: Callback) {
     val artist = viewState.album?.artists?.firstOrNull()
-    val albumSubtitle = listOf(stringResource(R.string.albums_detail_title), viewState.album?.year?.toString()).interpunctize()
+    val albumSubtitle = listOfNotNull(stringResource(R.string.albums_detail_title), viewState.album?.displayYear).interpunctize()
     val artistName = artist?.name.orNA()
 
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall)) {

@@ -45,10 +45,6 @@ data class Album(
     @ColumnInfo(name = "title")
     val title: String = UNTITLED_ALBUM,
 
-    @SerialName("subtitle")
-    @ColumnInfo(name = "subtitle")
-    val subtitle: String? = null,
-
     @SerialName("year")
     @ColumnInfo(name = "year")
     val year: Int = UNKNOWN_YEAR,
@@ -56,22 +52,6 @@ data class Album(
     @SerialName("count")
     @ColumnInfo(name = "count")
     val songCount: Int = 1,
-
-    @SerialName("plays")
-    @ColumnInfo(name = "plays")
-    val playCount: Long = 0L,
-
-    @SerialName("followers")
-    @ColumnInfo(name = "followers")
-    val followers: Int = 0,
-
-    @SerialName("create_time")
-    @ColumnInfo(name = "create_time")
-    val createdAt: Long = 0L,
-
-    @SerialName("update_time")
-    @ColumnInfo(name = "update_time")
-    val updatedAt: Long = 0L,
 
     @SerialName("is_explicit")
     @ColumnInfo(name = "explicit")
@@ -81,9 +61,9 @@ data class Album(
     @ColumnInfo(name = "main_artists")
     val artists: List<Artist> = listOf(Artist()),
 
-    @SerialName("genres")
-    @ColumnInfo(name = "genres")
-    val genres: List<Genre> = listOf(),
+    @SerialName("genre_id")
+    @ColumnInfo(name = "genre_id", defaultValue = "-1")
+    val genreId: Int = -1,
 
     @SerialName("photo")
     @ColumnInfo(name = "photo")
@@ -114,6 +94,12 @@ data class Album(
 ) : BasePaginatedEntity(), Parcelable, LibraryItem {
 
     val hasYear get() = year != UNKNOWN_YEAR
+    val displayYear
+        get() = when (year) {
+            UNKNOWN_YEAR -> null
+            YEAR_LOADING -> "----"
+            else -> year.toString()
+        }
 
     @Ignore @Transient @IgnoredOnParcel
     override val isUpdatable = false
