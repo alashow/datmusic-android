@@ -108,7 +108,7 @@ fun EditPlaylist(
                     .reorderable(
                         state = reorderableState,
                         onMove = { from, to -> viewModel.movePlaylistItem(from.index - itemsBeforeContent, to.index - itemsBeforeContent) },
-                        canDragOver = { (it.index - itemsBeforeContent) in (0..playlistItems.size) }
+                        canDragOver = { (it.index - itemsBeforeContent) in playlistItems.indices }
                     ),
             ) {
                 editPlaylistHeader(
