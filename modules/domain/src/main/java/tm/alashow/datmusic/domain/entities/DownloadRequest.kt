@@ -7,9 +7,9 @@ package tm.alashow.datmusic.domain.entities
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import kotlinx.serialization.json.Json
 import org.threeten.bp.LocalDateTime
 import tm.alashow.domain.models.BaseEntity
+import tm.alashow.domain.models.JSON
 
 @Entity(tableName = "download_requests")
 data class DownloadRequest(
@@ -41,7 +41,7 @@ data class DownloadRequest(
     val audio
         get() = run {
             assert(entityType == Type.Audio)
-            Json.decodeFromString(Audio.serializer(), entity)
+            JSON.decodeFromString(Audio.serializer(), entity)
         }
 
     companion object {
@@ -50,7 +50,7 @@ data class DownloadRequest(
         fun fromAudio(audio: Audio) = DownloadRequest(
             entityId = audio.id,
             entityType = Type.Audio,
-            entity = Json.encodeToString(Audio.serializer(), audio)
+            entity = JSON.encodeToString(Audio.serializer(), audio)
         )
     }
 

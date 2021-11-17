@@ -6,9 +6,9 @@ package tm.alashow.datmusic.playback.models
 
 import android.content.res.Resources
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 import tm.alashow.base.util.extensions.orBlank
 import tm.alashow.datmusic.playback.R
+import tm.alashow.domain.models.JSON
 
 @Serializable
 data class QueueTitle(
@@ -31,12 +31,12 @@ data class QueueTitle(
         Type.ARTIST, Type.ALBUM, Type.PLAYLIST, Type.SEARCH -> value ?: ""
     }
 
-    override fun toString() = Json.encodeToString(serializer(), this)
+    override fun toString() = JSON.encodeToString(serializer(), this)
 
     companion object {
         fun String?.asQueueTitle() = orBlank().let { value ->
             try {
-                Json.decodeFromString(serializer(), value)
+                JSON.decodeFromString(serializer(), value)
             } catch (e: Exception) {
                 QueueTitle()
             }

@@ -16,17 +16,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.json.Json
 import tm.alashow.base.util.RemoteLogger
-import tm.alashow.domain.models.DEFAULT_JSON_FORMAT
-import tm.alashow.domain.models.None
-import tm.alashow.domain.models.Optional
-import tm.alashow.domain.models.some
+import tm.alashow.domain.models.*
 
 private const val STORE_NAME = "app_preferences"
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = STORE_NAME)
 
-private val format = DEFAULT_JSON_FORMAT
+private val json = DEFAULT_JSON_FORMAT
 
 class PreferencesStore @Inject constructor(@ApplicationContext private val context: Context) {
 
@@ -50,7 +46,7 @@ class PreferencesStore @Inject constructor(@ApplicationContext private val conte
 
     suspend fun <T> save(name: String, value: T, serializer: KSerializer<T>) {
         val key = stringPreferencesKey(name)
-        save(key, Json.encodeToString(serializer, value))
+        save(key, json.encodeToString(serializer, value))
     }
 
     fun <T> optional(name: String, serializer: KSerializer<T>): Flow<Optional<T>> {
@@ -59,7 +55,7 @@ class PreferencesStore @Inject constructor(@ApplicationContext private val conte
             when (it) {
                 is Optional.Some<String> ->
                     try {
-                        some(format.decodeFromString(serializer, it.value))
+                        some(json.decodeFromString(serializer, it.value))
                     } catch (e: SerializationException) {
                         RemoteLogger.exception(e)
                         None
