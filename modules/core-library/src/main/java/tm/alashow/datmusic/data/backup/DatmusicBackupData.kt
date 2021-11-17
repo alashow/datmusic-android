@@ -6,11 +6,11 @@ package tm.alashow.datmusic.data.backup
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 import tm.alashow.datmusic.coreLibrary.R
 import tm.alashow.datmusic.domain.entities.Audios
 import tm.alashow.datmusic.domain.entities.PlaylistAudios
 import tm.alashow.datmusic.domain.entities.Playlists
+import tm.alashow.domain.models.JSON
 import tm.alashow.i18n.UiMessage
 import tm.alashow.i18n.ValidationError
 
@@ -39,10 +39,10 @@ data class DatmusicBackupData(
         DatmusicBackupVersionValidation(version).validate()
     }
 
-    fun toJson() = Json.encodeToString(serializer(), this)
+    fun toJson() = JSON.encodeToString(serializer(), this)
 
     companion object {
-        fun fromJson(json: String) = Json.decodeFromString(serializer(), json)
+        fun fromJson(json: String) = JSON.decodeFromString(serializer(), json)
 
         fun create(
             audios: Audios,
