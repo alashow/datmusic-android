@@ -8,6 +8,7 @@ import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -666,7 +667,7 @@ private fun PlaybackAudioInfo(audio: Audio) {
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
+@OptIn(ExperimentalAnimationApi::class, ExperimentalFoundationApi::class)
 private fun LazyListScope.playbackQueue(
     playbackQueue: PlaybackQueue,
     scrollToTop: Callback,
@@ -675,7 +676,7 @@ private fun LazyListScope.playbackQueue(
     val lastIndex = playbackQueue.audios.size
     val firstIndex = (playbackQueue.currentIndex + 1).coerceAtMost(lastIndex)
     val queue = playbackQueue.audios.subList(firstIndex, lastIndex)
-    itemsIndexed(queue, key = { index, _ -> index }) { index, audio ->
+    itemsIndexed(queue, key = { _, a -> a.primaryKey }) { index, audio ->
         val realPosition = firstIndex + index
         AudioRow(
             audio = audio,
@@ -686,7 +687,8 @@ private fun LazyListScope.playbackQueue(
                 scrollToTop()
             },
             extraActionLabels = listOf(RemoveFromPlaylist),
-            onExtraAction = { playbackConnection.removeByPosition(realPosition) }
+            onExtraAction = { playbackConnection.removeByPosition(realPosition) },
+            modifier = Modifier.animateItemPlacement()
         )
     }
 }

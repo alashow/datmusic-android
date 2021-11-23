@@ -149,13 +149,17 @@ class PlaybackConnectionImpl(
      * Resolves audios from given playback queue ids and validates current queues index.
      */
     private suspend fun buildPlaybackQueue(data: Triple<MediaMetadataCompat, PlaybackStateCompat, PlaybackQueue>): PlaybackQueue {
+        val audioIdFrequency = mutableMapOf<String, Int>()
         val (nowPlaying, state, queue) = data
         val nowPlayingId = nowPlaying.id.toMediaId().value
         val audios = audiosRepo.find(queue.ids.toMediaAudioIds()).map {
             if (it.id == nowPlayingId) {
                 it.audioDownloadItem = downloader.getAudioDownload(nowPlayingId).orNull()
             }
-            it
+            // build a stable id from audio id and it's frequency
+            audioIdFrequency[it.id] = (audioIdFrequency[it.id] ?: -1) + 1
+            val newId = it.id + '_' + (audioIdFrequency[it.id])
+            it.copy(primaryKey = newId)
         }
 
         return queue.copy(audios = audios, currentIndex = state.currentIndex).let {
