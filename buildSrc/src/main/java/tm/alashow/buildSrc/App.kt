@@ -6,6 +6,6 @@ object App {
     const val compileSdkVersion = 31
     const val targetSdkVersion = 31
     const val minSdkVersion = 21
-    const val versionCode = 228
-    const val versionName = "2.1.63"
+    const val versionCode = 229
+    const val versionName = "2.1.64"
 }

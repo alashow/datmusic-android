@@ -197,7 +197,7 @@ private fun RowScope.PlaybackNowPlaying(
             modifier = Modifier.padding(AppTheme.specs.paddingSmall)
         )
 
-        PlaybackPager(nowPlaying) { audio, _, pagerMod ->
+        PlaybackPager(nowPlaying = nowPlaying) { audio, _, pagerMod ->
             PlaybackNowPlaying(audio, modifier = pagerMod)
         }
     }

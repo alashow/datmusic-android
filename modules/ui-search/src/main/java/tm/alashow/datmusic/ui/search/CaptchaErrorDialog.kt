@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.net.toUri
+import coil.compose.AsyncImagePainter.*
 import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
 import com.google.accompanist.placeholder.material.placeholder
@@ -139,7 +140,7 @@ private fun CaptchaErrorImage(
                 .aspectRatio(130f / 50f) // source captcha original ratio
                 .align(Alignment.Center)
                 .placeholder(
-                    visible = image.state is ImagePainter.State.Loading,
+                    visible = image.state is State.Loading,
                     highlight = shimmer(),
                 )
         )

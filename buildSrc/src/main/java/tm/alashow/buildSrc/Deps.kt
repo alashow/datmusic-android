@@ -13,7 +13,7 @@ object Deps {
         const val stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$version"
         const val gradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:$version"
         const val serialization = "org.jetbrains.kotlin:kotlin-serialization:$version"
-        const val serializationRuntime = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0"
+        const val serializationRuntime = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.1"
 
         const val coroutinesVersion = "1.5.2"
         const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
@@ -30,22 +30,22 @@ object Deps {
         const val activityVersion = "1.4.0"
         const val activityKtx = "androidx.activity:activity-ktx:$activityVersion"
 
-        private const val navigationVersion = "2.4.0-beta01"
+        private const val navigationVersion = "2.4.0-beta02"
         const val navigationFragment = "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
         const val navigationUi = "androidx.navigation:navigation-ui-ktx:$navigationVersion"
-        const val navigationSafeArgs = "androidx.navigation:navigation-safe-args-gradle-plugin:2.4.0-beta01"
+        const val navigationSafeArgs = "androidx.navigation:navigation-safe-args-gradle-plugin:2.4.0-beta02"
         const val navigationCompose = "androidx.navigation:navigation-compose:$navigationVersion"
-        const val navigationHiltCompose = "androidx.hilt:hilt-navigation-compose:1.0.0-alpha03"
+        const val navigationHiltCompose = "androidx.hilt:hilt-navigation-compose:1.0.0-beta01"
 
         const val dataStore = "androidx.datastore:datastore-preferences:1.0.0"
 
         const val documentFile = "androidx.documentfile:documentfile:1.1.0-alpha01"
 
         const val palette = "androidx.palette:palette-ktx:1.0.0"
-        const val media ="androidx.media:media:1.4.3"
+        const val media ="androidx.media:media:1.5.0-alpha01"
 
         object Compose {
-            const val version = "1.1.0-beta01"
+            const val version = "1.1.0-beta03"
 
             const val ui = "androidx.compose.ui:ui:$version"
             const val uiUtil = "androidx.compose.ui:ui-util:$version"
@@ -54,13 +54,13 @@ object Deps {
             const val materialDesign = "androidx.compose.material:material:$version"
             const val materialDesignIcons = "androidx.compose.material:material-icons-core:$version"
             const val materialDesignIconsExtended = "androidx.compose.material:material-icons-extended:$version"
-            const val constraintLayout = "androidx.constraintlayout:constraintlayout-compose:1.0.0-rc01"
+            const val constraintLayout = "androidx.constraintlayout:constraintlayout-compose:1.0.0-rc02"
             const val liveData = "androidx.compose.runtime:runtime-livedata:$version"
             const val activity = "androidx.activity:activity-compose:$activityVersion"
             const val viewModels = "androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0"
             const val paging = "androidx.paging:paging-compose:1.0.0-alpha14"
 
-            private const val lottieVersion = "4.2.0"
+            private const val lottieVersion = "4.2.1"
             const val lottie = "com.airbnb.android:lottie-compose:$lottieVersion"
 
             const val coil = "io.coil-kt:coil-compose:${Utils.coilVersion}"
@@ -68,7 +68,7 @@ object Deps {
         }
 
         object Accompanist {
-            private const val version = "0.21.0-beta"
+            private const val version = "0.21.3-beta"
 
             const val insets = "com.google.accompanist:accompanist-insets:$version"
             const val insetsUi = "com.google.accompanist:accompanist-insets-ui:$version"
@@ -94,7 +94,7 @@ object Deps {
         }
 
         object Room {
-            private const val roomVersion = "2.4.0-beta01"
+            private const val roomVersion = "2.4.0-beta02"
 
             const val compiler = "androidx.room:room-compiler:$roomVersion"
             const val runtime = "androidx.room:room-runtime:$roomVersion"
@@ -103,7 +103,7 @@ object Deps {
         }
 
         object Paging {
-            private const val version = "3.1.0-beta01"
+            private const val version = "3.1.0"
 
             const val common = "androidx.paging:paging-common-ktx:$version"
             const val runtime = "androidx.paging:paging-runtime-ktx:$version"
@@ -116,11 +116,11 @@ object Deps {
         const val proguardSnippets = "com.github.yongjhih.android-proguards:android-proguards-all:-SNAPSHOT"
 
         const val junit = "junit:junit:4.13.2"
-        const val threeTen = "org.threeten:threetenbp:1.5.1"
+        const val threeTen = "org.threeten:threetenbp:1.5.2"
 
-        const val coilVersion = "2.0.0-alpha02"
+        const val coilVersion = "2.0.0-alpha04"
         const val coil = "io.coil-kt:coil:$coilVersion"
-        const val store = "com.dropbox.mobile.store:store4:4.0.2-KT15"
+        const val store = "com.dropbox.mobile.store:store4:4.0.3-KT15"
 
         // const val fetch = "androidx.tonyodev.fetch2:xfetch2:3.1.6"
         // const val fetchOkhttp = "androidx.tonyodev.fetch2okhttp:xfetch2okhttp:3.1.6"
@@ -131,11 +131,11 @@ object Deps {
         const val exoPlayerOkhttp = "com.google.android.exoplayer:extension-okhttp:2.15.0"
         const val exoPlayerFlac = "com.github.alashow.ExoPlayer-Extensions:extension-flac:v2.15.1"
 
-        const val qonversion = "io.qonversion.android.sdk:sdk:3.1.3"
+        const val qonversion = "io.qonversion.android.sdk:sdk:3.2.1"
     }
 
     object OkHttp {
-        private const val version = "5.0.0-alpha.2"
+        private const val version = "5.0.0-alpha.3"
 
         const val okhttp = "com.squareup.okhttp3:okhttp:$version"
         const val logger = "com.squareup.okhttp3:logging-interceptor:$version"
@@ -152,15 +152,14 @@ object Deps {
     }
 
     object Dagger {
-        private const val version = "2.40"
+        private const val version = "2.40.1"
 
         const val dagger = "com.google.dagger:dagger:$version"
         const val compiler = "com.google.dagger:dagger-compiler:$version"
 
-        const val hiltVersion = "2.40"
-        const val hilt = "com.google.dagger:hilt-android:$hiltVersion"
-        const val hiltCompiler = "com.google.dagger:hilt-compiler:$hiltVersion"
-        const val hiltGradle = "com.google.dagger:hilt-android-gradle-plugin:$hiltVersion"
+        const val hilt = "com.google.dagger:hilt-android:$version"
+        const val hiltCompiler = "com.google.dagger:hilt-compiler:$version"
+        const val hiltGradle = "com.google.dagger:hilt-android-gradle-plugin:$version"
     }
 
     object LeakCanary {

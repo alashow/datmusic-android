@@ -41,6 +41,7 @@ abstract class PlaylistsWithAudiosDao {
     @Transaction
     abstract fun updatePlaylistAudio(audioOfPlaylist: PlaylistAudio)
 
+    @Transaction
     @Query("SELECT * FROM playlist_audios WHERE playlist_id = :id ORDER BY position")
     abstract fun playlistItems(id: PlaylistId): Flow<List<PlaylistItem>>
 
@@ -63,6 +64,7 @@ abstract class PlaylistsWithAudiosDao {
     @Query("SELECT MAX(position) FROM playlist_audios WHERE playlist_id = :id")
     abstract fun lastPlaylistAudioIndex(id: PlaylistId): Flow<Int>
 
+    @Transaction
     @Query("SELECT * FROM playlists")
     abstract fun playlistsWithAudios(): Flow<List<PlaylistWithAudios>>
 

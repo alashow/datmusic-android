@@ -27,6 +27,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.isSpecified
+import coil.compose.AsyncImagePainter.*
 import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
 import com.google.accompanist.placeholder.PlaceholderDefaults
@@ -68,7 +69,7 @@ fun CoverImage(
             modifier = imageModifier
                 .fillMaxSize()
                 .placeholder(
-                    visible = state is ImagePainter.State.Loading,
+                    visible = state is State.Loading,
                     color = backgroundColor,
                     shape = shape,
                     highlight = PlaceholderHighlight.shimmer(highlightColor = contentColor.copy(alpha = .15f)),
@@ -76,7 +77,7 @@ fun CoverImage(
         )
 
         when (state) {
-            is ImagePainter.State.Error, ImagePainter.State.Empty, is ImagePainter.State.Loading -> {
+            is State.Error, State.Empty, is State.Loading -> {
                 Icon(
                     painter = icon,
                     tint = contentColor.copy(alpha = ContentAlpha.disabled),
@@ -89,7 +90,7 @@ fun CoverImage(
             else -> Unit
         }
 
-        if (bitmapPlaceholder != null && state is ImagePainter.State.Loading) {
+        if (bitmapPlaceholder != null && state is State.Loading) {
             Image(
                 painter = rememberImagePainter(bitmapPlaceholder),
                 contentDescription = null,
