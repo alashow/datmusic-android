@@ -10,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
@@ -278,6 +279,7 @@ private fun LazyListScope.editPlaylistExtraActions(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 private fun LazyListScope.editablePlaylistAudioList(
     reorderableState: ReorderableState,
     onRemove: (PlaylistAudioId) -> Unit,
@@ -285,7 +287,12 @@ private fun LazyListScope.editablePlaylistAudioList(
 ) {
     items(audios, key = { it.playlistAudio.id }) { playlistItem ->
         val haptic = LocalHapticFeedback.current
-        DraggableItemSurface(reorderableState.offsetByKey(playlistItem.playlistAudio.id)) {
+        val isDragging = reorderableState.draggedKey == playlistItem.playlistAudio.id
+        DraggableItemSurface(
+            reorderableState.offsetByKey(playlistItem.playlistAudio.id),
+            // animate item placement unless item is being dragged
+            modifier = if (isDragging) Modifier else Modifier.animateItemPlacement()
+        ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall),
@@ -305,6 +312,7 @@ private fun LazyListScope.editablePlaylistAudioList(
                     modifier = Modifier.weight(19f),
                     includeCover = false,
                     observeNowPlayingAudio = false,
+                    maxLines = 1,
                 )
 
                 Icon(
