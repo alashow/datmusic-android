@@ -4,9 +4,11 @@
  */
 package tm.alashow.datmusic.ui.library.playlists.detail
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.datmusic.domain.entities.PlaylistAudio
 import tm.alashow.datmusic.domain.entities.PlaylistItem
@@ -35,6 +37,7 @@ class PlaylistDetailContent(
         ) = PlaylistDetailContent(onRemoveFromPlaylist, playbackConnection)
     }
 
+    @OptIn(ExperimentalFoundationApi::class)
     override fun invoke(list: LazyListScope, details: Async<PlaylistItems>, detailsLoading: Boolean): Boolean {
         val playlistAudios = when (details) {
             is Success -> details()
@@ -53,7 +56,8 @@ class PlaylistDetailContent(
                             playbackConnection.playPlaylist(details().playlistId(), index)
                     },
                     extraActionLabels = listOf(RemoveFromPlaylist),
-                    onExtraAction = { onRemoveFromPlaylist(item) }
+                    onExtraAction = { onRemoveFromPlaylist(item) },
+                    modifier = Modifier.animateItemPlacement()
                 )
             }
         }
