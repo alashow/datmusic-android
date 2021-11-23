@@ -17,6 +17,7 @@ import androidx.compose.ui.zIndex
 @Composable
 fun DraggableItemSurface(
     offset: Float?,
+    modifier: Modifier = Modifier,
     orientation: Orientation = Orientation.Vertical,
     content: @Composable () -> Unit,
 ) {
@@ -24,7 +25,7 @@ fun DraggableItemSurface(
     Surface(
         color = offset?.let { draggingBackground } ?: Color.Transparent,
         elevation = offset?.let { 8.dp } ?: 0.dp,
-        modifier = Modifier
+        modifier = modifier
             .zIndex(offset?.let { 1f } ?: 0f)
             .graphicsLayer {
                 with(offset ?: 0f) {

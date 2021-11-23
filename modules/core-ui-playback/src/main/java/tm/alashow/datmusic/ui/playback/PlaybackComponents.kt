@@ -19,19 +19,13 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.util.lerp
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.calculateCurrentOffsetForPage
-import com.google.accompanist.pager.rememberPagerState
+import com.google.accompanist.pager.*
 import kotlin.math.absoluteValue
 import kotlinx.coroutines.flow.collect
-import timber.log.Timber
 import tm.alashow.common.compose.LocalPlaybackConnection
-import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.playback.PLAYBACK_PROGRESS_INTERVAL
 import tm.alashow.datmusic.playback.PlaybackConnection
-import tm.alashow.datmusic.playback.models.PlaybackQueue
 import tm.alashow.datmusic.playback.models.toAudio
 
 @OptIn(ExperimentalPagerApi::class)
@@ -39,11 +33,11 @@ import tm.alashow.datmusic.playback.models.toAudio
 internal fun PlaybackPager(
     nowPlaying: MediaMetadataCompat,
     modifier: Modifier = Modifier,
+    pagerState: PagerState = rememberPagerState(),
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
     content: @Composable (Audio, Int, Modifier) -> Unit,
 ) {
-    val playbackQueue by rememberFlowWithLifecycle(playbackConnection.playbackQueue).collectAsState(PlaybackQueue())
-
+    val playbackQueue by playbackConnection.playbackQueue.collectAsState()
     val playbackCurrentIndex = playbackQueue.currentIndex
     var lastRequestedPage by remember(playbackQueue, nowPlaying) { mutableStateOf<Int?>(playbackCurrentIndex) }
 
@@ -51,12 +45,8 @@ internal fun PlaybackPager(
         content(nowPlaying.toAudio(), playbackCurrentIndex, Modifier)
         return
     }
-
-    val pagerState = rememberPagerState(initialPage = playbackCurrentIndex)
-
     LaunchedEffect(playbackCurrentIndex, pagerState) {
         if (playbackCurrentIndex != pagerState.currentPage) {
-            Timber.d("Syncing pager page to index: $playbackCurrentIndex")
             pagerState.scrollToPage(playbackCurrentIndex)
         }
         snapshotFlow { pagerState.currentPage }.collect { page ->
@@ -66,11 +56,10 @@ internal fun PlaybackPager(
             }
         }
     }
-
     HorizontalPager(
         count = playbackQueue.ids.size,
-        state = pagerState,
-        modifier = modifier
+        modifier = modifier,
+        state = pagerState
     ) { page ->
         val currentAudio = playbackQueue.audios.getOrNull(page) ?: Audio()
 

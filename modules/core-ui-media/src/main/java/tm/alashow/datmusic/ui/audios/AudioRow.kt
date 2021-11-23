@@ -40,7 +40,6 @@ import tm.alashow.base.imageloading.ImageLoading
 import tm.alashow.base.util.extensions.interpunctize
 import tm.alashow.base.util.millisToDuration
 import tm.alashow.common.compose.LocalPlaybackConnection
-import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.models.PlaybackQueue.NowPlayingAudio.Companion.isCurrentAudio
@@ -147,7 +146,7 @@ fun AudioRowItem(
 ) {
     val isCurrentAudio = when (observeNowPlayingAudio) {
         true -> {
-            val nowPlayingAudio by rememberFlowWithLifecycle(playbackConnection.nowPlayingAudio).collectAsState(null)
+            val nowPlayingAudio by playbackConnection.nowPlayingAudio.collectAsState()
             nowPlayingAudio.isCurrentAudio(audio, audioIndex)
         }
         else -> false

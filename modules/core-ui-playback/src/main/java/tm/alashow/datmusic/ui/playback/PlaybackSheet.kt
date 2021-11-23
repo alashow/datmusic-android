@@ -73,6 +73,7 @@ import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.ui.Scaffold
 import com.google.accompanist.insets.ui.TopAppBar
+import com.google.accompanist.pager.rememberPagerState
 import kotlin.math.roundToLong
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -168,6 +169,8 @@ internal fun PlaybackSheetContent(
     val adaptiveColor = adaptiveColor(nowPlaying.artwork, initial = MaterialTheme.colors.onBackground)
     val contentColor by animateColorAsState(adaptiveColor.color, ADAPTIVE_COLOR_ANIMATION)
 
+    val pagerState = rememberPagerState(playbackQueue.currentIndex)
+
     LaunchedEffect(playbackConnection) {
         playbackConnection.playbackState.collect {
             if (it.isIdle) onClose()
@@ -203,7 +206,8 @@ internal fun PlaybackSheetContent(
             item {
                 PlaybackPager(
                     nowPlaying = nowPlaying,
-                    modifier = Modifier.fillParentMaxHeight(0.45f)
+                    modifier = Modifier.fillParentMaxHeight(0.45f),
+                    pagerState = pagerState,
                 ) { audio, _, pagerMod ->
                     val currentArtwork = rememberImagePainter(audio.coverUri(CoverImageSize.LARGE))
                     PlaybackArtwork(currentArtwork, contentColor, nowPlaying, pagerMod)

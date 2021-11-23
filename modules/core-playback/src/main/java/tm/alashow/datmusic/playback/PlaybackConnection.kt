@@ -17,17 +17,11 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import tm.alashow.base.util.extensions.flowInterval
+import tm.alashow.base.util.extensions.stateInDefault
 import tm.alashow.datmusic.data.repos.audio.AudiosRepo
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
@@ -65,8 +59,8 @@ interface PlaybackConnection {
     val playbackState: StateFlow<PlaybackStateCompat>
     val nowPlaying: StateFlow<MediaMetadataCompat>
 
-    val playbackQueue: SharedFlow<PlaybackQueue>
-    val nowPlayingAudio: SharedFlow<PlaybackQueue.NowPlayingAudio?>
+    val playbackQueue: StateFlow<PlaybackQueue>
+    val nowPlayingAudio: StateFlow<PlaybackQueue.NowPlayingAudio?>
 
     val playbackProgress: StateFlow<PlaybackProgressState>
     val playbackMode: StateFlow<PlaybackModeState>
@@ -107,7 +101,8 @@ class PlaybackConnectionImpl(
     private val playbackQueueState = MutableStateFlow(PlaybackQueue())
 
     override val playbackQueue = combine(nowPlaying, playbackState, playbackQueueState, ::Triple).map(::buildPlaybackQueue)
-        .shareIn(this, SharingStarted.WhileSubscribed(), 1)
+        .distinctUntilChanged()
+        .stateInDefault(this, PlaybackQueue())
 
     override val nowPlayingAudio = combine(playbackQueue, playbackState, ::Pair)
         .map { (queue, playbackState) ->
@@ -116,7 +111,8 @@ class PlaybackConnectionImpl(
                 else -> null
             }
         }
-        .shareIn(this, SharingStarted.WhileSubscribed(), 1)
+        .distinctUntilChanged()
+        .stateInDefault(this, null)
 
     private var playbackProgressInterval: Job = Job()
     override val playbackProgress = MutableStateFlow(PlaybackProgressState())
