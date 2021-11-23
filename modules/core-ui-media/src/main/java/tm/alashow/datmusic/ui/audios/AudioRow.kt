@@ -34,9 +34,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.rememberImagePainter
 import com.google.accompanist.placeholder.material.placeholder
-import tm.alashow.base.imageloading.ImageLoading
 import tm.alashow.base.util.extensions.interpunctize
 import tm.alashow.base.util.millisToDuration
 import tm.alashow.common.compose.LocalPlaybackConnection
@@ -164,9 +162,8 @@ fun AudioRowItem(
         modifier = modifier.fillMaxWidth()
     ) {
         if (includeCover) {
-            val image = rememberImagePainter(audio.coverUrlSmall ?: audio.coverUrl, builder = ImageLoading.defaultConfig)
             CoverImage(
-                painter = image,
+                data = audio.coverUrlSmall ?: audio.coverUrl,
                 size = imageSize,
                 imageModifier = Modifier
                     .simpleClickable { onCoverClick(audio) }

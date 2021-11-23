@@ -25,8 +25,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberImagePainter
-import tm.alashow.base.imageloading.ImageLoading
 import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.theme.AppTheme
 
@@ -57,9 +55,8 @@ fun CoverHeaderRow(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(AppTheme.specs.padding)
     ) {
-        val painter = rememberImagePainter(imageData, builder = ImageLoading.defaultConfig)
         CoverImage(
-            painter = painter,
+            data = imageData,
             shape = RectangleShape,
             elevation = 10.dp,
             icon = icon ?: rememberVectorPainter(Icons.Default.MusicNote),

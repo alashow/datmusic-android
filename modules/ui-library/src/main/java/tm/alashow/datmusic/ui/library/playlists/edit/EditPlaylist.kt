@@ -47,13 +47,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.rememberImagePainter
 import com.google.accompanist.insets.*
 import org.burnoutcrew.reorderable.ReorderableState
 import org.burnoutcrew.reorderable.detectReorder
 import org.burnoutcrew.reorderable.rememberReorderState
 import org.burnoutcrew.reorderable.reorderable
-import tm.alashow.base.imageloading.ImageLoading
 import tm.alashow.base.util.extensions.Callback
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.data.repos.playlist.ArtworkImageFileType.Companion.isUserSetArtworkPath
@@ -212,14 +210,14 @@ private fun EditablePlaylistArtwork(
     playlist: Playlist,
     onSetPlaylistArtwork: (Uri) -> Unit,
 ) {
-    val imagePainter = rememberImagePainter(playlist.artworkFile(), builder = ImageLoading.defaultConfig)
-    val adaptiveColor = adaptiveColor(playlist.artworkFile())
+    val image = playlist.artworkFile()
+    val adaptiveColor = adaptiveColor(image)
     val imagePickerLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) {
         if (it != null) onSetPlaylistArtwork(it)
     }
 
     CoverImage(
-        painter = imagePainter,
+        data = image,
         size = 180.dp,
         modifier = Modifier.padding(AppTheme.specs.padding),
         imageModifier = Modifier.coloredRippleClickable(

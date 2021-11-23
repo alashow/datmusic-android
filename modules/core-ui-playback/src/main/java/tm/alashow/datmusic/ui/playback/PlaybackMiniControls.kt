@@ -46,8 +46,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberImagePainter
-import tm.alashow.base.imageloading.ImageLoading
 import tm.alashow.base.util.extensions.orNA
 import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.common.compose.rememberFlowWithLifecycle
@@ -190,9 +188,8 @@ private fun RowScope.PlaybackNowPlaying(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.weight(7f),
     ) {
-        val artwork = rememberImagePainter(nowPlaying.artwork ?: nowPlaying.artworkUri, builder = ImageLoading.defaultConfig)
         CoverImage(
-            painter = artwork,
+            data = nowPlaying.artwork ?: nowPlaying.artworkUri,
             size = maxHeight - 16.dp,
             modifier = Modifier.padding(AppTheme.specs.paddingSmall)
         )

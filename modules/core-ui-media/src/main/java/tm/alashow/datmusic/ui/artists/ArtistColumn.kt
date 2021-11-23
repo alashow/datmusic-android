@@ -22,10 +22,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberImagePainter
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.firebase.analytics.FirebaseAnalytics
-import tm.alashow.base.imageloading.ImageLoading
 import tm.alashow.base.util.click
 import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.datmusic.domain.entities.Artist
@@ -62,9 +60,8 @@ fun ArtistColumn(
             .fillMaxWidth()
             .padding(AppTheme.specs.paddingTiny)
     ) {
-        val image = rememberImagePainter(artist.photo(), builder = ImageLoading.defaultConfig)
         CoverImage(
-            painter = image,
+            data = artist.photo(),
             icon = rememberVectorPainter(Icons.Default.Person),
             shape = CircleShape,
             size = imageSize,

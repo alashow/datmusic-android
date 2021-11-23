@@ -28,10 +28,8 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberImagePainter
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.firebase.analytics.FirebaseAnalytics
-import tm.alashow.base.imageloading.ImageLoading
 import tm.alashow.base.util.click
 import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.datmusic.domain.entities.Album
@@ -66,9 +64,8 @@ fun AlbumColumn(
             .fillMaxWidth()
             .padding(AppTheme.specs.padding)
     ) {
-        val image = rememberImagePainter(album.photo.mediumUrl, builder = ImageLoading.defaultConfig)
         CoverImage(
-            painter = image,
+            data = album.photo.mediumUrl,
             size = imageSize,
             icon = rememberVectorPainter(Icons.Default.Album),
             imageModifier = loadingModifier,

@@ -4,6 +4,7 @@
  */
 package tm.alashow.datmusic.ui.playback
 
+import android.net.Uri
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -67,8 +68,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.ImagePainter
-import coil.compose.rememberImagePainter
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.rememberInsetsPaddingValues
@@ -210,7 +209,7 @@ internal fun PlaybackSheetContent(
                     modifier = Modifier.fillParentMaxHeight(0.45f),
                     pagerState = pagerState,
                 ) { audio, _, pagerMod ->
-                    val currentArtwork = rememberImagePainter(audio.coverUri(CoverImageSize.LARGE))
+                    val currentArtwork = audio.coverUri(CoverImageSize.LARGE)
                     PlaybackArtwork(currentArtwork, contentColor, nowPlaying, pagerMod)
                 }
             }
@@ -333,14 +332,14 @@ private fun PlaybackSheetTopBarActions(
 
 @Composable
 private fun PlaybackArtwork(
-    currentArtwork: ImagePainter,
+    artwork: Uri,
     contentColor: Color,
     nowPlaying: MediaMetadataCompat,
     modifier: Modifier = Modifier,
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
 ) {
     CoverImage(
-        painter = currentArtwork,
+        data = artwork,
         shape = RectangleShape,
         backgroundColor = MaterialTheme.colors.plainSurfaceColor(),
         contentColor = contentColor,

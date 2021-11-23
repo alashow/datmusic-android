@@ -24,14 +24,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.rememberImagePainter
-import tm.alashow.base.imageloading.ImageLoading.applyDefault
 import tm.alashow.datmusic.domain.entities.LibraryItem
 import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.theme.AppTheme
@@ -90,22 +87,13 @@ private fun LibraryItemRow(
     typeRes: Int,
     modifier: Modifier = Modifier,
 ) {
-    val imageSizePx = with(LocalDensity.current) { imageSize.roundToPx() }
-    val image = rememberImagePainter(
-        imageData,
-        builder = {
-            applyDefault()
-            size(imageSizePx, imageSizePx)
-        }
-    )
-
     Row(
         horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
     ) {
         CoverImage(
-            painter = image,
+            data = imageData,
             size = imageSize,
             imageModifier = Modifier.clickable(
                 interactionSource = remember { MutableInteractionSource() },
