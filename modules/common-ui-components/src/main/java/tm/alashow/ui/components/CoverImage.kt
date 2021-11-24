@@ -6,6 +6,8 @@ package tm.alashow.ui.components
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -17,6 +19,8 @@ import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -24,12 +28,15 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.VectorPainter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.isSpecified
+import coil.compose.AsyncImage
+import coil.compose.AsyncImageContent
 import coil.compose.AsyncImagePainter.*
-import coil.compose.ImagePainter
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.google.accompanist.placeholder.PlaceholderDefaults
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.color
@@ -38,7 +45,7 @@ import com.google.accompanist.placeholder.shimmer
 
 @Composable
 fun CoverImage(
-    painter: ImagePainter,
+    data: Any?,
     modifier: Modifier = Modifier,
     imageModifier: Modifier = Modifier,
     size: Dp = Dp.Unspecified,
@@ -52,7 +59,6 @@ fun CoverImage(
     contentDescription: String? = null,
     elevation: Dp = 2.dp,
 ) {
-    val state = painter.state
     val sizeMod = if (size.isSpecified) Modifier.size(size) else Modifier
     Surface(
         elevation = elevation,
@@ -62,43 +68,48 @@ fun CoverImage(
             .then(sizeMod)
             .aspectRatio(1f)
     ) {
-        Image(
-            painter = painter,
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(data)
+                .build(),
             contentDescription = contentDescription,
             contentScale = contentScale,
-            modifier = imageModifier
-                .fillMaxSize()
-                .placeholder(
-                    visible = state is State.Loading,
-                    color = backgroundColor,
-                    shape = shape,
-                    highlight = PlaceholderHighlight.shimmer(highlightColor = contentColor.copy(alpha = .15f)),
-                )
-        )
+        ) { state ->
+            when (state) {
+                is State.Error, State.Empty, is State.Loading -> {
+                    Icon(
+                        painter = icon,
+                        tint = contentColor.copy(alpha = ContentAlpha.disabled),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(backgroundColor)
+                            .padding(iconPadding)
+                    )
+                    Box(
+                        Modifier
+                            .fillMaxSize()
+                            .placeholder(
+                                visible = state is State.Loading,
+                                color = Color.Transparent,
+                                shape = shape,
+                                highlight = PlaceholderHighlight.shimmer(highlightColor = contentColor.copy(alpha = .15f)),
+                            )
+                    )
+                }
+                else -> AsyncImageContent(imageModifier.fillMaxSize())
+            }
 
-        when (state) {
-            is State.Error, State.Empty, is State.Loading -> {
-                Icon(
-                    painter = icon,
-                    tint = contentColor.copy(alpha = ContentAlpha.disabled),
+            if (bitmapPlaceholder != null && state is State.Loading) {
+                Image(
+                    painter = rememberAsyncImagePainter(bitmapPlaceholder),
                     contentDescription = null,
+                    contentScale = contentScale,
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(iconPadding)
+                        .clip(shape)
                 )
             }
-            else -> Unit
-        }
-
-        if (bitmapPlaceholder != null && state is State.Loading) {
-            Image(
-                painter = rememberImagePainter(bitmapPlaceholder),
-                contentDescription = null,
-                contentScale = contentScale,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(shape)
-            )
         }
     }
 }

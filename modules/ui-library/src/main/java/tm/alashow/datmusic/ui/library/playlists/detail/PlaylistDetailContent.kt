@@ -53,7 +53,7 @@ class PlaylistDetailContent(
                             playbackConnection.playPlaylist(details().playlistId(), index)
                     },
                     extraActionLabels = listOf(RemoveFromPlaylist),
-                    onExtraAction = { onRemoveFromPlaylist(item) }
+                    onExtraAction = { onRemoveFromPlaylist(item) },
                 )
             }
         }

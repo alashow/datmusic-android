@@ -20,8 +20,6 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.rememberImagePainter
-import tm.alashow.base.imageloading.ImageLoading
 import tm.alashow.base.util.extensions.Callback
 import tm.alashow.base.util.extensions.interpunctize
 import tm.alashow.base.util.extensions.orNA
@@ -61,8 +59,7 @@ private fun AlbumHeaderSubtitle(viewState: AlbumDetailViewState, onArtistClick: 
     val artistName = artist?.name.orNA()
 
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall)) {
-        val painter = rememberImagePainter(artist?.photo(), builder = ImageLoading.defaultConfig)
-        CoverImage(painter, shape = CircleShape, size = 20.dp)
+        CoverImage(artist?.photo(), shape = CircleShape, size = 20.dp)
         Text(
             artistName, style = MaterialTheme.typography.subtitle2,
             modifier = Modifier.simpleClickable(onClick = onArtistClick)

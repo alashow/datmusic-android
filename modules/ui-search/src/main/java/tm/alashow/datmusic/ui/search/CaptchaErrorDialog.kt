@@ -4,6 +4,7 @@
  */
 package tm.alashow.datmusic.ui.search
 
+import android.net.Uri
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -41,12 +42,10 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.net.toUri
 import coil.compose.AsyncImagePainter.*
-import coil.compose.ImagePainter
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.firebase.analytics.FirebaseAnalytics
 import kotlin.random.Random
-import tm.alashow.base.imageloading.ImageLoading
 import tm.alashow.base.util.event
 import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.domain.models.errors.ApiCaptchaError
@@ -75,7 +74,6 @@ internal fun CaptchaErrorDialog(
             properties = DialogProperties(usePlatformDefaultWidth = true),
         ) {
             val imageUri = captchaError.error.captchaImageUrl.toUri().buildUpon().appendQueryParameter("v", captchaVersion.toString()).build()
-            val image = rememberImagePainter(imageUri, builder = ImageLoading.defaultConfig)
 
             Surface(
                 shape = MaterialTheme.shapes.medium,
@@ -94,7 +92,7 @@ internal fun CaptchaErrorDialog(
                         modifier = Modifier.align(Alignment.Start)
                     )
 
-                    CaptchaErrorImage(image, onReload = { captchaVersion = Random.nextInt() })
+                    CaptchaErrorImage(imageUri, onReload = { captchaVersion = Random.nextInt() })
 
                     OutlinedTextField(
                         value = captchaKey,
@@ -125,13 +123,14 @@ internal fun CaptchaErrorDialog(
 
 @Composable
 private fun CaptchaErrorImage(
-    image: ImagePainter,
+    image: Uri,
     onReload: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val painter = rememberAsyncImagePainter(image)
     Box(modifier.fillMaxWidth()) {
         Image(
-            painter = image,
+            painter = painter,
             contentDescription = null,
             modifier = Modifier
                 .padding(vertical = AppTheme.specs.paddingLarge)
@@ -140,7 +139,7 @@ private fun CaptchaErrorImage(
                 .aspectRatio(130f / 50f) // source captcha original ratio
                 .align(Alignment.Center)
                 .placeholder(
-                    visible = image.state is State.Loading,
+                    visible = painter.state is State.Loading,
                     highlight = shimmer(),
                 )
         )

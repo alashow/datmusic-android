@@ -1,3 +1,6 @@
+v2.1.7
+- Animated lists in playback sheet queue and playlist editor
+
 v2.1.61
 - Album detail year loading fix
 
