@@ -49,7 +49,7 @@ abstract class BaseDao<E : BaseEntity> {
     open suspend fun withTransaction(tx: suspend () -> Unit) = tx()
 
     abstract fun entries(): Flow<List<E>>
-    abstract fun entriesObservable(count: Int, offset: Int): Flow<List<E>>
+    abstract fun entries(count: Int, offset: Int): Flow<List<E>>
 
     abstract fun entriesPagingSource(): PagingSource<Int, E>
 
@@ -58,7 +58,8 @@ abstract class BaseDao<E : BaseEntity> {
 
     abstract fun entriesById(ids: List<String>): Flow<List<E>>
 
-    abstract fun count(): Flow<Int>
+    abstract suspend fun count(): Int
+    abstract fun observeCount(): Flow<Int>
     abstract fun has(id: String): Flow<Int>
 
     abstract suspend fun exists(id: String): Int
@@ -79,7 +80,7 @@ abstract class EntityDao<Params : Any, E : BaseEntity> : BaseDao<E>() {
 
 abstract class PaginatedEntryDao<Params : Any, E : PaginatedEntity> : EntityDao<Params, E>() {
 
-    abstract fun entriesObservable(params: Params, page: Int): Flow<List<E>>
+    abstract fun entries(params: Params, page: Int): Flow<List<E>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract override suspend fun insert(entity: E): Long
@@ -91,8 +92,6 @@ abstract class PaginatedEntryDao<Params : Any, E : PaginatedEntity> : EntityDao<
     abstract override suspend fun insertAll(entities: List<E>): List<Long>
 
     abstract suspend fun delete(params: Params, page: Int): Int
-    abstract suspend fun getLastPage(params: Params): Int?
-
     @Transaction
     open suspend fun update(id: String, entity: E) {
         delete(id)

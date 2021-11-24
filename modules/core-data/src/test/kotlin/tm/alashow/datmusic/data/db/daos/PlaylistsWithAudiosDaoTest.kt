@@ -9,7 +9,6 @@ import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import javax.inject.Inject
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.After
 import org.junit.Before
@@ -41,7 +40,7 @@ class PlaylistsWithAudiosDaoTest : BaseTest() {
     fun setUp() {
         hiltRule.inject()
 
-        runBlocking {
+        runBlockingTest {
             playlistsDao.insertAll(testItems.map { it.playlist })
             audiosDao.insertAll(testItems.map { it.audio })
         }

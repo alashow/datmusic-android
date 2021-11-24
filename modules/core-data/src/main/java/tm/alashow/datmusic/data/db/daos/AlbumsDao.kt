@@ -26,11 +26,11 @@ abstract class AlbumsDao : PaginatedEntryDao<DatmusicSearchParams, Album>() {
 
     @Transaction
     @Query("SELECT * FROM albums WHERE params = :params and page = :page ORDER BY page ASC, search_index ASC")
-    abstract override fun entriesObservable(params: DatmusicSearchParams, page: Int): Flow<List<Album>>
+    abstract override fun entries(params: DatmusicSearchParams, page: Int): Flow<List<Album>>
 
     @Transaction
     @Query("SELECT * FROM albums ORDER BY page ASC, search_index ASC LIMIT :count OFFSET :offset")
-    abstract override fun entriesObservable(count: Int, offset: Int): Flow<List<Album>>
+    abstract override fun entries(count: Int, offset: Int): Flow<List<Album>>
 
     @Transaction
     @Query("SELECT * FROM albums ORDER BY page ASC, search_index ASC")
@@ -64,11 +64,11 @@ abstract class AlbumsDao : PaginatedEntryDao<DatmusicSearchParams, Album>() {
     @Query("DELETE FROM albums")
     abstract override suspend fun deleteAll(): Int
 
-    @Query("SELECT MAX(page) from albums WHERE params = :params")
-    abstract override suspend fun getLastPage(params: DatmusicSearchParams): Int?
+    @Query("SELECT COUNT(*) from albums")
+    abstract override suspend fun count(): Int
 
     @Query("SELECT COUNT(*) from albums")
-    abstract override fun count(): Flow<Int>
+    abstract override fun observeCount(): Flow<Int>
 
     @Query("SELECT COUNT(*) from albums where params = :params")
     abstract override suspend fun count(params: DatmusicSearchParams): Int

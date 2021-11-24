@@ -18,10 +18,14 @@ internal object SampleData {
 
     fun audio() = Audio(
         id = "sample-audio-${random.nextInt()}",
+        primaryKey = "sample-audio-${random.nextInt()}",
+        searchIndex = random.nextInt(),
+        page = random.nextInt(),
+        params = random.nextInt().toString(),
         artist = "Artist ${random.nextInt()}",
         title = "Title ${random.nextInt()}",
         duration = random.nextInt(100, 300)
-    ).let { it.copy(primaryKey = it.id) }
+    )
 
     fun playlist() = Playlist(id = random.nextLong(), name = "Playlist ${random.nextInt()}")
 

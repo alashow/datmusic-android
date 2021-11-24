@@ -27,8 +27,8 @@ abstract class RoomRepo<ID, E : BaseEntity>(
         dao.entry(item.getIdentifier()).first()
     }
 
-    fun isEmpty(): Flow<Boolean> = dao.count().flowOn(dispatchers.io).map { it == 0 }
-    fun count(): Flow<Int> = dao.count().flowOn(dispatchers.io)
+    fun isEmpty(): Flow<Boolean> = dao.observeCount().flowOn(dispatchers.io).map { it == 0 }
+    fun count(): Flow<Int> = dao.observeCount().flowOn(dispatchers.io)
 
     fun has(id: ID): Flow<Boolean> = dao.has(id.toString()).map { it > 0 }
     suspend fun exists(id: ID): Boolean = dao.exists(id.toString()) > 0
