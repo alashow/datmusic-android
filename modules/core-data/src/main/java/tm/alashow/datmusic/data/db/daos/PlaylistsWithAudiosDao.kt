@@ -37,32 +37,27 @@ abstract class PlaylistsWithAudiosDao {
     @Query("DELETE FROM playlist_audios")
     abstract suspend fun deleteAll(): Int
 
-    @Update
-    @Transaction
-    abstract fun updatePlaylistAudio(audioOfPlaylist: PlaylistAudio)
+    @Query("SELECT * FROM playlist_audios")
+    abstract suspend fun getAll(): List<PlaylistAudio>
+
+    @Query("SELECT * FROM playlist_audios WHERE playlist_id = :id AND position = :position ")
+    abstract suspend fun getByPosition(id: PlaylistId, position: Int): PlaylistAudio
+
+    @Query("SELECT * FROM playlist_audios WHERE id = :id ")
+    abstract suspend fun getById(id: PlaylistAudioId): PlaylistAudio
+
+    @Query("SELECT * FROM playlist_audios WHERE id IN (:ids)")
+    abstract suspend fun getByIds(ids: PlaylistAudioIds): PlaylistAudios
+
+    @Query("SELECT distinct(audio_id) FROM playlist_audios ORDER BY position")
+    abstract suspend fun distinctAudios(): List<String>
+
+    @Query("SELECT MAX(position) FROM playlist_audios WHERE playlist_id = :id")
+    abstract suspend fun lastPlaylistAudioPosition(id: PlaylistId): Int?
 
     @Transaction
     @Query("SELECT * FROM playlist_audios WHERE playlist_id = :id ORDER BY position")
     abstract fun playlistItems(id: PlaylistId): Flow<List<PlaylistItem>>
-
-    @Query("SELECT * FROM playlist_audios WHERE playlist_id = :id AND position = :position ")
-    abstract fun getByPosition(id: PlaylistId, position: Int): Flow<PlaylistAudio>
-
-    @Query("SELECT * FROM playlist_audios WHERE id = :id ")
-    abstract fun getById(id: PlaylistAudioId): Flow<PlaylistAudio>
-
-    @Query("SELECT * FROM playlist_audios WHERE id IN (:ids)")
-    abstract fun getByIds(ids: PlaylistAudioIds): Flow<PlaylistAudios>
-
-    @Transaction
-    @Query("UPDATE playlist_audios SET position = :toPosition WHERE id = :id")
-    abstract fun updatePosition(id: Long, toPosition: Int)
-
-    @Query("SELECT distinct(audio_id) FROM playlist_audios ORDER BY position")
-    abstract fun distinctAudios(): Flow<List<String>>
-
-    @Query("SELECT MAX(position) FROM playlist_audios WHERE playlist_id = :id")
-    abstract fun lastPlaylistAudioIndex(id: PlaylistId): Flow<Int>
 
     @Transaction
     @Query("SELECT * FROM playlists")
@@ -70,4 +65,12 @@ abstract class PlaylistsWithAudiosDao {
 
     @Query("SELECT * FROM playlist_audios")
     abstract fun playlistAudios(): Flow<PlaylistAudios>
+
+    @Transaction
+    @Query("UPDATE playlist_audios SET position = :toPosition WHERE id = :id")
+    abstract fun updatePosition(id: Long, toPosition: Int)
+
+    @Update
+    @Transaction
+    abstract fun updatePlaylistAudio(audioOfPlaylist: PlaylistAudio)
 }

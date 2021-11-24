@@ -18,7 +18,7 @@ abstract class AudiosDao : PaginatedEntryDao<DatmusicSearchParams, Audio>() {
 
     @Transaction
     @Query("SELECT * FROM audios WHERE id IN (:ids) GROUP BY id")
-    abstract fun audiosById(ids: List<String>): Flow<List<Audio>>
+    abstract suspend fun audiosById(ids: List<String>): List<Audio>
 
     @Transaction
     @Query("DELETE FROM audios WHERE id NOT IN (:ids)")

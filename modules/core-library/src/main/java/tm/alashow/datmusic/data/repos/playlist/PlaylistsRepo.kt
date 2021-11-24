@@ -137,7 +137,7 @@ class PlaylistsRepo @Inject constructor(
                 RemoteLogger.log("Some audios are missing from database: $audioIds")
             }
 
-            val lastIndex = playlistAudiosDao.lastPlaylistAudioIndex(playlistId).firstOrNull() ?: -1
+            val lastIndex = playlistAudiosDao.lastPlaylistAudioPosition(playlistId) ?: -1
             val playlistWithAudios = audioIds
                 .filterNot { ignoredAudioIds.contains(it) }
                 .mapIndexed { index, id ->
@@ -158,8 +158,8 @@ class PlaylistsRepo @Inject constructor(
         withContext(dispatchers.io) {
             validatePlaylistId(playlistId)
 
-            val fromAudio = playlistAudiosDao.getByPosition(playlistId, from).first()
-            val toAudio = playlistAudiosDao.getByPosition(playlistId, to).first()
+            val fromAudio = playlistAudiosDao.getByPosition(playlistId, from)
+            val toAudio = playlistAudiosDao.getByPosition(playlistId, to)
 
             playlistAudiosDao.updatePosition(fromAudio.id, toPosition = to)
             playlistAudiosDao.updatePosition(toAudio.id, toPosition = from)
@@ -179,7 +179,7 @@ class PlaylistsRepo @Inject constructor(
 
     suspend fun removePlaylistItems(ids: PlaylistAudioIds): Int {
         if (ids.isEmpty()) return 0
-        val playlistIds = playlistAudiosDao.getByIds(ids).first().map { it.playlistId }
+        val playlistIds = playlistAudiosDao.getByIds(ids).map { it.playlistId }
         val result = playlistAudiosDao.deletePlaylistItems(ids)
         playlistIds.forEach { generatePlaylistArtwork(it) }
         return result
