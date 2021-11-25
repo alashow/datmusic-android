@@ -20,12 +20,12 @@ abstract class DownloadRequestsDao : BaseDao<DownloadRequest>() {
     abstract fun entriesByIdAndType(ids: List<String>, type: DownloadRequest.Type): Flow<List<DownloadRequest>>
 
     @Transaction
-    @Query("SELECT * FROM download_requests ORDER BY id")
-    abstract override fun entries(): Flow<List<DownloadRequest>>
-
-    @Transaction
     @Query("SELECT * FROM download_requests WHERE entity_type = :type ORDER BY id")
     abstract fun entriesByType(type: DownloadRequest.Type): Flow<List<DownloadRequest>>
+
+    @Transaction
+    @Query("SELECT * FROM download_requests ORDER BY id DESC")
+    abstract override fun entries(): Flow<List<DownloadRequest>>
 
     @Transaction
     @Query("SELECT * FROM download_requests ORDER BY id DESC LIMIT :count OFFSET :offset")

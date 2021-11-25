@@ -49,6 +49,7 @@ data class DownloadRequest(
 
         fun fromAudio(audio: Audio) = DownloadRequest(
             entityId = audio.id,
+            id = audio.id,
             entityType = Type.Audio,
             entity = JSON.encodeToString(Audio.serializer(), audio)
         )

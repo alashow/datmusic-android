@@ -39,7 +39,7 @@ class CreateDatmusicBackup @Inject constructor(
         clearUnusedEntities()
 
         val downloadRequestAudios = downloadRequestsDao.entriesByType(DownloadRequest.Type.Audio).first()
-        val downloadedAudioIds = downloadRequestAudios.map { it.entityId }
+        val downloadedAudioIds = downloadRequestAudios.map { it.id }
 
         createOrGetPlaylist.execute(
             CreateOrGetPlaylist.Params(

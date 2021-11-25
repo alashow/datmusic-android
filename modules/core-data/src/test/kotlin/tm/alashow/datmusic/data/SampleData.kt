@@ -8,6 +8,7 @@ import kotlin.random.Random
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
+import tm.alashow.datmusic.domain.entities.DownloadRequest
 import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.domain.entities.PlaylistAudio
 
@@ -59,4 +60,6 @@ internal object SampleData {
         page = random.nextInt(),
         name = "Artist ${random.nextInt()}"
     )
+
+    fun downloadRequest(audio: Audio = audio()) = DownloadRequest.fromAudio(audio)
 }

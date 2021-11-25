@@ -27,7 +27,7 @@ class ClearUnusedEntities @Inject constructor(
      */
     suspend operator fun invoke() {
         val downloadRequestAudios = downloadsRequestsDao.entriesByType(DownloadRequest.Type.Audio).first()
-        val downloadedAudioIds = downloadRequestAudios.map { it.entityId }
+        val downloadedAudioIds = downloadRequestAudios.map { it.id }
         val audioIdsInPlaylists = playlistWithAudios.distinctAudios().first()
 
         val audioIds = downloadedAudioIds + audioIdsInPlaylists
