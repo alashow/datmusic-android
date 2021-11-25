@@ -23,7 +23,7 @@ import tm.alashow.datmusic.domain.entities.PlaylistAudio
 import tm.alashow.domain.models.BaseTypeConverters
 
 @Database(
-    version = 11,
+    version = 12,
     entities = [
         Audio::class,
         Artist::class,
@@ -42,6 +42,7 @@ import tm.alashow.domain.models.BaseTypeConverters
         AutoMigration(from = 8, to = 9),
         AutoMigration(from = 9, to = 10, spec = AlbumDeleteAlbumIdColumnMigration::class),
         AutoMigration(from = 10, to = 11, spec = RenameAlbumOwnerIdToArtistIdColumnMigration::class),
+        AutoMigration(from = 11, to = 12, spec = DownloadRequestDeleteEntityIdColumnMigration::class),
     ]
 )
 @TypeConverters(BaseTypeConverters::class, AppTypeConverters::class)

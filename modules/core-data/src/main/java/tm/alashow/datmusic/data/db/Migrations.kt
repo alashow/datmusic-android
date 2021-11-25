@@ -39,3 +39,6 @@ internal class AlbumDeleteAlbumIdColumnMigration : AutoMigrationSpec
 
 @RenameColumn(tableName = "albums", fromColumnName = "owner_id", toColumnName = "artist_id")
 internal class RenameAlbumOwnerIdToArtistIdColumnMigration : AutoMigrationSpec
+
+@DeleteColumn(tableName = "download_requests", columnName = "entity_id")
+internal class DownloadRequestDeleteEntityIdColumnMigration : AutoMigrationSpec

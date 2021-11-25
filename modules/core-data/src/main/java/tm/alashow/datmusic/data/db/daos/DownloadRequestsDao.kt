@@ -16,7 +16,7 @@ import tm.alashow.datmusic.domain.entities.DownloadRequest
 abstract class DownloadRequestsDao : BaseDao<DownloadRequest>() {
 
     @Transaction
-    @Query("SELECT * FROM download_requests WHERE entity_id in (:ids) AND entity_type = :type")
+    @Query("SELECT * FROM download_requests WHERE id in (:ids) AND entity_type = :type")
     abstract fun entriesByIdAndType(ids: List<String>, type: DownloadRequest.Type): Flow<List<DownloadRequest>>
 
     @Transaction
