@@ -44,7 +44,7 @@ internal object SampleData {
         primaryKey = "sample-album-${random.nextInt()}",
         searchIndex = random.nextInt(),
         page = random.nextInt(),
-        albumId = 100,
+        artistId = 100,
         title = "Album ${random.nextInt()}",
         year = random.nextInt(1900, 2030),
         songCount = random.nextInt(1, 10),

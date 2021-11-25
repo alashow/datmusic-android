@@ -22,7 +22,7 @@ val MIGRATION_3_4 = object : Migration(3, 4) {
     fromColumnName = "_id",
     toColumnName = "id"
 )
-class PlaylistRenameIdMigration : AutoMigrationSpec
+internal class PlaylistRenameIdMigration : AutoMigrationSpec
 
 @DeleteColumn.Entries(
     DeleteColumn(tableName = "albums", columnName = "subtitle"),
@@ -32,4 +32,10 @@ class PlaylistRenameIdMigration : AutoMigrationSpec
     DeleteColumn(tableName = "albums", columnName = "update_time"),
     DeleteColumn(tableName = "albums", columnName = "genres"),
 )
-class AlbumDeleteOldColumnsMigration : AutoMigrationSpec
+internal class AlbumDeleteOldColumnsMigration : AutoMigrationSpec
+
+@DeleteColumn(tableName = "albums", columnName = "albumId")
+internal class AlbumDeleteAlbumIdColumnMigration : AutoMigrationSpec
+
+@RenameColumn(tableName = "albums", fromColumnName = "owner_id", toColumnName = "artist_id")
+internal class RenameAlbumOwnerIdToArtistIdColumnMigration : AutoMigrationSpec
