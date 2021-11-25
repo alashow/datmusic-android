@@ -15,7 +15,6 @@ import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.AudioId
 import tm.alashow.datmusic.domain.entities.AudioIds
 import tm.alashow.datmusic.domain.entities.Audios
-import tm.alashow.datmusic.domain.entities.DownloadRequest
 
 enum class AudioSaveType {
     Download, Playlist;
@@ -41,8 +40,7 @@ class AudiosRepo @Inject constructor(
     }
 
     private suspend fun findFromAudiosById(ids: AudioIds) = audiosById(ids)
-    private suspend fun findAudioDownloadsById(ids: AudioIds) =
-        downloadsRequestsDao.entriesByIdAndType(ids, DownloadRequest.Type.Audio).firstOrNull().orEmpty()
+    private suspend fun findAudioDownloadsById(ids: AudioIds) = downloadsRequestsDao.entriesById(ids).firstOrNull().orEmpty()
 
     suspend fun find(audioId: String): Audio? = find(listOf(audioId)).firstOrNull()
 

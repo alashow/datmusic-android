@@ -30,7 +30,7 @@ class DownloadRequestsDaoTest : BaseTest() {
     lateinit var dao: DownloadRequestsDao
 
     private val testItems = (1..5).map { SampleData.downloadRequest() }
-    private val entriesComparator = compareByDescending(DownloadRequest::id)
+    private val entriesComparator = compareByDescending(DownloadRequest::createdAt)
 
     @Before
     fun setUp() {
@@ -41,6 +41,15 @@ class DownloadRequestsDaoTest : BaseTest() {
     fun tearDown() {
         testScope.cleanupTestCoroutines()
         database.close()
+    }
+
+    @Test
+    fun getByType() = testScope.runBlockingTest {
+        val audioDownloadRequests = testItems.sortedWith(entriesComparator)
+        dao.insertAll(audioDownloadRequests)
+
+        val itemsByType = dao.getByType(audioDownloadRequests.first().entityType)
+        assertThat(itemsByType).isEqualTo(audioDownloadRequests)
     }
 
     @Test

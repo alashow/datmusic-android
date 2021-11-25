@@ -16,23 +16,19 @@ import tm.alashow.datmusic.domain.entities.DownloadRequest
 abstract class DownloadRequestsDao : BaseDao<DownloadRequest>() {
 
     @Transaction
-    @Query("SELECT * FROM download_requests WHERE id in (:ids) AND entity_type = :type")
-    abstract fun entriesByIdAndType(ids: List<String>, type: DownloadRequest.Type): Flow<List<DownloadRequest>>
+    @Query("SELECT * FROM download_requests WHERE entity_type = :type ORDER BY created_at DESC")
+    abstract suspend fun getByType(type: DownloadRequest.Type): List<DownloadRequest>
 
     @Transaction
-    @Query("SELECT * FROM download_requests WHERE entity_type = :type ORDER BY id")
-    abstract fun entriesByType(type: DownloadRequest.Type): Flow<List<DownloadRequest>>
-
-    @Transaction
-    @Query("SELECT * FROM download_requests ORDER BY id DESC")
+    @Query("SELECT * FROM download_requests ORDER BY created_at DESC")
     abstract override fun entries(): Flow<List<DownloadRequest>>
 
     @Transaction
-    @Query("SELECT * FROM download_requests ORDER BY id DESC LIMIT :count OFFSET :offset")
+    @Query("SELECT * FROM download_requests ORDER BY created_at DESC LIMIT :count OFFSET :offset")
     abstract override fun entries(count: Int, offset: Int): Flow<List<DownloadRequest>>
 
     @Transaction
-    @Query("SELECT * FROM download_requests ORDER BY id DESC")
+    @Query("SELECT * FROM download_requests ORDER BY created_at DESC")
     abstract override fun entriesPagingSource(): PagingSource<Int, DownloadRequest>
 
     @Transaction

@@ -46,6 +46,20 @@ class PlaylistsDaoTest : BaseTest() {
     }
 
     @Test
+    fun getByName() = testScope.runBlockingTest {
+        val item = testItems.first()
+        dao.insert(item)
+
+        assertThat(dao.getByName(item.name)).isEqualTo(item)
+    }
+
+    @Test
+    fun getByName_nonExisting() = testScope.runBlockingTest {
+        val item = testItems.first()
+        assertThat(dao.getByName(item.name)).isNull()
+    }
+
+    @Test
     fun entries() = testScope.runBlockingTest {
         val items = testItems.sortedWith(entriesComparator)
         dao.insertAll(items)

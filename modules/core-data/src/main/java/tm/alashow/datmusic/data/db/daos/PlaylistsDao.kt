@@ -19,7 +19,7 @@ abstract class PlaylistsDao : EntityDao<Params, Playlist>() {
 
     @Transaction
     @Query("SELECT * FROM playlists WHERE name = :name")
-    abstract fun playlistByName(name: String): Flow<Playlist>
+    abstract suspend fun getByName(name: String): Playlist?
 
     @Transaction
     @Query("SELECT * FROM playlists ORDER BY id DESC")

@@ -5,7 +5,6 @@
 package tm.alashow.datmusic.data.backup
 
 import javax.inject.Inject
-import kotlinx.coroutines.flow.first
 import timber.log.Timber
 import tm.alashow.datmusic.data.db.daos.AlbumsDao
 import tm.alashow.datmusic.data.db.daos.ArtistsDao
@@ -26,7 +25,7 @@ class ClearUnusedEntities @Inject constructor(
      * To be modified to not delete downloaded audios artists/albums in the future.
      */
     suspend operator fun invoke() {
-        val downloadRequestAudios = downloadsRequestsDao.entriesByType(DownloadRequest.Type.Audio).first()
+        val downloadRequestAudios = downloadsRequestsDao.getByType(DownloadRequest.Type.Audio)
         val downloadedAudioIds = downloadRequestAudios.map { it.id }
         val audioIdsInPlaylists = playlistWithAudios.distinctAudios().first()
 

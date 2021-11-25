@@ -11,7 +11,6 @@ import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -50,7 +49,7 @@ class PlaylistsRepo @Inject constructor(
     private val audiosRepo: AudiosRepo,
 ) : RoomRepo<PlaylistId, Playlist>(dao, dispatchers), CoroutineScope by ProcessLifecycleOwner.get().lifecycleScope {
 
-    fun playlistByName(name: String) = dao.playlistByName(name)
+    suspend fun getByName(name: String) = dao.getByName(name)
     fun playlist(id: PlaylistId) = dao.entry(id)
 
     fun playlistItems(id: PlaylistId) = playlistAudiosDao.playlistItems(id)
@@ -93,7 +92,7 @@ class PlaylistsRepo @Inject constructor(
     }
 
     suspend fun getOrCreatePlaylist(name: String, audioIds: AudioIds = emptyList(), ignoreExistingAudios: Boolean = true): PlaylistId {
-        val existingPlaylist = playlistByName(name).firstOrNull()
+        val existingPlaylist = getByName(name)
         val playlistId = existingPlaylist?.id ?: createPlaylist(Playlist(name = name))
         if (audioIds.isNotEmpty()) {
             withContext(dispatchers.io) {
