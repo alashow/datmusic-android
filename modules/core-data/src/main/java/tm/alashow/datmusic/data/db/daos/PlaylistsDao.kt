@@ -26,6 +26,10 @@ abstract class PlaylistsDao : EntityDao<Params, Playlist>() {
     abstract override fun entries(): Flow<List<Playlist>>
 
     @Transaction
+    @Query("SELECT * FROM playlists WHERE params = :params  ORDER BY id DESC")
+    abstract override fun entries(params: Params): Flow<List<Playlist>>
+
+    @Transaction
     @Query("SELECT * FROM playlists ORDER BY id DESC LIMIT :count OFFSET :offset")
     abstract override fun entries(count: Int, offset: Int): Flow<List<Playlist>>
 

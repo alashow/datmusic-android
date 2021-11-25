@@ -29,7 +29,7 @@ abstract class AudiosDao : PaginatedEntryDao<DatmusicSearchParams, Audio>() {
     abstract override fun entries(): Flow<List<Audio>>
 
     @Query("SELECT * FROM audios WHERE params = :params ORDER BY page ASC, search_index ASC")
-    abstract fun entries(params: DatmusicSearchParams): Flow<List<Audio>>
+    abstract override fun entries(params: DatmusicSearchParams): Flow<List<Audio>>
 
     @Query("SELECT * FROM audios WHERE params = :params and page = :page ORDER BY page ASC, search_index ASC")
     abstract override fun entries(params: DatmusicSearchParams, page: Int): Flow<List<Audio>>

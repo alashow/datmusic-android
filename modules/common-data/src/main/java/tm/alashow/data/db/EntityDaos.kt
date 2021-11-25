@@ -67,6 +67,7 @@ abstract class BaseDao<E : BaseEntity> {
 
 abstract class EntityDao<Params : Any, E : BaseEntity> : BaseDao<E>() {
 
+    abstract fun entries(params: Params): Flow<List<E>>
     abstract fun entriesPagingSource(params: Params): PagingSource<Int, E>
     abstract suspend fun count(params: Params): Int
     abstract suspend fun delete(params: Params): Int
