@@ -19,15 +19,19 @@ abstract class PlaylistsDao : EntityDao<Params, Playlist>() {
 
     @Transaction
     @Query("SELECT * FROM playlists WHERE name = :name")
-    abstract fun playlistByName(name: String): Flow<Playlist>
+    abstract suspend fun getByName(name: String): Playlist?
 
     @Transaction
     @Query("SELECT * FROM playlists ORDER BY id DESC")
     abstract override fun entries(): Flow<List<Playlist>>
 
     @Transaction
+    @Query("SELECT * FROM playlists WHERE params = :params ORDER BY id DESC")
+    abstract override fun entries(params: Params): Flow<List<Playlist>>
+
+    @Transaction
     @Query("SELECT * FROM playlists ORDER BY id DESC LIMIT :count OFFSET :offset")
-    abstract override fun entriesObservable(count: Int, offset: Int): Flow<List<Playlist>>
+    abstract override fun entries(count: Int, offset: Int): Flow<List<Playlist>>
 
     @Transaction
     @Query("SELECT * FROM playlists ORDER BY id DESC")
@@ -62,8 +66,11 @@ abstract class PlaylistsDao : EntityDao<Params, Playlist>() {
     @Query("DELETE FROM playlists")
     abstract override suspend fun deleteAll(): Int
 
+    @Query("SELECT COUNT(*) from playlists")
+    abstract override suspend fun count(): Int
+
     @Query("SELECT COUNT(*) from playlists ")
-    abstract override fun count(): Flow<Int>
+    abstract override fun observeCount(): Flow<Int>
 
     @Query("SELECT COUNT(*) from playlists where params = :params")
     abstract override suspend fun count(params: Params): Int

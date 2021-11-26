@@ -6,6 +6,6 @@ package tm.alashow.data.db
 
 import androidx.room.RoomDatabase
 
-class DatabaseTxRunner(private val db: RoomDatabase) {
-    fun runInTransaction(run: () -> Unit) = db.runInTransaction(run)
+open class DatabaseTxRunner(private val db: RoomDatabase) {
+    suspend fun invoke(run: () -> Unit) = db.runInTransaction(run)
 }

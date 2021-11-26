@@ -42,9 +42,9 @@ class DownloadPlaylist @Inject constructor(
                 enqueuedCount++
         }
 
-        val events = downloader.downloaderEventsAll
+        val events = downloader.getDownloaderEvents()
         if (enqueuedCount == 0 && events.isNotEmpty())
-            throw DownloaderEventsError(downloader.downloaderEventsAll)
+            throw DownloaderEventsError(events)
 
         return@withContext enqueuedCount
     }

@@ -13,8 +13,9 @@ import tm.alashow.domain.models.JSON
 
 @Entity(tableName = "download_requests")
 data class DownloadRequest(
-    @ColumnInfo(name = "entity_id")
-    val entityId: String = "",
+    @PrimaryKey
+    @ColumnInfo(name = "id")
+    val id: String = "",
 
     @ColumnInfo(name = "entity_type")
     val entityType: Type = Type.Audio,
@@ -27,10 +28,6 @@ data class DownloadRequest(
 
     @ColumnInfo(name = "created_at")
     val createdAt: LocalDateTime = LocalDateTime.now(),
-
-    @PrimaryKey
-    @ColumnInfo(name = "id")
-    val id: String = entityId,
 
     @ColumnInfo(name = "params")
     override var params: String = "",
@@ -48,7 +45,7 @@ data class DownloadRequest(
         const val REQUEST_NOT_SET = 0
 
         fun fromAudio(audio: Audio) = DownloadRequest(
-            entityId = audio.id,
+            id = audio.id,
             entityType = Type.Audio,
             entity = JSON.encodeToString(Audio.serializer(), audio)
         )

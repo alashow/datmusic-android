@@ -17,7 +17,7 @@ import kotlinx.serialization.Transient
 import tm.alashow.datmusic.domain.UNTITLED_ALBUM
 import tm.alashow.domain.models.BasePaginatedEntity
 
-typealias AlbumId = Long
+typealias AlbumId = String
 
 const val UNKNOWN_YEAR = 9999
 const val YEAR_LOADING = 9998
@@ -27,19 +27,16 @@ const val YEAR_LOADING = 9998
 @Entity(tableName = "albums")
 data class Album(
     @SerialName("id")
-    val albumId: AlbumId = 0L,
-
-    @Transient
     @ColumnInfo(name = "id")
-    val id: String = albumId.toString(),
+    val id: AlbumId = "",
 
     @SerialName("access_key")
     @ColumnInfo(name = "access_key")
     val accessKey: String = "",
 
-    @SerialName("owner_id")
-    @ColumnInfo(name = "owner_id")
-    val ownerId: Long = 0L,
+    @SerialName("artist_id")
+    @ColumnInfo(name = "artist_id")
+    val artistId: Long = 0L,
 
     @SerialName("title")
     @ColumnInfo(name = "title")

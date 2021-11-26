@@ -157,7 +157,7 @@ sealed class LeafScreen(
         route, root,
         arguments = listOf(
             navArgument(ALBUM_ID_KEY) {
-                type = NavType.LongType
+                type = NavType.StringType
             },
             navArgument(ALBUM_OWNER_ID_KEY) {
                 type = NavType.LongType
@@ -169,7 +169,7 @@ sealed class LeafScreen(
     ) {
         companion object {
             fun buildRoute(album: Album, root: RootScreen = RootScreen.Search) =
-                "${root.route}/albums/${album.id}/${album.ownerId}/${album.accessKey}"
+                "${root.route}/albums/${album.id}/${album.artistId}/${album.accessKey}"
 
             fun buildRoute(albumId: AlbumId, root: RootScreen = RootScreen.Search) = "${root.route}/albums/$albumId/-1/nokey"
             fun buildUri(albumId: Album) = "${Config.BASE_URL}albums/$albumId".toUri()

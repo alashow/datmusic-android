@@ -18,6 +18,7 @@ object Deps {
         const val coroutinesVersion = "1.5.2"
         const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
         const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+        const val coroutineTesting = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
     }
 
     object Android {
@@ -43,6 +44,8 @@ object Deps {
 
         const val palette = "androidx.palette:palette-ktx:1.0.0"
         const val media ="androidx.media:media:1.5.0-alpha01"
+
+        const val archCoreTesting = "androidx.arch.core:core-testing:2.1.0"
 
         object Compose {
             const val version = "1.1.0-beta03"
@@ -94,12 +97,13 @@ object Deps {
         }
 
         object Room {
-            private const val roomVersion = "2.4.0-beta02"
+            private const val versiion = "2.4.0-beta02"
 
-            const val compiler = "androidx.room:room-compiler:$roomVersion"
-            const val runtime = "androidx.room:room-runtime:$roomVersion"
-            const val ktx = "androidx.room:room-ktx:$roomVersion"
-            const val paging = "androidx.room:room-paging:$roomVersion"
+            const val compiler = "androidx.room:room-compiler:$versiion"
+            const val runtime = "androidx.room:room-runtime:$versiion"
+            const val ktx = "androidx.room:room-ktx:$versiion"
+            const val paging = "androidx.room:room-paging:$versiion"
+            const val testing = "androidx.room:room-testing:$versiion"
         }
 
         object Paging {
@@ -108,6 +112,15 @@ object Deps {
             const val common = "androidx.paging:paging-common-ktx:$version"
             const val runtime = "androidx.paging:paging-runtime-ktx:$version"
         }
+
+        object Test {
+            private const val version = "1.4.0"
+
+            const val core = "androidx.test:core:$version"
+            const val rules = "androidx.test:rules:$version"
+            const val runner = "androidx.test:runner:$version"
+            const val junit = "androidx.test.ext:junit-ktx:1.1.3"
+        }
     }
 
     object Utils {
@@ -115,7 +128,6 @@ object Deps {
         const val threeTenAbp = "com.jakewharton.threetenabp:threetenabp:1.3.1"
         const val proguardSnippets = "com.github.yongjhih.android-proguards:android-proguards-all:-SNAPSHOT"
 
-        const val junit = "junit:junit:4.13.2"
         const val threeTen = "org.threeten:threetenbp:1.5.2"
 
         const val coilVersion = "2.0.0-alpha04"
@@ -160,6 +172,7 @@ object Deps {
         const val hilt = "com.google.dagger:hilt-android:$version"
         const val hiltCompiler = "com.google.dagger:hilt-compiler:$version"
         const val hiltGradle = "com.google.dagger:hilt-android-gradle-plugin:$version"
+        const val hiltTesting = "com.google.dagger:hilt-android-testing:$version"
     }
 
     object LeakCanary {
@@ -176,5 +189,13 @@ object Deps {
         const val analytics = "com.google.firebase:firebase-analytics-ktx"
         const val crashlytics = "com.google.firebase:firebase-crashlytics-ktx"
         const val crashlyticsGradle = "com.google.firebase:firebase-crashlytics-gradle:2.8.0"
+    }
+
+    object Testing {
+        const val junit = "junit:junit:4.13.2"
+        const val truth = "com.google.truth:truth:1.1.3"
+        const val robolectric = "org.robolectric:robolectric:4.7.2"
+        const val mockK = "io.mockk:mockk:1.12.0"
+        const val turbine = "app.cash.turbine:turbine:0.7.0"
     }
 }
