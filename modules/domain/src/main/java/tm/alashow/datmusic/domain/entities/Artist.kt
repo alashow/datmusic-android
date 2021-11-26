@@ -12,7 +12,6 @@ import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 import tm.alashow.Config
 import tm.alashow.datmusic.domain.CoverImageSize
 import tm.alashow.datmusic.domain.UNKNOWN_ARTIST
@@ -48,22 +47,22 @@ data class Artist(
     @ColumnInfo(name = "albums")
     val albums: List<Album> = emptyList(),
 
-    @Transient
+    @SerialName("params")
     @ColumnInfo(name = "params")
     override var params: String = defaultParams,
 
-    @Transient
+    @SerialName("page")
     @ColumnInfo(name = "page")
     override var page: Int = defaultPage,
 
-    @Transient
+    @SerialName("details_fetched")
     @ColumnInfo(name = "details_fetched")
     val detailsFetched: Boolean = false,
 
     @PrimaryKey
     val primaryKey: String = "",
 
-    @Transient
+    @SerialName("search_index")
     @ColumnInfo(name = "search_index")
     val searchIndex: Int = 0,
 ) : BasePaginatedEntity(), Parcelable {

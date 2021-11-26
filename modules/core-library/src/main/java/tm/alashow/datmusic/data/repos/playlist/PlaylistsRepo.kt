@@ -11,7 +11,6 @@ import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -50,8 +49,8 @@ class PlaylistsRepo @Inject constructor(
     private val audiosRepo: AudiosRepo,
 ) : RoomRepo<PlaylistId, Playlist>(dao, dispatchers), CoroutineScope by ProcessLifecycleOwner.get().lifecycleScope {
 
-    fun playlistByName(name: String) = dao.playlistByName(name)
-    fun playlist(id: PlaylistId) = dao.entry(id)
+    suspend fun getByName(name: String) = dao.getByName(name)
+    fun playlist(id: PlaylistId) = entry(id)
 
     fun playlistItems(id: PlaylistId) = playlistAudiosDao.playlistItems(id)
     fun playlistWithAudios(id: PlaylistId) = combine(playlist(id), playlistItems(id).map { it.asAudios() }, ::PlaylistWithAudios)
@@ -93,7 +92,7 @@ class PlaylistsRepo @Inject constructor(
     }
 
     suspend fun getOrCreatePlaylist(name: String, audioIds: AudioIds = emptyList(), ignoreExistingAudios: Boolean = true): PlaylistId {
-        val existingPlaylist = playlistByName(name).firstOrNull()
+        val existingPlaylist = getByName(name)
         val playlistId = existingPlaylist?.id ?: createPlaylist(Playlist(name = name))
         if (audioIds.isNotEmpty()) {
             withContext(dispatchers.io) {
@@ -137,7 +136,7 @@ class PlaylistsRepo @Inject constructor(
                 RemoteLogger.log("Some audios are missing from database: $audioIds")
             }
 
-            val lastIndex = playlistAudiosDao.lastPlaylistAudioIndex(playlistId).firstOrNull() ?: -1
+            val lastIndex = playlistAudiosDao.lastPlaylistAudioPosition(playlistId) ?: -1
             val playlistWithAudios = audioIds
                 .filterNot { ignoredAudioIds.contains(it) }
                 .mapIndexed { index, id ->
@@ -158,8 +157,8 @@ class PlaylistsRepo @Inject constructor(
         withContext(dispatchers.io) {
             validatePlaylistId(playlistId)
 
-            val fromAudio = playlistAudiosDao.getByPosition(playlistId, from).first()
-            val toAudio = playlistAudiosDao.getByPosition(playlistId, to).first()
+            val fromAudio = playlistAudiosDao.getByPosition(playlistId, from)
+            val toAudio = playlistAudiosDao.getByPosition(playlistId, to)
 
             playlistAudiosDao.updatePosition(fromAudio.id, toPosition = to)
             playlistAudiosDao.updatePosition(toAudio.id, toPosition = from)
@@ -179,7 +178,7 @@ class PlaylistsRepo @Inject constructor(
 
     suspend fun removePlaylistItems(ids: PlaylistAudioIds): Int {
         if (ids.isEmpty()) return 0
-        val playlistIds = playlistAudiosDao.getByIds(ids).first().map { it.playlistId }
+        val playlistIds = playlistAudiosDao.getByIds(ids).map { it.playlistId }
         val result = playlistAudiosDao.deletePlaylistItems(ids)
         playlistIds.forEach { generatePlaylistArtwork(it) }
         return result

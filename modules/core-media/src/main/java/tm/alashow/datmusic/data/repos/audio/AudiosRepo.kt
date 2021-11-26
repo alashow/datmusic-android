@@ -5,9 +5,7 @@
 package tm.alashow.datmusic.data.repos.audio
 
 import javax.inject.Inject
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flowOn
 import timber.log.Timber
 import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.data.db.RoomRepo
@@ -17,7 +15,6 @@ import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.AudioId
 import tm.alashow.datmusic.domain.entities.AudioIds
 import tm.alashow.datmusic.domain.entities.Audios
-import tm.alashow.datmusic.domain.entities.DownloadRequest
 
 enum class AudioSaveType {
     Download, Playlist;
@@ -31,9 +28,9 @@ class AudiosRepo @Inject constructor(
     private val downloadsRequestsDao: DownloadRequestsDao,
 ) : RoomRepo<AudioId, Audio>(dao, dispatchers) {
 
-    fun audiosById(ids: AudioIds) = dao.audiosById(ids).flowOn(dispatchers.io)
+    suspend fun audiosById(ids: AudioIds) = dao.audiosById(ids)
 
-    suspend fun saveAudiosById(type: AudioSaveType, audioIds: AudioIds) = saveAudios(type, audiosById(audioIds).first())
+    suspend fun saveAudiosById(type: AudioSaveType, audioIds: AudioIds) = saveAudios(type, audiosById(audioIds))
 
     suspend fun saveAudios(type: AudioSaveType, audios: Audios) = saveAudios(type, *audios.toTypedArray())
 
@@ -42,9 +39,8 @@ class AudiosRepo @Inject constructor(
         return insertAll(mapped).size
     }
 
-    private suspend fun findFromAudiosById(ids: AudioIds) = audiosById(ids).firstOrNull().orEmpty()
-    private suspend fun findAudioDownloadsById(ids: AudioIds) =
-        downloadsRequestsDao.entriesByIdAndType(ids, DownloadRequest.Type.Audio).firstOrNull().orEmpty()
+    private suspend fun findFromAudiosById(ids: AudioIds) = audiosById(ids)
+    private suspend fun findAudioDownloadsById(ids: AudioIds) = downloadsRequestsDao.entriesById(ids).firstOrNull().orEmpty()
 
     suspend fun find(audioId: String): Audio? = find(listOf(audioId)).firstOrNull()
 

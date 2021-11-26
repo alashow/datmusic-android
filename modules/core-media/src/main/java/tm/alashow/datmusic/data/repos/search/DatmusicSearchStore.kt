@@ -60,7 +60,7 @@ object DatmusicSearchStoreModule {
                 .fetcherDefaults(lastRequests, params)
         },
         sourceOfTruth = SourceOfTruth.of(
-            reader = { params -> dao.entriesObservable(params, params.page).sourceReaderFilter(lastRequests, params) },
+            reader = { params -> dao.entries(params, params.page).sourceReaderFilter(lastRequests, params) },
             writer = { params, response ->
                 dao.withTransaction {
                     val entries = response.mapIndexed { index, it ->
@@ -88,7 +88,7 @@ object DatmusicSearchStoreModule {
     ): DatmusicSearchStore<Artist> = StoreBuilder.from(
         fetcher = Fetcher.of { params: DatmusicSearchParams -> search(params).map { it.data.artists }.fetcherDefaults(lastRequests, params) },
         sourceOfTruth = SourceOfTruth.of(
-            reader = { params -> dao.entriesObservable(params, params.page).sourceReaderFilter(lastRequests, params) },
+            reader = { params -> dao.entries(params, params.page).sourceReaderFilter(lastRequests, params) },
             writer = { params, response ->
                 dao.withTransaction {
                     val entries =
@@ -117,7 +117,7 @@ object DatmusicSearchStoreModule {
     ): DatmusicSearchStore<Album> = StoreBuilder.from(
         fetcher = Fetcher.of { params: DatmusicSearchParams -> search(params).map { it.data.albums }.fetcherDefaults(lastRequests, params) },
         sourceOfTruth = SourceOfTruth.of(
-            reader = { params -> dao.entriesObservable(params, params.page).sourceReaderFilter(lastRequests, params) },
+            reader = { params -> dao.entries(params, params.page).sourceReaderFilter(lastRequests, params) },
             writer = { params, response ->
                 dao.withTransaction {
                     val entries =

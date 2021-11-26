@@ -20,6 +20,8 @@ android {
 	defaultConfig {
 		minSdkVersion App.minSdkVersion
 
+		testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
 		javaCompileOptions {
 			annotationProcessorOptions {
 				arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
@@ -35,6 +37,12 @@ android {
 		sourceCompatibility JavaVersion.VERSION_1_8
 		targetCompatibility JavaVersion.VERSION_1_8
 	}
+
+	testOptions  {
+		unitTests {
+			includeAndroidResources = true
+		}
+	}
 }
 
 repositories {
@@ -48,7 +56,25 @@ dependencies {
 	kapt Deps.Dagger.compiler
 	kapt Deps.Dagger.hiltCompiler
 
-
 	kapt Deps.Android.Room.compiler
 
+	testImplementation Deps.Utils.threeTen
+
+	testImplementation Deps.Android.archCoreTesting
+	testImplementation Deps.Android.Test.core
+	testImplementation Deps.Android.Test.rules
+	testImplementation Deps.Android.Test.runner
+	testImplementation Deps.Android.Test.junit
+	testImplementation Deps.Android.Room.testing
+	testImplementation Deps.Kotlin.coroutineTesting
+	testImplementation Deps.Dagger.hiltTesting
+
+	testImplementation Deps.Testing.junit
+	testImplementation Deps.Testing.mockK
+	testImplementation Deps.Testing.truth
+	testImplementation Deps.Testing.turbine
+	testImplementation Deps.Testing.robolectric
+
+	kaptTest Deps.Dagger.hiltCompiler
+	kaptTest Deps.Android.Room.compiler
 }

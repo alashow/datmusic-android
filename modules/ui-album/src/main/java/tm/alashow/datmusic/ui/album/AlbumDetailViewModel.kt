@@ -36,7 +36,7 @@ class AlbumDetailViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val albumParams = DatmusicAlbumParams(
-        requireNotNull(handle.get<Long>(ALBUM_ID_KEY)),
+        requireNotNull(handle.get<String>(ALBUM_ID_KEY)),
         requireNotNull(handle.get<Long>(ALBUM_OWNER_ID_KEY)),
         requireNotNull(handle.get<String>(ALBUM_ACCESS_KEY))
     )

@@ -16,23 +16,19 @@ import tm.alashow.datmusic.domain.entities.DownloadRequest
 abstract class DownloadRequestsDao : BaseDao<DownloadRequest>() {
 
     @Transaction
-    @Query("SELECT * FROM download_requests WHERE entity_id in (:ids) AND entity_type = :type")
-    abstract fun entriesByIdAndType(ids: List<String>, type: DownloadRequest.Type): Flow<List<DownloadRequest>>
+    @Query("SELECT * FROM download_requests WHERE entity_type = :type ORDER BY created_at DESC")
+    abstract suspend fun getByType(type: DownloadRequest.Type): List<DownloadRequest>
 
     @Transaction
-    @Query("SELECT * FROM download_requests ORDER BY id")
+    @Query("SELECT * FROM download_requests ORDER BY created_at DESC")
     abstract override fun entries(): Flow<List<DownloadRequest>>
 
     @Transaction
-    @Query("SELECT * FROM download_requests WHERE entity_type = :type ORDER BY id")
-    abstract fun entriesByType(type: DownloadRequest.Type): Flow<List<DownloadRequest>>
+    @Query("SELECT * FROM download_requests ORDER BY created_at DESC LIMIT :count OFFSET :offset")
+    abstract override fun entries(count: Int, offset: Int): Flow<List<DownloadRequest>>
 
     @Transaction
-    @Query("SELECT * FROM download_requests ORDER BY id DESC LIMIT :count OFFSET :offset")
-    abstract override fun entriesObservable(count: Int, offset: Int): Flow<List<DownloadRequest>>
-
-    @Transaction
-    @Query("SELECT * FROM download_requests ORDER BY id DESC")
+    @Query("SELECT * FROM download_requests ORDER BY created_at DESC")
     abstract override fun entriesPagingSource(): PagingSource<Int, DownloadRequest>
 
     @Transaction
@@ -54,7 +50,10 @@ abstract class DownloadRequestsDao : BaseDao<DownloadRequest>() {
     abstract override suspend fun deleteAll(): Int
 
     @Query("SELECT COUNT(*) from download_requests")
-    abstract override fun count(): Flow<Int>
+    abstract override suspend fun count(): Int
+
+    @Query("SELECT COUNT(*) from download_requests")
+    abstract override fun observeCount(): Flow<Int>
 
     @Query("SELECT COUNT(*) from download_requests where id = :id")
     abstract override fun has(id: String): Flow<Int>
