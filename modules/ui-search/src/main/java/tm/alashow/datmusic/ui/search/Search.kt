@@ -258,7 +258,7 @@ fun SearchTextField(
     modifier: Modifier = Modifier,
     onSearch: () -> Unit = {},
     hint: String,
-    maxLength: Int = 50,
+    maxLength: Int = 200,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(
         imeAction = ImeAction.Search,
         keyboardType = KeyboardType.Text,
