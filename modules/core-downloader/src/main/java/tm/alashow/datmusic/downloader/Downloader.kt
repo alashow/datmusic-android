@@ -75,8 +75,8 @@ class Downloader @Inject constructor(
     val downloaderEvents = downloaderEventsChannel.receiveAsFlow()
 
     private val downloaderEventsHistory = mutableListOf<DownloaderEvent>()
-    val downloaderEventsAll get() = downloaderEventsHistory.toImmutableList()
     fun clearDownloaderEvents() = downloaderEventsHistory.clear()
+    fun getDownloaderEvents() = downloaderEventsHistory.toImmutableList()
 
     private fun downloaderEvent(event: DownloaderEvent) {
         downloaderEventsChannel.trySend(event)

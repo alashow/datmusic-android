@@ -50,7 +50,7 @@ class PlaylistsRepo @Inject constructor(
 ) : RoomRepo<PlaylistId, Playlist>(dao, dispatchers), CoroutineScope by ProcessLifecycleOwner.get().lifecycleScope {
 
     suspend fun getByName(name: String) = dao.getByName(name)
-    fun playlist(id: PlaylistId) = dao.entry(id)
+    fun playlist(id: PlaylistId) = entry(id)
 
     fun playlistItems(id: PlaylistId) = playlistAudiosDao.playlistItems(id)
     fun playlistWithAudios(id: PlaylistId) = combine(playlist(id), playlistItems(id).map { it.asAudios() }, ::PlaylistWithAudios)

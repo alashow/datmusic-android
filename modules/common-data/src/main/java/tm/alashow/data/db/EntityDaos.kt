@@ -93,6 +93,7 @@ abstract class PaginatedEntryDao<Params : Any, E : PaginatedEntity> : EntityDao<
     abstract override suspend fun insertAll(entities: List<E>): List<Long>
 
     abstract suspend fun delete(params: Params, page: Int): Int
+
     @Transaction
     open suspend fun update(id: String, entity: E) {
         delete(id)
