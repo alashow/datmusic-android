@@ -9,11 +9,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import tm.alashow.base.ui.SnackbarAction
 import tm.alashow.base.ui.SnackbarManager
 import tm.alashow.base.ui.SnackbarMessage
+import tm.alashow.base.util.toUiMessage
 import tm.alashow.datmusic.data.DatmusicSearchParams
 import tm.alashow.datmusic.data.interactors.playlist.CreatePlaylist
 import tm.alashow.datmusic.domain.entities.Playlist
@@ -44,13 +47,15 @@ class PlaybackSheetViewModel @Inject constructor(
     fun saveQueueAsPlaylist() = viewModelScope.launch {
         val queue = playbackConnection.playbackQueue.first()
 
-        val params = CreatePlaylist.Params(name = queue.title.asQueueTitle().localizeValue(), audios = queue)
-        val playlist = createPlaylist.execute(params)
-
-        val savedAsPlaylist = SavedAsPlaylistMessage(playlist)
-        snackbarManager.addMessage(savedAsPlaylist)
-        if (snackbarManager.observeMessageAction(savedAsPlaylist) != null)
-            navigator.navigate(LeafScreen.PlaylistDetail.buildRoute(playlist.id))
+        val params = CreatePlaylist.Params(name = queue.title.asQueueTitle().localizeValue(), audios = queue, trimIfTooLong = true)
+        createPlaylist(params)
+            .catch { snackbarManager.addMessage(it.toUiMessage()) }
+            .collect { playlist ->
+                val savedAsPlaylist = SavedAsPlaylistMessage(playlist)
+                snackbarManager.addMessage(savedAsPlaylist)
+                if (snackbarManager.observeMessageAction(savedAsPlaylist) != null)
+                    navigator.navigate(LeafScreen.PlaylistDetail.buildRoute(playlist.id))
+            }
     }
 
     fun navigateToQueueSource() = viewModelScope.launch {

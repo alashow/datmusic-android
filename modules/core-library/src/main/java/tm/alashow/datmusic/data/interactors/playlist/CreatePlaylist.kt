@@ -14,6 +14,7 @@ import tm.alashow.datmusic.coreLibrary.R
 import tm.alashow.datmusic.data.repos.playlist.PlaylistsRepo
 import tm.alashow.datmusic.domain.entities.AudioIds
 import tm.alashow.datmusic.domain.entities.Audios
+import tm.alashow.datmusic.domain.entities.PLAYLIST_NAME_MAX_LENGTH
 import tm.alashow.datmusic.domain.entities.Playlist
 
 class CreatePlaylist @Inject constructor(
@@ -25,6 +26,7 @@ class CreatePlaylist @Inject constructor(
     data class Params(
         val name: String = "",
         val generateNameIfEmpty: Boolean = true,
+        val trimIfTooLong: Boolean = false,
         val audios: Audios = emptyList(),
         val audioIds: AudioIds = emptyList()
     ) {
@@ -38,6 +40,9 @@ class CreatePlaylist @Inject constructor(
             val playlistCount = repo.count().first() + 1
             name = resources.getString(R.string.playlist_create_generatedTemplate, playlistCount)
         }
+
+        if (name.length > PLAYLIST_NAME_MAX_LENGTH && params.trimIfTooLong)
+            name = name.take(PLAYLIST_NAME_MAX_LENGTH)
 
         val newPlaylist = Playlist(name = name)
         val playlistId = repo.createPlaylist(
