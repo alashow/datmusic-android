@@ -6,12 +6,11 @@
 import tm.alashow.buildSrc.App
 import tm.alashow.buildSrc.Deps
 
+
 plugins {
 	id "com.android.library"
 	id "kotlin-android"
 	id "kotlin-kapt"
-	id "kotlin-parcelize"
-	id "org.jetbrains.kotlin.plugin.serialization"
 }
 
 android {
@@ -19,14 +18,6 @@ android {
 
 	defaultConfig {
 		minSdkVersion App.minSdkVersion
-
-		testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
-		javaCompileOptions {
-			annotationProcessorOptions {
-				arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
-			}
-		}
 	}
 
 	lintOptions {
@@ -37,28 +28,31 @@ android {
 		sourceCompatibility JavaVersion.VERSION_1_8
 		targetCompatibility JavaVersion.VERSION_1_8
 	}
-
-	testOptions  {
-		unitTests {
-			includeAndroidResources = true
-		}
-	}
 }
 
 repositories {
 	mavenCentral()
+	jcenter()
 	maven { url "https://jitpack.io" }
 }
 
 dependencies {
-	api project(":modules:common-data")
-
-	kapt Deps.Dagger.compiler
 	kapt Deps.Dagger.hiltCompiler
 
-	kapt Deps.Android.Room.compiler
+	api Deps.Utils.threeTen
+	api Deps.Android.archCoreTesting
+	api Deps.Android.Test.core
+	api Deps.Android.Test.rules
+	api Deps.Android.Test.runner
+	api Deps.Android.Test.junit
+	api Deps.Android.Room.testing
+	api Deps.Kotlin.coroutineTesting
+	api Deps.Dagger.hiltTesting
 
-	testImplementation project(":modules:core-testing")
-	kaptTest Deps.Dagger.hiltCompiler
-	kaptTest Deps.Android.Room.compiler
+	api Deps.Testing.junit
+	api Deps.Testing.mockito
+	api Deps.Testing.mockitoKotlin
+	api Deps.Testing.truth
+	api Deps.Testing.turbine
+	api Deps.Testing.robolectric
 }

@@ -8,7 +8,7 @@ import android.app.Application
 import com.qonversion.android.sdk.Qonversion
 import javax.inject.Inject
 import tm.alashow.base.inititializer.AppInitializer
-import tm.alashow.base.ui.utils.extensions.androidId
+import tm.alashow.base.util.extensions.androidId
 
 class SubscriptionsInitializer @Inject constructor() : AppInitializer {
     override fun init(application: Application) {

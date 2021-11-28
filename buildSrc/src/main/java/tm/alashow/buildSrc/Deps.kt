@@ -195,7 +195,8 @@ object Deps {
         const val junit = "junit:junit:4.13.2"
         const val truth = "com.google.truth:truth:1.1.3"
         const val robolectric = "org.robolectric:robolectric:4.7.2"
-        const val mockK = "io.mockk:mockk:1.12.0"
+        const val mockito = "org.mockito:mockito-core:4.1.0"
+        const val mockitoKotlin = "org.mockito.kotlin:mockito-kotlin:4.0.0"
         const val turbine = "app.cash.turbine:turbine:0.7.0"
     }
 }

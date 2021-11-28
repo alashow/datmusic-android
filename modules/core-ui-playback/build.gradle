@@ -19,6 +19,8 @@ android {
 
 	defaultConfig {
 		minSdkVersion App.minSdkVersion
+
+		testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 	}
 
 	compileOptions {
@@ -32,6 +34,12 @@ android {
 
 	composeOptions {
 		kotlinCompilerExtensionVersion Deps.Android.Compose.version
+	}
+
+	testOptions  {
+		unitTests {
+			includeAndroidResources = true
+		}
 	}
 }
 
@@ -50,4 +58,7 @@ dependencies {
 	implementation Deps.Dagger.hilt
 	kapt Deps.Dagger.compiler
 	kapt Deps.Dagger.hiltCompiler
+
+	testImplementation project(":modules:core-testing")
+	kaptTest Deps.Dagger.hiltCompiler
 }

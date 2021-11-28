@@ -9,7 +9,9 @@ import androidx.room.Room
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import dagger.hilt.migration.DisableInstallInCheck
 import javax.inject.Singleton
 import tm.alashow.data.db.DatabaseTxRunner
 
@@ -28,4 +30,16 @@ class DatabaseModule {
     @Singleton
     @Provides
     fun databaseTransactionRunner(db: AppDatabase): DatabaseTxRunner = DatabaseTxRunner(db)
+}
+
+@Module
+@DisableInstallInCheck
+object TestDatabaseModule {
+    @Singleton
+    @Provides
+    fun provideTestDatabase(@ApplicationContext context: Context): AppDatabase {
+        return Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java)
+            .allowMainThreadQueries()
+            .build()
+    }
 }

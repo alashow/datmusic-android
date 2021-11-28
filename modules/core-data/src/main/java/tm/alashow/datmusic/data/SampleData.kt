@@ -12,7 +12,7 @@ import tm.alashow.datmusic.domain.entities.DownloadRequest
 import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.domain.entities.PlaylistAudio
 
-internal object SampleData {
+object SampleData {
     private val random = Random(1000)
 
     val Audio: Audio = audio()

@@ -13,7 +13,7 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import tm.alashow.datmusic.data.BaseTest
+import tm.alashow.base.testing.BaseTest
 import tm.alashow.datmusic.data.SampleData
 import tm.alashow.datmusic.data.db.AppDatabase
 import tm.alashow.datmusic.data.db.DatabaseModule
