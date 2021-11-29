@@ -48,7 +48,7 @@ dependencies {
 
 	kapt Deps.Android.Room.compiler
 
-	testImplementation project(":modules:core-testing")
+	testImplementation project(":modules:common-testing")
 	kaptTest Deps.Dagger.hiltCompiler
 	kaptTest Deps.Android.Room.compiler
 }

@@ -40,6 +40,6 @@ dependencies {
 	kapt Deps.Dagger.compiler
 	kapt Deps.Dagger.hiltCompiler
 
-	testImplementation project(":modules:core-testing")
+	testImplementation project(":modules:common-testing")
 	kaptTest Deps.Dagger.hiltCompiler
 }
