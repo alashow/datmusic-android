@@ -76,15 +76,11 @@ class PlaybackSheetViewModelTest : BaseTest() {
     }
 
     @Test
-    fun `saveQueueAsPlaylist adds saved message then navigates to playlist detail`() = testScope.runBlockingTest {
+    fun `saveQueueAsPlaylist creates playlist then navigates to playlist detail`() = testScope.runBlockingTest {
         viewModel.saveQueueAsPlaylist()
         val createdPlaylist = playlistsRepo.playlists().first().first()
         val savedAsPlaylistMessage = SavedAsPlaylistMessage(createdPlaylist)
-
-        snackbarManager.messages.test {
-            assertThat(awaitItem()).isEqualTo(savedAsPlaylistMessage)
-            snackbarManager.onMessageActionPerformed(savedAsPlaylistMessage)
-        }
+        snackbarManager.onMessageActionPerformed(savedAsPlaylistMessage)
         navigator.assertNextRouteContains(createdPlaylist.getIdentifier())
     }
 
