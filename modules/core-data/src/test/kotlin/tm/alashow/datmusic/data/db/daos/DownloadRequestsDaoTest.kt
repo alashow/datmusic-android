@@ -11,7 +11,6 @@ import dagger.hilt.android.testing.UninstallModules
 import javax.inject.Inject
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.After
-import org.junit.Before
 import org.junit.Test
 import tm.alashow.base.testing.BaseTest
 import tm.alashow.datmusic.data.SampleData
@@ -32,14 +31,9 @@ class DownloadRequestsDaoTest : BaseTest() {
     private val testItems = (1..5).map { SampleData.downloadRequest() }
     private val entriesComparator = compareByDescending(DownloadRequest::createdAt)
 
-    @Before
-    fun setUp() {
-        hiltRule.inject()
-    }
-
     @After
-    fun tearDown() {
-        testScope.cleanupTestCoroutines()
+    override fun tearDown() {
+        super.tearDown()
         database.close()
     }
 

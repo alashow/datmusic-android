@@ -13,22 +13,11 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
-import kotlinx.coroutines.Dispatchers
-import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.base.util.extensions.androidId
 
 @Module
 @InstallIn(SingletonComponent::class)
 object BaseModule {
-
-    @Singleton
-    @Provides
-    fun coroutineDispatchers() = CoroutineDispatchers(
-        network = Dispatchers.IO,
-        io = Dispatchers.IO,
-        computation = Dispatchers.Default,
-        main = Dispatchers.Main
-    )
 
     @Provides
     fun appContext(app: Application): Context = app.applicationContext

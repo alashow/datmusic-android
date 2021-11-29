@@ -35,12 +35,6 @@ android {
 	composeOptions {
 		kotlinCompilerExtensionVersion Deps.Android.Compose.version
 	}
-
-	testOptions  {
-		unitTests {
-			includeAndroidResources = true
-		}
-	}
 }
 
 repositories {

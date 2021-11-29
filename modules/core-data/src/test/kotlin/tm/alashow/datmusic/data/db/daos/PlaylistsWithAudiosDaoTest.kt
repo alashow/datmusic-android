@@ -22,33 +22,28 @@ import tm.alashow.datmusic.data.db.DatabaseModule
 @HiltAndroidTest
 class PlaylistsWithAudiosDaoTest : BaseTest() {
 
-    @Inject
-    lateinit var database: AppDatabase
-
-    @Inject
-    lateinit var playlistsDao: PlaylistsDao
-
-    @Inject
-    lateinit var audiosDao: AudiosDao
-
-    @Inject
-    lateinit var dao: PlaylistsWithAudiosDao
+    @Inject lateinit var database: AppDatabase
+    @Inject lateinit var playlistsDao: PlaylistsDao
+    @Inject lateinit var audiosDao: AudiosDao
+    @Inject lateinit var dao: PlaylistsWithAudiosDao
 
     private val testItems = (1..5).map { SampleData.playlistAudioItems() }
 
     @Before
-    fun setUp() {
-        hiltRule.inject()
+    override fun setUp() {
+        super.setUp()
 
         runBlockingTest {
+            // pre-insert playlists & audios
+            // because in tests we're assuming relations already exist
             playlistsDao.insertAll(testItems.map { it.playlist })
             audiosDao.insertAll(testItems.map { it.audio })
         }
     }
 
     @After
-    fun tearDown() {
-        testScope.cleanupTestCoroutines()
+    override fun tearDown() {
+        super.tearDown()
         database.close()
     }
 

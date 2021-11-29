@@ -11,10 +11,9 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.verify
@@ -25,9 +24,9 @@ import tm.alashow.base.testing.BaseTest
 import tm.alashow.base.ui.SnackbarManager
 import tm.alashow.base.util.toUiMessage
 import tm.alashow.datmusic.data.DatmusicSearchParams
-import tm.alashow.datmusic.data.SampleData
 import tm.alashow.datmusic.data.db.DatabaseModule
 import tm.alashow.datmusic.data.interactors.playlist.CreatePlaylist
+import tm.alashow.datmusic.data.repos.playlist.PlaylistsRepo
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.models.MEDIA_TYPE_ALBUM
 import tm.alashow.datmusic.playback.models.MediaId
@@ -44,14 +43,10 @@ class PlaybackSheetViewModelTest : BaseTest() {
     @Inject lateinit var playbackConnection: PlaybackConnection
     @Inject lateinit var snackbarManager: SnackbarManager
     @Inject lateinit var navigator: Navigator
+    @Inject lateinit var createPlaylist: CreatePlaylist
+    @Inject lateinit var playlistsRepo: PlaylistsRepo
 
     private lateinit var viewModel: PlaybackSheetViewModel
-
-    private val fakePlaylist = SampleData.playlist()
-    private val fakeSavedAsPlaylistMessage = SavedAsPlaylistMessage(fakePlaylist)
-    private val fakeCreatePlaylist = mock<CreatePlaylist> {
-        on { invoke(any()) } doReturn flowOf(fakePlaylist)
-    }
 
     private val fakeError = Throwable("Fake error")
     private val erroneousCreatePlaylist = mock<CreatePlaylist> {
@@ -69,31 +64,28 @@ class PlaybackSheetViewModelTest : BaseTest() {
     ) = PlaybackSheetViewModel(
         SavedStateHandle(),
         playbackConnection ?: this.playbackConnection,
-        createPlaylist ?: this.fakeCreatePlaylist,
+        createPlaylist ?: this.createPlaylist,
         snackbarManager,
         navigator
     )
 
     @Before
-    fun setUp() {
-        hiltRule.inject()
+    override fun setUp() {
+        super.setUp()
         viewModel = buildVm()
-    }
-
-    @After
-    fun tearDown() {
-        testScope.cleanupTestCoroutines()
     }
 
     @Test
     fun `saveQueueAsPlaylist adds saved message then navigates to playlist detail`() = testScope.runBlockingTest {
         viewModel.saveQueueAsPlaylist()
-        verify(fakeCreatePlaylist).invoke(any())
+        val createdPlaylist = playlistsRepo.playlists().first().first()
+        val savedAsPlaylistMessage = SavedAsPlaylistMessage(createdPlaylist)
+
         snackbarManager.messages.test {
-            assertThat(awaitItem()).isEqualTo(fakeSavedAsPlaylistMessage)
+            assertThat(awaitItem()).isEqualTo(savedAsPlaylistMessage)
+            snackbarManager.onMessageActionPerformed(savedAsPlaylistMessage)
         }
-        snackbarManager.onMessageActionPerformed(fakeSavedAsPlaylistMessage)
-        navigator.assertNextRouteContains(fakePlaylist.getIdentifier())
+        navigator.assertNextRouteContains(createdPlaylist.getIdentifier())
     }
 
     @Test

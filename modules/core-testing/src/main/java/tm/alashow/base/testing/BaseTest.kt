@@ -9,6 +9,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltTestApplication
 import kotlinx.coroutines.test.TestCoroutineScope
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnit
@@ -28,4 +30,14 @@ abstract class BaseTest {
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     protected val testScope = TestCoroutineScope()
+
+    @Before
+    open fun setUp() {
+        hiltRule.inject()
+    }
+
+    @After
+    open fun tearDown() {
+        testScope.cleanupTestCoroutines()
+    }
 }

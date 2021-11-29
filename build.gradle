@@ -75,6 +75,18 @@ subprojects {
             indentWithTabs()
         }
     }
+
+    afterEvaluate { project ->
+        if (project.hasProperty("android")) {
+            android {
+                testOptions {
+                    unitTests {
+                        includeAndroidResources = true
+                    }
+                }
+            }
+        }
+    }
 }
 
 Object prop(String propertyName, Object defaultValue) {
