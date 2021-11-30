@@ -5,6 +5,7 @@
 package tm.alashow.datmusic.data
 
 import kotlin.random.Random
+import kotlin.random.nextInt
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
@@ -33,7 +34,7 @@ object SampleData {
         duration = random.nextInt(100, 300)
     )
 
-    fun playlist() = Playlist(id = random.nextLong(), name = "Playlist ${random.nextInt()}")
+    fun playlist() = Playlist(id = random.nextLong(0, 100), name = "Playlist ${random.nextInt()}")
 
     data class PlaylistAudioItem(val playlist: Playlist, val audio: Audio, val playlistAudio: PlaylistAudio)
 

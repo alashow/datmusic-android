@@ -38,13 +38,13 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        maven { url 'https://jitpack.io' }
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-        jcenter()
         maven { url 'https://androidx.dev/snapshots/builds/7818717/artifacts/repository' }
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+        maven { url 'https://jitpack.io' }
+        jcenter()
     }
 
-    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
         kotlinOptions {
             jvmTarget = "1.8"
 
@@ -68,7 +68,11 @@ subprojects {
         kotlin {
             licenseHeaderFile project.rootProject.file('spotless/copyright.kt')
             target "**/*.kt"
-            ktlint("0.41.0").userData(['android': 'true', 'max_line_length': '200', 'disabled_rules': 'no-wildcard-imports'])
+            ktlint("0.41.0").userData([
+                    'android'        : 'true',
+                    'max_line_length': '200',
+                    'disabled_rules' : 'no-wildcard-imports'
+            ])
         }
         format 'misc', {
             target '**/*.gradle', '**/*.md', '**/.gitignore'
