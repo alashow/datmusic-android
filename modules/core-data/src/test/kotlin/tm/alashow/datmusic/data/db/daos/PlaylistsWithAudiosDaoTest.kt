@@ -162,21 +162,6 @@ class PlaylistsWithAudiosDaoTest : BaseTest() {
     }
 
     @Test
-    fun playlistsWithAudios() = testScope.runBlockingTest {
-        val items = testItems.map { it.playlistAudio }
-        val playlistAudios = testItems.map { it.playlist.id to it.audio }.toMap()
-        dao.insertAll(items)
-
-        dao.playlistsWithAudios().test {
-            val playlists = awaitItem()
-
-            playlists.forEach {
-                assertThat(it.audios).contains(playlistAudios[it.playlist.id])
-            }
-        }
-    }
-
-    @Test
     fun playlistAudios() = testScope.runBlockingTest {
         val items = testItems.map { it.playlistAudio }
         dao.insertAll(items)

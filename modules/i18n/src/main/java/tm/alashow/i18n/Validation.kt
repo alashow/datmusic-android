@@ -4,8 +4,12 @@
  */
 package tm.alashow.i18n
 
-class ValidationErrorException(val error: ValidationError, override val message: String?) : Exception(message), UiMessageConvertable {
+open class ValidationErrorException(val error: ValidationError, override val message: String? = error.toUiMessage().toString()) : Exception(message), UiMessageConvertable {
     override fun toUiMessage() = error.toUiMessage()
+
+    companion object {
+        fun of(error: ValidationError, message: String? = null) = ValidationErrorException(error, message)
+    }
 }
 
 open class ValidationError(val message: UiMessage<*>) : UiMessageConvertable {
@@ -20,7 +24,7 @@ open class ValidationError(val message: UiMessage<*>) : UiMessageConvertable {
 
 fun Throwable.asValidationError() = when (this) {
     is ValidationErrorException -> error
-    else -> ValidationErrorUnknown
+    else -> ValidationErrorUnknown.error
 }
 
 typealias ValidationErrors = ArrayList<ValidationError>

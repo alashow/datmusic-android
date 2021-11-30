@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import timber.log.Timber
 import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.data.db.RoomRepo
+import tm.alashow.datmusic.data.DatmusicSearchParams
 import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
 import tm.alashow.datmusic.domain.entities.Audio
@@ -28,6 +29,7 @@ class AudiosRepo @Inject constructor(
     private val downloadsRequestsDao: DownloadRequestsDao,
 ) : RoomRepo<AudioId, Audio>(dao, dispatchers) {
 
+    suspend fun entriesByParams(params: DatmusicSearchParams) = dao.entries(params)
     suspend fun audiosById(ids: AudioIds) = dao.audiosById(ids)
 
     suspend fun saveAudiosById(type: AudioSaveType, audioIds: AudioIds) = saveAudios(type, audiosById(audioIds))

@@ -11,7 +11,7 @@ import tm.alashow.datmusic.data.DatmusicSearchParams
 import tm.alashow.datmusic.data.DatmusicSearchParams.Companion.withTypes
 import tm.alashow.datmusic.data.db.daos.AlbumsDao
 import tm.alashow.datmusic.data.db.daos.ArtistsDao
-import tm.alashow.datmusic.data.db.daos.AudiosDao
+import tm.alashow.datmusic.data.repos.audio.AudiosRepo
 import tm.alashow.datmusic.data.repos.playlist.PlaylistsRepo
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.asAudios
@@ -28,7 +28,7 @@ import tm.alashow.datmusic.playback.models.MediaId
 import tm.alashow.datmusic.playback.models.QueueTitle
 
 class MediaQueueBuilder @Inject constructor(
-    private val audiosDao: AudiosDao,
+    private val audiosRepo: AudiosRepo,
     private val artistsDao: ArtistsDao,
     private val albumsDao: AlbumsDao,
     private val playlistsRepo: PlaylistsRepo,
@@ -36,7 +36,7 @@ class MediaQueueBuilder @Inject constructor(
 ) {
     suspend fun buildAudioList(source: MediaId): List<Audio> = with(source) {
         when (type) {
-            MEDIA_TYPE_AUDIO -> listOfNotNull(audiosDao.entry(value).firstOrNull())
+            MEDIA_TYPE_AUDIO -> listOfNotNull(audiosRepo.entry(value).firstOrNull())
             MEDIA_TYPE_ALBUM -> albumsDao.entry(value).firstOrNull()?.audios
             MEDIA_TYPE_ARTIST -> artistsDao.entry(value).firstOrNull()?.audios
             MEDIA_TYPE_PLAYLIST -> playlistsRepo.playlistItems(value.toLong()).firstOrNull()?.asAudios()
@@ -49,7 +49,7 @@ class MediaQueueBuilder @Inject constructor(
                         else -> this
                     }
                 }
-                audiosDao.entries(params).first()
+                audiosRepo.entriesByParams(params).first()
             }
             else -> null
         }.orEmpty()
@@ -57,14 +57,10 @@ class MediaQueueBuilder @Inject constructor(
 
     suspend fun buildQueueTitle(source: MediaId): QueueTitle = with(source) {
         when (type) {
-            MEDIA_TYPE_AUDIO -> QueueTitle(this, QueueTitle.Type.AUDIO, audiosDao.entry(value).firstOrNull()?.title)
+            MEDIA_TYPE_AUDIO -> QueueTitle(this, QueueTitle.Type.AUDIO, audiosRepo.entry(value).firstOrNull()?.title)
             MEDIA_TYPE_ARTIST -> QueueTitle(this, QueueTitle.Type.ARTIST, artistsDao.entry(value).firstOrNull()?.name)
             MEDIA_TYPE_ALBUM -> QueueTitle(this, QueueTitle.Type.ALBUM, albumsDao.entry(value).firstOrNull()?.title)
-            MEDIA_TYPE_PLAYLIST -> QueueTitle(
-                this,
-                QueueTitle.Type.PLAYLIST,
-                playlistsRepo.playlistWithAudios(value.toLong()).firstOrNull()?.playlist?.name
-            )
+            MEDIA_TYPE_PLAYLIST -> QueueTitle(this, QueueTitle.Type.PLAYLIST, playlistsRepo.playlist(value.toLong()).firstOrNull()?.name)
             MEDIA_TYPE_DOWNLOADS -> QueueTitle(this, QueueTitle.Type.DOWNLOADS)
             MEDIA_TYPE_AUDIO_QUERY, MEDIA_TYPE_AUDIO_MINERVA_QUERY, MEDIA_TYPE_AUDIO_FLACS_QUERY -> QueueTitle(this, QueueTitle.Type.SEARCH, value)
             else -> QueueTitle()

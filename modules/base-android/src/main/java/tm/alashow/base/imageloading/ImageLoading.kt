@@ -12,17 +12,6 @@ import coil.request.ImageRequest
 import coil.request.SuccessResult
 import coil.size.Precision
 
-object ImageLoading {
-
-    val defaultConfig: ImageRequest.Builder.() -> Unit = {
-        crossfade(200)
-    }
-
-    fun ImageRequest.Builder.applyDefault() {
-        crossfade(200)
-    }
-}
-
 suspend fun Context.getBitmap(data: Any?, size: Int = Int.MAX_VALUE, allowHardware: Boolean = true): Bitmap? {
     val request = ImageRequest.Builder(this)
         .data(data)

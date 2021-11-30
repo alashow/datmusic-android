@@ -16,7 +16,8 @@ import javax.inject.Inject
 import okhttp3.OkHttpClient
 import tm.alashow.base.inititializer.AppInitializer
 
-class CoilAppInitializer @OptIn(ExperimentalCoilApi::class)
+@OptIn(ExperimentalCoilApi::class)
+class CoilAppInitializer
 @Inject constructor(
     private val okHttpClient: OkHttpClient,
     @ApplicationContext private val context: Context

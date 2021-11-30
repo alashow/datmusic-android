@@ -17,7 +17,6 @@ import tm.alashow.datmusic.domain.entities.PlaylistAudioIds
 import tm.alashow.datmusic.domain.entities.PlaylistAudios
 import tm.alashow.datmusic.domain.entities.PlaylistId
 import tm.alashow.datmusic.domain.entities.PlaylistItem
-import tm.alashow.datmusic.domain.entities.PlaylistWithAudios
 
 @Dao
 abstract class PlaylistsWithAudiosDao {
@@ -58,10 +57,6 @@ abstract class PlaylistsWithAudiosDao {
     @Transaction
     @Query("SELECT * FROM playlist_audios WHERE playlist_id = :id ORDER BY position")
     abstract fun playlistItems(id: PlaylistId): Flow<List<PlaylistItem>>
-
-    @Transaction
-    @Query("SELECT * FROM playlists")
-    abstract fun playlistsWithAudios(): Flow<List<PlaylistWithAudios>>
 
     @Query("SELECT * FROM playlist_audios")
     abstract fun playlistAudios(): Flow<PlaylistAudios>
