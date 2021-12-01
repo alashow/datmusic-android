@@ -43,4 +43,7 @@ dependencies {
 	kapt Deps.Dagger.hiltCompiler
 
 	kapt Deps.Android.Room.compiler
+
+	testImplementation project(":modules:common-testing")
+	kaptTest Deps.Dagger.hiltCompiler
 }
