@@ -59,13 +59,14 @@ class AudiosRepoTest : BaseTest() {
     @Test
     fun `audiosById returns distinct audios`() = testScope.runBlockingTest {
         val items = testItems
+        val itemIds = items.map { it.id }
         repo.insertAll(items)
 
         // re-save items to duplicate them
         repo.saveAudios(AudioSaveType.Download, items)
 
-        assertThat(repo.audiosById(items.map { it.id }))
-            .containsExactlyElementsIn(items)
+        assertThat(repo.audiosById(itemIds).map { it.id })
+            .containsExactlyElementsIn(itemIds)
     }
 
     @Test
