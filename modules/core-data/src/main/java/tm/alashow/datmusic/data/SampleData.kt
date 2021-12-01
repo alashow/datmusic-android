@@ -66,5 +66,5 @@ object SampleData {
         name = "Artist ${random.id()}"
     )
 
-    fun downloadRequest(audio: Audio = audio()) = DownloadRequest.fromAudio(audio)
+    fun downloadRequest(audio: Audio = audio()) = DownloadRequest.fromAudio(audio.copy(id = "${audio.id}-downloaded"))
 }

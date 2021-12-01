@@ -9,6 +9,7 @@ import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import javax.inject.Inject
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.After
 import org.junit.Test
@@ -29,12 +30,25 @@ class DownloadRequestsDaoTest : BaseTest() {
     lateinit var dao: DownloadRequestsDao
 
     private val testItems = (1..5).map { SampleData.downloadRequest() }
-    private val entriesComparator = compareByDescending(DownloadRequest::createdAt)
+    private val entriesComparator = compareByDescending(DownloadRequest::createdAt).thenBy(DownloadRequest::id)
 
     @After
     override fun tearDown() {
         super.tearDown()
         database.close()
+    }
+
+    @Test
+    fun getByIdsAndType() = runBlockingTest {
+        val audioDownloadRequests = testItems.sortedWith(entriesComparator)
+        dao.insertAll(audioDownloadRequests)
+
+        val itemsByIdAndType = dao.getByIdAndType(
+            ids = audioDownloadRequests.map { it.id },
+            type = audioDownloadRequests.first().entityType
+        )
+        assertThat(itemsByIdAndType)
+            .isEqualTo(audioDownloadRequests.sortedWith(entriesComparator))
     }
 
     @Test

@@ -17,7 +17,7 @@ import tm.alashow.domain.models.BaseEntity
 import tm.alashow.domain.models.PaginatedEntity
 
 abstract class BaseDao<E : BaseEntity> {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract suspend fun insert(entity: E): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

@@ -302,7 +302,7 @@ class PlaylistsRepoTest : BaseTest() {
         }
     }
 
-    // RoomRepo tests
+    // region RoomRepo tests
 
     @Test
     fun entry() = testScope.runBlockingTest {
@@ -418,4 +418,6 @@ class PlaylistsRepoTest : BaseTest() {
             assertThat(awaitItem()).isTrue()
         }
     }
+
+    // endregion
 }
