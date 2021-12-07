@@ -102,9 +102,8 @@ class CreatePlaylistTest : BaseTest() {
     @Test
     fun `creates playlist with given audios & ids`() = testScope.runBlockingTest {
         val audiosCount = 10
-        val audioItems = (1..audiosCount).map { SampleData.audio() }
+        val audioItems = (1..audiosCount).map { SampleData.audio() }.apply { audiosRepo.insertAll(this) }
         val audioIds = audioItems.map { it.id }
-        audiosRepo.insertAll(audioItems)
         val params = testParams.copy(audios = audioItems.take(audiosCount / 5), audioIds = audioIds.drop(audiosCount / 5))
 
         val playlist = createPlaylist.execute(params)
