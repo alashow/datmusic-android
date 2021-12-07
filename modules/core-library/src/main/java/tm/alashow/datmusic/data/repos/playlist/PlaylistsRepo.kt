@@ -29,6 +29,7 @@ import tm.alashow.datmusic.domain.entities.AudioIds
 import tm.alashow.datmusic.domain.entities.PLAYLIST_NAME_MAX_LENGTH
 import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.domain.entities.PlaylistAudio
+import tm.alashow.datmusic.domain.entities.PlaylistAudioId
 import tm.alashow.datmusic.domain.entities.PlaylistAudioIds
 import tm.alashow.datmusic.domain.entities.PlaylistId
 import tm.alashow.datmusic.domain.entities.PlaylistItems
@@ -109,7 +110,7 @@ class PlaylistsRepo @Inject constructor(
         return updatePlaylist(applyUpdate(playlist(playlistId).first()))
     }
 
-    suspend fun addAudiosToPlaylist(playlistId: PlaylistId, audioIds: AudioIds, ignoreExisting: Boolean = false): List<PlaylistId> {
+    suspend fun addAudiosToPlaylist(playlistId: PlaylistId, audioIds: AudioIds, ignoreExisting: Boolean = false): List<PlaylistAudioId> {
         val insertedIds = mutableListOf<PlaylistId>()
         val ignoredAudioIds = mutableListOf<AudioId>()
         validatePlaylistId(playlistId)
@@ -128,7 +129,7 @@ class PlaylistsRepo @Inject constructor(
             }
 
             val lastIndex = playlistAudiosDao.lastPlaylistAudioPosition(playlistId) ?: -1
-            val playlistWithAudios = audioIds
+            val playlistAudios = audioIds
                 .filterNot { ignoredAudioIds.contains(it) }
                 .mapIndexed { index, id ->
                     PlaylistAudio(
@@ -137,7 +138,7 @@ class PlaylistsRepo @Inject constructor(
                         position = lastIndex + (index + 1)
                     )
                 }
-            insertedIds += playlistAudiosDao.insertAll(playlistWithAudios)
+            insertedIds += playlistAudiosDao.insertAll(playlistAudios)
             generatePlaylistArtwork(playlistId)
             return@withContext
         }

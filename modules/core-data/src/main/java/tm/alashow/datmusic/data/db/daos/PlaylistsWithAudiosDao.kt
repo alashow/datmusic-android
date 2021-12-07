@@ -25,7 +25,7 @@ abstract class PlaylistsWithAudiosDao {
     abstract suspend fun insert(entities: PlaylistAudio)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract suspend fun insertAll(entities: List<PlaylistAudio>): List<Long>
+    abstract suspend fun insertAll(entities: List<PlaylistAudio>): List<PlaylistAudioId>
 
     @Update(onConflict = OnConflictStrategy.ABORT)
     abstract suspend fun updateAll(entities: List<PlaylistAudio>)

@@ -8,21 +8,22 @@ import javax.inject.Inject
 import kotlinx.coroutines.withContext
 import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.data.ResultInteractor
-import tm.alashow.datmusic.domain.entities.Audios
-import tm.alashow.datmusic.domain.entities.Playlist
+import tm.alashow.datmusic.data.repos.playlist.PlaylistsRepo
+import tm.alashow.datmusic.domain.entities.AudioIds
 import tm.alashow.datmusic.domain.entities.PlaylistId
 
 class AddToPlaylist @Inject constructor(
-    private val repo: tm.alashow.datmusic.data.repos.playlist.PlaylistsRepo,
+    private val repo: PlaylistsRepo,
     private val dispatchers: CoroutineDispatchers
 ) : ResultInteractor<AddToPlaylist.Params, List<PlaylistId>>() {
 
-    data class Params(val playlist: Playlist, var audios: Audios)
+    data class Params(val playlistId: PlaylistId, var audioIds: AudioIds, val ignoreExisting: Boolean = false)
 
     override suspend fun doWork(params: Params) = withContext(dispatchers.io) {
         repo.addAudiosToPlaylist(
-            playlistId = params.playlist.id,
-            audioIds = params.audios.map { it.id }
+            playlistId = params.playlistId,
+            audioIds = params.audioIds,
+            ignoreExisting = params.ignoreExisting
         )
     }
 }
