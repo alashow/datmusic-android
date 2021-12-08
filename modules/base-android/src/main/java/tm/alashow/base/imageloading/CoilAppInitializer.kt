@@ -15,19 +15,21 @@ import java.io.File
 import javax.inject.Inject
 import okhttp3.OkHttpClient
 import tm.alashow.base.inititializer.AppInitializer
+import tm.alashow.base.util.CoroutineDispatchers
 
 @OptIn(ExperimentalCoilApi::class)
 class CoilAppInitializer
 @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val dispatchers: CoroutineDispatchers,
     private val okHttpClient: OkHttpClient,
-    @ApplicationContext private val context: Context
 ) : AppInitializer {
     override fun init(application: Application) {
-        val coilOkHttpClient = okHttpClient.newBuilder()
-            .build()
         Coil.setImageLoader {
             ImageLoader.Builder(application)
-                .okHttpClient(coilOkHttpClient)
+                .okHttpClient(okHttpClient)
+                .dispatcher(dispatchers.io)
+                .fetcherDispatcher(dispatchers.network)
                 .diskCache(DiskCache.Builder(context).directory(File(context.cacheDir, "images_cache")).build())
                 .build()
         }

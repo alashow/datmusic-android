@@ -8,9 +8,11 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import coil.imageLoader
+import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import coil.size.Precision
+import timber.log.Timber
 
 suspend fun Context.getBitmap(data: Any?, size: Int = Int.MAX_VALUE, allowHardware: Boolean = true): Bitmap? {
     val request = ImageRequest.Builder(this)
@@ -22,6 +24,9 @@ suspend fun Context.getBitmap(data: Any?, size: Int = Int.MAX_VALUE, allowHardwa
 
     return when (val result = imageLoader.execute(request)) {
         is SuccessResult -> (result.drawable as BitmapDrawable).bitmap
-        else -> null
+        is ErrorResult -> {
+            Timber.e(result.throwable)
+            null
+        }
     }
 }

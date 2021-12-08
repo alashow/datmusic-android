@@ -37,6 +37,8 @@ repositories {
 }
 
 dependencies {
+	implementation Deps.Utils.coil
+
 	kapt Deps.Dagger.hiltCompiler
 
 	api Deps.Utils.threeTen

@@ -11,6 +11,8 @@ object DatabaseError : ValidationErrorException(ValidationError(UiMessage.Resour
 object DatabaseInsertError : ValidationErrorException(ValidationError(UiMessage.Resource(R.string.error_database)))
 object DatabaseUpdateError : ValidationErrorException(ValidationError(UiMessage.Resource(R.string.error_database)))
 
+object LoadingError : ValidationErrorException(ValidationError(UiMessage.Resource(R.string.error_loading)))
+
 object ValidationErrorUnknown : ValidationErrorException(ValidationError(UiMessage.Resource(R.string.error_unknown)))
 open class ValidationErrorBlank : ValidationErrorException(ValidationError(UiMessage.Resource(R.string.error_blank)))
 open class ValidationErrorTooShort : ValidationErrorException(ValidationError(UiMessage.Resource(R.string.error_validation_textShort)))

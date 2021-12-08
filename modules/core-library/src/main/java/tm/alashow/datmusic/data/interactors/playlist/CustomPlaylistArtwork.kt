@@ -17,6 +17,7 @@ import tm.alashow.datmusic.data.repos.playlist.ArtworkImageFileType
 import tm.alashow.datmusic.data.repos.playlist.PlaylistArtworkUtils.savePlaylistArtwork
 import tm.alashow.datmusic.data.repos.playlist.PlaylistsRepo
 import tm.alashow.datmusic.domain.entities.PlaylistId
+import tm.alashow.i18n.LoadingError
 
 class SetCustomPlaylistArtwork @Inject constructor(
     @ApplicationContext private val appContext: Context,
@@ -28,11 +29,11 @@ class SetCustomPlaylistArtwork @Inject constructor(
 
     override suspend fun doWork(params: Params) = withContext(dispatchers.io) {
         repo.validatePlaylistId(params.playlistId)
-        val region = appContext.getBitmap(params.uri, allowHardware = false) ?: error("Failed to read image")
-        val artwork = params.playlistId.savePlaylistArtwork(appContext, region, ArtworkImageFileType.PLAYLIST_USER_SET, recycle = false)
+        val bitmap = appContext.getBitmap(params.uri, allowHardware = false) ?: throw LoadingError
+        val artwork = params.playlistId.savePlaylistArtwork(appContext, bitmap, ArtworkImageFileType.PLAYLIST_USER_SET, recycle = false)
 
         val playlist = repo.playlist(params.playlistId).first()
-        repo.updatePlaylist(playlist.copy(artworkPath = artwork.path))
+        repo.updatePlaylist(playlist.copy(artworkPath = artwork.path, artworkSource = artwork.path.hashCode().toString()))
         return@withContext
     }
 }
