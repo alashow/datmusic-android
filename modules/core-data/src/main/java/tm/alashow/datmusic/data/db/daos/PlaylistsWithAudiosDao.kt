@@ -40,7 +40,7 @@ abstract class PlaylistsWithAudiosDao {
     abstract suspend fun getAll(): List<PlaylistAudio>
 
     @Query("SELECT * FROM playlist_audios WHERE playlist_id = :id AND position = :position ")
-    abstract suspend fun getByPosition(id: PlaylistId, position: Int): PlaylistAudio
+    abstract suspend fun getByPosition(id: PlaylistId, position: Int): PlaylistAudio?
 
     @Query("SELECT * FROM playlist_audios WHERE id = :id ")
     abstract suspend fun getById(id: PlaylistAudioId): PlaylistAudio

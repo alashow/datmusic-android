@@ -245,7 +245,7 @@ class PlaylistsRepoTest : BaseTest() {
     fun swapPositions() = testScope.runBlockingTest {
         val item = testItems.first()
         val audioIds = (1..5).map { SampleData.audio() }.also { audiosDao.insertAll(it) }.map { it.id }
-        val repositionedAudioIds = audioIds.swap(audioIds.size - 1, 0).swap(1, audioIds.size - 1)
+        val repositionedAudioIds = audioIds.swap(0, audioIds.size - 1)
         val id = repo.createPlaylist(item, audioIds)
 
         repo.swapPositions(id, 0, audioIds.size - 1)

@@ -28,11 +28,13 @@ class UpdatePlaylist @Inject constructor(
 class ReorderPlaylist @Inject constructor(
     private val repo: PlaylistsRepo,
     private val dispatchers: CoroutineDispatchers,
-) : Interactor<Triple<PlaylistId, Int, Int>>() {
+) : Interactor<ReorderPlaylist.Params>() {
 
-    override suspend fun doWork(params: Triple<PlaylistId, Int, Int>) {
+    data class Params(val playlistId: PlaylistId, val from: Int, val to: Int)
+
+    override suspend fun doWork(params: Params) {
         withContext(dispatchers.io) {
-            repo.swapPositions(params.first, params.second, params.third)
+            repo.swapPositions(params.playlistId, params.from, params.to)
         }
     }
 }

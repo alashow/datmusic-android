@@ -149,8 +149,8 @@ class PlaylistsRepo @Inject constructor(
         withContext(dispatchers.io) {
             validatePlaylistId(playlistId)
 
-            val fromAudio = playlistAudiosDao.getByPosition(playlistId, from)
-            val toAudio = playlistAudiosDao.getByPosition(playlistId, to)
+            val fromAudio = playlistAudiosDao.getByPosition(playlistId, from) ?: throw DatabaseNotFoundError
+            val toAudio = playlistAudiosDao.getByPosition(playlistId, to) ?: throw DatabaseNotFoundError
 
             playlistAudiosDao.updatePosition(fromAudio.id, toPosition = to)
             playlistAudiosDao.updatePosition(toAudio.id, toPosition = from)
