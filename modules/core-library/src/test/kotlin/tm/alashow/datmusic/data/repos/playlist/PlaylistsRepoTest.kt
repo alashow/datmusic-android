@@ -260,12 +260,12 @@ class PlaylistsRepoTest : BaseTest() {
         val item = testItems.first()
         val audioIds = (1..5).map { SampleData.audio() }.also { audiosDao.insertAll(it) }.map { it.id }
         val id = repo.createPlaylist(item, audioIds)
-
         val shuffledPlaylistItems = repo.playlistItems(id).first()
             .shuffled()
             .mapIndexed { index, playlistItem ->
                 playlistItem.copy(playlistAudio = playlistItem.playlistAudio.copy(position = index))
             }
+
         repo.updatePlaylistItems(shuffledPlaylistItems)
 
         repo.playlistItems(id).test {
@@ -282,7 +282,10 @@ class PlaylistsRepoTest : BaseTest() {
 
         val playlistItems = repo.playlistItems(id).first().shuffled()
         val playlistItemsToRemove = playlistItems.take(2)
-        repo.removePlaylistItems(playlistItemsToRemove.map { it.playlistAudio.id })
+        val removedItemsCount = repo.removePlaylistItems(playlistItemsToRemove.map { it.playlistAudio.id })
+
+        assertThat(removedItemsCount)
+            .isEqualTo(playlistItemsToRemove.size)
 
         repo.playlistItems(id).test {
             assertThat(awaitItem())
