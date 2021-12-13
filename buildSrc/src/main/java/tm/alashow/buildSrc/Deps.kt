@@ -22,7 +22,7 @@ object Deps {
     }
 
     object Android {
-        private const val gradleVersion = "7.0.3"
+        private const val gradleVersion = "7.0.4"
 
         const val gradle = "com.android.tools.build:gradle:$gradleVersion"
 
