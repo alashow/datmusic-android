@@ -20,6 +20,7 @@ import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
 import tm.alashow.datmusic.data.db.daos.PlaylistsDao
 import tm.alashow.datmusic.data.db.daos.PlaylistsWithAudiosDao
 import tm.alashow.datmusic.data.interactors.playlist.CreateOrGetPlaylist
+import tm.alashow.datmusic.domain.entities.DatmusicBackupData
 import tm.alashow.datmusic.domain.entities.DownloadRequest
 
 class CreateDatmusicBackup @Inject constructor(

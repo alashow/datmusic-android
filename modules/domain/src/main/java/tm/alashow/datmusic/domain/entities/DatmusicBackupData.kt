@@ -2,14 +2,11 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.datmusic.data.interactors.backup
+package tm.alashow.datmusic.domain.entities
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import tm.alashow.datmusic.coreLibrary.R
-import tm.alashow.datmusic.domain.entities.Audios
-import tm.alashow.datmusic.domain.entities.PlaylistAudios
-import tm.alashow.datmusic.domain.entities.Playlists
+import tm.alashow.domain.R
 import tm.alashow.domain.models.JSON
 import tm.alashow.i18n.UiMessage
 import tm.alashow.i18n.ValidationError
