@@ -2,7 +2,7 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.datmusic.data.backup
+package tm.alashow.datmusic.data.interactors.backup
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

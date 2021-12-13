@@ -2,7 +2,7 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.datmusic.data.backup
+package tm.alashow.datmusic.data.interactors.backup
 
 import android.content.Context
 import android.net.Uri
@@ -15,7 +15,6 @@ import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.base.util.extensions.readFromFile
 import tm.alashow.data.AsyncInteractor
 import tm.alashow.data.ResultInteractor
-import tm.alashow.datmusic.data.db.DatabaseNuke
 import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.data.db.daos.PlaylistsDao
 import tm.alashow.datmusic.data.db.daos.PlaylistsWithAudiosDao
@@ -27,7 +26,6 @@ class RestoreDatmusicBackup @Inject constructor(
     private val playlistWithAudiosDao: PlaylistsWithAudiosDao,
     private val playlistsRepo: PlaylistsRepo,
     private val dispatchers: CoroutineDispatchers,
-    private val databaseNuke: DatabaseNuke,
 ) : ResultInteractor<DatmusicBackupData, Pair<Int, Int>>() {
     override suspend fun doWork(params: DatmusicBackupData) = withContext(dispatchers.io) {
         var (deletedCount, insertedCount) = 0 to 0
