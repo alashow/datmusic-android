@@ -45,7 +45,7 @@ class RestoreDatmusicBackup @Inject constructor(
     }
 }
 
-class DatmusicRestoreFromFile @Inject constructor(
+class RestoreDatmusicFromFile @Inject constructor(
     @ApplicationContext private val context: Context,
     private val restoreDatmusicBackup: RestoreDatmusicBackup,
     private val dispatchers: CoroutineDispatchers,

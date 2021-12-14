@@ -60,7 +60,7 @@ class CreateDatmusicBackup @Inject constructor(
     }
 }
 
-class DatmusicBackupToFile @Inject constructor(
+class CreateDatmusicBackupToFile @Inject constructor(
     @ApplicationContext private val context: Context,
     private val createDatmusicBackup: CreateDatmusicBackup,
     private val dispatchers: CoroutineDispatchers,
