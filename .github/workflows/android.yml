@@ -8,7 +8,7 @@ concurrency:
 jobs:
   run-tests:
     name: Run Tests
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v1
