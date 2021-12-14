@@ -32,9 +32,9 @@ import com.google.android.vending.licensing.LicenseCheckerCallback
 import com.google.android.vending.licensing.Policy
 import com.google.android.vending.licensing.ServerManagedPolicy
 import timber.log.Timber
-import tm.alashow.base.ui.utils.extensions.androidId
 import tm.alashow.base.util.IntentUtils
 import tm.alashow.base.util.RemoteLogger
+import tm.alashow.base.util.extensions.androidId
 import tm.alashow.datmusic.R
 import tm.alashow.ui.components.TextRoundedButton
 import tm.alashow.ui.theme.AppTheme
