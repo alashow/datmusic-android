@@ -6,6 +6,9 @@ package tm.alashow.base.util.extensions
 
 import android.content.Context
 import android.net.Uri
+import android.provider.Settings
+
+fun Context.androidId() = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
 
 fun Context.writeToFile(data: ByteArray, output: Uri) {
     // try to reset file before writing

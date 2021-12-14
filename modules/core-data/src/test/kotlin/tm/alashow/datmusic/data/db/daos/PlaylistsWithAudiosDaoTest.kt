@@ -9,11 +9,13 @@ import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import javax.inject.Inject
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import tm.alashow.datmusic.data.BaseTest
+import tm.alashow.base.testing.BaseTest
 import tm.alashow.datmusic.data.SampleData
 import tm.alashow.datmusic.data.db.AppDatabase
 import tm.alashow.datmusic.data.db.DatabaseModule
@@ -22,33 +24,28 @@ import tm.alashow.datmusic.data.db.DatabaseModule
 @HiltAndroidTest
 class PlaylistsWithAudiosDaoTest : BaseTest() {
 
-    @Inject
-    lateinit var database: AppDatabase
-
-    @Inject
-    lateinit var playlistsDao: PlaylistsDao
-
-    @Inject
-    lateinit var audiosDao: AudiosDao
-
-    @Inject
-    lateinit var dao: PlaylistsWithAudiosDao
+    @Inject lateinit var database: AppDatabase
+    @Inject lateinit var playlistsDao: PlaylistsDao
+    @Inject lateinit var audiosDao: AudiosDao
+    @Inject lateinit var dao: PlaylistsWithAudiosDao
 
     private val testItems = (1..5).map { SampleData.playlistAudioItems() }
 
     @Before
-    fun setUp() {
-        hiltRule.inject()
+    override fun setUp() {
+        super.setUp()
 
         runBlockingTest {
+            // pre-insert playlists & audios
+            // because in tests we're assuming relations already exist
             playlistsDao.insertAll(testItems.map { it.playlist })
             audiosDao.insertAll(testItems.map { it.audio })
         }
     }
 
     @After
-    fun tearDown() {
-        testScope.cleanupTestCoroutines()
+    override fun tearDown() {
+        super.tearDown()
         database.close()
     }
 
@@ -138,11 +135,16 @@ class PlaylistsWithAudiosDaoTest : BaseTest() {
 
     @Test
     fun distinctAudios() = testScope.runBlockingTest {
-        val audioId = testItems.first().audio.id
-        val items = testItems.map { it.playlistAudio.copy(audioId = audioId) }
+        val audioIds = testItems.also { audiosDao.insertAll(it.map { it.audio }) }.map { it.audio.id }
+        val items = testItems.map { it.playlistAudio.copy(audioId = it.audio.id) }
         dao.insertAll(items)
+        // insert playlist items with same audio ids but different playlistAudioId and position
+        dao.insertAll(items.mapIndexed { index, it -> it.copy(id = items.size + index.toLong(), position = items.size + index) })
 
-        assertThat(dao.distinctAudios().size).isEqualTo(1)
+        assertThat(dao.playlistAudios().first().map { it.audioId })
+            .containsExactlyElementsIn(audioIds + audioIds)
+        assertThat(dao.distinctAudios())
+            .containsExactlyElementsIn(audioIds)
     }
 
     @Test
@@ -163,21 +165,6 @@ class PlaylistsWithAudiosDaoTest : BaseTest() {
 
         dao.playlistItems(playlistId).test {
             assertThat(awaitItem().map { it.playlistAudio }).isEqualTo(orderedItems)
-        }
-    }
-
-    @Test
-    fun playlistsWithAudios() = testScope.runBlockingTest {
-        val items = testItems.map { it.playlistAudio }
-        val playlistAudios = testItems.map { it.playlist.id to it.audio }.toMap()
-        dao.insertAll(items)
-
-        dao.playlistsWithAudios().test {
-            val playlists = awaitItem()
-
-            playlists.forEach {
-                assertThat(it.audios).contains(playlistAudios[it.playlist.id])
-            }
         }
     }
 

@@ -80,6 +80,7 @@ class PlaybackSheetViewModel @Inject constructor(
                     DatmusicSearchParams.BackendType.FLACS
                 )
             )
+            else -> error("Cannot navigate to $sourceMediaType")
         }
     }
 

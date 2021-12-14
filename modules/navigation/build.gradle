@@ -40,6 +40,8 @@ repositories {
 }
 
 dependencies {
+	implementation Deps.Testing.turbine
+
 	implementation Deps.Dagger.hilt
 	kapt Deps.Dagger.compiler
 	kapt Deps.Dagger.hiltCompiler

@@ -31,16 +31,17 @@ buildscript {
 plugins {
     id "com.diffplug.spotless" version "5.17.1"
     id "com.github.ben-manes.versions" version "0.39.0"
+    id "com.kncept.junit.reporter" version "2.1.0"
 }
 
 allprojects {
     repositories {
         google()
         mavenCentral()
-        maven { url 'https://jitpack.io' }
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-        jcenter()
         maven { url 'https://androidx.dev/snapshots/builds/7818717/artifacts/repository' }
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+        maven { url 'https://jitpack.io' }
+        jcenter()
     }
 
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
@@ -67,12 +68,28 @@ subprojects {
         kotlin {
             licenseHeaderFile project.rootProject.file('spotless/copyright.kt')
             target "**/*.kt"
-            ktlint("0.41.0").userData(['android': 'true', 'max_line_length': '200', 'disabled_rules': 'no-wildcard-imports'])
+            ktlint("0.41.0").userData([
+                    'android'        : 'true',
+                    'max_line_length': '200',
+                    'disabled_rules' : 'no-wildcard-imports'
+            ])
         }
         format 'misc', {
             target '**/*.gradle', '**/*.md', '**/.gitignore'
             trimTrailingWhitespace()
             indentWithTabs()
+        }
+    }
+
+    afterEvaluate { project ->
+        if (project.hasProperty("android")) {
+            android {
+                testOptions {
+                    unitTests {
+                        includeAndroidResources = true
+                    }
+                }
+            }
         }
     }
 }

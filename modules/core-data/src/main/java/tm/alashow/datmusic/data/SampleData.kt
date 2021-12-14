@@ -4,7 +4,9 @@
  */
 package tm.alashow.datmusic.data
 
+import kotlin.math.abs
 import kotlin.random.Random
+import kotlin.random.nextInt
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
@@ -12,8 +14,11 @@ import tm.alashow.datmusic.domain.entities.DownloadRequest
 import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.domain.entities.PlaylistAudio
 
-internal object SampleData {
+object SampleData {
     private val random = Random(1000)
+
+    fun Random.id(): Long = abs(nextLong())
+    fun Random.sid(): String = nextInt().toString()
 
     val Audio: Audio = audio()
     val Playlist: Playlist = playlist()
@@ -23,8 +28,8 @@ internal object SampleData {
     val Album: Album = album(Artist)
 
     fun audio() = Audio(
-        id = "sample-audio-${random.nextInt()}",
-        primaryKey = "sample-audio-${random.nextInt()}",
+        id = "sample-audio-${random.id()}",
+        primaryKey = "sample-audio-${random.id()}",
         searchIndex = random.nextInt(),
         page = random.nextInt(),
         params = random.nextInt().toString(),
@@ -33,7 +38,7 @@ internal object SampleData {
         duration = random.nextInt(100, 300)
     )
 
-    fun playlist() = Playlist(id = random.nextLong(), name = "Playlist ${random.nextInt()}")
+    fun playlist() = Playlist(id = random.id(), name = "Playlist ${random.id()}")
 
     data class PlaylistAudioItem(val playlist: Playlist, val audio: Audio, val playlistAudio: PlaylistAudio)
 
@@ -41,12 +46,12 @@ internal object SampleData {
         PlaylistAudioItem(playlist, audio, PlaylistAudio(id = random.nextLong(), playlistId = playlist.id, audioId = audio.id))
 
     fun album(mainArtist: Artist = artist()) = Album(
-        id = "100",
-        primaryKey = "sample-album-${random.nextInt()}",
+        id = random.sid(),
+        primaryKey = "sample-album-${random.id()}",
         searchIndex = random.nextInt(),
         page = random.nextInt(),
-        artistId = 100,
-        title = "Album ${random.nextInt()}",
+        artistId = random.id(),
+        title = "Album ${random.id()}",
         year = random.nextInt(1900, 2030),
         songCount = random.nextInt(1, 10),
         explicit = random.nextBoolean(),
@@ -54,12 +59,12 @@ internal object SampleData {
     )
 
     fun artist() = Artist(
-        id = random.nextInt().toString(),
-        primaryKey = "sample-artist-${random.nextInt()}",
+        id = random.sid(),
+        primaryKey = "sample-artist-${random.id()}",
         searchIndex = random.nextInt(),
         page = random.nextInt(),
-        name = "Artist ${random.nextInt()}"
+        name = "Artist ${random.id()}"
     )
 
-    fun downloadRequest(audio: Audio = audio()) = DownloadRequest.fromAudio(audio)
+    fun downloadRequest(audio: Audio = audio()) = DownloadRequest.fromAudio(audio.copy(id = "${audio.id}-downloaded"))
 }

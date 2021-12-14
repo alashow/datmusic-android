@@ -63,7 +63,7 @@ fun AddToPlaylistMenu(
             multiple = audios.size > 1,
             playlists = playlists.withNewPlaylistItem(),
             onPlaylistSelect = {
-                viewModel.addTo(playlist = it, audios)
+                viewModel.addTo(playlist = it, audios.map { it.id })
             },
             modifier = modifier,
         )

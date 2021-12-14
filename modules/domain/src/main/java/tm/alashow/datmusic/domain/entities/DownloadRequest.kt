@@ -52,7 +52,7 @@ data class DownloadRequest(
     }
 
     enum class Type {
-        Audio;
+        Audio, Playlist;
 
         override fun toString() = name
 

@@ -9,7 +9,7 @@ import java.util.*
 import okhttp3.Interceptor
 import okhttp3.Response
 import tm.alashow.Config as BaseConfig
-import tm.alashow.base.ui.utils.extensions.androidId
+import tm.alashow.base.util.extensions.androidId
 import tm.alashow.datmusic.Config
 
 internal class AppHeadersInterceptor(context: Context) : Interceptor {

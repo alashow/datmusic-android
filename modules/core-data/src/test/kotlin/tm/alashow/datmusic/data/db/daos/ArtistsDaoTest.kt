@@ -11,9 +11,8 @@ import dagger.hilt.android.testing.UninstallModules
 import javax.inject.Inject
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.After
-import org.junit.Before
 import org.junit.Test
-import tm.alashow.datmusic.data.BaseTest
+import tm.alashow.base.testing.BaseTest
 import tm.alashow.datmusic.data.DatmusicSearchParams
 import tm.alashow.datmusic.data.SampleData
 import tm.alashow.datmusic.data.db.AppDatabase
@@ -34,14 +33,9 @@ class ArtistsDaoTest : BaseTest() {
     private val testParams = DatmusicSearchParams("test")
     private val entriesComparator = compareBy(Artist::page, Artist::searchIndex)
 
-    @Before
-    fun setUp() {
-        hiltRule.inject()
-    }
-
     @After
-    fun tearDown() {
-        testScope.cleanupTestCoroutines()
+    override fun tearDown() {
+        super.tearDown()
         database.close()
     }
 
