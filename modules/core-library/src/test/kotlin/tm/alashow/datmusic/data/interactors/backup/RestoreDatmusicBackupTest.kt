@@ -8,7 +8,6 @@ import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import javax.inject.Inject
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 import tm.alashow.base.testing.BaseTest
@@ -22,7 +21,7 @@ import tm.alashow.datmusic.data.repos.playlist.PlaylistsRepo
 
 @HiltAndroidTest
 @UninstallModules(DatabaseModule::class)
-class CreateDatmusicBackupTest : BaseTest() {
+class RestoreDatmusicBackupTest : BaseTest() {
 
     @Inject lateinit var database: AppDatabase
     @Inject lateinit var playlistsRepo: PlaylistsRepo
@@ -31,6 +30,7 @@ class CreateDatmusicBackupTest : BaseTest() {
     @Inject lateinit var albumsDao: AlbumsDao
     @Inject lateinit var downloadRequestsDao: DownloadRequestsDao
     @Inject lateinit var createDatmusicBackup: CreateDatmusicBackup
+    @Inject lateinit var restoreDatmusicBackup: RestoreDatmusicBackup
 
     override fun tearDown() {
         super.tearDown()
@@ -38,18 +38,15 @@ class CreateDatmusicBackupTest : BaseTest() {
     }
 
     @Test
-    fun `creates backup with audios & playlists`() = testScope.runBlockingTest {
-        val (playlistItemAudios, downloadRequests) = createBackupData(playlistsRepo, audiosRepo, artistsDao, albumsDao, downloadRequestsDao)
+    fun `restored backup is the same as initial backup after clearing & restoring from initial backup`() = testScope.runBlockingTest {
+        createBackupData(playlistsRepo, audiosRepo, artistsDao, albumsDao, downloadRequestsDao)
+        val initialBackup = createDatmusicBackup.execute(Unit)
+        database.clearAllTables()
 
-        val backup = createDatmusicBackup.execute(Unit)
+        restoreDatmusicBackup.execute(initialBackup)
 
-        val playlistAudiosAndDownloads = playlistItemAudios.map { it.id } + downloadRequests.map { it.id }
-        assertThat(backup.audios.map { it.id }.toSet())
-            .containsExactlyElementsIn(playlistAudiosAndDownloads.toSet())
-
-        assertThat(artistsDao.entries().first())
-            .isEmpty()
-        assertThat(albumsDao.entries().first())
-            .isEmpty()
+        val restoredBackup = createDatmusicBackup.execute(Unit)
+        assertThat(restoredBackup)
+            .isEqualTo(initialBackup)
     }
 }
