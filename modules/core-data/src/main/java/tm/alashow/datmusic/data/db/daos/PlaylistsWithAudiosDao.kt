@@ -17,7 +17,6 @@ import tm.alashow.datmusic.domain.entities.PlaylistAudioIds
 import tm.alashow.datmusic.domain.entities.PlaylistAudios
 import tm.alashow.datmusic.domain.entities.PlaylistId
 import tm.alashow.datmusic.domain.entities.PlaylistItem
-import tm.alashow.datmusic.domain.entities.PlaylistWithAudios
 
 @Dao
 abstract class PlaylistsWithAudiosDao {
@@ -26,7 +25,7 @@ abstract class PlaylistsWithAudiosDao {
     abstract suspend fun insert(entities: PlaylistAudio)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract suspend fun insertAll(entities: List<PlaylistAudio>): List<Long>
+    abstract suspend fun insertAll(entities: List<PlaylistAudio>): List<PlaylistAudioId>
 
     @Update(onConflict = OnConflictStrategy.ABORT)
     abstract suspend fun updateAll(entities: List<PlaylistAudio>)
@@ -41,7 +40,7 @@ abstract class PlaylistsWithAudiosDao {
     abstract suspend fun getAll(): List<PlaylistAudio>
 
     @Query("SELECT * FROM playlist_audios WHERE playlist_id = :id AND position = :position ")
-    abstract suspend fun getByPosition(id: PlaylistId, position: Int): PlaylistAudio
+    abstract suspend fun getByPosition(id: PlaylistId, position: Int): PlaylistAudio?
 
     @Query("SELECT * FROM playlist_audios WHERE id = :id ")
     abstract suspend fun getById(id: PlaylistAudioId): PlaylistAudio
@@ -58,10 +57,6 @@ abstract class PlaylistsWithAudiosDao {
     @Transaction
     @Query("SELECT * FROM playlist_audios WHERE playlist_id = :id ORDER BY position")
     abstract fun playlistItems(id: PlaylistId): Flow<List<PlaylistItem>>
-
-    @Transaction
-    @Query("SELECT * FROM playlists")
-    abstract fun playlistsWithAudios(): Flow<List<PlaylistWithAudios>>
 
     @Query("SELECT * FROM playlist_audios")
     abstract fun playlistAudios(): Flow<PlaylistAudios>

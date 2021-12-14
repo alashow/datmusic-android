@@ -39,8 +39,6 @@ repositories {
 }
 
 dependencies {
-	api Deps.Utils.coil
-
 	api Deps.Dagger.hilt
 
 	// android

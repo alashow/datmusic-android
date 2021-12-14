@@ -20,8 +20,8 @@ import tm.alashow.base.util.CreateFileContract
 import tm.alashow.base.util.event
 import tm.alashow.base.util.extensions.stateInDefault
 import tm.alashow.base.util.toUiMessage
-import tm.alashow.datmusic.data.backup.DatmusicBackupToFile
-import tm.alashow.datmusic.data.backup.DatmusicRestoreFromFile
+import tm.alashow.datmusic.data.interactors.backup.CreateDatmusicBackupToFile
+import tm.alashow.datmusic.data.interactors.backup.RestoreDatmusicFromFile
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.ui.settings.R
 import tm.alashow.domain.models.Fail
@@ -33,8 +33,8 @@ val BACKUP_FILE_PARAMS = CreateFileContract.Params(suggestedName = "datmusic-bac
 @HiltViewModel
 class BackupRestoreViewModel @Inject constructor(
     handle: SavedStateHandle,
-    private val backupToFile: DatmusicBackupToFile,
-    private val restoreFromFile: DatmusicRestoreFromFile,
+    private val backupToFile: CreateDatmusicBackupToFile,
+    private val restoreFromFile: RestoreDatmusicFromFile,
     private val snackbarManager: SnackbarManager,
     private val analytics: FirebaseAnalytics,
     private val playbackConnection: PlaybackConnection,

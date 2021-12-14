@@ -11,7 +11,6 @@ import androidx.room.ForeignKey
 import androidx.room.ForeignKey.CASCADE
 import androidx.room.Ignore
 import androidx.room.Index
-import androidx.room.Junction
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 import java.io.File
@@ -24,7 +23,7 @@ import tm.alashow.domain.models.BaseEntity
 
 typealias PlaylistId = Long
 typealias Playlists = List<Playlist>
-typealias PlaylistsWithAudios = List<PlaylistWithAudios>
+typealias PlaylistsWithItems = List<PlaylistWithItems>
 
 const val PLAYLIST_NAME_MAX_LENGTH = 100
 
@@ -96,22 +95,6 @@ data class PlaylistAudio(
     val position: Int = 0,
 )
 
-data class PlaylistWithAudios(
-    @Embedded
-    val playlist: Playlist = Playlist(),
-
-    @Relation(
-        parentColumn = "id",
-        entityColumn = "id",
-        associateBy = Junction(
-            PlaylistAudio::class,
-            parentColumn = "playlist_id",
-            entityColumn = "audio_id"
-        )
-    )
-    val audios: List<Audio> = emptyList(),
-)
-
 data class PlaylistItem(
     @Embedded
     val playlistAudio: PlaylistAudio = PlaylistAudio(),
@@ -123,6 +106,7 @@ data class PlaylistItem(
     val audio: Audio = Audio()
 )
 
+data class PlaylistWithItems(val playlist: Playlist = Playlist(), val items: List<PlaylistItem>)
 typealias PlaylistAudios = List<PlaylistAudio>
 typealias PlaylistItems = List<PlaylistItem>
 typealias PlaylistAudioIds = List<PlaylistAudioId>

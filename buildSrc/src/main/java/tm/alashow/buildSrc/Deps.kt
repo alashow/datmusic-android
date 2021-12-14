@@ -22,7 +22,7 @@ object Deps {
     }
 
     object Android {
-        private const val gradleVersion = "7.0.3"
+        private const val gradleVersion = "7.0.4"
 
         const val gradle = "com.android.tools.build:gradle:$gradleVersion"
 
@@ -164,7 +164,7 @@ object Deps {
     }
 
     object Dagger {
-        private const val version = "2.40.1"
+        private const val version = "2.40.4"
 
         const val dagger = "com.google.dagger:dagger:$version"
         const val compiler = "com.google.dagger:dagger-compiler:$version"

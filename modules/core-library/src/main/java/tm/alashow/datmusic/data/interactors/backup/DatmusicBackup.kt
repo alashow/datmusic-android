@@ -2,7 +2,7 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.datmusic.data.backup
+package tm.alashow.datmusic.data.interactors.backup
 
 import android.content.Context
 import android.net.Uri
@@ -20,6 +20,7 @@ import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
 import tm.alashow.datmusic.data.db.daos.PlaylistsDao
 import tm.alashow.datmusic.data.db.daos.PlaylistsWithAudiosDao
 import tm.alashow.datmusic.data.interactors.playlist.CreateOrGetPlaylist
+import tm.alashow.datmusic.domain.entities.DatmusicBackupData
 import tm.alashow.datmusic.domain.entities.DownloadRequest
 
 class CreateDatmusicBackup @Inject constructor(
@@ -31,11 +32,9 @@ class CreateDatmusicBackup @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val clearUnusedEntities: ClearUnusedEntities,
     private val createOrGetPlaylist: CreateOrGetPlaylist,
-) : ResultInteractor<CreateDatmusicBackup.Params, DatmusicBackupData>() {
+) : ResultInteractor<Unit, DatmusicBackupData>() {
 
-    data class Params(val clearEntities: Boolean = true)
-
-    override suspend fun doWork(params: Params) = withContext(dispatchers.io) {
+    override suspend fun doWork(params: Unit) = withContext(dispatchers.io) {
         clearUnusedEntities()
 
         val downloadRequestAudios = downloadRequestsDao.getByType(DownloadRequest.Type.Audio)
@@ -61,14 +60,14 @@ class CreateDatmusicBackup @Inject constructor(
     }
 }
 
-class DatmusicBackupToFile @Inject constructor(
+class CreateDatmusicBackupToFile @Inject constructor(
     @ApplicationContext private val context: Context,
     private val createDatmusicBackup: CreateDatmusicBackup,
     private val dispatchers: CoroutineDispatchers,
 ) : AsyncInteractor<Uri, Unit>() {
 
     override suspend fun doWork(params: Uri) = withContext(dispatchers.io) {
-        val backup = createDatmusicBackup.execute(CreateDatmusicBackup.Params())
+        val backup = createDatmusicBackup.execute(Unit)
         val backupJsonBytes = backup.toJson().toByteArray()
         context.writeToFile(backupJsonBytes, params)
     }

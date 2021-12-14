@@ -40,6 +40,7 @@ dependencies {
 	api Deps.Kotlin.serializationRuntime
 	api Deps.Kotlin.coroutinesCore
 
+	api Deps.Utils.coil
 	api Deps.Utils.timber
 	api Deps.Utils.threeTenAbp
 

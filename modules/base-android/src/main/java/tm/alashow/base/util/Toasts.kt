@@ -15,7 +15,7 @@ import androidx.annotation.StringRes
  * @param message the message text.
  */
 fun Context.toast(message: CharSequence, duration: Int = Toast.LENGTH_SHORT, block: Toast.() -> Unit = {}): Toast = Toast
-    .makeText(this, message, Toast.LENGTH_SHORT)
+    .makeText(this, message, duration)
     .apply {
         block(this)
         show()
@@ -24,7 +24,7 @@ fun Context.toast(message: CharSequence, duration: Int = Toast.LENGTH_SHORT, blo
 fun Context.toast(@StringRes messageRes: Int, duration: Int = Toast.LENGTH_SHORT, block: Toast.() -> Unit = {}) = toast(getString(messageRes), duration, block)
 
 fun Context.centeredToast(message: CharSequence, duration: Int = Toast.LENGTH_SHORT) {
-    toast(message) {
+    toast(message, duration) {
         setGravity(Gravity.CENTER, 0, 0)
     }
 }
