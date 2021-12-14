@@ -32,11 +32,9 @@ class CreateDatmusicBackup @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val clearUnusedEntities: ClearUnusedEntities,
     private val createOrGetPlaylist: CreateOrGetPlaylist,
-) : ResultInteractor<CreateDatmusicBackup.Params, DatmusicBackupData>() {
+) : ResultInteractor<Unit, DatmusicBackupData>() {
 
-    data class Params(val clearEntities: Boolean = true)
-
-    override suspend fun doWork(params: Params) = withContext(dispatchers.io) {
+    override suspend fun doWork(params: Unit) = withContext(dispatchers.io) {
         clearUnusedEntities()
 
         val downloadRequestAudios = downloadRequestsDao.getByType(DownloadRequest.Type.Audio)
@@ -69,7 +67,7 @@ class DatmusicBackupToFile @Inject constructor(
 ) : AsyncInteractor<Uri, Unit>() {
 
     override suspend fun doWork(params: Uri) = withContext(dispatchers.io) {
-        val backup = createDatmusicBackup.execute(CreateDatmusicBackup.Params())
+        val backup = createDatmusicBackup.execute(Unit)
         val backupJsonBytes = backup.toJson().toByteArray()
         context.writeToFile(backupJsonBytes, params)
     }
