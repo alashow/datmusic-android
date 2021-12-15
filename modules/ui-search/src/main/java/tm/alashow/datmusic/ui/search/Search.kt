@@ -59,7 +59,7 @@ import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
 import com.google.firebase.analytics.FirebaseAnalytics
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -119,7 +119,7 @@ private fun Search(
             .distinctUntilChanged()
             .map { if (listState.firstVisibleItemIndex > searchBarHideThreshold) it else false }
             .map { if (it) 1f else 0f }
-            .collect { searchBarHidden.animateTo(it) }
+            .collectLatest { searchBarHidden.animateTo(it) }
     }
 
     Scaffold(

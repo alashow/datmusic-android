@@ -21,7 +21,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.util.lerp
 import com.google.accompanist.pager.*
 import kotlin.math.absoluteValue
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.playback.PLAYBACK_PROGRESS_INTERVAL
@@ -49,7 +49,7 @@ internal fun PlaybackPager(
         if (playbackCurrentIndex != pagerState.currentPage) {
             pagerState.scrollToPage(playbackCurrentIndex)
         }
-        snapshotFlow { pagerState.currentPage }.collect { page ->
+        snapshotFlow { pagerState.currentPage }.collectLatest { page ->
             if (lastRequestedPage != page) {
                 lastRequestedPage = page
                 playbackConnection.transportControls?.skipToQueueItem(page.toLong())

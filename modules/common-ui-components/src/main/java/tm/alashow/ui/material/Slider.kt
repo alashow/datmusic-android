@@ -83,8 +83,9 @@ import androidx.compose.ui.util.lerp
 import kotlin.math.abs
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 /**
@@ -591,6 +592,7 @@ private fun RangeSliderImpl(
     }
 }
 
+@OptIn(InternalCoroutinesApi::class)
 @Composable
 private fun SliderThumb(
     modifier: Modifier,
@@ -603,7 +605,7 @@ private fun SliderThumb(
     Box(modifier.padding(start = offset)) {
         val interactions = remember { mutableStateListOf<Interaction>() }
         LaunchedEffect(interactionSource) {
-            interactionSource.interactions.collect { interaction ->
+            interactionSource.interactions.collectLatest { interaction ->
                 when (interaction) {
                     is PressInteraction.Press -> interactions.add(interaction)
                     is PressInteraction.Release -> interactions.remove(interaction.press)

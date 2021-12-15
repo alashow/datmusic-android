@@ -10,7 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import tm.alashow.base.ui.SnackbarManager
@@ -61,7 +61,7 @@ class LibraryViewModel @Inject constructor(
 
     fun downloadPlaylist(playlistId: PlaylistId) = viewModelScope.launch {
         analytics.event("playlist.row.download", mapOf("playlistId" to playlistId))
-        playlistDownloader(playlistId).collect { result ->
+        playlistDownloader(playlistId).collectLatest { result ->
             when (result) {
                 is Fail -> snackbarManager.addMessage(result.error.toUiMessage())
                 is Loading -> {

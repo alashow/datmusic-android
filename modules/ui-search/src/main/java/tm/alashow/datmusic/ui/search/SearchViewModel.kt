@@ -16,7 +16,6 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
@@ -76,7 +75,7 @@ internal class SearchViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            pendingActions.collect { action ->
+            pendingActions.collectLatest { action ->
                 when (action) {
                     is SearchAction.QueryChange -> {
                         searchQuery.value = action.query
@@ -183,7 +182,7 @@ internal class SearchViewModel @Inject constructor(
 
     private fun Flow<Throwable>.watchForErrors(pager: ObservePagedDatmusicSearch<*>) = viewModelScope.launch { collectErrors(pager) }
 
-    private suspend fun Flow<Throwable>.collectErrors(pager: ObservePagedDatmusicSearch<*>) = collect { error ->
+    private suspend fun Flow<Throwable>.collectErrors(pager: ObservePagedDatmusicSearch<*>) = collectLatest { error ->
         Timber.e(error, "Collected error from a pager")
         when (error) {
             is ApiCaptchaError -> captchaError.value = error

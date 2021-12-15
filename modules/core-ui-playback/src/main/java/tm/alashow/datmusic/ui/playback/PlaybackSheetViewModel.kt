@@ -10,7 +10,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import tm.alashow.base.ui.SnackbarAction
@@ -50,7 +50,7 @@ class PlaybackSheetViewModel @Inject constructor(
         val params = CreatePlaylist.Params(name = queue.title.asQueueTitle().localizeValue(), audios = queue, trimIfTooLong = true)
         createPlaylist(params)
             .catch { snackbarManager.addMessage(it.toUiMessage()) }
-            .collect { playlist ->
+            .collectLatest { playlist ->
                 val savedAsPlaylist = SavedAsPlaylistMessage(playlist)
                 snackbarManager.addMessage(savedAsPlaylist)
                 if (snackbarManager.observeMessageAction(savedAsPlaylist) != null)

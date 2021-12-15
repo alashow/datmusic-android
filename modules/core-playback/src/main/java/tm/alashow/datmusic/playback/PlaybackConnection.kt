@@ -129,13 +129,13 @@ class PlaybackConnectionImpl(
     }
 
     private fun startPlaybackProgress() = launch {
-        combine(playbackState, nowPlaying, ::Pair).collect { (state, current) ->
+        combine(playbackState, nowPlaying, ::Pair).collectLatest { (state, current) ->
             playbackProgressInterval.cancel()
             val duration = current.duration
             val position = state.position
 
             if (state == NONE_PLAYBACK_STATE || current == NONE_PLAYING || duration < 1)
-                return@collect
+                return@collectLatest
 
             val initial = PlaybackProgressState(duration, position, buffered = audioPlayer.bufferedPosition())
             playbackProgress.value = initial
@@ -180,7 +180,7 @@ class PlaybackConnectionImpl(
 
     private fun starPlaybackProgressInterval(initial: PlaybackProgressState) {
         playbackProgressInterval = launch {
-            flowInterval(PLAYBACK_PROGRESS_INTERVAL).collect { ticks ->
+            flowInterval(PLAYBACK_PROGRESS_INTERVAL).collectLatest { ticks ->
                 val elapsed = PLAYBACK_PROGRESS_INTERVAL * (ticks + 1)
                 playbackProgress.value = initial.copy(elapsed = elapsed, buffered = audioPlayer.bufferedPosition())
             }

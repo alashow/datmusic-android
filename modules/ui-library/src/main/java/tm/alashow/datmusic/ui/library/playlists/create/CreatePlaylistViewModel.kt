@@ -14,7 +14,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import tm.alashow.base.util.event
@@ -53,7 +53,7 @@ class CreatePlaylistViewModel @Inject constructor(
         viewModelScope.launch {
             createPlaylist(params).catch {
                 nameErrorState.value = it.asValidationError()
-            }.collect { newPlaylist ->
+            }.collectLatest { newPlaylist ->
                 navigator.navigate(LeafScreen.PlaylistDetail.buildRoute(newPlaylist.id))
             }
         }

@@ -3,19 +3,19 @@ package tm.alashow.buildSrc
 object Deps {
     object Gradle {
         const val dexCount = "com.getkeepsafe.dexcount:dexcount-gradle-plugin:2.0.0"
-        const val playPublisher = "com.github.triplet.gradle:play-publisher:3.6.0"
+        const val playPublisher = "com.github.triplet.gradle:play-publisher:3.7.0"
         const val googleServices = "com.google.gms:google-services:4.3.10"
     }
 
     object Kotlin {
-        const val version = "1.5.31"
+        const val version = "1.6.0"
 
         const val stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$version"
         const val gradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:$version"
         const val serialization = "org.jetbrains.kotlin:kotlin-serialization:$version"
         const val serializationRuntime = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.1"
 
-        const val coroutinesVersion = "1.5.2"
+        const val coroutinesVersion = "1.6.0-RC2"
         const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
         const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
         const val coroutineTesting = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
@@ -43,12 +43,12 @@ object Deps {
         const val documentFile = "androidx.documentfile:documentfile:1.1.0-alpha01"
 
         const val palette = "androidx.palette:palette-ktx:1.0.0"
-        const val media ="androidx.media:media:1.5.0-alpha01"
+        const val media ="androidx.media:media:1.5.0-beta01"
 
         const val archCoreTesting = "androidx.arch.core:core-testing:2.1.0"
 
         object Compose {
-            const val version = "1.1.0-beta03"
+            const val version = "1.1.0-beta04"
 
             const val ui = "androidx.compose.ui:ui:$version"
             const val uiUtil = "androidx.compose.ui:ui-util:$version"
@@ -63,15 +63,15 @@ object Deps {
             const val viewModels = "androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0"
             const val paging = "androidx.paging:paging-compose:1.0.0-alpha14"
 
-            private const val lottieVersion = "4.2.1"
+            private const val lottieVersion = "4.2.2"
             const val lottie = "com.airbnb.android:lottie-compose:$lottieVersion"
 
             const val coil = "io.coil-kt:coil-compose:${Utils.coilVersion}"
-            const val reorderable = "org.burnoutcrew.composereorderable:reorderable:0.7.0"
+            const val reorderable = "org.burnoutcrew.composereorderable:reorderable:0.7.4"
         }
 
         object Accompanist {
-            private const val version = "0.21.3-beta"
+            private const val version = "0.21.4-beta"
 
             const val insets = "com.google.accompanist:accompanist-insets:$version"
             const val insetsUi = "com.google.accompanist:accompanist-insets-ui:$version"
@@ -97,7 +97,7 @@ object Deps {
         }
 
         object Room {
-            private const val versiion = "2.4.0-beta02"
+            private const val versiion = "2.4.0-rc01"
 
             const val compiler = "androidx.room:room-compiler:$versiion"
             const val runtime = "androidx.room:room-runtime:$versiion"
@@ -114,12 +114,12 @@ object Deps {
         }
 
         object Test {
-            private const val version = "1.4.0"
+            private const val version = "1.4.1-alpha03"
 
             const val core = "androidx.test:core:$version"
             const val rules = "androidx.test:rules:$version"
             const val runner = "androidx.test:runner:$version"
-            const val junit = "androidx.test.ext:junit-ktx:1.1.3"
+            const val junit = "androidx.test.ext:junit-ktx:1.1.4-alpha03"
         }
     }
 
@@ -130,9 +130,9 @@ object Deps {
 
         const val threeTen = "org.threeten:threetenbp:1.5.2"
 
-        const val coilVersion = "2.0.0-alpha04"
+        const val coilVersion = "2.0.0-alpha05"
         const val coil = "io.coil-kt:coil:$coilVersion"
-        const val store = "com.dropbox.mobile.store:store4:4.0.3-KT15"
+        const val store = "com.dropbox.mobile.store:store4:4.0.4-KT15"
 
         // const val fetch = "androidx.tonyodev.fetch2:xfetch2:3.1.6"
         // const val fetchOkhttp = "androidx.tonyodev.fetch2okhttp:xfetch2okhttp:3.1.6"
@@ -143,7 +143,7 @@ object Deps {
         const val exoPlayerOkhttp = "com.google.android.exoplayer:extension-okhttp:2.15.0"
         const val exoPlayerFlac = "com.github.alashow.ExoPlayer-Extensions:extension-flac:v2.15.1"
 
-        const val qonversion = "io.qonversion.android.sdk:sdk:3.2.1"
+        const val qonversion = "io.qonversion.android.sdk:sdk:3.2.3"
     }
 
     object OkHttp {
@@ -164,7 +164,7 @@ object Deps {
     }
 
     object Dagger {
-        private const val version = "2.40.4"
+        private const val version = "2.40.5"
 
         const val dagger = "com.google.dagger:dagger:$version"
         const val compiler = "com.google.dagger:dagger-compiler:$version"
@@ -183,18 +183,18 @@ object Deps {
 
     object Firebase {
 
-        const val bom = "com.google.firebase:firebase-bom:29.0.0"
+        const val bom = "com.google.firebase:firebase-bom:29.0.2"
         const val messaging = "com.google.firebase:firebase-messaging-ktx"
         const val remoteConfig = "com.google.firebase:firebase-config-ktx"
         const val analytics = "com.google.firebase:firebase-analytics-ktx"
         const val crashlytics = "com.google.firebase:firebase-crashlytics-ktx"
-        const val crashlyticsGradle = "com.google.firebase:firebase-crashlytics-gradle:2.8.0"
+        const val crashlyticsGradle = "com.google.firebase:firebase-crashlytics-gradle:2.8.1"
     }
 
     object Testing {
         const val junit = "junit:junit:4.13.2"
         const val truth = "com.google.truth:truth:1.1.3"
-        const val robolectric = "org.robolectric:robolectric:4.7.2"
+        const val robolectric = "org.robolectric:robolectric:4.7.3"
         const val mockito = "org.mockito:mockito-core:4.1.0"
         const val mockitoKotlin = "org.mockito.kotlin:mockito-kotlin:4.0.0"
         const val turbine = "app.cash.turbine:turbine:0.7.0"

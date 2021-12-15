@@ -22,7 +22,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.statusBarsPadding
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import tm.alashow.base.util.extensions.Callback
@@ -42,7 +42,7 @@ fun coverHeaderScrollProgress(listState: LazyListState, height: Dp = CoverHeader
             .map { if (listState.firstVisibleItemIndex == 0) it else 1f }
             .map { it.coerceIn(0f, 1f) }
             .distinctUntilChanged()
-            .collect { headerProgress.value = it }
+            .collectLatest { headerProgress.value = it }
     }
     return headerProgress
 }

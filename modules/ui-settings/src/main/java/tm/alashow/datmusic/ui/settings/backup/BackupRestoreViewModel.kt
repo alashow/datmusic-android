@@ -12,7 +12,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import tm.alashow.base.ui.SnackbarManager
@@ -48,14 +48,14 @@ class BackupRestoreViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            restoreFromFile.warnings.collect { snackbarManager.addMessage(it.toUiMessage()) }
+            restoreFromFile.warnings.collectLatest { snackbarManager.addMessage(it.toUiMessage()) }
         }
     }
 
     fun backupTo(file: Uri) = viewModelScope.launch {
         analytics.event("settings.db.backup")
         playbackConnection.transportControls?.stop()
-        backupToFile(file).collect {
+        backupToFile(file).collectLatest {
             isBackingUp.value = it.isLoading
             when (it) {
                 is Fail -> snackbarManager.addMessage(it.error.toUiMessage())
@@ -68,7 +68,7 @@ class BackupRestoreViewModel @Inject constructor(
     fun restoreFrom(file: Uri) = viewModelScope.launch {
         analytics.event("settings.db.restore")
         playbackConnection.transportControls?.stop()
-        restoreFromFile(file).collect {
+        restoreFromFile(file).collectLatest {
             isRestoring.value = it.isLoading
             when (it) {
                 is Fail -> snackbarManager.addMessage(it.error.toUiMessage())

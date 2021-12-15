@@ -9,7 +9,7 @@ import javax.inject.Singleton
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
@@ -42,7 +42,7 @@ class SnackbarManager @Inject constructor(
     val errors: Flow<Throwable?> = flow {
         emit(null)
 
-        pendingErrors.receiveAsFlow().collect {
+        pendingErrors.receiveAsFlow().collectLatest {
             emit(it)
 
             // Wait for either a maxDuration timeout, or a remove signal (whichever comes first)

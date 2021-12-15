@@ -7,8 +7,8 @@ package tm.alashow.datmusic.data.observers.artist
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.collectLatest
 import tm.alashow.data.SubjectInteractor
 import tm.alashow.datmusic.data.DatmusicArtistParams
 import tm.alashow.datmusic.data.db.daos.ArtistsDao
@@ -29,10 +29,10 @@ class ObserveArtistDetails @Inject constructor(
     private val getArtistDetails: GetArtistDetails,
 ) : SubjectInteractor<GetArtistDetails.Params, Async<Artist>>() {
 
-    override fun createObservable(params: GetArtistDetails.Params): Flow<Async<Artist>> = flow {
-        emit(Loading())
+    override fun createObservable(params: GetArtistDetails.Params) = channelFlow<Async<Artist>> {
+        send(Loading())
         getArtistDetails(params)
-            .catch { error -> emit(Fail<Artist>(error)) }
-            .collect { emit(Success(it)) }
+            .catch { error -> send(Fail(error)) }
+            .collectLatest { send(Success(it)) }
     }
 }

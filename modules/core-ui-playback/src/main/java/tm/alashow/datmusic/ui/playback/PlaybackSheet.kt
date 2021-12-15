@@ -73,9 +73,10 @@ import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.ui.Scaffold
 import com.google.accompanist.insets.ui.TopAppBar
+import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
 import kotlin.math.roundToLong
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import tm.alashow.base.ui.ColorPalettePreference
 import tm.alashow.base.ui.ThemeState
@@ -153,6 +154,7 @@ fun PlaybackSheet(
     }
 }
 
+@OptIn(ExperimentalPagerApi::class)
 @Composable
 internal fun PlaybackSheetContent(
     onClose: Callback,
@@ -172,7 +174,7 @@ internal fun PlaybackSheetContent(
     val pagerState = rememberPagerState(playbackQueue.currentIndex)
 
     LaunchedEffect(playbackConnection) {
-        playbackConnection.playbackState.collect {
+        playbackConnection.playbackState.collectLatest {
             if (it.isIdle) onClose()
         }
     }

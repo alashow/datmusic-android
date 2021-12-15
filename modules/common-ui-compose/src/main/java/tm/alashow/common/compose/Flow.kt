@@ -12,7 +12,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun <T> rememberFlowWithLifecycle(
@@ -34,7 +34,7 @@ fun <T> collectEvent(
     collector: (T) -> Unit
 ): Unit = LaunchedEffect(lifecycle, flow) {
     lifecycle.repeatOnLifecycle(minActiveState) {
-        flow.collect {
+        flow.collectLatest {
             collector(it)
         }
     }

@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
@@ -88,7 +88,7 @@ class EditPlaylistViewModel @Inject constructor(
             val playlist = observePlaylist.get()
             nameState.value = TextFieldValue(playlist.name)
 
-            observePlaylistDetails.flow.filter { it is Success }.collect {
+            observePlaylistDetails.flow.filter { it is Success }.collectLatest {
                 val items = it.invoke().orEmpty()
                 playlistItems.value = items
             }
@@ -159,7 +159,7 @@ class EditPlaylistViewModel @Inject constructor(
 
     fun deletePlaylist() = viewModelScope.launch {
         analytics.event("playlists.edit.delete", mapOf("playlistId" to playlistId))
-        deletePlaylist(playlistId).collect {
+        deletePlaylist(playlistId).collectLatest {
             navigator.goBack()
         }
     }
@@ -185,7 +185,7 @@ class EditPlaylistViewModel @Inject constructor(
             val playlist = observePlaylist.get().copy(name = nameState.value.text.orBlank())
             updatePlaylist(playlist).catch {
                 nameErrorState.value = it.asValidationError()
-            }.collect {
+            }.collectLatest {
                 navigator.goBack()
             }
         }
