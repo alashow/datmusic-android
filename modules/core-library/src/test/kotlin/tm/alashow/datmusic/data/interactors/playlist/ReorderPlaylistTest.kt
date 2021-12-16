@@ -9,7 +9,8 @@ import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import javax.inject.Inject
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Test
 import tm.alashow.base.testing.BaseTest
 import tm.alashow.base.util.extensions.swap
@@ -28,13 +29,13 @@ class ReorderPlaylistTest : BaseTest() {
     @Inject lateinit var repo: PlaylistsRepo
     @Inject lateinit var audiosRepo: AudiosRepo
 
-    override fun tearDown() {
-        super.tearDown()
+    @After
+    fun tearDown() {
         database.close()
     }
 
     @Test
-    fun `swaps position of playlist items given playlist id and from, to`() = testScope.runBlockingTest {
+    fun `swaps position of playlist items given playlist id and from, to`() = runTest {
         val playlist = SampleData.playlist()
         val audioIds = (1..5).map { SampleData.audio() }
             .apply { audiosRepo.insertAll(this) }

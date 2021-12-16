@@ -9,7 +9,8 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import javax.inject.Inject
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Test
 import tm.alashow.base.testing.BaseTest
 import tm.alashow.datmusic.data.SampleData
@@ -33,13 +34,13 @@ class ClearUnusedEntitiesTest : BaseTest() {
     @Inject lateinit var downloadRequestsDao: DownloadRequestsDao
     @Inject lateinit var clearUnusedEntities: ClearUnusedEntities
 
-    override fun tearDown() {
-        super.tearDown()
+    @After
+    fun tearDown() {
         database.close()
     }
 
     @Test
-    fun `clears unused entities`() = testScope.runBlockingTest {
+    fun `clears unused entities`() = runTest {
         val audioItems = (1..10).map { SampleData.audio() }
             .also { audiosRepo.insertAll(it) }
         val artistItems = (1..10).map { SampleData.artist() }

@@ -10,7 +10,8 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import javax.inject.Inject
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Test
 import tm.alashow.base.testing.BaseTest
 import tm.alashow.datmusic.data.SampleData
@@ -28,13 +29,13 @@ class UpdatePlaylistItemsTest : BaseTest() {
     @Inject lateinit var repo: PlaylistsRepo
     @Inject lateinit var audiosRepo: AudiosRepo
 
-    override fun tearDown() {
-        super.tearDown()
+    @After
+    fun tearDown() {
         database.close()
     }
 
     @Test
-    fun `updates playlist items given playlist items`() = testScope.runBlockingTest {
+    fun `updates playlist items given playlist items`() = runTest {
         val audioIds = (1..5).map { SampleData.audio() }.also { audiosRepo.insertAll(it) }.map { it.id }
         val id = repo.createPlaylist(SampleData.playlist(), audioIds)
         val shuffledPlaylistItems = repo.playlistItems(id).first()

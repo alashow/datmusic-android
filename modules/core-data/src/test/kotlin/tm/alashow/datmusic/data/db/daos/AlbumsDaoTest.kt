@@ -9,7 +9,7 @@ import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import javax.inject.Inject
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Test
 import tm.alashow.base.testing.BaseTest
@@ -34,13 +34,12 @@ class AlbumsDaoTest : BaseTest() {
     private val entriesComparator = compareBy(Album::page, Album::searchIndex)
 
     @After
-    override fun tearDown() {
-        super.tearDown()
+    fun tearDown() {
         database.close()
     }
 
     @Test
-    fun entries() = testScope.runBlockingTest {
+    fun entries() = runTest {
         val items = testItems.sortedWith(entriesComparator)
         dao.insertAll(items)
 
@@ -50,7 +49,7 @@ class AlbumsDaoTest : BaseTest() {
     }
 
     @Test
-    fun entries_onSamePage() = testScope.runBlockingTest {
+    fun entries_onSamePage() = runTest {
         val items = testItems.map { it.copy(page = 0) }.sortedWith(entriesComparator)
         dao.insertAll(items)
 
@@ -60,7 +59,7 @@ class AlbumsDaoTest : BaseTest() {
     }
 
     @Test
-    fun entries_withParams() = testScope.runBlockingTest {
+    fun entries_withParams() = runTest {
         val items = testItems.map { it.copy(params = testParams.toString()) }
             .sortedWith(entriesComparator)
         dao.insertAll(items)
@@ -71,7 +70,7 @@ class AlbumsDaoTest : BaseTest() {
     }
 
     @Test
-    fun entries_withParams_onSamePage() = testScope.runBlockingTest {
+    fun entries_withParams_onSamePage() = runTest {
         val items = testItems.map { it.copy(params = testParams.toString(), page = 0) }
             .sortedWith(entriesComparator)
         dao.insertAll(items)
@@ -82,7 +81,7 @@ class AlbumsDaoTest : BaseTest() {
     }
 
     @Test
-    fun entries_withParamsAndPage() = testScope.runBlockingTest {
+    fun entries_withParamsAndPage() = runTest {
         val page = 2
         val items = testItems.map { it.copy(params = testParams.toString(), page = page) }
             .sortedWith(entriesComparator)
@@ -97,7 +96,7 @@ class AlbumsDaoTest : BaseTest() {
     }
 
     @Test
-    fun entries_withCountAndOffset() = testScope.runBlockingTest {
+    fun entries_withCountAndOffset() = runTest {
         val items = testItems.map { it.copy(params = testParams.toString()) }
             .sortedWith(entriesComparator)
         dao.insertAll(items)
@@ -110,7 +109,7 @@ class AlbumsDaoTest : BaseTest() {
     }
 
     @Test
-    fun entry() = testScope.runBlockingTest {
+    fun entry() = runTest {
         val item = testItems.first()
         dao.insert(item)
 
@@ -120,7 +119,7 @@ class AlbumsDaoTest : BaseTest() {
     }
 
     @Test
-    fun entryNullable() = testScope.runBlockingTest {
+    fun entryNullable() = runTest {
         val item = testItems.first()
         dao.entryNullable(item.id).test {
             assertThat(awaitItem()).isNull()
@@ -128,7 +127,7 @@ class AlbumsDaoTest : BaseTest() {
     }
 
     @Test
-    fun entriesById() = testScope.runBlockingTest {
+    fun entriesById() = runTest {
         dao.insertAll(testItems)
 
         dao.entriesById(testItems.map { it.id }).test {
@@ -137,7 +136,7 @@ class AlbumsDaoTest : BaseTest() {
     }
 
     @Test
-    fun delete() = testScope.runBlockingTest {
+    fun delete() = runTest {
         val item = testItems.first()
         dao.insert(item)
         dao.delete(item.id)
@@ -146,7 +145,7 @@ class AlbumsDaoTest : BaseTest() {
     }
 
     @Test
-    fun delete_withParams() = testScope.runBlockingTest {
+    fun delete_withParams() = runTest {
         val item = testItems.first().copy(params = testParams.toString())
         dao.insert(item)
         dao.delete(testParams)
@@ -155,7 +154,7 @@ class AlbumsDaoTest : BaseTest() {
     }
 
     @Test
-    fun delete_withParamsAndPage() = testScope.runBlockingTest {
+    fun delete_withParamsAndPage() = runTest {
         val page = 2
         val items = testItems.map { it.copy(params = testParams.toString(), page = page) }
         dao.insertAll(items)
@@ -167,7 +166,7 @@ class AlbumsDaoTest : BaseTest() {
     }
 
     @Test
-    fun deleteAll() = testScope.runBlockingTest {
+    fun deleteAll() = runTest {
         dao.insertAll(testItems)
         dao.deleteAll()
 
@@ -175,14 +174,14 @@ class AlbumsDaoTest : BaseTest() {
     }
 
     @Test
-    fun count() = testScope.runBlockingTest {
+    fun count() = runTest {
         dao.insertAll(testItems)
 
         assertThat(dao.count()).isEqualTo(testItems.size)
     }
 
     @Test
-    fun observeCount() = testScope.runBlockingTest {
+    fun observeCount() = runTest {
         dao.insertAll(testItems)
 
         dao.observeCount().test {
@@ -193,7 +192,7 @@ class AlbumsDaoTest : BaseTest() {
     }
 
     @Test
-    fun count_withParams() = testScope.runBlockingTest {
+    fun count_withParams() = runTest {
         val paramlessItems = (1..5).map { SampleData.album() }
         val items = testItems.map { it.copy(params = testParams.toString()) }
 
@@ -205,7 +204,7 @@ class AlbumsDaoTest : BaseTest() {
     }
 
     @Test
-    fun exists() = testScope.runBlockingTest {
+    fun exists() = runTest {
         val item = testItems.first()
         dao.insert(item)
 
@@ -213,7 +212,7 @@ class AlbumsDaoTest : BaseTest() {
     }
 
     @Test
-    fun has() = testScope.runBlockingTest {
+    fun has() = runTest {
         val item = testItems.first()
         dao.insert(item)
 

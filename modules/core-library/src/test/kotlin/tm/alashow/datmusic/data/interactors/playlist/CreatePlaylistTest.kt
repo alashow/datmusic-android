@@ -9,7 +9,7 @@ import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import javax.inject.Inject
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Test
 import tm.alashow.base.testing.BaseTest
@@ -35,13 +35,12 @@ class CreatePlaylistTest : BaseTest() {
     private val testParams = CreatePlaylist.Params(name = "Test Name")
 
     @After
-    override fun tearDown() {
-        super.tearDown()
+    fun tearDown() {
         database.close()
     }
 
     @Test
-    fun `creates playlist given valid Playlist`() = testScope.runBlockingTest {
+    fun `creates playlist given valid Playlist`() = runTest {
         val params = testParams
 
         createPlaylist(params).test {
@@ -55,7 +54,7 @@ class CreatePlaylistTest : BaseTest() {
     }
 
     @Test
-    fun `creates playlist with generated name given empty name`() = testScope.runBlockingTest {
+    fun `creates playlist with generated name given empty name`() = runTest {
         val params = testParams.copy(name = "", generateNameIfEmpty = true)
 
         createPlaylist(params).test {
@@ -69,7 +68,7 @@ class CreatePlaylistTest : BaseTest() {
     }
 
     @Test
-    fun `creates playlist with trimmed named given too long name`() = testScope.runBlockingTest {
+    fun `creates playlist with trimmed named given too long name`() = runTest {
         val longName = "a".repeat(300)
         val params = testParams.copy(name = "a".repeat(300), trimIfTooLong = true)
 
@@ -86,21 +85,21 @@ class CreatePlaylistTest : BaseTest() {
     }
 
     @Test(expected = ValidationErrorBlank::class)
-    fun `fails with empty name given empty name and generateNameIfEmpty false`() = testScope.runBlockingTest {
+    fun `fails with empty name given empty name and generateNameIfEmpty false`() = runTest {
         val params = testParams.copy(name = "", generateNameIfEmpty = false)
 
         createPlaylist.execute(params)
     }
 
     @Test(expected = ValidationErrorTooLong::class)
-    fun `fails with too long name given long name and trimIfTooLong false`() = testScope.runBlockingTest {
+    fun `fails with too long name given long name and trimIfTooLong false`() = runTest {
         val params = testParams.copy(name = "a".repeat(300), trimIfTooLong = false)
 
         createPlaylist.execute(params)
     }
 
     @Test
-    fun `creates playlist with given audios & ids`() = testScope.runBlockingTest {
+    fun `creates playlist with given audios & ids`() = runTest {
         val audiosCount = 10
         val audioItems = (1..audiosCount).map { SampleData.audio() }.apply { audiosRepo.insertAll(this) }
         val audioIds = audioItems.map { it.id }

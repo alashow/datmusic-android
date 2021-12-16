@@ -9,7 +9,8 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import javax.inject.Inject
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Test
 import tm.alashow.base.testing.BaseTest
 import tm.alashow.datmusic.data.db.AppDatabase
@@ -32,13 +33,13 @@ class CreateDatmusicBackupTest : BaseTest() {
     @Inject lateinit var downloadRequestsDao: DownloadRequestsDao
     @Inject lateinit var createDatmusicBackup: CreateDatmusicBackup
 
-    override fun tearDown() {
-        super.tearDown()
+    @After
+    fun tearDown() {
         database.close()
     }
 
     @Test
-    fun `creates backup with audios & playlists`() = testScope.runBlockingTest {
+    fun `creates backup with audios & playlists`() = runTest {
         val (playlistItemAudios, downloadRequests) = createBackupData(playlistsRepo, audiosRepo, artistsDao, albumsDao, downloadRequestsDao)
 
         val backup = createDatmusicBackup.execute(Unit)

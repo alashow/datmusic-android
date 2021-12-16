@@ -8,7 +8,8 @@ import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import javax.inject.Inject
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Test
 import tm.alashow.base.testing.BaseTest
 import tm.alashow.datmusic.data.SampleData
@@ -24,13 +25,13 @@ class DeletePlaylistTest : BaseTest() {
     @Inject lateinit var deletePlaylist: DeletePlaylist
     @Inject lateinit var repo: PlaylistsRepo
 
-    override fun tearDown() {
-        super.tearDown()
+    @After
+    fun tearDown() {
         database.close()
     }
 
     @Test
-    fun `deletes playlist given playlist id`() = testScope.runBlockingTest {
+    fun `deletes playlist given playlist id`() = runTest {
         val playlistId = repo.createPlaylist(SampleData.playlist())
 
         deletePlaylist.execute(playlistId)

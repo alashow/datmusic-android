@@ -9,7 +9,8 @@ import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import javax.inject.Inject
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Test
 import tm.alashow.base.testing.BaseTest
 import tm.alashow.datmusic.data.SampleData
@@ -28,13 +29,13 @@ class UpdatePlaylistTest : BaseTest() {
     @Inject lateinit var updatePlaylist: UpdatePlaylist
     @Inject lateinit var repo: PlaylistsRepo
 
-    override fun tearDown() {
-        super.tearDown()
+    @After
+    fun tearDown() {
         database.close()
     }
 
     @Test
-    fun `updates playlist given playlist`() = testScope.runBlockingTest {
+    fun `updates playlist given playlist`() = runTest {
         val originalPlaylist = SampleData.playlist()
         repo.createPlaylist(originalPlaylist)
 
@@ -49,7 +50,7 @@ class UpdatePlaylistTest : BaseTest() {
     }
 
     @Test(expected = ValidationErrorBlank::class)
-    fun `fails given playlist with empty name`() = testScope.runBlockingTest {
+    fun `fails given playlist with empty name`() = runTest {
         val originalPlaylist = SampleData.playlist()
         repo.createPlaylist(originalPlaylist)
 
@@ -58,7 +59,7 @@ class UpdatePlaylistTest : BaseTest() {
     }
 
     @Test(expected = ValidationErrorTooLong::class)
-    fun `fails given playlist with too long name`() = testScope.runBlockingTest {
+    fun `fails given playlist with too long name`() = runTest {
         val originalPlaylist = SampleData.playlist()
         repo.createPlaylist(originalPlaylist)
 

@@ -31,7 +31,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.LocalContentAlpha
@@ -126,7 +125,6 @@ private val RemoveFromPlaylist = R.string.playback_queue_removeFromQueue
 private val AddQueueToPlaylist = R.string.playback_queue_addQueueToPlaylist
 private val SaveQueueAsPlaylist = R.string.playback_queue_saveAsPlaylist
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun PlaybackSheet(
     // override local theme color palette because we want simple colors for menus n' stuff

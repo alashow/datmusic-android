@@ -11,7 +11,8 @@ import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import javax.inject.Inject
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Test
 import tm.alashow.base.testing.BaseTest
 import tm.alashow.datmusic.data.SampleData
@@ -31,14 +32,14 @@ class SetCustomPlaylistArtworkTest : BaseTest() {
 
     private val testParams = SetCustomPlaylistArtwork.Params(uri = Uri.parse("test"), playlistId = -1)
 
-    override fun tearDown() {
-        super.tearDown()
+    @After
+    fun tearDown() {
         database.close()
         imageLoader.shutdown()
     }
 
     @Test
-    fun `sets custom playlist artwork given uri`() = testScope.runBlockingTest {
+    fun `sets custom playlist artwork given uri`() = runTest {
         val playlistId = repo.createPlaylist(SampleData.playlist())
         val params = testParams.copy(playlistId = playlistId)
 

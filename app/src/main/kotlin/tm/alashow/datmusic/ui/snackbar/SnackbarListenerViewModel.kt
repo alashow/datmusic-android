@@ -13,7 +13,7 @@ import tm.alashow.base.ui.SnackbarMessage
 
 @HiltViewModel
 class SnackbarListenerViewModel @Inject constructor(
-    handle: SavedStateHandle,
+    private val handle: SavedStateHandle,
     private val snackbarManager: SnackbarManager,
 ) : ViewModel() {
     val messages = snackbarManager.messages

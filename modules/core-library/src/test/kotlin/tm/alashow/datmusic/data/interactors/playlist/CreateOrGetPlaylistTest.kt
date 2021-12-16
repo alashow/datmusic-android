@@ -9,7 +9,8 @@ import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import javax.inject.Inject
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Test
 import tm.alashow.base.testing.BaseTest
 import tm.alashow.base.testing.awaitSingle
@@ -31,13 +32,13 @@ class CreateOrGetPlaylistTest : BaseTest() {
 
     private val testParams = CreateOrGetPlaylist.Params(name = "Test Name")
 
-    override fun tearDown() {
-        super.tearDown()
+    @After
+    fun tearDown() {
         database.close()
     }
 
     @Test
-    fun `creates new playlist given new name`() = testScope.runBlockingTest {
+    fun `creates new playlist given new name`() = runTest {
         val params = testParams.copy()
 
         getOrCreatePlaylist(params).test {
@@ -51,7 +52,7 @@ class CreateOrGetPlaylistTest : BaseTest() {
     }
 
     @Test
-    fun `finds existing playlist given existing name and adds given audioIds`() = testScope.runBlockingTest {
+    fun `finds existing playlist given existing name and adds given audioIds`() = runTest {
         val audiosCount = 10
         val audioItems = (1..audiosCount).map { SampleData.audio() }.apply { audiosRepo.insertAll(this) }
         val audioIds = audioItems.map { it.id }
@@ -81,7 +82,7 @@ class CreateOrGetPlaylistTest : BaseTest() {
     }
 
     @Test
-    fun `finds existing playlist given existing name and ignores given audios when ignoreExisting is true`() = testScope.runBlockingTest {
+    fun `finds existing playlist given existing name and ignores given audios when ignoreExisting is true`() = runTest {
         val existingPlaylistAudioIds = (1..5).map { SampleData.audio() }.apply { audiosRepo.insertAll(this) }.map { it.id }
         val params = testParams.copy(audioIds = existingPlaylistAudioIds, ignoreExistingAudios = true)
         val existingPlaylistId = repo.createPlaylist(Playlist(name = params.name), audioIds = existingPlaylistAudioIds)
