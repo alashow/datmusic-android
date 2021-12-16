@@ -7,6 +7,7 @@ package tm.alashow.datmusic.ui.playback
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
+import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import javax.inject.Inject
@@ -45,6 +46,7 @@ class PlaybackSheetViewModelTest : BaseTest() {
     @Inject lateinit var navigator: Navigator
     @Inject lateinit var createPlaylist: CreatePlaylist
     @Inject lateinit var playlistsRepo: PlaylistsRepo
+    @Inject lateinit var analytics: FirebaseAnalytics
 
     private lateinit var viewModel: PlaybackSheetViewModel
 
@@ -66,7 +68,8 @@ class PlaybackSheetViewModelTest : BaseTest() {
         playbackConnection ?: this.playbackConnection,
         createPlaylist ?: this.createPlaylist,
         snackbarManager,
-        navigator
+        navigator,
+        analytics
     )
 
     @Before
