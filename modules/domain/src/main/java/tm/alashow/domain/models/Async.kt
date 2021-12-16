@@ -1,10 +1,19 @@
 /*
- * Copyright (C) 2019, Alashov Berkeli
+ * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
 package tm.alashow.domain.models
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import tm.alashow.base.util.extensions.pass
+
+fun <T> Flow<T>.asAsyncFlow() =
+    map { Success(it) as Async<T> }
+        .onStart { emit(Loading()) }
+        .catch { emit(Fail(it)) }
 
 /**
  * The T generic is unused for some classes but since it is sealed and useful for Success and Fail,

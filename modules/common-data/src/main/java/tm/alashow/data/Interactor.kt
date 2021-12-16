@@ -101,7 +101,7 @@ abstract class SuspendingWorkInteractor<P : Any, T> : SubjectInteractor<P, T>() 
     abstract suspend fun doWork(params: P): T
 }
 
-abstract class SubjectInteractor<P : Any, T> {
+abstract class SubjectInteractor<P, T> {
     // Ideally this would be buffer = 0, since we use flatMapLatest below, BUT invoke is not
     // suspending. This means that we can't suspend while flatMapLatest cancels any
     // existing flows. The buffer of 1 means that we can use tryEmit() and buffer the value

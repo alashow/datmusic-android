@@ -34,7 +34,7 @@ import tm.alashow.datmusic.data.interactors.playlist.SetCustomPlaylistArtwork
 import tm.alashow.datmusic.data.interactors.playlist.UpdatePlaylist
 import tm.alashow.datmusic.data.interactors.playlist.UpdatePlaylistItems
 import tm.alashow.datmusic.data.observers.playlist.ObservePlaylist
-import tm.alashow.datmusic.data.observers.playlist.ObservePlaylistItems
+import tm.alashow.datmusic.data.observers.playlist.ObservePlaylistDetails
 import tm.alashow.datmusic.domain.entities.PlaylistAudioId
 import tm.alashow.datmusic.domain.entities.PlaylistId
 import tm.alashow.datmusic.domain.entities.PlaylistItem
@@ -49,7 +49,7 @@ import tm.alashow.navigation.screens.PLAYLIST_ID_KEY
 class EditPlaylistViewModel @Inject constructor(
     handle: SavedStateHandle,
     private val observePlaylist: ObservePlaylist,
-    private val observePlaylistDetails: ObservePlaylistItems,
+    private val observePlaylistDetails: ObservePlaylistDetails,
     private val updatePlaylist: UpdatePlaylist,
     private val deletePlaylist: DeletePlaylist,
     private val reorderPlaylist: UpdatePlaylistItems,
