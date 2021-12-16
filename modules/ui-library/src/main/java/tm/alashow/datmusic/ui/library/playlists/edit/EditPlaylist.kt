@@ -14,7 +14,14 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
@@ -47,7 +54,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.insets.*
+import com.google.accompanist.insets.navigationBarsHeight
+import com.google.accompanist.insets.navigationBarsWithImePadding
+import com.google.accompanist.insets.statusBarsPadding
 import org.burnoutcrew.reorderable.ReorderableState
 import org.burnoutcrew.reorderable.detectReorder
 import org.burnoutcrew.reorderable.rememberReorderState
@@ -73,21 +82,12 @@ import tm.alashow.ui.components.textIconModifier
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.Orange
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun EditPlaylist(
     viewModel: EditPlaylistViewModel = hiltViewModel(),
 ) {
-    val playlist by rememberFlowWithLifecycle(viewModel.playlist).collectAsState(Playlist())
-    val playlistItems by rememberFlowWithLifecycle(viewModel.playlistAudios).collectAsState(emptyList())
+    val playlistItems by rememberFlowWithLifecycle(viewModel.playlistAudios).collectAsState(null)
     val lastRemovedItem by rememberFlowWithLifecycle(viewModel.lastRemovedItem).collectAsState(null)
-
-    val name by rememberFlowWithLifecycle(viewModel.name).collectAsState(TextFieldValue())
-    val nameError by rememberFlowWithLifecycle(viewModel.nameError).collectAsState(null)
-
-    val reorderableState = rememberReorderState()
-    val itemsBeforeContent = 2
-
     Scaffold(
         bottomBar = {
             PlaylistLastRemovedItemSnackbar(
@@ -98,44 +98,66 @@ fun EditPlaylist(
             )
         }
     ) {
-        Box {
-            LazyColumn(
-                state = reorderableState.listState,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colors.background)
-                    .reorderable(
-                        state = reorderableState,
-                        onMove = { from, to -> viewModel.movePlaylistItem(from.index - itemsBeforeContent, to.index - itemsBeforeContent) },
-                        canDragOver = { (it.index - itemsBeforeContent) in playlistItems.indices }
-                    ),
-            ) {
-                editPlaylistHeader(
-                    playlist = playlist,
-                    name = name,
-                    onSetName = viewModel::setPlaylistName,
-                    onSetPlaylistArtwork = viewModel::setPlaylistArtwork,
-                    onSave = viewModel::save,
-                    nameError = nameError
-                )
+        if (playlistItems != null) {
+            EditPlaylist(
+                viewModel = viewModel,
+                playlistItems = playlistItems.orEmpty(),
+            )
+        }
+    }
+}
 
-                editPlaylistExtraActions(
-                    onClearArtwork = viewModel::clearPlaylistArtwork,
-                    onShuffle = viewModel::shufflePlaylist,
-                    onDelete = viewModel::deletePlaylist,
-                    shuffleEnabled = playlistItems.size > 1,
-                    clearArtworkEnabled = playlist.artworkPath.isUserSetArtworkPath()
-                )
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun EditPlaylist(
+    viewModel: EditPlaylistViewModel,
+    playlistItems: PlaylistItems,
+) {
+    val playlist by rememberFlowWithLifecycle(viewModel.playlist).collectAsState(Playlist())
 
-                editablePlaylistAudioList(
-                    reorderableState = reorderableState,
-                    onRemove = viewModel::removePlaylistItem,
-                    audios = playlistItems
-                )
+    val name by rememberFlowWithLifecycle(viewModel.name).collectAsState(TextFieldValue())
+    val nameError by rememberFlowWithLifecycle(viewModel.nameError).collectAsState(null)
 
-                item {
-                    Spacer(Modifier.navigationBarsHeight())
-                }
+    val reorderableState = rememberReorderState()
+    val itemsBeforeContent = 2
+
+    Box {
+        LazyColumn(
+            state = reorderableState.listState,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colors.background)
+                .reorderable(
+                    state = reorderableState,
+                    onMove = { from, to -> viewModel.movePlaylistItem(from.index - itemsBeforeContent, to.index - itemsBeforeContent) },
+                    canDragOver = { (it.index - itemsBeforeContent) in playlistItems.indices }
+                ),
+        ) {
+            editPlaylistHeader(
+                playlist = playlist,
+                name = name,
+                onSetName = viewModel::setPlaylistName,
+                onSetPlaylistArtwork = viewModel::setPlaylistArtwork,
+                onSave = viewModel::save,
+                nameError = nameError
+            )
+
+            editPlaylistExtraActions(
+                onClearArtwork = viewModel::clearPlaylistArtwork,
+                onShuffle = viewModel::shufflePlaylist,
+                onDelete = viewModel::deletePlaylist,
+                shuffleEnabled = playlistItems.size > 1,
+                clearArtworkEnabled = playlist.artworkPath.isUserSetArtworkPath()
+            )
+
+            editablePlaylistAudioList(
+                reorderableState = reorderableState,
+                onRemove = viewModel::removePlaylistItem,
+                audios = playlistItems
+            )
+
+            item {
+                Spacer(Modifier.navigationBarsHeight())
             }
         }
     }
@@ -227,7 +249,6 @@ private fun EditablePlaylistArtwork(
                 imagePickerLauncher.launch("image/*")
             }
         )
-
     )
 }
 

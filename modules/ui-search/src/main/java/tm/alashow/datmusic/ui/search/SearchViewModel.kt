@@ -13,6 +13,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import tm.alashow.base.ui.SnackbarManager
@@ -70,6 +72,9 @@ internal class SearchViewModel @Inject constructor(
     val pagedArtistsList get() = artistsPager.flow.cachedIn(viewModelScope)
     val pagedAlbumsList get() = albumsPager.flow.cachedIn(viewModelScope)
 
+    private val onSearchEventChannel = Channel<SearchEvent>(Channel.CONFLATED)
+    val onSearchEvent = onSearchEventChannel.receiveAsFlow()
+
     val state = combine(searchFilter.filterNotNull(), snackbarManager.errors, captchaError, ::SearchViewState)
         .stateInDefault(viewModelScope, SearchViewState.Empty)
 
@@ -96,10 +101,11 @@ internal class SearchViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            combine(searchTrigger.filterNotNull(), searchFilter.filterNotNull(), ::Pair)
+            combine(searchTrigger.filterNotNull(), searchFilter.filterNotNull(), ::SearchEvent)
                 .debounce(SEARCH_DEBOUNCE_MILLIS)
-                .collectLatest { (trigger, filter) ->
-                    search(trigger, filter)
+                .collectLatest {
+                    search(it)
+                    onSearchEventChannel.send(it)
                 }
         }
 
@@ -108,7 +114,8 @@ internal class SearchViewModel @Inject constructor(
         }
     }
 
-    fun search(trigger: SearchTrigger, filter: SearchFilter) {
+    fun search(searchEvent: SearchEvent) {
+        val (trigger, filter) = searchEvent
         val query = trigger.query
         val searchParams = DatmusicSearchParams(query, trigger.captchaSolution)
         val backends = filter.backends.joinToString { it.type }

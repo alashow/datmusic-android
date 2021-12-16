@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
-import tm.alashow.base.util.extensions.pass
 
 fun <T> Flow<T>.asAsyncFlow() =
     map { Success(it) as Async<T> }
@@ -27,9 +26,10 @@ sealed class Async<out T>(val complete: Boolean, val shouldLoad: Boolean) {
 
     val isLoading get() = this is Loading
 
-    fun success(block: (T) -> Unit) = if (this is Success) {
-        block(this())
-    } else pass
+    fun success(onOtherwise: () -> Unit, onSuccess: (T) -> Unit) = when (this) {
+        is Success -> onSuccess(invoke())
+        else -> onOtherwise()
+    }
 }
 
 object Uninitialized : Async<Nothing>(complete = false, shouldLoad = true), Incomplete

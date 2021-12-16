@@ -45,5 +45,5 @@ fun <T> CoroutineScope.lazyAsync(block: suspend CoroutineScope.() -> T): Lazy<De
 fun <T> Flow<T>.stateInDefault(
     scope: CoroutineScope,
     initialValue: T,
-    started: SharingStarted = SharingStarted.WhileSubscribed(500),
+    started: SharingStarted = SharingStarted.WhileSubscribed(5000),
 ) = stateIn(scope, started, initialValue)

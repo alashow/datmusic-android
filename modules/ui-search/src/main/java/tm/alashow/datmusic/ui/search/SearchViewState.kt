@@ -13,7 +13,7 @@ import tm.alashow.datmusic.data.DatmusicSearchParams.BackendType.Companion.asBac
 import tm.alashow.domain.models.errors.ApiCaptchaError
 
 @Parcelize
-data class SearchFilter(
+internal data class SearchFilter(
     val backends: BackendTypes = DefaultBackends
 ) : Parcelable {
 
@@ -33,7 +33,7 @@ data class SearchFilter(
     }
 }
 
-data class SearchViewState(
+internal data class SearchViewState(
     val searchFilter: SearchFilter = SearchFilter(),
     val error: Throwable? = null,
     val captchaError: ApiCaptchaError? = null,
@@ -44,4 +44,6 @@ data class SearchViewState(
 }
 
 @Parcelize
-data class SearchTrigger(val query: String = "", val captchaSolution: CaptchaSolution? = null) : Parcelable
+internal data class SearchTrigger(val query: String = "", val captchaSolution: CaptchaSolution? = null) : Parcelable
+
+internal data class SearchEvent(val searchTrigger: SearchTrigger, val searchFilter: SearchFilter)

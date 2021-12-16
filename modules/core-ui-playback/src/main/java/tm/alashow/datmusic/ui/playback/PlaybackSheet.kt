@@ -173,6 +173,9 @@ internal fun PlaybackSheetContent(
 
     val pagerState = rememberPagerState(playbackQueue.currentIndex)
 
+    if (playbackState == NONE_PLAYBACK_STATE)
+        return
+
     LaunchedEffect(playbackConnection) {
         playbackConnection.playbackState.collectLatest {
             if (it.isIdle) onClose()

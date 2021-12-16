@@ -31,7 +31,7 @@ fun <T> collectEvent(
     flow: Flow<T>,
     lifecycle: Lifecycle = LocalLifecycleOwner.current.lifecycle,
     minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
-    collector: (T) -> Unit
+    collector: suspend (T) -> Unit
 ): Unit = LaunchedEffect(lifecycle, flow) {
     lifecycle.repeatOnLifecycle(minActiveState) {
         flow.collectLatest {

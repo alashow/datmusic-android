@@ -27,7 +27,7 @@ import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.Navigator
 import tm.alashow.ui.adaptiveColor
 import tm.alashow.ui.components.CollapsingTopBar
-import tm.alashow.ui.components.fullScreenLoading
+import tm.alashow.ui.components.FullScreenLoading
 
 @Composable
 fun <DetailType> MediaDetail(
@@ -104,12 +104,12 @@ private fun <DetailType, T : MediaDetailViewState<DetailType>> MediaDetailConten
     val listBackgroundMod = if (isLight) adaptiveBackground else Modifier
     val headerBackgroundMod = if (isLight) Modifier else adaptiveBackground
 
-    LazyColumn(
-        state = listState,
-        contentPadding = PaddingValues(bottom = padding.calculateTopPadding() + padding.calculateBottomPadding()),
-        modifier = listBackgroundMod.fillMaxSize(),
-    ) {
-        if (viewState.isLoaded) {
+    if (viewState.isLoaded) {
+        LazyColumn(
+            state = listState,
+            contentPadding = PaddingValues(bottom = padding.calculateTopPadding() + padding.calculateBottomPadding()),
+            modifier = listBackgroundMod.fillMaxSize(),
+        ) {
             val details = viewState.details()
             val detailsLoading = details is Incomplete
 
@@ -142,8 +142,6 @@ private fun <DetailType, T : MediaDetailViewState<DetailType>> MediaDetailConten
                 detailsEmpty = isEmpty,
                 onEmptyRetry = onEmptyRetry
             )
-        } else {
-            fullScreenLoading()
         }
-    }
+    } else FullScreenLoading()
 }

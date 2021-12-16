@@ -43,12 +43,12 @@ object Deps {
         const val documentFile = "androidx.documentfile:documentfile:1.1.0-alpha01"
 
         const val palette = "androidx.palette:palette-ktx:1.0.0"
-        const val media ="androidx.media:media:1.5.0-beta01"
+        const val media = "androidx.media:media:1.5.0-beta01"
 
         const val archCoreTesting = "androidx.arch.core:core-testing:2.1.0"
 
         object Compose {
-            const val version = "1.1.0-beta04"
+            const val version = "1.1.0-rc01"
 
             const val ui = "androidx.compose.ui:ui:$version"
             const val uiUtil = "androidx.compose.ui:ui-util:$version"

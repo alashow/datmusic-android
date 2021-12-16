@@ -48,7 +48,7 @@ fun AlbumColumn(
     imageSize: Dp = AlbumsDefaults.imageSize,
     isPlaceholder: Boolean = false,
     analytics: FirebaseAnalytics = LocalAnalytics.current,
-    onClick: (Album) -> Unit = {},
+    onClick: () -> Unit = {},
 ) {
     val loadingModifier = Modifier.placeholder(
         visible = isPlaceholder,
@@ -59,7 +59,7 @@ fun AlbumColumn(
         modifier = modifier
             .clickable {
                 analytics.click("album", mapOf("id" to album.id))
-                if (!isPlaceholder) onClick(album)
+                if (!isPlaceholder) onClick()
             }
             .fillMaxWidth()
             .padding(AppTheme.specs.padding)
