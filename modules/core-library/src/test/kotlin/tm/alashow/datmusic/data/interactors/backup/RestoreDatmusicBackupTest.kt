@@ -8,7 +8,8 @@ import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import javax.inject.Inject
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Test
 import tm.alashow.base.testing.BaseTest
 import tm.alashow.datmusic.data.db.AppDatabase
@@ -32,13 +33,13 @@ class RestoreDatmusicBackupTest : BaseTest() {
     @Inject lateinit var createDatmusicBackup: CreateDatmusicBackup
     @Inject lateinit var restoreDatmusicBackup: RestoreDatmusicBackup
 
-    override fun tearDown() {
-        super.tearDown()
+    @After
+    fun tearDown() {
         database.close()
     }
 
     @Test
-    fun `restored backup is the same as initial backup after clearing & restoring from initial backup`() = testScope.runBlockingTest {
+    fun `restored backup is the same as initial backup after clearing & restoring from initial backup`() = runTest {
         createBackupData(playlistsRepo, audiosRepo, artistsDao, albumsDao, downloadRequestsDao)
         val initialBackup = createDatmusicBackup.execute(Unit)
         database.clearAllTables()

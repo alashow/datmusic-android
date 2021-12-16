@@ -43,7 +43,7 @@ fun ArtistColumn(
     nameWidth: Dp = ArtistsDefaults.nameWidth,
     isPlaceholder: Boolean = false,
     analytics: FirebaseAnalytics = LocalAnalytics.current,
-    onClick: (Artist) -> Unit = {},
+    onClick: () -> Unit = {},
 ) {
     val loadingModifier = Modifier.placeholder(
         visible = isPlaceholder,
@@ -55,7 +55,7 @@ fun ArtistColumn(
         modifier = Modifier
             .clickable {
                 analytics.click("artist", mapOf("id" to artist.id))
-                if (!isPlaceholder) onClick(artist)
+                if (!isPlaceholder) onClick()
             }
             .fillMaxWidth()
             .padding(AppTheme.specs.paddingTiny)

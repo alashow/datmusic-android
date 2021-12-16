@@ -10,7 +10,8 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import javax.inject.Inject
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Test
 import tm.alashow.base.testing.BaseTest
 import tm.alashow.base.util.extensions.swap
@@ -35,13 +36,13 @@ class PlaylistsRepoTest : BaseTest() {
     private val testItems = (1..5).map { SampleData.playlist() }
     private val entriesComparator = compareByDescending(Playlist::id)
 
-    override fun tearDown() {
-        super.tearDown()
+    @After
+    fun tearDown() {
         database.close()
     }
 
     @Test
-    fun getByName() = testScope.runBlockingTest {
+    fun getByName() = runTest {
         val item = testItems.first()
         repo.insert(item)
 
@@ -49,7 +50,7 @@ class PlaylistsRepoTest : BaseTest() {
     }
 
     @Test
-    fun playlistItems() = testScope.runBlockingTest {
+    fun playlistItems() = runTest {
         val item = testItems.first()
         val audioIds = (1..5).map { SampleData.audio() }.also { audiosDao.insertAll(it) }.map { it.id }
         val id = repo.createPlaylist(item, audioIds)
@@ -61,7 +62,7 @@ class PlaylistsRepoTest : BaseTest() {
     }
 
     @Test
-    fun playlistWithAudios() = testScope.runBlockingTest {
+    fun playlistWithAudios() = runTest {
         val item = testItems.first()
         val audioIds = (1..5).map { SampleData.audio() }.also { audiosDao.insertAll(it) }.map { it.id }
         val id = repo.createPlaylist(item, audioIds)
@@ -73,7 +74,7 @@ class PlaylistsRepoTest : BaseTest() {
     }
 
     @Test
-    fun playlists() = testScope.runBlockingTest {
+    fun playlists() = runTest {
         repo.insertAll(testItems)
 
         repo.playlists().test {
@@ -83,7 +84,7 @@ class PlaylistsRepoTest : BaseTest() {
     }
 
     @Test
-    fun validatePlaylistId() = testScope.runBlockingTest {
+    fun validatePlaylistId() = runTest {
         val item = testItems.first()
         val id = repo.createPlaylist(item)
 
@@ -91,14 +92,14 @@ class PlaylistsRepoTest : BaseTest() {
     }
 
     @Test(expected = DatabaseNotFoundError::class)
-    fun validatePlaylistId_notFound() = testScope.runBlockingTest {
+    fun validatePlaylistId_notFound() = runTest {
         val item = testItems.first()
 
         repo.validatePlaylistId(item.id)
     }
 
     @Test
-    fun createPlaylist() = testScope.runBlockingTest {
+    fun createPlaylist() = runTest {
         val item = testItems.first()
         val id = repo.createPlaylist(item)
 
@@ -107,19 +108,19 @@ class PlaylistsRepoTest : BaseTest() {
     }
 
     @Test(expected = ValidationErrorBlank::class)
-    fun `createPlaylist fails with empty playlist name`() = testScope.runBlockingTest {
+    fun `createPlaylist fails with empty playlist name`() = runTest {
         val item = testItems.first().copy(name = "")
         repo.createPlaylist(item)
     }
 
     @Test(expected = ValidationErrorTooLong::class)
-    fun `createPlaylist fails with too long playlist name`() = testScope.runBlockingTest {
+    fun `createPlaylist fails with too long playlist name`() = runTest {
         val item = testItems.first().copy(name = "a".repeat(PLAYLIST_NAME_MAX_LENGTH + 1))
         repo.createPlaylist(item)
     }
 
     @Test
-    fun getOrCreatePlaylist() = testScope.runBlockingTest {
+    fun getOrCreatePlaylist() = runTest {
         val item = testItems.first()
         repo.createPlaylist(item)
         repo.getOrCreatePlaylist(item.name)
@@ -129,7 +130,7 @@ class PlaylistsRepoTest : BaseTest() {
     }
 
     @Test
-    fun getOrCreatePlaylist_inexisting() = testScope.runBlockingTest {
+    fun getOrCreatePlaylist_inexisting() = runTest {
         val item = testItems.first()
         val id = repo.getOrCreatePlaylist(item.name)
 
@@ -138,7 +139,7 @@ class PlaylistsRepoTest : BaseTest() {
     }
 
     @Test
-    fun updatePlaylist() = testScope.runBlockingTest {
+    fun updatePlaylist() = runTest {
         val item = testItems.first()
         repo.createPlaylist(item)
 
@@ -151,27 +152,27 @@ class PlaylistsRepoTest : BaseTest() {
     }
 
     @Test(expected = DatabaseNotFoundError::class)
-    fun `updatePlaylist fails with inexisting playlist id`() = testScope.runBlockingTest {
+    fun `updatePlaylist fails with inexisting playlist id`() = runTest {
         val item = testItems.first()
         repo.updatePlaylist(item)
     }
 
     @Test(expected = ValidationErrorBlank::class)
-    fun `updatePlaylist fails with empty playlist name`() = testScope.runBlockingTest {
+    fun `updatePlaylist fails with empty playlist name`() = runTest {
         val item = testItems.first()
         repo.createPlaylist(item)
         repo.updatePlaylist(item.copy(name = ""))
     }
 
     @Test(expected = ValidationErrorTooLong::class)
-    fun `updatePlaylist fails with too long playlist name`() = testScope.runBlockingTest {
+    fun `updatePlaylist fails with too long playlist name`() = runTest {
         val item = testItems.first()
         repo.createPlaylist(item)
         repo.updatePlaylist(item.copy(name = "a".repeat(PLAYLIST_NAME_MAX_LENGTH + 1)))
     }
 
     @Test
-    fun updatePlaylistById() = testScope.runBlockingTest {
+    fun updatePlaylistById() = runTest {
         val item = testItems.first()
         val id = repo.createPlaylist(item)
 
@@ -183,14 +184,14 @@ class PlaylistsRepoTest : BaseTest() {
     }
 
     @Test(expected = DatabaseNotFoundError::class)
-    fun `updatePlaylistById fails with inexisting playlist id`() = testScope.runBlockingTest {
+    fun `updatePlaylistById fails with inexisting playlist id`() = runTest {
         val item = testItems.first()
 
         repo.updatePlaylist(item.id) { it.copy(name = "") }
     }
 
     @Test(expected = ValidationErrorBlank::class)
-    fun `updatePlaylistById with empty playlist name`() = testScope.runBlockingTest {
+    fun `updatePlaylistById with empty playlist name`() = runTest {
         val item = testItems.first()
         val id = repo.createPlaylist(item)
 
@@ -198,7 +199,7 @@ class PlaylistsRepoTest : BaseTest() {
     }
 
     @Test(expected = ValidationErrorTooLong::class)
-    fun `updatePlaylistById with too long playlist name`() = testScope.runBlockingTest {
+    fun `updatePlaylistById with too long playlist name`() = runTest {
         val item = testItems.first()
         val id = repo.createPlaylist(item)
 
@@ -206,7 +207,7 @@ class PlaylistsRepoTest : BaseTest() {
     }
 
     @Test
-    fun addAudiosToPlaylist() = testScope.runBlockingTest {
+    fun addAudiosToPlaylist() = runTest {
         val item = testItems.first()
         val id = repo.createPlaylist(item)
 
@@ -242,7 +243,7 @@ class PlaylistsRepoTest : BaseTest() {
     }
 
     @Test
-    fun swapPositions() = testScope.runBlockingTest {
+    fun swapPositions() = runTest {
         val item = testItems.first()
         val audioIds = (1..5).map { SampleData.audio() }.also { audiosDao.insertAll(it) }.map { it.id }
         val repositionedAudioIds = audioIds.swap(0, audioIds.size - 1)
@@ -256,7 +257,7 @@ class PlaylistsRepoTest : BaseTest() {
     }
 
     @Test
-    fun updatePlaylistItems() = testScope.runBlockingTest {
+    fun updatePlaylistItems() = runTest {
         val item = testItems.first()
         val audioIds = (1..5).map { SampleData.audio() }.also { audiosDao.insertAll(it) }.map { it.id }
         val id = repo.createPlaylist(item, audioIds)
@@ -275,7 +276,7 @@ class PlaylistsRepoTest : BaseTest() {
     }
 
     @Test
-    fun removePlaylistItems() = testScope.runBlockingTest {
+    fun removePlaylistItems() = runTest {
         val item = testItems.first()
         val audioIds = (1..5).map { SampleData.audio() }.also { audiosDao.insertAll(it) }.map { it.id }
         val id = repo.createPlaylist(item, audioIds)
@@ -294,7 +295,7 @@ class PlaylistsRepoTest : BaseTest() {
     }
 
     @Test
-    fun clearPlaylistArtwork() = testScope.runBlockingTest {
+    fun clearPlaylistArtwork() = runTest {
         val item = testItems.first().copy(artworkPath = "some/path")
         val id = repo.createPlaylist(item)
 
@@ -308,7 +309,7 @@ class PlaylistsRepoTest : BaseTest() {
     // region RoomRepo tests
 
     @Test
-    fun entry() = testScope.runBlockingTest {
+    fun entry() = runTest {
         val item = testItems.first()
         repo.insert(item)
 
@@ -318,7 +319,7 @@ class PlaylistsRepoTest : BaseTest() {
     }
 
     @Test
-    fun entries() = testScope.runBlockingTest {
+    fun entries() = runTest {
         repo.insertAll(testItems)
 
         repo.entries().test {
@@ -328,7 +329,7 @@ class PlaylistsRepoTest : BaseTest() {
     }
 
     @Test
-    fun entries_byId() = testScope.runBlockingTest {
+    fun entries_byId() = runTest {
         repo.insertAll(testItems)
 
         repo.entries(testItems.map { it.id }).test {
@@ -338,7 +339,7 @@ class PlaylistsRepoTest : BaseTest() {
     }
 
     @Test
-    fun update() = testScope.runBlockingTest {
+    fun update() = runTest {
         val item = testItems.first()
         repo.insert(item)
 
@@ -356,7 +357,7 @@ class PlaylistsRepoTest : BaseTest() {
     }
 
     @Test
-    fun isEmpty() = testScope.runBlockingTest {
+    fun isEmpty() = runTest {
         repo.isEmpty().test {
             assertThat(awaitItem()).isTrue()
         }
@@ -369,7 +370,7 @@ class PlaylistsRepoTest : BaseTest() {
     }
 
     @Test
-    fun count() = testScope.runBlockingTest {
+    fun count() = runTest {
         repo.count().test {
             assertThat(awaitItem()).isEqualTo(0)
         }
@@ -382,7 +383,7 @@ class PlaylistsRepoTest : BaseTest() {
     }
 
     @Test
-    fun has() = testScope.runBlockingTest {
+    fun has() = runTest {
         val item = testItems.first()
 
         repo.has(item.id).test {
@@ -393,7 +394,7 @@ class PlaylistsRepoTest : BaseTest() {
     }
 
     @Test
-    fun exists() = testScope.runBlockingTest {
+    fun exists() = runTest {
         val item = testItems.first()
 
         assertThat(repo.exists(item.id)).isFalse()
@@ -402,7 +403,7 @@ class PlaylistsRepoTest : BaseTest() {
     }
 
     @Test
-    fun delete() = testScope.runBlockingTest {
+    fun delete() = runTest {
         val item = testItems.first()
         val id = repo.createPlaylist(item)
 
@@ -412,7 +413,7 @@ class PlaylistsRepoTest : BaseTest() {
     }
 
     @Test
-    fun deleteAll() = testScope.runBlockingTest {
+    fun deleteAll() = runTest {
         repo.insertAll(testItems)
 
         repo.deleteAll()

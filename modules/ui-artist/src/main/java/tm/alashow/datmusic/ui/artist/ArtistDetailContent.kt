@@ -61,7 +61,7 @@ class ArtistDetailContent : MediaDetailContent<Artist>() {
                             album = album,
                             isPlaceholder = detailsLoading,
                         ) {
-                            navigator.navigate(LeafScreen.AlbumDetails.buildRoute(it))
+                            navigator.navigate(LeafScreen.AlbumDetails.buildRoute(album))
                         }
                     }
                 }

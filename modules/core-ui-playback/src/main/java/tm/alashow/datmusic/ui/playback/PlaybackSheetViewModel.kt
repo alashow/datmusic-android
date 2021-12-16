@@ -7,15 +7,17 @@ package tm.alashow.datmusic.ui.playback
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import tm.alashow.base.ui.SnackbarAction
 import tm.alashow.base.ui.SnackbarManager
 import tm.alashow.base.ui.SnackbarMessage
+import tm.alashow.base.util.event
 import tm.alashow.base.util.toUiMessage
 import tm.alashow.datmusic.data.DatmusicSearchParams
 import tm.alashow.datmusic.data.interactors.playlist.CreatePlaylist
@@ -42,15 +44,20 @@ class PlaybackSheetViewModel @Inject constructor(
     private val createPlaylist: CreatePlaylist,
     private val snackbarManager: SnackbarManager,
     private val navigator: Navigator,
+    private val analytics: FirebaseAnalytics
 ) : ViewModel() {
 
     fun saveQueueAsPlaylist() = viewModelScope.launch {
         val queue = playbackConnection.playbackQueue.first()
+        analytics.event(
+            "playbackSheet.saveQueueAsPlaylist",
+            mapOf("count" to queue.size, "queue" to queue.title)
+        )
 
         val params = CreatePlaylist.Params(name = queue.title.asQueueTitle().localizeValue(), audios = queue, trimIfTooLong = true)
         createPlaylist(params)
             .catch { snackbarManager.addMessage(it.toUiMessage()) }
-            .collect { playlist ->
+            .collectLatest { playlist ->
                 val savedAsPlaylist = SavedAsPlaylistMessage(playlist)
                 snackbarManager.addMessage(savedAsPlaylist)
                 if (snackbarManager.observeMessageAction(savedAsPlaylist) != null)
@@ -61,6 +68,10 @@ class PlaybackSheetViewModel @Inject constructor(
     fun navigateToQueueSource() = viewModelScope.launch {
         val queue = playbackConnection.playbackQueue.first()
         val (sourceMediaType, sourceMediaValue) = queue.title.asQueueTitle().sourceMediaId
+        analytics.event(
+            "playbackSheet.navigateToQueueSource",
+            mapOf("sourceMediaType" to sourceMediaType, "sourceMediaValue" to sourceMediaValue)
+        )
 
         when (sourceMediaType) {
             MEDIA_TYPE_PLAYLIST -> navigator.navigate(LeafScreen.PlaylistDetail.buildRoute(sourceMediaValue.toLong()))
@@ -80,23 +91,25 @@ class PlaybackSheetViewModel @Inject constructor(
                     DatmusicSearchParams.BackendType.FLACS
                 )
             )
-            else -> error("Cannot navigate to $sourceMediaType")
+            else -> Unit
         }
     }
 
     fun onTitleClick() = viewModelScope.launch {
         val nowPlaying = playbackConnection.nowPlaying.value
+        val query = nowPlaying.toAlbumSearchQuery()
+        analytics.event("playbackSheet.onTitleClick", mapOf("query" to query))
         navigator.navigate(LeafScreen.Search.buildRoute(nowPlaying.toAlbumSearchQuery(), DatmusicSearchParams.BackendType.ALBUMS))
     }
 
     fun onArtistClick() = viewModelScope.launch {
         val nowPlaying = playbackConnection.nowPlaying.value
-
+        val query = nowPlaying.toArtistSearchQuery()
+        analytics.event("playbackSheet.onArtistClick", mapOf("query" to query))
         navigator.navigate(
             LeafScreen.Search.buildRoute(
-                nowPlaying.toArtistSearchQuery(),
-                DatmusicSearchParams.BackendType.ARTISTS,
-                DatmusicSearchParams.BackendType.ALBUMS
+                query,
+                DatmusicSearchParams.BackendType.ARTISTS, DatmusicSearchParams.BackendType.ALBUMS
             )
         )
     }

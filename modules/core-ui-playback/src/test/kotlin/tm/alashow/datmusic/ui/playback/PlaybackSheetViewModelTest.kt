@@ -7,13 +7,14 @@ package tm.alashow.datmusic.ui.playback
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
+import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.verify
@@ -45,6 +46,7 @@ class PlaybackSheetViewModelTest : BaseTest() {
     @Inject lateinit var navigator: Navigator
     @Inject lateinit var createPlaylist: CreatePlaylist
     @Inject lateinit var playlistsRepo: PlaylistsRepo
+    @Inject lateinit var analytics: FirebaseAnalytics
 
     private lateinit var viewModel: PlaybackSheetViewModel
 
@@ -66,7 +68,8 @@ class PlaybackSheetViewModelTest : BaseTest() {
         playbackConnection ?: this.playbackConnection,
         createPlaylist ?: this.createPlaylist,
         snackbarManager,
-        navigator
+        navigator,
+        analytics
     )
 
     @Before
@@ -76,7 +79,7 @@ class PlaybackSheetViewModelTest : BaseTest() {
     }
 
     @Test
-    fun `saveQueueAsPlaylist creates playlist then navigates to playlist detail`() = testScope.runBlockingTest {
+    fun `saveQueueAsPlaylist creates playlist then navigates to playlist detail`() = runTest {
         viewModel.saveQueueAsPlaylist()
         val createdPlaylist = playlistsRepo.playlists().first().first()
         val savedAsPlaylistMessage = SavedAsPlaylistMessage(createdPlaylist)
@@ -85,7 +88,7 @@ class PlaybackSheetViewModelTest : BaseTest() {
     }
 
     @Test
-    fun `saveQueueAsPlaylist fails CreatePlaylist gracefully`() = testScope.runBlockingTest {
+    fun `saveQueueAsPlaylist fails CreatePlaylist gracefully`() = runTest {
         viewModel = buildVm(createPlaylist = erroneousCreatePlaylist)
         viewModel.saveQueueAsPlaylist()
 
@@ -96,7 +99,7 @@ class PlaybackSheetViewModelTest : BaseTest() {
     }
 
     @Test
-    fun `navigateToQueueSource navigates to queue's source's media id`() = testScope.runBlockingTest {
+    fun `navigateToQueueSource navigates to queue's source's media id`() = runTest {
         viewModel = buildVm(playbackConnection = fakePlaybackConnection)
         viewModel.navigateToQueueSource()
 
@@ -104,14 +107,14 @@ class PlaybackSheetViewModelTest : BaseTest() {
     }
 
     @Test
-    fun `onTitleClick navigates to search albums route`() = testScope.runBlockingTest {
+    fun `onTitleClick navigates to search albums route`() = runTest {
         viewModel.onTitleClick()
 
         navigator.assertNextRouteContains(LeafScreen.Search().root?.route, DatmusicSearchParams.BackendType.ALBUMS.type)
     }
 
     @Test
-    fun `onArtistClick navigates to search albums & artists route`() = testScope.runBlockingTest {
+    fun `onArtistClick navigates to search albums & artists route`() = runTest {
         viewModel.onArtistClick()
 
         navigator.assertNextRouteContains(

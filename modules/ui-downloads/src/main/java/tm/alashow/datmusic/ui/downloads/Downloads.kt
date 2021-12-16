@@ -25,7 +25,7 @@ import tm.alashow.domain.models.Success
 import tm.alashow.domain.models.Uninitialized
 import tm.alashow.ui.components.AppTopBar
 import tm.alashow.ui.components.EmptyErrorBox
-import tm.alashow.ui.components.fullScreenLoading
+import tm.alashow.ui.components.FullScreenLoading
 
 @Composable
 fun Downloads() {
@@ -43,17 +43,19 @@ private fun Downloads(viewModel: DownloadsViewModel) {
         },
         modifier = Modifier.fillMaxSize()
     ) { padding ->
-        LazyColumn(
-            state = listState,
-            contentPadding = padding,
-        ) {
-            when (val dls = asyncDownloads) {
-                is Success -> downloadsList(
-                    downloads = dls(),
-                    onAudioPlay = viewModel::playAudioDownload
-                )
-                else -> fullScreenLoading()
+        when (val downloads = asyncDownloads) {
+            is Success -> {
+                LazyColumn(
+                    state = listState,
+                    contentPadding = padding,
+                ) {
+                    downloadsList(
+                        downloads = downloads(),
+                        onAudioPlay = viewModel::playAudioDownload
+                    )
+                }
             }
+            else -> FullScreenLoading()
         }
     }
 }

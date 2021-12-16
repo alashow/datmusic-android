@@ -6,34 +6,24 @@ package tm.alashow.datmusic.data.observers.album
 
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
 import tm.alashow.data.SubjectInteractor
 import tm.alashow.datmusic.data.DatmusicAlbumParams
 import tm.alashow.datmusic.data.db.daos.AlbumsDao
 import tm.alashow.datmusic.data.interactors.album.GetAlbumDetails
 import tm.alashow.datmusic.domain.entities.Album
-import tm.alashow.datmusic.domain.entities.Audio
+import tm.alashow.datmusic.domain.entities.Audios
 import tm.alashow.domain.models.Async
-import tm.alashow.domain.models.Fail
-import tm.alashow.domain.models.Loading
-import tm.alashow.domain.models.Success
+import tm.alashow.domain.models.asAsyncFlow
 
 class ObserveAlbum @Inject constructor(
     private val albumsDao: AlbumsDao,
 ) : SubjectInteractor<DatmusicAlbumParams, Album>() {
-    override fun createObservable(params: DatmusicAlbumParams): Flow<Album> = albumsDao.entry(params.id.toString())
+    override fun createObservable(params: DatmusicAlbumParams): Flow<Album> = albumsDao.entry(params.id)
 }
 
 class ObserveAlbumDetails @Inject constructor(
     private val getAlbumDetails: GetAlbumDetails,
-) : SubjectInteractor<GetAlbumDetails.Params, Async<List<Audio>>>() {
+) : SubjectInteractor<GetAlbumDetails.Params, Async<Audios>>() {
 
-    override fun createObservable(params: GetAlbumDetails.Params) = flow {
-        emit(Loading())
-        getAlbumDetails(params)
-            .catch { error -> emit(Fail<List<Audio>>(error)) }
-            .collect { emit(Success(it)) }
-    }
+    override fun createObservable(params: GetAlbumDetails.Params) = getAlbumDetails(params).asAsyncFlow()
 }

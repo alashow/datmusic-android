@@ -11,7 +11,7 @@ import dagger.hilt.android.testing.UninstallModules
 import javax.inject.Inject
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -35,7 +35,7 @@ class PlaylistsWithAudiosDaoTest : BaseTest() {
     override fun setUp() {
         super.setUp()
 
-        runBlockingTest {
+        runTest {
             // pre-insert playlists & audios
             // because in tests we're assuming relations already exist
             playlistsDao.insertAll(testItems.map { it.playlist })
@@ -44,13 +44,12 @@ class PlaylistsWithAudiosDaoTest : BaseTest() {
     }
 
     @After
-    override fun tearDown() {
-        super.tearDown()
+    fun tearDown() {
         database.close()
     }
 
     @Test
-    fun insert() = testScope.runBlockingTest {
+    fun insert() = runTest {
         val item = testItems.first().playlistAudio
         dao.insert(item)
 
@@ -58,7 +57,7 @@ class PlaylistsWithAudiosDaoTest : BaseTest() {
     }
 
     @Test
-    fun insertAll() = testScope.runBlockingTest {
+    fun insertAll() = runTest {
         val items = testItems.map { it.playlistAudio }
         dao.insertAll(items)
 
@@ -67,7 +66,7 @@ class PlaylistsWithAudiosDaoTest : BaseTest() {
     }
 
     @Test
-    fun updateAll() = testScope.runBlockingTest {
+    fun updateAll() = runTest {
         var items = testItems.map { it.playlistAudio }
         dao.insertAll(items)
 
@@ -79,7 +78,7 @@ class PlaylistsWithAudiosDaoTest : BaseTest() {
     }
 
     @Test
-    fun deletePlaylistItems() = testScope.runBlockingTest {
+    fun deletePlaylistItems() = runTest {
         val items = testItems.map { it.playlistAudio }
         val ids = items.map { it.id }
         dao.insertAll(items)
@@ -91,7 +90,7 @@ class PlaylistsWithAudiosDaoTest : BaseTest() {
     }
 
     @Test
-    fun deleteAll() = testScope.runBlockingTest {
+    fun deleteAll() = runTest {
         val items = testItems.map { it.playlistAudio }
         dao.insertAll(items)
         dao.deleteAll()
@@ -100,7 +99,7 @@ class PlaylistsWithAudiosDaoTest : BaseTest() {
     }
 
     @Test
-    fun getAll() = testScope.runBlockingTest {
+    fun getAll() = runTest {
         val items = testItems.map { it.playlistAudio }
         dao.insertAll(items)
 
@@ -108,7 +107,7 @@ class PlaylistsWithAudiosDaoTest : BaseTest() {
     }
 
     @Test
-    fun getByPosition() = testScope.runBlockingTest {
+    fun getByPosition() = runTest {
         val item = testItems.first().playlistAudio.copy(position = 1000)
         dao.insert(item)
 
@@ -117,7 +116,7 @@ class PlaylistsWithAudiosDaoTest : BaseTest() {
     }
 
     @Test
-    fun getById() = testScope.runBlockingTest {
+    fun getById() = runTest {
         val item = testItems.first().playlistAudio
         dao.insert(item)
 
@@ -126,7 +125,7 @@ class PlaylistsWithAudiosDaoTest : BaseTest() {
     }
 
     @Test
-    fun getByIds() = testScope.runBlockingTest {
+    fun getByIds() = runTest {
         val items = testItems.map { it.playlistAudio }
         dao.insertAll(items)
 
@@ -134,7 +133,7 @@ class PlaylistsWithAudiosDaoTest : BaseTest() {
     }
 
     @Test
-    fun distinctAudios() = testScope.runBlockingTest {
+    fun distinctAudios() = runTest {
         val audioIds = testItems.also { audiosDao.insertAll(it.map { it.audio }) }.map { it.audio.id }
         val items = testItems.map { it.playlistAudio.copy(audioId = it.audio.id) }
         dao.insertAll(items)
@@ -148,7 +147,7 @@ class PlaylistsWithAudiosDaoTest : BaseTest() {
     }
 
     @Test
-    fun lastPlaylistAudioPosition() = testScope.runBlockingTest {
+    fun lastPlaylistAudioPosition() = runTest {
         val playlistId = testItems.first().playlist.id
         val items = testItems.mapIndexed { index, it -> it.playlistAudio.copy(playlistId = playlistId, position = index) }.take(2)
         dao.insertAll(items)
@@ -158,7 +157,7 @@ class PlaylistsWithAudiosDaoTest : BaseTest() {
     }
 
     @Test
-    fun playlistItems() = testScope.runBlockingTest {
+    fun playlistItems() = runTest {
         val playlistId = testItems.first().playlist.id
         val orderedItems = testItems.mapIndexed { index, it -> it.playlistAudio.copy(playlistId = playlistId, position = index) }
         dao.insertAll(orderedItems)
@@ -169,7 +168,7 @@ class PlaylistsWithAudiosDaoTest : BaseTest() {
     }
 
     @Test
-    fun playlistAudios() = testScope.runBlockingTest {
+    fun playlistAudios() = runTest {
         val items = testItems.map { it.playlistAudio }
         dao.insertAll(items)
 
@@ -179,7 +178,7 @@ class PlaylistsWithAudiosDaoTest : BaseTest() {
     }
 
     @Test
-    fun updatePlaylistAudio() = testScope.runBlockingTest {
+    fun updatePlaylistAudio() = runTest {
         val item = testItems.first().playlistAudio
         dao.insert(item)
 

@@ -9,7 +9,8 @@ import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import javax.inject.Inject
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Test
 import tm.alashow.base.testing.BaseTest
 import tm.alashow.datmusic.data.DatmusicSearchParams
@@ -31,13 +32,13 @@ class AudiosRepoTest : BaseTest() {
     private val testParams = DatmusicSearchParams("test")
     private val entriesComparator = compareBy(Audio::page, Audio::searchIndex)
 
-    override fun tearDown() {
-        super.tearDown()
+    @After
+    fun tearDown() {
         database.close()
     }
 
     @Test
-    fun entriesByParams() = runBlockingTest {
+    fun entriesByParams() = runTest {
         val params = testParams.toString()
         val items = testItems.map { it.copy(params = params) }
         repo.insertAll(items)
@@ -49,7 +50,7 @@ class AudiosRepoTest : BaseTest() {
     }
 
     @Test
-    fun entriesByParams_empty() = runBlockingTest {
+    fun entriesByParams_empty() = runTest {
         repo.entriesByParams(testParams).test {
             assertThat(awaitItem())
                 .isEqualTo(emptyList<Audio>())
@@ -57,7 +58,7 @@ class AudiosRepoTest : BaseTest() {
     }
 
     @Test
-    fun `audiosById returns distinct audios`() = testScope.runBlockingTest {
+    fun `audiosById returns distinct audios`() = runTest {
         val items = testItems
         val itemIds = items.map { it.id }
         repo.insertAll(items)
@@ -70,7 +71,7 @@ class AudiosRepoTest : BaseTest() {
     }
 
     @Test
-    fun `saveAudios saves with id as primaryKey and saveType params`() = testScope.runBlockingTest {
+    fun `saveAudios saves with id as primaryKey and saveType params`() = runTest {
         val items = testItems
         val itemIds = testItems.map { it.id }
         repo.saveAudios(AudioSaveType.Download, items)
@@ -84,7 +85,7 @@ class AudiosRepoTest : BaseTest() {
     }
 
     @Test
-    fun find() = testScope.runBlockingTest {
+    fun find() = runTest {
         repo.insertAll(testItems)
         val downloadRequestItems = (1..5).map { SampleData.downloadRequest() }
         downloadRequestsDao.insertAll(downloadRequestItems)
@@ -95,7 +96,7 @@ class AudiosRepoTest : BaseTest() {
     }
 
     @Test
-    fun findMissingIds() = testScope.runBlockingTest {
+    fun findMissingIds() = runTest {
         repo.insertAll(testItems)
         val downloadRequestItems = (1..5).map { SampleData.downloadRequest() }
         downloadRequestsDao.insertAll(downloadRequestItems)
@@ -117,7 +118,7 @@ class AudiosRepoTest : BaseTest() {
     // region RoomRepo tests
 
     @Test
-    fun entry() = testScope.runBlockingTest {
+    fun entry() = runTest {
         val item = testItems.first()
         repo.insert(item)
 
@@ -127,7 +128,7 @@ class AudiosRepoTest : BaseTest() {
     }
 
     @Test
-    fun entries() = testScope.runBlockingTest {
+    fun entries() = runTest {
         repo.insertAll(testItems)
 
         repo.entries().test {
@@ -137,7 +138,7 @@ class AudiosRepoTest : BaseTest() {
     }
 
     @Test
-    fun entries_byId() = testScope.runBlockingTest {
+    fun entries_byId() = runTest {
         repo.insertAll(testItems)
 
         repo.entries(testItems.map { it.id }).test {
@@ -147,7 +148,7 @@ class AudiosRepoTest : BaseTest() {
     }
 
     @Test
-    fun update() = testScope.runBlockingTest {
+    fun update() = runTest {
         val item = testItems.first()
         repo.insert(item)
 
@@ -160,7 +161,7 @@ class AudiosRepoTest : BaseTest() {
     }
 
     @Test
-    fun isEmpty() = testScope.runBlockingTest {
+    fun isEmpty() = runTest {
         repo.isEmpty().test {
             assertThat(awaitItem()).isTrue()
         }
@@ -173,7 +174,7 @@ class AudiosRepoTest : BaseTest() {
     }
 
     @Test
-    fun count() = testScope.runBlockingTest {
+    fun count() = runTest {
         repo.count().test {
             assertThat(awaitItem()).isEqualTo(0)
         }
@@ -186,7 +187,7 @@ class AudiosRepoTest : BaseTest() {
     }
 
     @Test
-    fun has() = testScope.runBlockingTest {
+    fun has() = runTest {
         val item = testItems.first()
 
         repo.has(item.id).test {
@@ -197,7 +198,7 @@ class AudiosRepoTest : BaseTest() {
     }
 
     @Test
-    fun exists() = testScope.runBlockingTest {
+    fun exists() = runTest {
         val item = testItems.first()
 
         assertThat(repo.exists(item.id)).isFalse()
@@ -206,7 +207,7 @@ class AudiosRepoTest : BaseTest() {
     }
 
     @Test
-    fun delete() = testScope.runBlockingTest {
+    fun delete() = runTest {
         val item = testItems.first()
         repo.insert(item)
 
@@ -216,7 +217,7 @@ class AudiosRepoTest : BaseTest() {
     }
 
     @Test
-    fun deleteAll() = testScope.runBlockingTest {
+    fun deleteAll() = runTest {
         repo.insertAll(testItems)
 
         repo.deleteAll()

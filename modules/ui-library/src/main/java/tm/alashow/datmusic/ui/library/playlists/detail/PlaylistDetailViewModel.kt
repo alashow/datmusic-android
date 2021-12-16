@@ -10,7 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -19,7 +19,7 @@ import tm.alashow.base.util.extensions.stateInDefault
 import tm.alashow.datmusic.data.interactors.playlist.RemovePlaylistItems
 import tm.alashow.datmusic.data.observers.playlist.ObservePlaylist
 import tm.alashow.datmusic.data.observers.playlist.ObservePlaylistDetails
-import tm.alashow.datmusic.data.observers.playlist.ObservePlaylistExistense
+import tm.alashow.datmusic.data.observers.playlist.ObservePlaylistExistence
 import tm.alashow.datmusic.domain.entities.PlaylistAudioId
 import tm.alashow.datmusic.domain.entities.PlaylistId
 import tm.alashow.datmusic.domain.entities.PlaylistItem
@@ -33,7 +33,7 @@ import tm.alashow.navigation.screens.RootScreen
 class PlaylistDetailViewModel @Inject constructor(
     private val handle: SavedStateHandle,
     private val playlist: ObservePlaylist,
-    private val playlistExistense: ObservePlaylistExistense,
+    private val playlistExistense: ObservePlaylistExistence,
     private val playlistDetails: ObservePlaylistDetails,
     private val removePlaylistItems: RemovePlaylistItems,
     private val analytics: FirebaseAnalytics,
@@ -59,7 +59,7 @@ class PlaylistDetailViewModel @Inject constructor(
         playlistDetails(playlistId)
         playlistExistense(playlistId)
         viewModelScope.launch {
-            playlistExistense.flow.collect { exists ->
+            playlistExistense.flow.collectLatest { exists ->
                 if (!exists) navigator.goBack()
             }
         }

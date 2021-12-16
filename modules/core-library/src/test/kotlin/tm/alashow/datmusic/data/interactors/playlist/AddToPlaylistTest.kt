@@ -9,7 +9,8 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import javax.inject.Inject
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Test
 import tm.alashow.base.testing.BaseTest
 import tm.alashow.datmusic.data.SampleData
@@ -27,13 +28,13 @@ class AddToPlaylistTest : BaseTest() {
     @Inject lateinit var repo: PlaylistsRepo
     @Inject lateinit var audiosRepo: AudiosRepo
 
-    override fun tearDown() {
-        super.tearDown()
+    @After
+    fun tearDown() {
         database.close()
     }
 
     @Test
-    fun `adds to playlist given audios ids`() = testScope.runBlockingTest {
+    fun `adds to playlist given audios ids`() = runTest {
         val audioIds = (1..5).map { SampleData.audio() }
             .apply { audiosRepo.insertAll(this) }
             .map { it.id }
@@ -48,7 +49,7 @@ class AddToPlaylistTest : BaseTest() {
     }
 
     @Test
-    fun `adds to playlist given audios ids but ignores existing given ignoreExisting true`() = testScope.runBlockingTest {
+    fun `adds to playlist given audios ids but ignores existing given ignoreExisting true`() = runTest {
         val audiosCount = 10
         val existingAudioIdsCount = audiosCount / 2
         val audioIds = (1..audiosCount).map { SampleData.audio() }

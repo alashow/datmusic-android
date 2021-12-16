@@ -9,7 +9,7 @@ import androidx.lifecycle.SavedStateHandle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -39,7 +39,7 @@ fun <T> SavedStateHandle.getStateFlow(
                 withContext(Dispatchers.Main.immediate) {
                     liveData.removeObserver(observer)
                 }
-            }.collect { value ->
+            }.collectLatest { value ->
                 withContext(Dispatchers.Main.immediate) {
                     if (liveData.value != value) {
                         liveData.value = value

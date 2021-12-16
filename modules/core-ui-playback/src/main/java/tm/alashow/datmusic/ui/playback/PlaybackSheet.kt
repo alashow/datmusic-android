@@ -31,7 +31,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.LocalContentAlpha
@@ -73,9 +72,10 @@ import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.ui.Scaffold
 import com.google.accompanist.insets.ui.TopAppBar
+import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
 import kotlin.math.roundToLong
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import tm.alashow.base.ui.ColorPalettePreference
 import tm.alashow.base.ui.ThemeState
@@ -125,7 +125,6 @@ private val RemoveFromPlaylist = R.string.playback_queue_removeFromQueue
 private val AddQueueToPlaylist = R.string.playback_queue_addQueueToPlaylist
 private val SaveQueueAsPlaylist = R.string.playback_queue_saveAsPlaylist
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun PlaybackSheet(
     // override local theme color palette because we want simple colors for menus n' stuff
@@ -153,6 +152,7 @@ fun PlaybackSheet(
     }
 }
 
+@OptIn(ExperimentalPagerApi::class)
 @Composable
 internal fun PlaybackSheetContent(
     onClose: Callback,
@@ -171,8 +171,11 @@ internal fun PlaybackSheetContent(
 
     val pagerState = rememberPagerState(playbackQueue.currentIndex)
 
+    if (playbackState == NONE_PLAYBACK_STATE)
+        return
+
     LaunchedEffect(playbackConnection) {
-        playbackConnection.playbackState.collect {
+        playbackConnection.playbackState.collectLatest {
             if (it.isIdle) onClose()
         }
     }

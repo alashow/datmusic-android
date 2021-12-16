@@ -16,7 +16,7 @@ import androidx.compose.runtime.snapshotFlow
 import com.google.accompanist.navigation.material.BottomSheetNavigator
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterialNavigationApi::class, InternalCoroutinesApi::class)
 @Composable
@@ -32,7 +32,7 @@ fun rememberBottomSheetNavigator(
     if (skipHalfExpanded) {
         LaunchedEffect(sheetState) {
             snapshotFlow { sheetState.isAnimationRunning }
-                .collect {
+                .collectLatest {
                     with(sheetState) {
                         val isOpening = currentValue == ModalBottomSheetValue.Hidden && targetValue == ModalBottomSheetValue.HalfExpanded
                         val isClosing = currentValue == ModalBottomSheetValue.Expanded && targetValue == ModalBottomSheetValue.HalfExpanded

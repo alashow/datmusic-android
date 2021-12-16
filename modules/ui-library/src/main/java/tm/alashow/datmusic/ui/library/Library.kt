@@ -22,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.insets.ui.LocalScaffoldPadding
 import com.google.accompanist.insets.ui.Scaffold
 import tm.alashow.base.util.extensions.Callback
 import tm.alashow.common.compose.rememberFlowWithLifecycle
@@ -38,8 +37,8 @@ import tm.alashow.navigation.Navigator
 import tm.alashow.navigation.screens.LeafScreen
 import tm.alashow.ui.components.AppTopBar
 import tm.alashow.ui.components.EmptyErrorBox
+import tm.alashow.ui.components.FullScreenLoading
 import tm.alashow.ui.components.IconButton
-import tm.alashow.ui.components.fullScreenLoading
 
 @Composable
 fun Library() {
@@ -64,17 +63,17 @@ private fun Library(
             )
         },
         modifier = Modifier.fillMaxSize()
-    ) {
-        LazyColumn(
-            contentPadding = LocalScaffoldPadding.current,
-            state = listState
-        ) {
-            when (val items = asyncLibraryItems) {
-                is Success -> libraryList(
-                    items = items(),
-                )
-                else -> fullScreenLoading()
+    ) { padding ->
+        when (val items = asyncLibraryItems) {
+            is Success -> {
+                LazyColumn(
+                    contentPadding = padding,
+                    state = listState
+                ) {
+                    libraryList(items())
+                }
             }
+            else -> FullScreenLoading()
         }
     }
 }

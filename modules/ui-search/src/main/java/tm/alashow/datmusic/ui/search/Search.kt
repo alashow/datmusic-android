@@ -59,12 +59,13 @@ import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
 import com.google.firebase.analytics.FirebaseAnalytics
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import tm.alashow.base.util.click
 import tm.alashow.common.compose.LocalAnalytics
+import tm.alashow.common.compose.collectEvent
 import tm.alashow.common.compose.getNavArgument
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.data.DatmusicSearchParams.BackendType
@@ -95,7 +96,7 @@ internal fun Search(
     viewModel: SearchViewModel,
     actioner: (SearchAction) -> Unit
 ) {
-    val viewState by rememberFlowWithLifecycle(viewModel.state).collectAsState(initial = SearchViewState.Empty)
+    val viewState by rememberFlowWithLifecycle(viewModel.state).collectAsState(SearchViewState.Empty)
     val listState = rememberLazyListState()
 
     Search(viewState, actioner, viewModel, listState)
@@ -119,7 +120,11 @@ private fun Search(
             .distinctUntilChanged()
             .map { if (listState.firstVisibleItemIndex > searchBarHideThreshold) it else false }
             .map { if (it) 1f else 0f }
-            .collect { searchBarHidden.animateTo(it) }
+            .collectLatest { searchBarHidden.animateTo(it) }
+    }
+
+    collectEvent(viewModel.onSearchEvent) {
+        listState.scrollToItem(0)
     }
 
     Scaffold(

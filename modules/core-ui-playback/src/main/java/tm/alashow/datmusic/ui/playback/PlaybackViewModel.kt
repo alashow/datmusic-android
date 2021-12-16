@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.SET_MEDIA_STATE
@@ -22,7 +22,7 @@ class PlaybackViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            playbackConnection.isConnected.collect { connected ->
+            playbackConnection.isConnected.collectLatest { connected ->
                 if (connected) {
                     playbackConnection.transportControls?.sendCustomAction(SET_MEDIA_STATE, null)
                 }
