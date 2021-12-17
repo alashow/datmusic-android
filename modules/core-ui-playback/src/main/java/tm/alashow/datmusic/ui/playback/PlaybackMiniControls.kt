@@ -14,6 +14,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,6 +40,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -79,6 +81,7 @@ object PlaybackMiniControlsDefaults {
 @Composable
 fun PlaybackMiniControls(
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current
 ) {
     val playbackState by rememberFlowWithLifecycle(playbackConnection.playbackState).collectAsState(NONE_PLAYBACK_STATE)
@@ -95,6 +98,7 @@ fun PlaybackMiniControls(
             playbackState = playbackState,
             nowPlaying = nowPlaying,
             onPlayPause = { playbackConnection.mediaController?.playPause() },
+            contentPadding = contentPadding,
         )
     }
 }
@@ -104,8 +108,9 @@ fun PlaybackMiniControls(
 fun PlaybackMiniControls(
     playbackState: PlaybackStateCompat,
     nowPlaying: MediaMetadataCompat,
-    modifier: Modifier = Modifier,
     onPlayPause: () -> Unit,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
     height: Dp = PlaybackMiniControlsDefaults.height,
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
     navigator: Navigator = LocalNavigator.current,
@@ -134,6 +139,7 @@ fun PlaybackMiniControls(
                         .height(height)
                         .fillMaxWidth()
                         .background(backgroundColor)
+                        .padding(contentPadding)
                 ) {
                     CompositionLocalProvider(LocalContentColor provides contentColor) {
                         PlaybackNowPlaying(nowPlaying = nowPlaying, maxHeight = height)
