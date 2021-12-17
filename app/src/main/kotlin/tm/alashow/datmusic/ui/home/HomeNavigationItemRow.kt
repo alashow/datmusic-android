@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextOverflow
 import tm.alashow.ui.theme.AppTheme
 
 @Composable
@@ -70,6 +71,8 @@ internal fun HomeNavigationItemRow(
             )
             Text(
                 stringResource(item.labelRes),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.subtitle2
             )
         }
