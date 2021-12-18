@@ -16,6 +16,7 @@ data class PlaybackQueue(
     val title: String? = null,
     val initialMediaId: String = "",
     val currentIndex: Int = 0,
+    val isIndexValid: Boolean = true
 ) : List<Audio> by audios {
 
     val isValid = ids.isNotEmpty() && audios.isNotEmpty() && currentIndex >= 0

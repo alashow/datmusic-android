@@ -19,7 +19,11 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.util.lerp
-import com.google.accompanist.pager.*
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.PagerState
+import com.google.accompanist.pager.calculateCurrentOffsetForPage
+import com.google.accompanist.pager.rememberPagerState
 import kotlin.math.absoluteValue
 import kotlinx.coroutines.flow.collectLatest
 import tm.alashow.common.compose.LocalPlaybackConnection
@@ -45,9 +49,12 @@ internal fun PlaybackPager(
         content(nowPlaying.toAudio(), playbackCurrentIndex, Modifier)
         return
     }
+    LaunchedEffect(Unit) {
+        pagerState.scrollToPage(playbackCurrentIndex)
+    }
     LaunchedEffect(playbackCurrentIndex, pagerState) {
         if (playbackCurrentIndex != pagerState.currentPage) {
-            pagerState.scrollToPage(playbackCurrentIndex)
+            pagerState.animateScrollToPage(playbackCurrentIndex)
         }
         snapshotFlow { pagerState.currentPage }.collectLatest { page ->
             if (lastRequestedPage != page) {
