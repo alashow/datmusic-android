@@ -13,6 +13,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import java.io.Serializable
+
+data class DraggableItemKey(val any: Any) : Serializable
 
 @Composable
 fun DraggableItemSurface(
