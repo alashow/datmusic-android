@@ -6,6 +6,7 @@ package tm.alashow.datmusic.ui.home
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.ScaffoldState
@@ -20,6 +21,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
 import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.common.compose.LocalScaffoldState
@@ -74,6 +76,7 @@ internal fun Home(
                             height = bottomBarHeight
                         )
                     }
+                else Spacer(Modifier.navigationBarsPadding())
             }
         ) {
             AppNavigation(navController = navController)
