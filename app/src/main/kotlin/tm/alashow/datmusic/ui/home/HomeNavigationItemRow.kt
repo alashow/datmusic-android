@@ -72,7 +72,7 @@ internal fun HomeNavigationItemRow(
             Text(
                 stringResource(item.labelRes),
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
+                overflow = TextOverflow.Visible,
                 style = MaterialTheme.typography.subtitle2
             )
         }

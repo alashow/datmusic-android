@@ -20,9 +20,7 @@ internal fun HomeNavigationItemIcon(item: HomeNavigationItem, selected: Boolean)
     val selectedPainter = when (item) {
         is HomeNavigationItem.ResourceIcon -> item.selectedIconRes?.let { painterResource(it) }
         is HomeNavigationItem.ImageVectorIcon -> item.selectedImageVector?.let {
-            rememberVectorPainter(
-                it
-            )
+            rememberVectorPainter(it)
         }
     }
 
