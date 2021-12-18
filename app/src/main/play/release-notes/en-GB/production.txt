@@ -1,3 +1,7 @@
+v2.1.9
+- Resizable home navigation rail for wide/large screens (landscape mode)
+- Fix EditPlaylist reordering bug
+
 v2.1.8
 - Fix scroll position restoration on all screens
 - Smoother media detail header scroll transition
