@@ -6,6 +6,7 @@ package tm.alashow.datmusic.ui.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
@@ -29,6 +30,7 @@ internal fun HomeNavigationRail(
     selectedTab: RootScreen,
     onNavigationSelected: (RootScreen) -> Unit,
     modifier: Modifier = Modifier,
+    extraContent: @Composable BoxScope.() -> Unit = {},
 ) {
     Surface(
         color = MaterialTheme.colors.surface,
@@ -46,6 +48,7 @@ internal fun HomeNavigationRail(
                     )
                 )
         ) {
+            extraContent()
             Column(
                 modifier = Modifier
                     .align(Alignment.TopStart)
