@@ -4,8 +4,6 @@
  */
 package tm.alashow.datmusic.di
 
-import android.app.Application
-import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,7 +16,6 @@ import tm.alashow.base.inititializer.AppInitializers
 import tm.alashow.base.inititializer.ThreeTenAbpInitializer
 import tm.alashow.base.inititializer.TimberInitializer
 import tm.alashow.base.util.CoroutineDispatchers
-import tm.alashow.base.util.LocalConfig
 import tm.alashow.datmusic.fcm.FcmTokenRegistrator
 import tm.alashow.datmusic.notifications.NotificationsInitializer
 import tm.alashow.datmusic.util.RemoteConfigInitializer
@@ -35,10 +32,6 @@ class AppModule {
         computation = Dispatchers.Default,
         main = Dispatchers.Main
     )
-
-    @Provides
-    @Singleton
-    fun localConfig(app: Application) = LocalConfig(app.getSharedPreferences("local_config", Context.MODE_PRIVATE))
 
     @Provides
     fun appInitializers(
