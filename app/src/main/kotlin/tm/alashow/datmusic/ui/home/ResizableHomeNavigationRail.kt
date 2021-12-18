@@ -37,6 +37,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.insets.systemBarsPadding
+import tm.alashow.base.util.event
+import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.ui.playback.PlaybackMiniControlsDefaults
 import tm.alashow.navigation.screens.RootScreen
@@ -125,6 +127,7 @@ private fun Modifier.resizableArea(
     orientation: Orientation = Orientation.Horizontal,
 ) = composed {
     val haptic = LocalHapticFeedback.current
+    val analytics = LocalAnalytics.current
     draggable(
         orientation = orientation,
         state = rememberDraggableState { delta ->
@@ -144,6 +147,7 @@ private fun Modifier.resizableArea(
                 newAnchor = 0
             setDragSnapCurrentAnchor(newAnchor)
             setDividerDragOffset(dragSnapAnchors[dragSnapCurrentAnchor])
+            analytics.event("home.navigationRail.snapAnchor", mapOf("anchor" to newAnchor))
         },
     )
 }
