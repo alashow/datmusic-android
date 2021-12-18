@@ -55,7 +55,7 @@ internal fun Home(
     val bottomBarHeight = HomeBottomNavigationHeight * (if (isPlayerActive) 1.15f else 1f)
     Row(Modifier.fillMaxSize()) {
         if (isWideScreen)
-            ResizableHomeNavigationRail(isPlayerActive, selectedTab, navController)
+            ResizableHomeNavigationRail(selectedTab = selectedTab, navController = navController)
         Scaffold(
             modifier = Modifier.weight(12f),
             scaffoldState = scaffoldState,

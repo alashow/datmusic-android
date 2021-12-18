@@ -45,12 +45,10 @@ import tm.alashow.ui.theme.AppTheme
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 internal fun RowScope.ResizableHomeNavigationRail(
-    isPlayerActive: Boolean,
     selectedTab: RootScreen,
     navController: NavHostController,
     configuration: Configuration = LocalConfiguration.current,
-    navigationRailWeightWithPlayer: Float = 4.5f,
-    navigationRailWeightWithoutPlayer: Float = 3.5f,
+    navigationRailBaseWeight: Float = 4.5f,
     navigationRailWeightMinWeight: Float = 0.9f,
     viewModel: ResizableHomeNavigationRailViewModel = hiltViewModel(),
     dividerDragOffset: State<Float> = rememberFlowWithLifecycle(viewModel.dragOffset).collectAsState(initial = 0f),
@@ -61,8 +59,6 @@ internal fun RowScope.ResizableHomeNavigationRail(
     val dragSnapAnchors = listOf(0f, dragRange.endInclusive, dragRange.start)
     var dragSnapCurrentAnchor by remember { mutableStateOf(0) }
     val dividerDragOffsetWeight by derivedStateOf { (dividerDragOffset.value / screenWidth) * 12 }
-
-    val navigationRailBaseWeight = if (isPlayerActive) navigationRailWeightWithPlayer else navigationRailWeightWithoutPlayer
     val navigationRailWeight = navigationRailBaseWeight + dividerDragOffsetWeight
 
     Box(Modifier.weight(navigationRailWeight.coerceAtLeast(navigationRailWeightMinWeight))) {
