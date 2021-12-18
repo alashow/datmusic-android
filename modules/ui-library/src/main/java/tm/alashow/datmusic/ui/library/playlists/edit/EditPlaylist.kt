@@ -80,6 +80,7 @@ import tm.alashow.ui.components.DraggableItemSurface
 import tm.alashow.ui.components.IconButton
 import tm.alashow.ui.components.TextRoundedButton
 import tm.alashow.ui.components.textIconModifier
+import tm.alashow.ui.simpleClickable
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.Orange
 
@@ -244,7 +245,12 @@ private fun EditablePlaylistArtwork(
     CoverImage(
         data = image,
         size = 180.dp,
-        modifier = Modifier.padding(AppTheme.specs.padding),
+        modifier = Modifier
+            .padding(AppTheme.specs.padding)
+            .simpleClickable {
+                if (image == null)
+                    imagePickerLauncher.launch("image/*")
+            },
         imageModifier = Modifier.coloredRippleClickable(
             color = adaptiveColor.color,
             rippleRadius = Dp.Unspecified,
