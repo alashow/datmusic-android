@@ -9,14 +9,3 @@ v2.1.8
 
 v2.1.7
 - Animated lists in playback sheet queue and playlist editor
-
-v2.1.61
-- Album detail year loading fix
-
-v2.1.6
-- Main audios backend change
-- Fix Edit playlist screen's re-ordering handle
-- Updated translations
-
-v2.1.5
-- Backup & restore library database in settings.
