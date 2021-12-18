@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
@@ -35,8 +36,11 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.google.accompanist.insets.systemBarsPadding
 import tm.alashow.common.compose.rememberFlowWithLifecycle
+import tm.alashow.datmusic.ui.playback.PlaybackMiniControlsDefaults
 import tm.alashow.navigation.screens.RootScreen
+import tm.alashow.ui.theme.AppTheme
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -86,6 +90,24 @@ internal fun RowScope.ResizableHomeNavigationRail(
                 .fillMaxHeight()
                 .align(Alignment.CenterEnd)
         ) {
+            Box(
+                Modifier
+                    .width(8.dp)
+                    .align(Alignment.TopEnd)
+                    .fillMaxHeight()
+                    // position draggable area above mini playback controls
+                    .padding(bottom = PlaybackMiniControlsDefaults.height + AppTheme.specs.padding)
+                    .systemBarsPadding()
+                    .resizableArea(
+                        dragRange = dragRange,
+                        dividerDragOffset = dividerDragOffset,
+                        setDividerDragOffset = setDividerDragOffset,
+                        dragSnapAnchors = dragSnapAnchors,
+                        dragSnapCurrentAnchor = dragSnapCurrentAnchor,
+                        setDragSnapCurrentAnchor = { dragSnapCurrentAnchor = it },
+                    )
+
+            )
             Divider(
                 modifier = Modifier
                     .width(1.dp)
