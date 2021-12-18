@@ -41,18 +41,13 @@ class ResizableHomeNavigationRailViewModel @Inject constructor(
 
     private fun persistDragOffset() {
         viewModelScope.launch {
-            launch {
-                preferencesStore.get(HomeNavigationRailDragOffsetKey, HomeNavigationRailWeightDefault).collectLatest {
-                    dragOffsetState.value = it
-                }
-            }
-            launch {
-                dragOffsetState
-                    .debounce(1000)
-                    .collectLatest {
-                        preferencesStore.save(HomeNavigationRailDragOffsetKey, it)
-                    }
-            }
+            preferencesStore.get(HomeNavigationRailDragOffsetKey, HomeNavigationRailWeightDefault)
+                .collectLatest { dragOffsetState.value = it }
+        }
+        viewModelScope.launch {
+            dragOffsetState
+                .debounce(100)
+                .collectLatest { preferencesStore.save(HomeNavigationRailDragOffsetKey, it) }
         }
     }
 }

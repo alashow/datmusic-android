@@ -8,10 +8,12 @@ import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -40,9 +42,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -102,7 +108,7 @@ fun PlaybackMiniControls(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun PlaybackMiniControls(
     playbackState: PlaybackStateCompat,
@@ -114,7 +120,7 @@ fun PlaybackMiniControls(
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
     navigator: Navigator = LocalNavigator.current,
 ) {
-    val expand = {
+    val openPlaybackSheet = {
         navigator.navigate(LeafScreen.PlaybackSheet().createRoute())
     }
 
@@ -128,9 +134,17 @@ fun PlaybackMiniControls(
             shape = MaterialTheme.shapes.small,
             modifier = modifier
                 .padding(horizontal = AppTheme.specs.paddingSmall)
-                .clickable { expand() }
+                .animateContentSize()
+                .combinedClickable(
+                    enabled = true,
+                    onClick = openPlaybackSheet,
+                    onLongClick = onPlayPause,
+                    onDoubleClick = onPlayPause
+                )
         ) {
             Column {
+                var controlsVisible by remember { mutableStateOf(true) }
+                var nowPlayingVisible by remember { mutableStateOf(true) }
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
@@ -138,11 +152,17 @@ fun PlaybackMiniControls(
                         .height(height)
                         .fillMaxWidth()
                         .background(backgroundColor)
-                        .padding(contentPadding)
+                        .onGloballyPositioned {
+                            val aspectRatio = it.size.height.toFloat() / it.size.width.toFloat()
+                            controlsVisible = aspectRatio < 0.9
+                            nowPlayingVisible = aspectRatio < 0.5
+                        }
+                        .padding(if (controlsVisible) contentPadding else PaddingValues())
                 ) {
                     CompositionLocalProvider(LocalContentColor provides contentColor) {
-                        PlaybackNowPlaying(nowPlaying = nowPlaying, maxHeight = height)
-                        PlaybackPlayPause(playbackState = playbackState, onPlayPause = onPlayPause)
+                        PlaybackNowPlaying(nowPlaying = nowPlaying, maxHeight = height, coverOnly = !nowPlayingVisible)
+                        if (controlsVisible)
+                            PlaybackPlayPause(playbackState = playbackState, onPlayPause = onPlayPause)
                     }
                 }
                 PlaybackProgress(
@@ -155,53 +175,27 @@ fun PlaybackMiniControls(
 }
 
 @Composable
-private fun PlaybackProgress(
-    playbackState: PlaybackStateCompat,
-    color: Color,
-    playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
-) {
-    val progressState by rememberFlowWithLifecycle(playbackConnection.playbackProgress).collectAsState(PlaybackProgressState())
-    val sizeModifier = Modifier
-        .height(2.dp)
-        .fillMaxWidth()
-    when {
-        playbackState.isBuffering -> {
-            LinearProgressIndicator(
-                color = color,
-                modifier = sizeModifier
-            )
-        }
-        else -> {
-            val progress by animatePlaybackProgress(progressState.progress)
-            LinearProgressIndicator(
-                progress = progress,
-                color = color,
-                backgroundColor = color.copy(ProgressIndicatorDefaults.IndicatorBackgroundOpacity),
-                modifier = sizeModifier
-            )
-        }
-    }
-}
-
-@Composable
 private fun RowScope.PlaybackNowPlaying(
     nowPlaying: MediaMetadataCompat,
     maxHeight: Dp,
+    modifier: Modifier = Modifier,
+    coverOnly: Boolean = false,
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingTiny),
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.weight(7f),
+        modifier = modifier.weight(if (coverOnly) 3f else 7f),
     ) {
         CoverImage(
             data = nowPlaying.artwork ?: nowPlaying.artworkUri,
-            size = maxHeight - 16.dp,
+            size = maxHeight - AppTheme.specs.padding,
             modifier = Modifier.padding(AppTheme.specs.paddingSmall)
         )
 
-        PlaybackPager(nowPlaying = nowPlaying) { audio, _, pagerMod ->
-            PlaybackNowPlaying(audio, modifier = pagerMod)
-        }
+        if (!coverOnly)
+            PlaybackPager(nowPlaying = nowPlaying) { audio, _, pagerMod ->
+                PlaybackNowPlaying(audio, modifier = pagerMod)
+            }
     }
 }
 
@@ -251,5 +245,34 @@ private fun RowScope.PlaybackPlayPause(
             modifier = Modifier.size(size),
             contentDescription = null
         )
+    }
+}
+
+@Composable
+private fun PlaybackProgress(
+    playbackState: PlaybackStateCompat,
+    color: Color,
+    playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
+) {
+    val progressState by rememberFlowWithLifecycle(playbackConnection.playbackProgress).collectAsState(PlaybackProgressState())
+    val sizeModifier = Modifier
+        .height(2.dp)
+        .fillMaxWidth()
+    when {
+        playbackState.isBuffering -> {
+            LinearProgressIndicator(
+                color = color,
+                modifier = sizeModifier
+            )
+        }
+        else -> {
+            val progress by animatePlaybackProgress(progressState.progress)
+            LinearProgressIndicator(
+                progress = progress,
+                color = color,
+                backgroundColor = color.copy(ProgressIndicatorDefaults.IndicatorBackgroundOpacity),
+                modifier = sizeModifier
+            )
+        }
     }
 }
