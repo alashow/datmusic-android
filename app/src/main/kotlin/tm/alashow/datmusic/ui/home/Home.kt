@@ -48,38 +48,35 @@ internal fun Home(
     val playbackState by rememberFlowWithLifecycle(playbackConnection.playbackState).collectAsState(NONE_PLAYBACK_STATE)
     val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying).collectAsState(NONE_PLAYING)
 
-    val playerActive = (playbackState to nowPlaying).isActive
+    val isPlayerActive = (playbackState to nowPlaying).isActive
     val isWideScreen by isWideScreen()
-    val bottomBarHeight = HomeBottomNavigationHeight * (if (playerActive) 1.15f else 1f)
-
-    Scaffold(
-        scaffoldState = scaffoldState,
-        snackbarHost = { DismissableSnackbarHost(it) },
-        bottomBar = {
-            if (!isWideScreen)
-                Column {
-                    PlaybackMiniControls(
-                        modifier = Modifier
-                            .graphicsLayer(translationY = AppTheme.specs.padding.value)
-                            .zIndex(2f)
-                    )
-                    HomeBottomNavigation(
-                        selectedTab = selectedTab,
-                        onNavigationSelected = { selected -> navController.selectRootScreen(selected) },
-                        playerActive = playerActive,
-                        modifier = Modifier.fillMaxWidth(),
-                        height = bottomBarHeight
-                    )
-                }
-        }
-    ) {
-        Row(Modifier.fillMaxSize()) {
-            if (isWideScreen)
-                ResizableHomeNavigationRail(playerActive, selectedTab, navController)
-            AppNavigation(
-                navController = navController,
-                modifier = Modifier.weight(12f)
-            )
+    val bottomBarHeight = HomeBottomNavigationHeight * (if (isPlayerActive) 1.15f else 1f)
+    Row(Modifier.fillMaxSize()) {
+        if (isWideScreen)
+            ResizableHomeNavigationRail(isPlayerActive, selectedTab, navController)
+        Scaffold(
+            modifier = Modifier.weight(12f),
+            scaffoldState = scaffoldState,
+            snackbarHost = { DismissableSnackbarHost(it) },
+            bottomBar = {
+                if (!isWideScreen)
+                    Column {
+                        PlaybackMiniControls(
+                            modifier = Modifier
+                                .graphicsLayer(translationY = AppTheme.specs.padding.value)
+                                .zIndex(2f)
+                        )
+                        HomeBottomNavigation(
+                            selectedTab = selectedTab,
+                            onNavigationSelected = { selected -> navController.selectRootScreen(selected) },
+                            playerActive = isPlayerActive,
+                            modifier = Modifier.fillMaxWidth(),
+                            height = bottomBarHeight
+                        )
+                    }
+            }
+        ) {
+            AppNavigation(navController = navController)
         }
     }
 }

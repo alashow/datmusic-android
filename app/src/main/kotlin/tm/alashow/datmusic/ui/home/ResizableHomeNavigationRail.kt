@@ -45,15 +45,15 @@ internal fun RowScope.ResizableHomeNavigationRail(
     selectedTab: RootScreen,
     navController: NavHostController,
     configuration: Configuration = LocalConfiguration.current,
-    navigationRailWeightWithPlayer: Float = 4f,
-    navigationRailWeightWithoutPlayer: Float = 2.8f,
-    navigationRailWeightMinWeight: Float = 0.75f,
+    navigationRailWeightWithPlayer: Float = 4.5f,
+    navigationRailWeightWithoutPlayer: Float = 3.5f,
+    navigationRailWeightMinWeight: Float = 0.9f,
     viewModel: ResizableHomeNavigationRailViewModel = hiltViewModel(),
     dividerDragOffset: State<Float> = rememberFlowWithLifecycle(viewModel.dragOffset).collectAsState(initial = 0f),
     setDividerDragOffset: (Float) -> Unit = viewModel::setDragOffset,
 ) {
     val screenWidth = configuration.screenWidthDp
-    val dragRange = (-screenWidth / 4f)..(screenWidth / 4f)
+    val dragRange = (-screenWidth / 3f)..(screenWidth / 3f)
     val dragSnapAnchors = listOf(0f, dragRange.endInclusive, dragRange.start)
     var dragSnapCurrentAnchor by remember { mutableStateOf(0) }
     val dividerDragOffsetWeight by derivedStateOf { (dividerDragOffset.value / screenWidth) * 12 }
