@@ -10,6 +10,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -48,6 +49,7 @@ internal fun AppNavigation(
     navController: NavHostController,
     navigator: Navigator = LocalNavigator.current,
     analytics: FirebaseAnalytics = LocalAnalytics.current,
+    modifier: Modifier = Modifier
 ) {
     collectEvent(navigator.queue) { event ->
         analytics.event("navigator.navigate", mapOf("route" to event.route))
@@ -77,7 +79,8 @@ internal fun AppNavigation(
 
     NavHost(
         navController = navController,
-        startDestination = RootScreen.Search.route
+        startDestination = RootScreen.Search.route,
+        modifier = modifier
     ) {
         addSearchRoot(navController)
         addDownloadsRoot(navController)

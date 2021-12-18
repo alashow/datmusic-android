@@ -41,7 +41,7 @@ repositories {
 }
 
 dependencies {
-	api project(":modules:common-ui-compose")
+	api project(':modules:common-compose')
 	api project(":modules:common-ui-theme")
 	api project(":modules:common-ui-components")
 	api project(":modules:core-ui-downloader")

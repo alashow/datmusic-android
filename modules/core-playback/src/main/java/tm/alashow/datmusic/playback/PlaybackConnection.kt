@@ -106,7 +106,7 @@ class PlaybackConnectionImpl(
 
     override val nowPlayingAudio = combine(playbackQueue, playbackState, ::Pair)
         .map { (queue, playbackState) ->
-            when (queue.isValid && !playbackState.isIdle) {
+            when (queue.isIndexValid && queue.isValid && !playbackState.isIdle) {
                 true -> PlaybackQueue.NowPlayingAudio.from(queue)
                 else -> null
             }
@@ -173,7 +173,7 @@ class PlaybackConnectionImpl(
             // if not, try to override current index by finding audio via now playing id
             when (synced) {
                 true -> it
-                else -> it.copy(currentIndex = it.indexOfFirst { a -> a.id == nowPlayingId })
+                else -> it.copy(isIndexValid = false, currentIndex = it.indexOfFirst { a -> a.id == nowPlayingId })
             }
         }
     }

@@ -75,12 +75,16 @@ import tm.alashow.ui.SwipeDismissSnackbar
 import tm.alashow.ui.adaptiveColor
 import tm.alashow.ui.coloredRippleClickable
 import tm.alashow.ui.components.CoverImage
+import tm.alashow.ui.components.DraggableItemKey
 import tm.alashow.ui.components.DraggableItemSurface
 import tm.alashow.ui.components.IconButton
 import tm.alashow.ui.components.TextRoundedButton
 import tm.alashow.ui.components.textIconModifier
+import tm.alashow.ui.simpleClickable
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.Orange
+
+private const val DRAGGABLE_ITEM_PREFIX = "draggable_"
 
 @Composable
 fun EditPlaylist(
@@ -130,7 +134,7 @@ fun EditPlaylist(
                 .reorderable(
                     state = reorderableState,
                     onMove = { from, to -> viewModel.movePlaylistItem(from.index - itemsBeforeContent, to.index - itemsBeforeContent) },
-                    canDragOver = { (it.index - itemsBeforeContent) in playlistItems.indices }
+                    canDragOver = { it.key is DraggableItemKey }
                 ),
         ) {
             editPlaylistHeader(
@@ -241,7 +245,12 @@ private fun EditablePlaylistArtwork(
     CoverImage(
         data = image,
         size = 180.dp,
-        modifier = Modifier.padding(AppTheme.specs.padding),
+        modifier = Modifier
+            .padding(AppTheme.specs.padding)
+            .simpleClickable {
+                if (image == null)
+                    imagePickerLauncher.launch("image/*")
+            },
         imageModifier = Modifier.coloredRippleClickable(
             color = adaptiveColor.color,
             rippleRadius = Dp.Unspecified,
@@ -304,11 +313,12 @@ private fun LazyListScope.editablePlaylistAudioList(
     onRemove: (PlaylistAudioId) -> Unit,
     audios: PlaylistItems,
 ) {
-    items(audios, key = { it.playlistAudio.id }) { playlistItem ->
+    items(audios, key = { DraggableItemKey(it.playlistAudio.id) }) { playlistItem ->
         val haptic = LocalHapticFeedback.current
-        val isDragging = reorderableState.draggedKey == playlistItem.playlistAudio.id
+        val itemKey = DraggableItemKey(playlistItem.playlistAudio.id)
+        val isDragging = reorderableState.draggedKey == itemKey
         DraggableItemSurface(
-            reorderableState.offsetByKey(playlistItem.playlistAudio.id),
+            reorderableState.offsetByKey(itemKey),
             // animate item placement unless item is being dragged
             modifier = if (isDragging) Modifier else Modifier.animateItemPlacement()
         ) {

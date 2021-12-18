@@ -6,7 +6,6 @@ package tm.alashow.datmusic.ui.search
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.expandIn
 import androidx.compose.animation.fadeIn
@@ -183,11 +182,8 @@ private fun SearchAppBar(
         }
 
         Column(
-            verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall),
-            modifier = Modifier.animateContentSize()
+            verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall)
         ) {
-            // hide title bar if we can make search list not jump during transitions caused by toolbar height change
-            // if (!searchActive)
             Text(
                 text = stringResource(R.string.search_title),
                 style = topAppBarTitleStyle(),
