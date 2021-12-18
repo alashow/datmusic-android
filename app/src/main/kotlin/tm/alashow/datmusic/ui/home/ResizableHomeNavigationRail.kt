@@ -45,7 +45,7 @@ internal fun RowScope.ResizableHomeNavigationRail(
     configuration: Configuration = LocalConfiguration.current,
     navigationRailWeightWithPlayer: Float = 4f,
     navigationRailWeightWithoutPlayer: Float = 2.8f,
-    navigationRailWeightMinWeight: Float = 0.75f,
+    navigationRailWeightMinWeight: Float = 0.8f,
 ) {
     val haptic = LocalHapticFeedback.current
     val screenWidth = configuration.screenWidthDp

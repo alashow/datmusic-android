@@ -42,7 +42,7 @@ repositories {
 
 dependencies {
 
-	implementation project(":modules:common-ui-compose")
+	implementation project(':modules:common-compose')
 	implementation project(":modules:common-ui-theme")
 	implementation project(":modules:common-ui-components")
 	implementation project(":modules:core-ui-media")

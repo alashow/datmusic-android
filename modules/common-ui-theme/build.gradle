@@ -44,6 +44,6 @@ dependencies {
 	implementation Deps.Dagger.hilt
 	kapt Deps.Dagger.compiler
 	kapt Deps.Dagger.hiltCompiler
+	api project(':modules:common-compose')
 
-	api project(":modules:common-ui-compose")
 }

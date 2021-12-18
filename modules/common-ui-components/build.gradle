@@ -40,6 +40,6 @@ repositories {
 
 dependencies {
 	api Deps.Android.Compose.lottie
-	api project(":modules:common-ui-compose")
+	api project(':modules:common-compose')
 	api project(":modules:common-ui-theme")
 }

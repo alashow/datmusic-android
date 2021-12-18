@@ -16,7 +16,6 @@ fun PlaybackHost(
     viewModel: PlaybackViewModel = hiltViewModel(),
     content: @Composable () -> Unit
 ) {
-
     CompositionLocalProvider(
         LocalPlaybackConnection provides viewModel.playbackConnection,
     ) {
