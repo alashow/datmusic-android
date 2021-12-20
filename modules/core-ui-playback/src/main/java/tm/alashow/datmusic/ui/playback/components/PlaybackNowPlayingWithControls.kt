@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -137,13 +136,15 @@ internal fun PlaybackControls(
 ) {
     val playbackMode by rememberFlowWithLifecycle(playbackConnection.playbackMode).collectAsState(PlaybackModeState())
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.width(288.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(
             onClick = { playbackConnection.mediaController?.toggleShuffleMode() },
-            modifier = Modifier.size(20.dp),
+            modifier = Modifier
+                .size(20.dp)
+                .weight(2f),
             rippleRadius = smallRippleRadius,
         ) {
             Icon(
@@ -164,7 +165,9 @@ internal fun PlaybackControls(
 
         IconButton(
             onClick = { playbackConnection.transportControls?.skipToPrevious() },
-            modifier = Modifier.size(40.dp),
+            modifier = Modifier
+                .size(40.dp)
+                .weight(4f),
             rippleRadius = smallRippleRadius,
         ) {
             Icon(
@@ -179,7 +182,9 @@ internal fun PlaybackControls(
 
         IconButton(
             onClick = { playbackConnection.mediaController?.playPause() },
-            modifier = Modifier.size(80.dp),
+            modifier = Modifier
+                .size(80.dp)
+                .weight(8f),
             rippleRadius = 35.dp,
         ) {
             Icon(
@@ -201,7 +206,9 @@ internal fun PlaybackControls(
 
         IconButton(
             onClick = { playbackConnection.transportControls?.skipToNext() },
-            modifier = Modifier.size(40.dp),
+            modifier = Modifier
+                .size(40.dp)
+                .weight(4f),
             rippleRadius = smallRippleRadius,
         ) {
             Icon(
@@ -216,7 +223,9 @@ internal fun PlaybackControls(
 
         IconButton(
             onClick = { playbackConnection.mediaController?.toggleRepeatMode() },
-            modifier = Modifier.size(20.dp),
+            modifier = Modifier
+                .size(20.dp)
+                .weight(2f),
             rippleRadius = smallRippleRadius,
         ) {
             Icon(

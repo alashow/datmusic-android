@@ -1,0 +1,67 @@
+/*
+ * Copyright (C) 2021, Alashov Berkeli
+ * All rights reserved.
+ */
+package tm.alashow.datmusic.ui.playback.components
+
+import android.support.v4.media.MediaMetadataCompat
+import android.support.v4.media.session.PlaybackStateCompat
+import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.PagerState
+import com.google.accompanist.pager.rememberPagerState
+import tm.alashow.base.util.extensions.Callback
+import tm.alashow.datmusic.domain.CoverImageSize
+
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+fun PlaybackArtworkPagerWithNowPlayingAndControls(
+    nowPlaying: MediaMetadataCompat,
+    playbackState: PlaybackStateCompat,
+    modifier: Modifier = Modifier,
+    contentColor: Color = MaterialTheme.colors.onBackground,
+    pagerState: PagerState = rememberPagerState(),
+    onArtworkClick: Callback? = null,
+    onTitleClick: Callback = {},
+    onArtistClick: Callback = {},
+) {
+    ConstraintLayout(modifier = modifier) {
+        val (pager, nowPlayingControls) = createRefs()
+        PlaybackPager(
+            nowPlaying = nowPlaying,
+            pagerState = pagerState,
+            modifier = Modifier.constrainAs(pager) {
+                centerHorizontallyTo(parent)
+                top.linkTo(parent.top)
+                bottom.linkTo(nowPlayingControls.top)
+                height = Dimension.fillToConstraints
+            }
+        ) { audio, _, pagerMod ->
+            val currentArtwork = audio.coverUri(CoverImageSize.LARGE)
+            PlaybackArtwork(
+                artwork = currentArtwork,
+                contentColor = contentColor,
+                nowPlaying = nowPlaying,
+                onClick = onArtworkClick,
+                modifier = pagerMod,
+            )
+        }
+        PlaybackNowPlayingWithControls(
+            nowPlaying = nowPlaying,
+            playbackState = playbackState,
+            contentColor = contentColor,
+            onTitleClick = onTitleClick,
+            onArtistClick = onArtistClick,
+            modifier = Modifier.constrainAs(nowPlayingControls) {
+                centerHorizontallyTo(parent)
+                bottom.linkTo(parent.bottom)
+                height = Dimension.fillToConstraints
+            }
+        )
+    }
+}

@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.Dp
+import tm.alashow.base.util.extensions.Callback
 import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.artwork
@@ -28,6 +29,7 @@ internal fun PlaybackArtwork(
     contentColor: Color,
     nowPlaying: MediaMetadataCompat,
     modifier: Modifier = Modifier,
+    onClick: Callback? = null,
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
 ) {
     CoverImage(
@@ -39,13 +41,13 @@ internal fun PlaybackArtwork(
         modifier = Modifier
             .padding(horizontal = AppTheme.specs.paddingLarge)
             .then(modifier),
-        imageModifier = Modifier
-            .coloredRippleClickable(
-                onClick = {
-                    playbackConnection.mediaController?.playPause()
-                },
-                color = contentColor,
-                rippleRadius = Dp.Unspecified,
-            ),
+        imageModifier = Modifier.coloredRippleClickable(
+            onClick = {
+                if (onClick != null) onClick.invoke()
+                else playbackConnection.mediaController?.playPause()
+            },
+            color = contentColor,
+            rippleRadius = Dp.Unspecified,
+        ),
     )
 }

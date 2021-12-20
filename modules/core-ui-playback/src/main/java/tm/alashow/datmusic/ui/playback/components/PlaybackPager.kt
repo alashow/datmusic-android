@@ -66,12 +66,18 @@ internal fun PlaybackPager(
     HorizontalPager(
         count = playbackQueue.ids.size,
         modifier = modifier,
-        state = pagerState
+        state = pagerState,
+        key = { playbackQueue.audios[it].primaryKey },
     ) { page ->
         val currentAudio = playbackQueue.audios.getOrNull(page) ?: Audio()
 
         val pagerMod = Modifier.graphicsLayer {
             val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
+            // TODO: report to upstream if can be reproduced in isolation
+            if (pageOffset.isNaN()) {
+                return@graphicsLayer
+            }
+
             lerp(
                 start = 0.85f,
                 stop = 1f,
@@ -80,7 +86,6 @@ internal fun PlaybackPager(
                 scaleX = scale
                 scaleY = scale
             }
-
             alpha = lerp(
                 start = 0.5f,
                 stop = 1f,
