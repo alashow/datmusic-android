@@ -6,8 +6,8 @@ package tm.alashow.datmusic.ui.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -21,13 +21,8 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
@@ -45,7 +40,7 @@ import tm.alashow.navigation.screens.RootScreen
 import tm.alashow.ui.theme.AppTheme
 
 private val NAVIGATION_RAIL_BIG_MODE_MIN_WIDTH = 280.dp
-private val NAVIGATION_RAIL_BIG_MODE_MIN_HEIGHT = 800.dp
+private val NAVIGATION_RAIL_BIG_MODE_MIN_HEIGHT = 600.dp
 
 @Composable
 internal fun HomeNavigationRail(
@@ -56,14 +51,13 @@ internal fun HomeNavigationRail(
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
     navigator: Navigator = LocalNavigator.current,
 ) {
-    val density = LocalDensity.current
     Surface(
         color = MaterialTheme.colors.surface,
         contentColor = MaterialTheme.colors.onSurface,
         elevation = NavigationRailDefaults.Elevation,
         modifier = modifier,
     ) {
-        Box(
+        BoxWithConstraints(
             modifier = Modifier
                 .background(MaterialTheme.colors.surface)
                 .padding(
@@ -74,18 +68,11 @@ internal fun HomeNavigationRail(
                 )
         ) {
             extraContent()
-            var isBigPlaybackMode by remember { mutableStateOf(false) }
+            val isBigPlaybackMode = maxWidth > NAVIGATION_RAIL_BIG_MODE_MIN_WIDTH && maxHeight > NAVIGATION_RAIL_BIG_MODE_MIN_HEIGHT
             Column(
                 verticalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
-                    .fillMaxHeight()
-                    .onGloballyPositioned {
-                        isBigPlaybackMode = with(density) {
-                            val width = it.size.width.toDp()
-                            val height = it.size.height.toDp()
-                            width > NAVIGATION_RAIL_BIG_MODE_MIN_WIDTH && height > NAVIGATION_RAIL_BIG_MODE_MIN_HEIGHT
-                        }
-                    },
+                    .fillMaxHeight(),
             ) {
                 Column(
                     modifier = Modifier

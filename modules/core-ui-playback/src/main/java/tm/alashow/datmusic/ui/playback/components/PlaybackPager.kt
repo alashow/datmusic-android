@@ -46,7 +46,7 @@ internal fun PlaybackPager(
     }
 
     if (!playbackQueue.isValid) {
-        content(nowPlaying.toAudio(), playbackCurrentIndex, Modifier)
+        content(nowPlaying.toAudio(), playbackCurrentIndex, modifier)
         return
     }
     LaunchedEffect(Unit) {
@@ -67,7 +67,7 @@ internal fun PlaybackPager(
         count = playbackQueue.ids.size,
         modifier = modifier,
         state = pagerState,
-        key = { playbackQueue.audios[it].primaryKey },
+        key = { playbackQueue.audios.getOrNull(it) ?: it },
     ) { page ->
         val currentAudio = playbackQueue.audios.getOrNull(page) ?: Audio()
 

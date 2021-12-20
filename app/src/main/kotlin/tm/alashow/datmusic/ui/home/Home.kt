@@ -4,6 +4,7 @@
  */
 package tm.alashow.datmusic.ui.home
 
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -35,9 +36,9 @@ import tm.alashow.datmusic.ui.currentScreenAsState
 import tm.alashow.datmusic.ui.playback.PlaybackMiniControls
 import tm.alashow.navigation.screens.RootScreen
 import tm.alashow.ui.DismissableSnackbarHost
-import tm.alashow.ui.isWideScreen
 import tm.alashow.ui.theme.AppTheme
 
+private val WIDE_LAYOUT_MIN_WIDTH = 600.dp
 val HomeBottomNavigationHeight = 56.dp
 
 @Composable
@@ -51,35 +52,38 @@ internal fun Home(
     val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying).collectAsState(NONE_PLAYING)
 
     val isPlayerActive = (playbackState to nowPlaying).isActive
-    val isWideScreen by isWideScreen()
     val bottomBarHeight = HomeBottomNavigationHeight * (if (isPlayerActive) 1.15f else 1f)
-    Row(Modifier.fillMaxSize()) {
-        if (isWideScreen)
-            ResizableHomeNavigationRail(selectedTab = selectedTab, navController = navController)
-        Scaffold(
-            modifier = Modifier.weight(12f),
-            scaffoldState = scaffoldState,
-            snackbarHost = { DismissableSnackbarHost(it) },
-            bottomBar = {
-                if (!isWideScreen)
-                    Column {
-                        PlaybackMiniControls(
-                            modifier = Modifier
-                                .graphicsLayer(translationY = AppTheme.specs.padding.value)
-                                .zIndex(2f)
-                        )
-                        HomeBottomNavigation(
-                            selectedTab = selectedTab,
-                            onNavigationSelected = { selected -> navController.selectRootScreen(selected) },
-                            playerActive = isPlayerActive,
-                            modifier = Modifier.fillMaxWidth(),
-                            height = bottomBarHeight
-                        )
-                    }
-                else Spacer(Modifier.navigationBarsPadding())
+    BoxWithConstraints {
+        val isWideLayout = maxWidth > WIDE_LAYOUT_MIN_WIDTH
+
+        Row(Modifier.fillMaxSize()) {
+            if (isWideLayout)
+                ResizableHomeNavigationRail(selectedTab = selectedTab, navController = navController)
+            Scaffold(
+                modifier = Modifier.weight(12f),
+                scaffoldState = scaffoldState,
+                snackbarHost = { DismissableSnackbarHost(it) },
+                bottomBar = {
+                    if (!isWideLayout)
+                        Column {
+                            PlaybackMiniControls(
+                                modifier = Modifier
+                                    .graphicsLayer(translationY = AppTheme.specs.padding.value)
+                                    .zIndex(2f)
+                            )
+                            HomeBottomNavigation(
+                                selectedTab = selectedTab,
+                                onNavigationSelected = { selected -> navController.selectRootScreen(selected) },
+                                playerActive = isPlayerActive,
+                                modifier = Modifier.fillMaxWidth(),
+                                height = bottomBarHeight
+                            )
+                        }
+                    else Spacer(Modifier.navigationBarsPadding())
+                }
+            ) {
+                AppNavigation(navController = navController)
             }
-        ) {
-            AppNavigation(navController = navController)
         }
     }
 }
