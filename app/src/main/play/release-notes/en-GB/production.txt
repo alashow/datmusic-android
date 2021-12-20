@@ -1,3 +1,8 @@
+v2.1.92
+- Compact playback info on navigation rail for tablet sized screens
+- Improve playback sheet for large screen sizes
+- Fix audio info not being displayed on playback sheet
+
 v2.1.9
 - Resizable home navigation rail for wide/large screens (landscape mode)
 - Fix EditPlaylist reordering bug
@@ -6,6 +11,3 @@ v2.1.8
 - Fix scroll position restoration on all screens
 - Smoother media detail header scroll transition
 - Fix crash when clicking non-navigatable queue source
-
-v2.1.7
-- Animated lists in playback sheet queue and playlist editor
