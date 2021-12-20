@@ -4,11 +4,15 @@
  */
 package tm.alashow.datmusic.ui.playback
 
+import android.support.v4.media.MediaMetadataCompat
+import android.support.v4.media.session.PlaybackStateCompat
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -42,6 +46,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.navigationBarsPadding
@@ -49,6 +55,7 @@ import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.ui.Scaffold
 import com.google.accompanist.insets.ui.TopAppBar
 import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -73,6 +80,7 @@ import tm.alashow.datmusic.ui.audios.audioActionHandler
 import tm.alashow.datmusic.ui.audios.currentPlayingMenuActionLabels
 import tm.alashow.datmusic.ui.library.playlist.addTo.AddToPlaylistMenu
 import tm.alashow.datmusic.ui.playback.components.PlaybackArtwork
+import tm.alashow.datmusic.ui.playback.components.PlaybackNowPlaying
 import tm.alashow.datmusic.ui.playback.components.PlaybackNowPlayingWithControls
 import tm.alashow.datmusic.ui.playback.components.PlaybackPager
 import tm.alashow.navigation.LocalNavigator
@@ -82,6 +90,7 @@ import tm.alashow.ui.DismissableSnackbarHost
 import tm.alashow.ui.adaptiveColor
 import tm.alashow.ui.components.IconButton
 import tm.alashow.ui.components.MoreVerticalIcon
+import tm.alashow.ui.isLargeScreen
 import tm.alashow.ui.simpleClickable
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.LocalThemeState
@@ -142,7 +151,7 @@ internal fun PlaybackSheetContent(
 
     LaunchedEffect(playbackConnection) {
         playbackConnection.playbackState.collectLatest {
-            if (it.isIdle) onClose()
+//            if (it.isIdle) onClose()
         }
     }
 
@@ -173,23 +182,14 @@ internal fun PlaybackSheetContent(
             }
 
             item {
-                PlaybackPager(
-                    nowPlaying = nowPlaying,
-                    modifier = Modifier.fillParentMaxHeight(0.45f),
-                    pagerState = pagerState,
-                ) { audio, _, pagerMod ->
-                    val currentArtwork = audio.coverUri(CoverImageSize.LARGE)
-                    PlaybackArtwork(currentArtwork, contentColor, nowPlaying, pagerMod)
-                }
-            }
-
-            item {
-                PlaybackNowPlayingWithControls(
+                PlaybackArtworkPagerWithNowPlayingAndControls(
                     nowPlaying = nowPlaying,
                     playbackState = playbackState,
+                    pagerState = pagerState,
                     contentColor = contentColor,
                     onTitleClick = viewModel::onTitleClick,
                     onArtistClick = viewModel::onArtistClick,
+                    modifier = Modifier.fillParentMaxHeight(0.8f),
                 )
             }
 
@@ -204,6 +204,64 @@ internal fun PlaybackSheetContent(
                 playbackConnection = playbackConnection,
             )
         }
+    }
+}
+
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+internal fun PlaybackArtworkPagerWithNowPlayingAndControls(
+    nowPlaying: MediaMetadataCompat,
+    playbackState: PlaybackStateCompat,
+    modifier: Modifier = Modifier,
+    contentColor: Color = MaterialTheme.colors.onBackground,
+    pagerState: PagerState = rememberPagerState(),
+    onTitleClick: Callback = {},
+    onArtistClick: Callback = {},
+) {
+    val isLargeScreen by isLargeScreen()
+    ConstraintLayout(modifier = modifier) {
+        val (pager, nowPlayingControls) = createRefs()
+        PlaybackPager(
+            nowPlaying = nowPlaying,
+            pagerState = pagerState,
+            modifier = Modifier
+                .constrainAs(pager) {
+                    centerHorizontallyTo(parent)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(nowPlayingControls.top)
+                    height = Dimension.fillToConstraints
+                }
+        ) { audio, _, pagerMod ->
+            val currentArtwork = audio.coverUri(CoverImageSize.LARGE)
+            Row(
+                horizontalArrangement = if (isLargeScreen) Arrangement.Start else Arrangement.Center,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                PlaybackArtwork(currentArtwork, contentColor, nowPlaying, pagerMod)
+                if (isLargeScreen) {
+                    PlaybackNowPlaying(
+                        nowPlaying = nowPlaying,
+                        onTitleClick = onTitleClick,
+                        onArtistClick = onArtistClick,
+                        horizontalAlignment = Alignment.Start,
+                        modifier = Modifier.align(Alignment.Bottom)
+                    )
+                }
+            }
+        }
+        PlaybackNowPlayingWithControls(
+            nowPlaying = nowPlaying,
+            playbackState = playbackState,
+            contentColor = contentColor,
+            onTitleClick = onTitleClick,
+            onArtistClick = onArtistClick,
+            onlyControls = isLargeScreen,
+            modifier = Modifier.constrainAs(nowPlayingControls) {
+                centerHorizontallyTo(parent)
+                bottom.linkTo(parent.bottom)
+                height = Dimension.fillToConstraints
+            }
+        )
     }
 }
 

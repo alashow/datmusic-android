@@ -18,3 +18,12 @@ fun isWideScreen(
         configuration.screenWidthDp >= 600
     }
 }
+
+@Composable
+fun isLargeScreen(
+    configuration: Configuration = LocalConfiguration.current,
+) = remember {
+    derivedStateOf {
+        configuration.screenWidthDp >= 600 && (configuration.screenHeightDp.toFloat() / configuration.screenWidthDp) in 0.525f..0.7f
+    }
+}

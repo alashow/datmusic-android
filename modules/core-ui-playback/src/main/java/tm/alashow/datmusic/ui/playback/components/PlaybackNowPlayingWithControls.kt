@@ -72,16 +72,18 @@ internal fun PlaybackNowPlayingWithControls(
     onTitleClick: Callback,
     onArtistClick: Callback,
     modifier: Modifier = Modifier,
+    onlyControls: Boolean = false,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier.padding(AppTheme.specs.paddingLarge)
     ) {
-        PlaybackNowPlaying(
-            nowPlaying = nowPlaying,
-            onTitleClick = onTitleClick,
-            onArtistClick = onArtistClick
-        )
+        if (!onlyControls)
+            PlaybackNowPlaying(
+                nowPlaying = nowPlaying,
+                onTitleClick = onTitleClick,
+                onArtistClick = onArtistClick
+            )
 
         PlaybackProgress(
             playbackState = playbackState,
@@ -99,23 +101,30 @@ internal fun PlaybackNowPlaying(
     nowPlaying: MediaMetadataCompat,
     onTitleClick: Callback,
     onArtistClick: Callback,
+    modifier: Modifier = Modifier,
+    horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
 ) {
     val title = nowPlaying.title
-    Text(
-        title.orNA(),
-        style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold),
-        overflow = TextOverflow.Ellipsis,
-        maxLines = 1,
-        modifier = Modifier.simpleClickable(onClick = onTitleClick)
-    )
-    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+    Column(
+        horizontalAlignment = horizontalAlignment,
+        modifier = modifier
+    ) {
         Text(
-            nowPlaying.artist.orNA(),
-            style = MaterialTheme.typography.subtitle1,
+            title.orNA(),
+            style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold),
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,
-            modifier = Modifier.simpleClickable(onClick = onArtistClick)
+            modifier = Modifier.simpleClickable(onClick = onTitleClick)
         )
+        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+            Text(
+                nowPlaying.artist.orNA(),
+                style = MaterialTheme.typography.subtitle1,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
+                modifier = Modifier.simpleClickable(onClick = onArtistClick)
+            )
+        }
     }
 }
 @Composable
