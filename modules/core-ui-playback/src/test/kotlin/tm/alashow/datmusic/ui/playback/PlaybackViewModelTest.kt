@@ -39,7 +39,7 @@ import tm.alashow.navigation.screens.LeafScreen
 
 @HiltAndroidTest
 @UninstallModules(DatabaseModule::class)
-class PlaybackSheetViewModelTest : BaseTest() {
+class PlaybackViewModelTest : BaseTest() {
 
     @Inject lateinit var playbackConnection: PlaybackConnection
     @Inject lateinit var snackbarManager: SnackbarManager
@@ -48,7 +48,7 @@ class PlaybackSheetViewModelTest : BaseTest() {
     @Inject lateinit var playlistsRepo: PlaylistsRepo
     @Inject lateinit var analytics: FirebaseAnalytics
 
-    private lateinit var viewModel: PlaybackSheetViewModel
+    private lateinit var viewModel: PlaybackViewModel
 
     private val fakeError = Throwable("Fake error")
     private val erroneousCreatePlaylist = mock<CreatePlaylist> {
@@ -63,7 +63,7 @@ class PlaybackSheetViewModelTest : BaseTest() {
     private fun buildVm(
         playbackConnection: PlaybackConnection? = null,
         createPlaylist: CreatePlaylist? = null
-    ) = PlaybackSheetViewModel(
+    ) = PlaybackViewModel(
         SavedStateHandle(),
         playbackConnection ?: this.playbackConnection,
         createPlaylist ?: this.createPlaylist,

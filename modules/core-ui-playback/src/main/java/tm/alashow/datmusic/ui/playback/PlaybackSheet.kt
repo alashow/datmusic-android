@@ -133,7 +133,7 @@ internal fun PlaybackSheetContent(
     listState: LazyListState,
     scaffoldState: ScaffoldState = rememberScaffoldState(snackbarHostState = LocalScaffoldState.current.snackbarHostState),
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
-    viewModel: PlaybackSheetViewModel = hiltViewModel(),
+    viewModel: PlaybackViewModel = hiltViewModel(),
 ) {
     val playbackState by rememberFlowWithLifecycle(playbackConnection.playbackState).collectAsState(NONE_PLAYBACK_STATE)
     val playbackQueue by rememberFlowWithLifecycle(playbackConnection.playbackQueue).collectAsState(PlaybackQueue())
@@ -185,8 +185,6 @@ internal fun PlaybackSheetContent(
                     playbackState = playbackState,
                     pagerState = pagerState,
                     contentColor = contentColor,
-                    onTitleClick = viewModel::onTitleClick,
-                    onArtistClick = viewModel::onArtistClick,
                     modifier = Modifier.fillParentMaxHeight(0.8f),
                 )
             }

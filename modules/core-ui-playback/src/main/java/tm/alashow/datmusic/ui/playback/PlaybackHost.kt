@@ -13,7 +13,7 @@ import tm.alashow.common.compose.LocalPlaybackConnection
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun PlaybackHost(
-    viewModel: PlaybackViewModel = hiltViewModel(),
+    viewModel: PlaybackConnectionViewModel = hiltViewModel(),
     content: @Composable () -> Unit
 ) {
     CompositionLocalProvider(

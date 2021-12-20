@@ -12,11 +12,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
 import tm.alashow.base.util.extensions.Callback
 import tm.alashow.datmusic.domain.CoverImageSize
+import tm.alashow.datmusic.ui.playback.PlaybackViewModel
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
@@ -27,8 +29,7 @@ fun PlaybackArtworkPagerWithNowPlayingAndControls(
     contentColor: Color = MaterialTheme.colors.onBackground,
     pagerState: PagerState = rememberPagerState(),
     onArtworkClick: Callback? = null,
-    onTitleClick: Callback = {},
-    onArtistClick: Callback = {},
+    viewModel: PlaybackViewModel = hiltViewModel(),
 ) {
     ConstraintLayout(modifier = modifier) {
         val (pager, nowPlayingControls) = createRefs()
@@ -55,8 +56,8 @@ fun PlaybackArtworkPagerWithNowPlayingAndControls(
             nowPlaying = nowPlaying,
             playbackState = playbackState,
             contentColor = contentColor,
-            onTitleClick = onTitleClick,
-            onArtistClick = onArtistClick,
+            onTitleClick = viewModel::onTitleClick,
+            onArtistClick = viewModel::onArtistClick,
             modifier = Modifier.constrainAs(nowPlayingControls) {
                 centerHorizontallyTo(parent)
                 bottom.linkTo(parent.bottom)
