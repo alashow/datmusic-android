@@ -2,12 +2,9 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.datmusic.ui.playback
+package tm.alashow.datmusic.ui.playback.components
 
 import android.support.v4.media.MediaMetadataCompat
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -28,7 +25,6 @@ import kotlin.math.absoluteValue
 import kotlinx.coroutines.flow.collectLatest
 import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.datmusic.domain.entities.Audio
-import tm.alashow.datmusic.playback.PLAYBACK_PROGRESS_INTERVAL
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.models.toAudio
 
@@ -43,7 +39,11 @@ internal fun PlaybackPager(
 ) {
     val playbackQueue by playbackConnection.playbackQueue.collectAsState()
     val playbackCurrentIndex = playbackQueue.currentIndex
-    var lastRequestedPage by remember(playbackQueue, nowPlaying) { mutableStateOf<Int?>(playbackCurrentIndex) }
+    var lastRequestedPage by remember(playbackQueue, nowPlaying) {
+        mutableStateOf<Int?>(
+            playbackCurrentIndex
+        )
+    }
 
     if (!playbackQueue.isValid) {
         content(nowPlaying.toAudio(), playbackCurrentIndex, Modifier)
@@ -90,14 +90,3 @@ internal fun PlaybackPager(
         content(currentAudio, page, pagerMod)
     }
 }
-
-@Composable
-internal fun animatePlaybackProgress(
-    targetValue: Float,
-) = animateFloatAsState(
-    targetValue = targetValue,
-    animationSpec = tween(
-        durationMillis = PLAYBACK_PROGRESS_INTERVAL.toInt(),
-        easing = FastOutSlowInEasing
-    ),
-)

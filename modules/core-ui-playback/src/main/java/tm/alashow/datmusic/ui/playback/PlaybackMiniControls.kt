@@ -69,6 +69,8 @@ import tm.alashow.datmusic.playback.isPlayEnabled
 import tm.alashow.datmusic.playback.isPlaying
 import tm.alashow.datmusic.playback.models.PlaybackProgressState
 import tm.alashow.datmusic.playback.playPause
+import tm.alashow.datmusic.ui.playback.components.PlaybackPager
+import tm.alashow.datmusic.ui.playback.components.animatePlaybackProgress
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.Navigator
 import tm.alashow.navigation.screens.LeafScreen
