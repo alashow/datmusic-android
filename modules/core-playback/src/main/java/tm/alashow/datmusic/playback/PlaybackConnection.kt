@@ -17,7 +17,12 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import tm.alashow.base.util.extensions.flowInterval
@@ -100,7 +105,8 @@ class PlaybackConnectionImpl(
 
     private val playbackQueueState = MutableStateFlow(PlaybackQueue())
 
-    override val playbackQueue = combine(nowPlaying, playbackState, playbackQueueState, ::Triple).map(::buildPlaybackQueue)
+    override val playbackQueue = combine(nowPlaying, playbackState, playbackQueueState, ::Triple)
+        .map(::buildPlaybackQueue)
         .distinctUntilChanged()
         .stateInDefault(this, PlaybackQueue())
 
@@ -153,13 +159,14 @@ class PlaybackConnectionImpl(
         val (nowPlaying, state, queue) = data
         val nowPlayingId = nowPlaying.id.toMediaId().value
         val audios = audiosRepo.find(queue.ids.toMediaAudioIds()).map {
-            if (it.id == nowPlayingId) {
-                it.audioDownloadItem = downloader.getAudioDownload(nowPlayingId).orNull()
-            }
             // build a stable id from audio id and it's frequency
             audioIdFrequency[it.id] = (audioIdFrequency[it.id] ?: -1) + 1
             val newId = it.id + '_' + (audioIdFrequency[it.id])
-            it.copy(primaryKey = newId)
+            it.copy(primaryKey = newId).apply {
+                if (id == nowPlayingId) {
+                    audioDownloadItem = downloader.getAudioDownload(nowPlayingId).orNull()
+                }
+            }
         }
 
         return queue.copy(audios = audios, currentIndex = state.currentIndex).let {

@@ -53,6 +53,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.pager.ExperimentalPagerApi
 import tm.alashow.base.util.extensions.orNA
 import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.common.compose.rememberFlowWithLifecycle
@@ -69,6 +70,8 @@ import tm.alashow.datmusic.playback.isPlayEnabled
 import tm.alashow.datmusic.playback.isPlaying
 import tm.alashow.datmusic.playback.models.PlaybackProgressState
 import tm.alashow.datmusic.playback.playPause
+import tm.alashow.datmusic.ui.playback.components.PlaybackPager
+import tm.alashow.datmusic.ui.playback.components.animatePlaybackProgress
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.Navigator
 import tm.alashow.navigation.screens.LeafScreen
@@ -120,10 +123,7 @@ fun PlaybackMiniControls(
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
     navigator: Navigator = LocalNavigator.current,
 ) {
-    val openPlaybackSheet = {
-        navigator.navigate(LeafScreen.PlaybackSheet().createRoute())
-    }
-
+    val openPlaybackSheet = { navigator.navigate(LeafScreen.PlaybackSheet().createRoute()) }
     val adaptiveColor = adaptiveColor(nowPlaying.artwork, initial = MaterialTheme.colors.background)
     val backgroundColor = adaptiveColor.color
     val contentColor = adaptiveColor.contentColor
@@ -174,6 +174,7 @@ fun PlaybackMiniControls(
     }
 }
 
+@OptIn(ExperimentalPagerApi::class)
 @Composable
 private fun RowScope.PlaybackNowPlaying(
     nowPlaying: MediaMetadataCompat,
