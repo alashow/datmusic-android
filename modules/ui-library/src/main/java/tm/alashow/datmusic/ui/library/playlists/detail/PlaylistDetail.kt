@@ -57,7 +57,7 @@ private fun PlaylistDetail(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 PlaylistHeaderSubtitle(viewState)
-                if (viewState.isLoaded && !viewState.isEmpty)
+                if (!viewState.isLoading && !viewState.isEmpty)
                     ShuffleAdaptiveButton(playbackConnection) {
                         if (playlistId != null)
                             playbackConnection.playPlaylist(playlistId, MEDIA_ID_INDEX_SHUFFLED)

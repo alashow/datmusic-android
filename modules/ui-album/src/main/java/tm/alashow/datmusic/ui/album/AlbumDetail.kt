@@ -66,7 +66,7 @@ private fun AlbumDetail(
                 ) {
                     AlbumHeaderSubtitle(viewState, onArtistClick = viewModel::goToArtist)
                 }
-                if (viewState.isLoaded && !viewState.isEmpty)
+                if (!viewState.isLoading && !viewState.isEmpty)
                     ShuffleAdaptiveButton(playbackConnection, Modifier.weight(1f)) {
                         if (albumId != null)
                             playbackConnection.playAlbum(albumId, MEDIA_ID_INDEX_SHUFFLED)

@@ -94,21 +94,21 @@ private fun <DetailType, T : MediaDetailViewState<DetailType>> MediaDetailConten
 ) {
     val context = LocalContext.current
     val artwork = viewState.artwork(context)
-    val adaptiveColor by adaptiveColor(
-        artwork,
-        initial = MaterialTheme.colors.background,
-        fallback = MaterialTheme.colors.secondary,
-        gradientEndColor = MaterialTheme.colors.background
-    )
-    val adaptiveBackground = Modifier.background(adaptiveColor.gradient)
-
-    // apply adaptive background to whole list only on light theme
-    // because full list gradient doesn't look great on dark
-    val isLight = MaterialTheme.colors.isLight
-    val listBackgroundMod = if (isLight) adaptiveBackground else Modifier
-    val headerBackgroundMod = if (isLight) Modifier else adaptiveBackground
 
     if (viewState.isLoaded) {
+        val adaptiveColor by adaptiveColor(
+            artwork,
+            initial = MaterialTheme.colors.background,
+            fallback = MaterialTheme.colors.secondary,
+            gradientEndColor = MaterialTheme.colors.background
+        )
+        val adaptiveBackground = Modifier.background(adaptiveColor.gradient)
+
+        // apply adaptive background to whole list only on light theme
+        // because full list gradient doesn't look great on dark
+        val isLight = MaterialTheme.colors.isLight
+        val listBackgroundMod = if (isLight) adaptiveBackground else Modifier
+        val headerBackgroundMod = if (isLight) Modifier else adaptiveBackground
         CompositionLocalProvider(
             LocalAdaptiveColorResult provides adaptiveColor
         ) {
