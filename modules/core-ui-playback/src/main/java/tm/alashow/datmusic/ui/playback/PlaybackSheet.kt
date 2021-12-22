@@ -160,7 +160,7 @@ internal fun PlaybackSheetContent(
     val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying).collectAsState(NONE_PLAYING)
     val pagerState = rememberPagerState(playbackQueue.currentIndex)
 
-    val adaptiveColor = adaptiveColor(nowPlaying.artwork, initial = MaterialTheme.colors.onBackground)
+    val adaptiveColor by adaptiveColor(nowPlaying.artwork, initial = MaterialTheme.colors.onBackground)
     val contentColor by animateColorAsState(adaptiveColor.color, ADAPTIVE_COLOR_ANIMATION)
 
     LaunchedEffect(playbackConnection) {
@@ -231,7 +231,7 @@ internal fun PlaybackSheetContent(
                             PlaybackAudioInfo(playbackQueue.currentAudio)
                         }
 
-                    if (!isWideLayout) {
+                    if (!isWideLayout && !playbackQueue.isLastAudio) {
                         playbackQueueLabel()
                         playbackQueue(
                             playbackQueue = playbackQueue,

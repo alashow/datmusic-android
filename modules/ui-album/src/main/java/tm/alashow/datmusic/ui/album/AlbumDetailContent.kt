@@ -34,7 +34,7 @@ class AlbumDetailContent(val album: Album) : MediaDetailContent<Audios>() {
                     includeCover = false,
                     onPlayAudio = {
                         if (details is Success)
-                            playbackConnection.playAlbum(album, index)
+                            playbackConnection.playAlbum(album.id, index)
                     }
                 )
             }

@@ -86,7 +86,7 @@ class ArtistDetailContent : MediaDetailContent<Artist>() {
                     isPlaceholder = detailsLoading,
                     onPlayAudio = {
                         if (details is Success)
-                            playbackConnection.playArtist(details(), index)
+                            playbackConnection.playArtist(details().id, index)
                     }
                 )
             }
