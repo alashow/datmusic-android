@@ -4,6 +4,10 @@
  */
 package tm.alashow.datmusic.ui.home
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxScope
@@ -31,6 +35,7 @@ import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.playback.NONE_PLAYBACK_STATE
 import tm.alashow.datmusic.playback.NONE_PLAYING
 import tm.alashow.datmusic.playback.PlaybackConnection
+import tm.alashow.datmusic.playback.isActive
 import tm.alashow.datmusic.ui.playback.PlaybackMiniControls
 import tm.alashow.datmusic.ui.playback.components.PlaybackArtworkPagerWithNowPlayingAndControls
 import tm.alashow.navigation.LocalNavigator
@@ -42,6 +47,7 @@ import tm.alashow.ui.theme.AppTheme
 private val NAVIGATION_RAIL_BIG_MODE_MIN_WIDTH = 280.dp
 private val NAVIGATION_RAIL_BIG_MODE_MIN_HEIGHT = 600.dp
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 internal fun HomeNavigationRail(
     selectedTab: RootScreen,
@@ -71,8 +77,7 @@ internal fun HomeNavigationRail(
             val isBigPlaybackMode = maxWidth > NAVIGATION_RAIL_BIG_MODE_MIN_WIDTH && maxHeight > NAVIGATION_RAIL_BIG_MODE_MIN_HEIGHT
             Column(
                 verticalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxHeight(),
+                modifier = Modifier.fillMaxHeight(),
             ) {
                 Column(
                     modifier = Modifier
@@ -92,12 +97,18 @@ internal fun HomeNavigationRail(
                 if (isBigPlaybackMode) {
                     val playbackState by rememberFlowWithLifecycle(playbackConnection.playbackState).collectAsState(NONE_PLAYBACK_STATE)
                     val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying).collectAsState(NONE_PLAYING)
-                    PlaybackArtworkPagerWithNowPlayingAndControls(
-                        nowPlaying = nowPlaying,
-                        playbackState = playbackState,
+                    val visible = (playbackState to nowPlaying).isActive
+                    AnimatedVisibility(
+                        visible = visible,
                         modifier = Modifier.weight(6f),
-                        onArtworkClick = { navigator.navigate(LeafScreen.PlaybackSheet().createRoute()) }
-                    )
+                        enter = slideInVertically(initialOffsetY = { it / 2 }) + scaleIn()
+                    ) {
+                        PlaybackArtworkPagerWithNowPlayingAndControls(
+                            nowPlaying = nowPlaying,
+                            playbackState = playbackState,
+                            onArtworkClick = { navigator.navigate(LeafScreen.PlaybackSheet().createRoute()) }
+                        )
+                    }
                 } else PlaybackMiniControls(
                     modifier = Modifier.padding(bottom = AppTheme.specs.paddingSmall),
                     contentPadding = PaddingValues(end = AppTheme.specs.padding),

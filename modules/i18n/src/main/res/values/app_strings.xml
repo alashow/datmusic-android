@@ -100,6 +100,8 @@
     <string name="playlist.download.queuedCount">%1$d songs were queued to download</string>
     <string name="playlist.download.error.empty">Playlist is empty</string>
 
+    <string name="playback.queue.title">Next up</string>
+    <string name="playback.queue.empty">Nothing in queue :(</string>
     <string name="playback.queue.addQueueToPlaylist">Add queue to playlist</string>
     <string name="playback.queue.saveAsPlaylist">Save queue as playlist</string>
     <string name="playback.queue.saveAsPlaylist.saved">Saved as %1$s</string>

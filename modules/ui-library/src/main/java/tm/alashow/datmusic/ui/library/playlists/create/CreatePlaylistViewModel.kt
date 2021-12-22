@@ -51,11 +51,11 @@ class CreatePlaylistViewModel @Inject constructor(
             generateNameIfEmpty = true
         )
         viewModelScope.launch {
-            createPlaylist(params).catch {
-                nameErrorState.value = it.asValidationError()
-            }.collectLatest { newPlaylist ->
-                navigator.navigate(LeafScreen.PlaylistDetail.buildRoute(newPlaylist.id))
-            }
+            createPlaylist(params)
+                .catch { nameErrorState.value = it.asValidationError() }
+                .collectLatest { newPlaylist ->
+                    navigator.navigate(LeafScreen.PlaylistDetail.buildRoute(newPlaylist.id))
+                }
         }
     }
 }

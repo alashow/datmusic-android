@@ -23,6 +23,8 @@ import com.google.accompanist.pager.calculateCurrentOffsetForPage
 import com.google.accompanist.pager.rememberPagerState
 import kotlin.math.absoluteValue
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.playback.PlaybackConnection
@@ -56,15 +58,18 @@ internal fun PlaybackPager(
         if (playbackCurrentIndex != pagerState.currentPage) {
             pagerState.animateScrollToPage(playbackCurrentIndex)
         }
-        snapshotFlow { pagerState.currentPage }.collectLatest { page ->
-            if (lastRequestedPage != page) {
-                lastRequestedPage = page
-                playbackConnection.transportControls?.skipToQueueItem(page.toLong())
+        snapshotFlow { pagerState.isScrollInProgress }
+            .filter { !it }
+            .map { pagerState.currentPage }
+            .collectLatest { page ->
+                if (lastRequestedPage != page) {
+                    lastRequestedPage = page
+                    playbackConnection.transportControls?.skipToQueueItem(page.toLong())
+                }
             }
-        }
     }
     HorizontalPager(
-        count = playbackQueue.ids.size,
+        count = playbackQueue.size,
         modifier = modifier,
         state = pagerState,
         key = { playbackQueue.audios.getOrNull(it) ?: it },

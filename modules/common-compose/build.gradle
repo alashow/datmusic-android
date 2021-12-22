@@ -35,7 +35,7 @@ android {
 	}
 
 	composeOptions {
-		kotlinCompilerExtensionVersion Deps.Android.Compose.version
+		kotlinCompilerExtensionVersion Deps.Android.Compose.compilerVersion
 	}
 }
 
@@ -55,9 +55,9 @@ dependencies {
 	api Deps.Android.Compose.uiUtil
 	api Deps.Android.Compose.uiTooling
 	api Deps.Android.Compose.foundation
-	api Deps.Android.Compose.materialDesign
-	api Deps.Android.Compose.materialDesignIcons
-	api Deps.Android.Compose.materialDesignIconsExtended
+	api Deps.Android.Compose.material
+	api Deps.Android.Compose.materialIcons
+	api Deps.Android.Compose.materialIconsExtended
 	api Deps.Android.Compose.constraintLayout
 	api Deps.Android.Compose.activity
 	api Deps.Android.Compose.viewModels
