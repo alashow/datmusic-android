@@ -61,7 +61,7 @@ android {
 	}
 
 	composeOptions {
-		kotlinCompilerExtensionVersion Deps.Android.Compose.version
+		kotlinCompilerExtensionVersion Deps.Android.Compose.compilerVersion
 	}
 
 	signingConfigs {

@@ -237,7 +237,7 @@ private fun EditablePlaylistArtwork(
     onSetPlaylistArtwork: (Uri) -> Unit,
 ) {
     val image = playlist.artworkFile()
-    val adaptiveColor = adaptiveColor(image)
+    val adaptiveColor by adaptiveColor(image)
     val imagePickerLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) {
         if (it != null) onSetPlaylistArtwork(it)
     }

@@ -4,13 +4,6 @@
  */
 package tm.alashow.datmusic.ui.home
 
-import android.content.res.Configuration
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.draggable
-import androidx.compose.foundation.gestures.rememberDraggableState
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -20,54 +13,37 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import tm.alashow.base.util.event
-import tm.alashow.common.compose.LocalAnalytics
-import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.navigation.screens.RootScreen
+import tm.alashow.ui.ResizableLayout
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 internal fun RowScope.ResizableHomeNavigationRail(
+    maxWidth: Dp,
     selectedTab: RootScreen,
     navController: NavHostController,
-    configuration: Configuration = LocalConfiguration.current,
-    navigationRailBaseWeight: Float = 4.5f,
-    navigationRailWeightMinWeight: Float = 0.9f,
+    baseWeight: Float = 4.5f,
+    minWeight: Float = 0.9f,
+    maxWeight: Float = 12f,
     viewModel: ResizableHomeNavigationRailViewModel = hiltViewModel(),
-    dividerDragOffset: State<Float> = rememberFlowWithLifecycle(viewModel.dragOffset).collectAsState(initial = 0f),
-    setDividerDragOffset: (Float) -> Unit = viewModel::setDragOffset,
+    dragOffset: State<Float> = viewModel.dragOffset.collectAsState(),
+    setDragOffset: (Float) -> Unit = viewModel::setDragOffset,
 ) {
-    val screenWidth = configuration.screenWidthDp
-    val dragRange = (-screenWidth / 3f)..(screenWidth / 3f)
-    val dragSnapAnchors = listOf(0f, dragRange.endInclusive, dragRange.start)
-    var dragSnapCurrentAnchor by remember { mutableStateOf(0) }
-    val dividerDragOffsetWeight by derivedStateOf { (dividerDragOffset.value / screenWidth) * 12 }
-    val navigationRailWeight = navigationRailBaseWeight + dividerDragOffsetWeight
-
-    val resizableModifier = Modifier.resizableArea(
-        dragRange = dragRange,
-        dividerDragOffset = dividerDragOffset,
-        setDividerDragOffset = setDividerDragOffset,
-        dragSnapAnchors = dragSnapAnchors,
-        dragSnapCurrentAnchor = dragSnapCurrentAnchor,
-        setDragSnapCurrentAnchor = { dragSnapCurrentAnchor = it },
-    )
-
-    Box(Modifier.weight(navigationRailWeight.coerceAtLeast(navigationRailWeightMinWeight))) {
+    ResizableLayout(
+        maxWidth = maxWidth,
+        baseWeight = baseWeight,
+        minWeight = minWeight,
+        maxWeight = maxWeight,
+        dragOffset = dragOffset,
+        setDragOffset = setDragOffset,
+        analyticsPrefix = "home.navigationRail"
+    ) { resizableModifier ->
         HomeNavigationRail(
             selectedTab = selectedTab,
             onNavigationSelected = { selected -> navController.selectRootScreen(selected) },
@@ -88,40 +64,4 @@ internal fun RowScope.ResizableHomeNavigationRail(
             )
         }
     }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-private fun Modifier.resizableArea(
-    dragRange: ClosedFloatingPointRange<Float>,
-    dividerDragOffset: State<Float>,
-    setDividerDragOffset: (Float) -> Unit,
-    dragSnapAnchors: List<Float>,
-    dragSnapCurrentAnchor: Int,
-    setDragSnapCurrentAnchor: (Int) -> Unit,
-    orientation: Orientation = Orientation.Horizontal,
-) = composed {
-    val haptic = LocalHapticFeedback.current
-    val analytics = LocalAnalytics.current
-    draggable(
-        orientation = orientation,
-        state = rememberDraggableState { delta ->
-            setDividerDragOffset((dividerDragOffset.value + delta).coerceIn(dragRange))
-        },
-        onDragStarted = {
-            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-        }
-    ).combinedClickable(
-        interactionSource = remember { MutableInteractionSource() },
-        enabled = true,
-        indication = null,
-        onClick = {
-            // cycle through the snap anchors
-            var newAnchor = dragSnapCurrentAnchor + 1
-            if (newAnchor > dragSnapAnchors.lastIndex)
-                newAnchor = 0
-            setDragSnapCurrentAnchor(newAnchor)
-            setDividerDragOffset(dragSnapAnchors[dragSnapCurrentAnchor])
-            analytics.event("home.navigationRail.snapAnchor", mapOf("anchor" to newAnchor))
-        },
-    )
 }

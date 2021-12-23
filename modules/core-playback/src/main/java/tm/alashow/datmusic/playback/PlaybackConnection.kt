@@ -28,8 +28,8 @@ import timber.log.Timber
 import tm.alashow.base.util.extensions.flowInterval
 import tm.alashow.base.util.extensions.stateInDefault
 import tm.alashow.datmusic.data.repos.audio.AudiosRepo
-import tm.alashow.datmusic.domain.entities.Album
-import tm.alashow.datmusic.domain.entities.Artist
+import tm.alashow.datmusic.domain.entities.AlbumId
+import tm.alashow.datmusic.domain.entities.ArtistId
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.PlaylistId
 import tm.alashow.datmusic.downloader.Downloader
@@ -76,9 +76,9 @@ interface PlaybackConnection {
     fun playAudio(audio: Audio, title: QueueTitle = QueueTitle())
     fun playNextAudio(audio: Audio)
     fun playAudios(audios: List<Audio>, index: Int = 0, title: QueueTitle = QueueTitle())
-    fun playArtist(artist: Artist, index: Int = 0)
+    fun playArtist(artistId: ArtistId, index: Int = 0)
     fun playPlaylist(playlistId: PlaylistId, index: Int = 0)
-    fun playAlbum(album: Album, index: Int = 0)
+    fun playAlbum(albumId: AlbumId, index: Int = 0)
     fun playFromDownloads(index: Int = 0)
     fun playWithQuery(query: String, audioId: String)
     fun playWithMinervaQuery(query: String, audioId: String)
@@ -221,12 +221,12 @@ class PlaybackConnectionImpl(
         transportControls?.playFromMediaId(MediaId(MEDIA_TYPE_PLAYLIST, playlistId.toString(), index).toString(), null)
     }
 
-    override fun playArtist(artist: Artist, index: Int) {
-        transportControls?.playFromMediaId(MediaId(MEDIA_TYPE_ARTIST, artist.id, index).toString(), null)
+    override fun playArtist(artistId: ArtistId, index: Int) {
+        transportControls?.playFromMediaId(MediaId(MEDIA_TYPE_ARTIST, artistId, index).toString(), null)
     }
 
-    override fun playAlbum(album: Album, index: Int) {
-        transportControls?.playFromMediaId(MediaId(MEDIA_TYPE_ALBUM, album.id, index).toString(), null)
+    override fun playAlbum(albumId: AlbumId, index: Int) {
+        transportControls?.playFromMediaId(MediaId(MEDIA_TYPE_ALBUM, albumId, index).toString(), null)
     }
 
     override fun playFromDownloads(index: Int) {

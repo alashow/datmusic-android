@@ -1,3 +1,9 @@
+v2.1.95
+- Add Shuffle button to media detail screens
+- Two column layout for playback sheet on wide screens / landscape mode
+- Cache adaptive color results in memory
+- Wait for custom theme to load when main activity is creating/restarting
+
 v2.1.92
 - Compact playback info on navigation rail for tablet sized screens
 - Improve playback sheet for large screen sizes
@@ -6,8 +12,3 @@ v2.1.92
 v2.1.9
 - Resizable home navigation rail for wide/large screens (landscape mode)
 - Fix EditPlaylist reordering bug
-
-v2.1.8
-- Fix scroll position restoration on all screens
-- Smoother media detail header scroll transition
-- Fix crash when clicking non-navigatable queue source

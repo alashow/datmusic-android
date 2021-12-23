@@ -36,7 +36,6 @@ import tm.alashow.navigation.NavigatorHost
 import tm.alashow.navigation.rememberBottomSheetNavigator
 import tm.alashow.ui.ThemeViewModel
 import tm.alashow.ui.theme.AppTheme
-import tm.alashow.ui.theme.DefaultTheme
 
 @OptIn(ExperimentalMaterialNavigationApi::class)
 @Composable
@@ -68,13 +67,14 @@ private fun DatmusicCore(
     content: @Composable () -> Unit
 ) {
     SnackbarMessagesListener()
-    val themeState by rememberFlowWithLifecycle(themeViewModel.themeState).collectAsState(DefaultTheme)
-    AppTheme(themeState) {
-        NavigatorHost {
-            DownloaderHost {
-                PlaybackHost {
-                    DatmusicActionHandlers {
-                        content()
+    rememberFlowWithLifecycle(themeViewModel.themeState).collectAsState(null).value?.apply {
+        AppTheme(this) {
+            NavigatorHost {
+                DownloaderHost {
+                    PlaybackHost {
+                        DatmusicActionHandlers {
+                            content()
+                        }
                     }
                 }
             }

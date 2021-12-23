@@ -151,16 +151,7 @@ class MediaSessionCallback(
 
     override fun onSetShuffleMode(shuffleMode: Int) {
         super.onSetShuffleMode(shuffleMode)
-        val bundle = mediaSession.controller.playbackState.extras ?: Bundle()
-        datmusicPlayer.setPlaybackState(
-            Builder(mediaSession.controller.playbackState)
-                .setExtras(
-                    bundle.apply {
-                        putInt(SHUFFLE_MODE, shuffleMode)
-                    }
-                ).build()
-        )
-        datmusicPlayer.shuffleQueue(shuffleMode != SHUFFLE_MODE_NONE)
+        datmusicPlayer.setShuffleMode(shuffleMode)
     }
 
     override fun onCustomAction(action: String?, extras: Bundle?) {

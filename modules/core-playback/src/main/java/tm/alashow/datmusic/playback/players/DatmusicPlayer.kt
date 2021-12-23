@@ -97,6 +97,7 @@ interface DatmusicPlayer {
     fun onMetaDataChanged(metaDataChanged: OnMetaDataChanged)
     fun updatePlaybackState(applier: PlaybackStateCompat.Builder.() -> Unit = {})
     fun setPlaybackState(state: PlaybackStateCompat)
+    fun setShuffleMode(shuffleMode: Int)
     fun updateData(list: List<String> = emptyList(), title: String? = null)
     fun setData(list: List<String> = emptyList(), title: String? = null)
     suspend fun setDataFromMediaId(_mediaId: String, extras: Bundle = bundleOf())
@@ -452,6 +453,19 @@ class DatmusicPlayerImpl @Inject constructor(
         }
     }
 
+    override fun setShuffleMode(shuffleMode: Int) {
+        val bundle = mediaSession.controller.playbackState.extras ?: Bundle()
+        setPlaybackState(
+            PlaybackStateCompat.Builder(mediaSession.controller.playbackState)
+                .setExtras(
+                    bundle.apply {
+                        putInt(SHUFFLE_MODE, shuffleMode)
+                    }
+                ).build()
+        )
+        shuffleQueue(shuffleMode != SHUFFLE_MODE_NONE)
+    }
+
     override fun updateData(list: List<String>, title: String?) {
         if (mediaSession.shuffleMode == SHUFFLE_MODE_NONE)
             if (title == queueManager.queueTitle) {
@@ -483,8 +497,11 @@ class DatmusicPlayerImpl @Inject constructor(
 
         if (queue == null) {
             queue = mediaQueueBuilder.buildAudioList(mediaId).map { it.id }.apply {
-                if (mediaId.hasIndex && isNotEmpty())
-                    audioId = if (mediaId.index < size) get(mediaId.index) else first()
+                if (isNotEmpty())
+                    when {
+                        mediaId.isShuffleIndex -> audioId = shuffled().first()
+                        mediaId.hasIndex -> audioId = if (mediaId.index < size) get(mediaId.index) else first()
+                    }
             }
             queueTitle = mediaQueueBuilder.buildQueueTitle(mediaId).toString()
         }
@@ -492,6 +509,7 @@ class DatmusicPlayerImpl @Inject constructor(
         if (queue.isNotEmpty()) {
             setData(queue, queueTitle)
             playAudio(audioId, if (mediaId.hasIndex) mediaId.index else queue.indexOf(audioId))
+            if (mediaId.isShuffleIndex) setShuffleMode(SHUFFLE_MODE_ALL)
             // delay for new queue to apply first
             delay(2000)
             saveQueueState()

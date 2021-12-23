@@ -8,14 +8,14 @@ object Deps {
     }
 
     object Kotlin {
-        const val version = "1.6.0"
+        const val version = "1.6.10"
 
         const val stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$version"
         const val gradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:$version"
         const val serialization = "org.jetbrains.kotlin:kotlin-serialization:$version"
         const val serializationRuntime = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.1"
 
-        const val coroutinesVersion = "1.6.0-RC2"
+        const val coroutinesVersion = "1.6.0-RC3"
         const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
         const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
         const val coroutineTesting = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
@@ -31,12 +31,12 @@ object Deps {
         const val activityVersion = "1.4.0"
         const val activityKtx = "androidx.activity:activity-ktx:$activityVersion"
 
-        private const val navigationVersion = "2.4.0-beta02"
+        private const val navigationVersion = "2.4.0-rc01"
         const val navigationFragment = "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
         const val navigationUi = "androidx.navigation:navigation-ui-ktx:$navigationVersion"
-        const val navigationSafeArgs = "androidx.navigation:navigation-safe-args-gradle-plugin:2.4.0-beta02"
+        const val navigationSafeArgs = "androidx.navigation:navigation-safe-args-gradle-plugin:2.4.0-rc01"
         const val navigationCompose = "androidx.navigation:navigation-compose:$navigationVersion"
-        const val navigationHiltCompose = "androidx.hilt:hilt-navigation-compose:1.0.0-beta01"
+        const val navigationHiltCompose = "androidx.hilt:hilt-navigation-compose:1.0.0-rc01"
 
         const val dataStore = "androidx.datastore:datastore-preferences:1.0.0"
 
@@ -49,14 +49,15 @@ object Deps {
 
         object Compose {
             const val version = "1.1.0-rc01"
+            const val compilerVersion = "1.1.0-rc02"
 
             const val ui = "androidx.compose.ui:ui:$version"
             const val uiUtil = "androidx.compose.ui:ui-util:$version"
             const val uiTooling = "androidx.compose.ui:ui-tooling:$version"
             const val foundation = "androidx.compose.foundation:foundation:$version"
-            const val materialDesign = "androidx.compose.material:material:$version"
-            const val materialDesignIcons = "androidx.compose.material:material-icons-core:$version"
-            const val materialDesignIconsExtended = "androidx.compose.material:material-icons-extended:$version"
+            const val material = "androidx.compose.material:material:$version"
+            const val materialIcons = "androidx.compose.material:material-icons-core:$version"
+            const val materialIconsExtended = "androidx.compose.material:material-icons-extended:$version"
             const val constraintLayout = "androidx.constraintlayout:constraintlayout-compose:1.0.0-rc02"
             const val liveData = "androidx.compose.runtime:runtime-livedata:$version"
             const val activity = "androidx.activity:activity-compose:$activityVersion"
@@ -71,7 +72,7 @@ object Deps {
         }
 
         object Accompanist {
-            private const val version = "0.21.4-beta"
+            private const val version = "0.22.0-rc"
 
             const val insets = "com.google.accompanist:accompanist-insets:$version"
             const val insetsUi = "com.google.accompanist:accompanist-insets-ui:$version"
@@ -97,7 +98,7 @@ object Deps {
         }
 
         object Room {
-            private const val versiion = "2.4.0-rc01"
+            private const val versiion = "2.4.0"
 
             const val compiler = "androidx.room:room-compiler:$versiion"
             const val runtime = "androidx.room:room-runtime:$versiion"
@@ -183,7 +184,7 @@ object Deps {
 
     object Firebase {
 
-        const val bom = "com.google.firebase:firebase-bom:29.0.2"
+        const val bom = "com.google.firebase:firebase-bom:29.0.3"
         const val messaging = "com.google.firebase:firebase-messaging-ktx"
         const val remoteConfig = "com.google.firebase:firebase-config-ktx"
         const val analytics = "com.google.firebase:firebase-analytics-ktx"
@@ -195,7 +196,7 @@ object Deps {
         const val junit = "junit:junit:4.13.2"
         const val truth = "com.google.truth:truth:1.1.3"
         const val robolectric = "org.robolectric:robolectric:4.7.3"
-        const val mockito = "org.mockito:mockito-core:4.1.0"
+        const val mockito = "org.mockito:mockito-core:4.2.0"
         const val mockitoKotlin = "org.mockito.kotlin:mockito-kotlin:4.0.0"
         const val turbine = "app.cash.turbine:turbine:0.7.0"
     }

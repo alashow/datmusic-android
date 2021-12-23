@@ -16,6 +16,8 @@ const val MEDIA_TYPE_AUDIO_QUERY = "Media.AudioQuery"
 const val MEDIA_TYPE_AUDIO_MINERVA_QUERY = "Media.AudioMinervaQuery"
 const val MEDIA_TYPE_AUDIO_FLACS_QUERY = "Media.AudioFlacsQuery"
 
+const val MEDIA_ID_INDEX_SHUFFLED = -1000
+
 private const val MEDIA_ID_SEPARATOR = " | "
 
 @Serializable
@@ -27,6 +29,7 @@ data class MediaId(
 ) {
 
     val hasIndex = index >= 0
+    val isShuffleIndex = index == MEDIA_ID_INDEX_SHUFFLED
 
     companion object {
         const val CALLER_SELF = "self"

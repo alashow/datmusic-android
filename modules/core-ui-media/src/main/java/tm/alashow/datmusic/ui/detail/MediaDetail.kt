@@ -14,6 +14,8 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.VectorPainter
 import androidx.compose.ui.platform.LocalContext
@@ -25,6 +27,7 @@ import tm.alashow.base.util.extensions.orNA
 import tm.alashow.domain.models.Incomplete
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.Navigator
+import tm.alashow.ui.LocalAdaptiveColorResult
 import tm.alashow.ui.adaptiveColor
 import tm.alashow.ui.components.CollapsingTopBar
 import tm.alashow.ui.components.FullScreenLoading
@@ -91,57 +94,62 @@ private fun <DetailType, T : MediaDetailViewState<DetailType>> MediaDetailConten
 ) {
     val context = LocalContext.current
     val artwork = viewState.artwork(context)
-    val adaptiveColor = adaptiveColor(
-        artwork,
-        fallback = MaterialTheme.colors.background,
-        gradientEndColor = MaterialTheme.colors.background
-    )
-    val adaptiveBackground = Modifier.background(adaptiveColor.gradient)
-
-    // apply adaptive background to whole list only on light theme
-    // because full list gradient doesn't look great on dark
-    val isLight = MaterialTheme.colors.isLight
-    val listBackgroundMod = if (isLight) adaptiveBackground else Modifier
-    val headerBackgroundMod = if (isLight) Modifier else adaptiveBackground
 
     if (viewState.isLoaded) {
-        LazyColumn(
-            state = listState,
-            contentPadding = PaddingValues(bottom = padding.calculateTopPadding() + padding.calculateBottomPadding()),
-            modifier = listBackgroundMod.fillMaxSize(),
+        val adaptiveColor by adaptiveColor(
+            artwork,
+            initial = MaterialTheme.colors.background,
+            fallback = MaterialTheme.colors.secondary,
+            gradientEndColor = MaterialTheme.colors.background
+        )
+        val adaptiveBackground = Modifier.background(adaptiveColor.gradient)
+
+        // apply adaptive background to whole list only on light theme
+        // because full list gradient doesn't look great on dark
+        val isLight = MaterialTheme.colors.isLight
+        val listBackgroundMod = if (isLight) adaptiveBackground else Modifier
+        val headerBackgroundMod = if (isLight) Modifier else adaptiveBackground
+        CompositionLocalProvider(
+            LocalAdaptiveColorResult provides adaptiveColor
         ) {
-            val details = viewState.details()
-            val detailsLoading = details is Incomplete
+            LazyColumn(
+                state = listState,
+                contentPadding = PaddingValues(bottom = padding.calculateTopPadding() + padding.calculateBottomPadding()),
+                modifier = listBackgroundMod.fillMaxSize(),
+            ) {
+                val details = viewState.details()
+                val detailsLoading = details is Incomplete
 
-            mediaDetailHeader(
-                list = this,
-                listState = listState,
-                headerBackgroundMod = headerBackgroundMod,
-                title = viewState.title.orNA(),
-                artwork = artwork,
-                onTitleClick = onTitleClick,
-                headerCoverIcon = headerCoverIcon,
-                extraHeaderContent = extraHeaderContent,
-            )
+                mediaDetailHeader(
+                    list = this,
+                    listState = listState,
+                    headerBackgroundMod = headerBackgroundMod,
+                    title = viewState.title.orNA(),
+                    artwork = artwork,
+                    onTitleClick = onTitleClick,
+                    headerCoverIcon = headerCoverIcon,
+                    extraHeaderContent = extraHeaderContent,
+                )
 
-            val isEmpty = mediaDetailContent(
-                list = this,
-                details = details,
-                detailsLoading = detailsLoading
-            )
+                val isEmpty = mediaDetailContent(
+                    list = this,
+                    details = details,
+                    detailsLoading = detailsLoading
+                )
 
-            mediaDetailFail(
-                list = this,
-                details = details,
-                onFailRetry = onFailRetry
-            )
+                mediaDetailFail(
+                    list = this,
+                    details = details,
+                    onFailRetry = onFailRetry
+                )
 
-            mediaDetailEmpty(
-                list = this,
-                details = details,
-                detailsEmpty = isEmpty,
-                onEmptyRetry = onEmptyRetry
-            )
+                mediaDetailEmpty(
+                    list = this,
+                    details = details,
+                    detailsEmpty = isEmpty,
+                    onEmptyRetry = onEmptyRetry
+                )
+            }
         }
     } else FullScreenLoading()
 }

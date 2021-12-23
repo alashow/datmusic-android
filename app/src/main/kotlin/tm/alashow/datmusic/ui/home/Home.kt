@@ -36,9 +36,9 @@ import tm.alashow.datmusic.ui.currentScreenAsState
 import tm.alashow.datmusic.ui.playback.PlaybackMiniControls
 import tm.alashow.navigation.screens.RootScreen
 import tm.alashow.ui.DismissableSnackbarHost
+import tm.alashow.ui.isWideLayout
 import tm.alashow.ui.theme.AppTheme
 
-private val WIDE_LAYOUT_MIN_WIDTH = 600.dp
 val HomeBottomNavigationHeight = 56.dp
 
 @Composable
@@ -54,11 +54,15 @@ internal fun Home(
     val isPlayerActive = (playbackState to nowPlaying).isActive
     val bottomBarHeight = HomeBottomNavigationHeight * (if (isPlayerActive) 1.15f else 1f)
     BoxWithConstraints {
-        val isWideLayout = maxWidth > WIDE_LAYOUT_MIN_WIDTH
-
+        val isWideLayout = isWideLayout()
+        val maxWidth = maxWidth
         Row(Modifier.fillMaxSize()) {
             if (isWideLayout)
-                ResizableHomeNavigationRail(selectedTab = selectedTab, navController = navController)
+                ResizableHomeNavigationRail(
+                    maxWidth = maxWidth,
+                    selectedTab = selectedTab,
+                    navController = navController
+                )
             Scaffold(
                 modifier = Modifier.weight(12f),
                 scaffoldState = scaffoldState,

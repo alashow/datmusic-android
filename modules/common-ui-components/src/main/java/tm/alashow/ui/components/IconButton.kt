@@ -4,7 +4,8 @@
  */
 package tm.alashow.ui.components
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -27,6 +28,7 @@ import tm.alashow.ui.theme.AppTheme
 private val RippleRadius = 24.dp
 private val IconButtonSizeModifier = Modifier.size(48.dp)
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun IconButton(
     onClick: () -> Unit,
@@ -34,13 +36,19 @@ fun IconButton(
     enabled: Boolean = true,
     rippleColor: Color = Color.Unspecified,
     rippleRadius: Dp = RippleRadius,
+    onLongClickLabel: String? = null,
+    onLongClick: (() -> Unit)? = null,
+    onDoubleClick: (() -> Unit)? = null,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     content: @Composable () -> Unit
 ) {
     Box(
         modifier = modifier
-            .clickable(
+            .combinedClickable(
                 onClick = onClick,
+                onLongClickLabel = onLongClickLabel,
+                onLongClick = onLongClick,
+                onDoubleClick = onDoubleClick,
                 enabled = enabled,
                 role = Role.Button,
                 interactionSource = interactionSource,
