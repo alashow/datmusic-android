@@ -4,6 +4,9 @@
  */
 package tm.alashow.datmusic.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -26,9 +29,10 @@ import tm.alashow.ui.LocalAdaptiveColorResult
 import tm.alashow.ui.components.IconButton
 import tm.alashow.ui.theme.AppTheme
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, androidx.compose.animation.ExperimentalAnimationApi::class)
 @Composable
 fun ShuffleButton(
+    visible: Boolean,
     playbackConnection: PlaybackConnection,
     modifier: Modifier = Modifier,
     background: Color = MaterialTheme.colors.primary,
@@ -38,29 +42,36 @@ fun ShuffleButton(
     onDoubleClick: Callback = { playbackConnection.mediaController?.playPause() },
     onClick: Callback = {},
 ) {
-    Box(modifier) {
-        IconButton(
-            onClick = onClick,
-            onLongClickLabel = onLongClickLabel,
-            onLongClick = onLongClick,
-            onDoubleClick = onDoubleClick,
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .clip(CircleShape)
-                .background(background)
-                .size(AppTheme.specs.iconSizeLarge)
-        ) {
-            Icon(
-                painter = rememberVectorPainter(Icons.Default.Shuffle),
-                tint = tint,
-                contentDescription = null
-            )
+    AnimatedVisibility(
+        visible = visible,
+        enter = scaleIn(),
+        exit = scaleOut()
+    ) {
+        Box(modifier) {
+            IconButton(
+                onClick = onClick,
+                onLongClickLabel = onLongClickLabel,
+                onLongClick = onLongClick,
+                onDoubleClick = onDoubleClick,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .clip(CircleShape)
+                    .background(background)
+                    .size(AppTheme.specs.iconSizeLarge)
+            ) {
+                Icon(
+                    painter = rememberVectorPainter(Icons.Default.Shuffle),
+                    tint = tint,
+                    contentDescription = null
+                )
+            }
         }
     }
 }
 
 @Composable
 fun ShuffleAdaptiveButton(
+    visible: Boolean,
     playbackConnection: PlaybackConnection,
     modifier: Modifier = Modifier,
     tint: Color = LocalAdaptiveColorResult.current.contentColor,
@@ -71,6 +82,7 @@ fun ShuffleAdaptiveButton(
     onClick: Callback = {},
 ) {
     ShuffleButton(
+        visible = visible,
         playbackConnection = playbackConnection,
         modifier = modifier,
         background = background,
