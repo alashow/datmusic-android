@@ -38,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -63,6 +64,11 @@ import tm.alashow.ui.simpleClickable
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.disabledAlpha
 
+object PlaybackNowPlayingDefaults {
+    val titleTextStyle @Composable get() = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold)
+    val artistTextStyle @Composable get() = MaterialTheme.typography.subtitle1
+}
+
 @Composable
 internal fun PlaybackNowPlayingWithControls(
     nowPlaying: MediaMetadataCompat,
@@ -71,6 +77,8 @@ internal fun PlaybackNowPlayingWithControls(
     onTitleClick: Callback,
     onArtistClick: Callback,
     modifier: Modifier = Modifier,
+    titleTextStyle: TextStyle = PlaybackNowPlayingDefaults.titleTextStyle,
+    artistTextStyle: TextStyle = PlaybackNowPlayingDefaults.artistTextStyle,
     onlyControls: Boolean = false,
 ) {
     Column(
@@ -81,7 +89,9 @@ internal fun PlaybackNowPlayingWithControls(
             PlaybackNowPlaying(
                 nowPlaying = nowPlaying,
                 onTitleClick = onTitleClick,
-                onArtistClick = onArtistClick
+                onArtistClick = onArtistClick,
+                titleTextStyle = titleTextStyle,
+                artistTextStyle = artistTextStyle,
             )
 
         PlaybackProgress(
@@ -101,6 +111,8 @@ internal fun PlaybackNowPlaying(
     onTitleClick: Callback,
     onArtistClick: Callback,
     modifier: Modifier = Modifier,
+    titleTextStyle: TextStyle = PlaybackNowPlayingDefaults.titleTextStyle,
+    artistTextStyle: TextStyle = PlaybackNowPlayingDefaults.artistTextStyle,
     horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
 ) {
     val title = nowPlaying.title
@@ -110,7 +122,7 @@ internal fun PlaybackNowPlaying(
     ) {
         Text(
             title.orNA(),
-            style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold),
+            style = titleTextStyle,
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,
             modifier = Modifier.simpleClickable(onClick = onTitleClick)
@@ -118,7 +130,7 @@ internal fun PlaybackNowPlaying(
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
             Text(
                 nowPlaying.artist.orNA(),
-                style = MaterialTheme.typography.subtitle1,
+                style = artistTextStyle,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
                 modifier = Modifier.simpleClickable(onClick = onArtistClick)

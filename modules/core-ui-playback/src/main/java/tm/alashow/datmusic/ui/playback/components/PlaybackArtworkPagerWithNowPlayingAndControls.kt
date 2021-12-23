@@ -10,6 +10,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -27,6 +28,8 @@ fun PlaybackArtworkPagerWithNowPlayingAndControls(
     playbackState: PlaybackStateCompat,
     modifier: Modifier = Modifier,
     contentColor: Color = MaterialTheme.colors.onBackground,
+    titleTextStyle: TextStyle = PlaybackNowPlayingDefaults.titleTextStyle,
+    artistTextStyle: TextStyle = PlaybackNowPlayingDefaults.artistTextStyle,
     pagerState: PagerState = rememberPagerState(),
     onArtworkClick: Callback? = null,
     viewModel: PlaybackViewModel = hiltViewModel(),
@@ -56,6 +59,8 @@ fun PlaybackArtworkPagerWithNowPlayingAndControls(
             nowPlaying = nowPlaying,
             playbackState = playbackState,
             contentColor = contentColor,
+            titleTextStyle = titleTextStyle,
+            artistTextStyle = artistTextStyle,
             onTitleClick = viewModel::onTitleClick,
             onArtistClick = viewModel::onArtistClick,
             modifier = Modifier.constrainAs(nowPlayingControls) {

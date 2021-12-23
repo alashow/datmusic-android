@@ -38,13 +38,14 @@ import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.isActive
 import tm.alashow.datmusic.ui.playback.PlaybackMiniControls
 import tm.alashow.datmusic.ui.playback.components.PlaybackArtworkPagerWithNowPlayingAndControls
+import tm.alashow.datmusic.ui.playback.components.PlaybackNowPlayingDefaults
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.Navigator
 import tm.alashow.navigation.screens.LeafScreen
 import tm.alashow.navigation.screens.RootScreen
 import tm.alashow.ui.theme.AppTheme
 
-private val NAVIGATION_RAIL_BIG_MODE_MIN_WIDTH = 280.dp
+private val NAVIGATION_RAIL_BIG_MODE_MIN_WIDTH = 200.dp
 private val NAVIGATION_RAIL_BIG_MODE_MIN_HEIGHT = 600.dp
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -74,6 +75,7 @@ internal fun HomeNavigationRail(
                 )
         ) {
             extraContent()
+            val maxWidth = maxWidth
             val isBigPlaybackMode = maxWidth > NAVIGATION_RAIL_BIG_MODE_MIN_WIDTH && maxHeight > NAVIGATION_RAIL_BIG_MODE_MIN_HEIGHT
             Column(
                 verticalArrangement = Arrangement.SpaceBetween,
@@ -95,18 +97,21 @@ internal fun HomeNavigationRail(
                     }
                 }
                 if (isBigPlaybackMode) {
+                    val bigPlaybackModeWeight = 3f + ((maxWidth - NAVIGATION_RAIL_BIG_MODE_MIN_WIDTH) / NAVIGATION_RAIL_BIG_MODE_MIN_WIDTH * 2.5f)
                     val playbackState by rememberFlowWithLifecycle(playbackConnection.playbackState).collectAsState(NONE_PLAYBACK_STATE)
                     val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying).collectAsState(NONE_PLAYING)
                     val visible = (playbackState to nowPlaying).isActive
                     AnimatedVisibility(
                         visible = visible,
-                        modifier = Modifier.weight(6f),
+                        modifier = Modifier.weight(bigPlaybackModeWeight),
                         enter = slideInVertically(initialOffsetY = { it / 2 }) + scaleIn()
                     ) {
                         PlaybackArtworkPagerWithNowPlayingAndControls(
                             nowPlaying = nowPlaying,
                             playbackState = playbackState,
-                            onArtworkClick = { navigator.navigate(LeafScreen.PlaybackSheet().createRoute()) }
+                            onArtworkClick = { navigator.navigate(LeafScreen.PlaybackSheet().createRoute()) },
+                            titleTextStyle = PlaybackNowPlayingDefaults.titleTextStyle.copy(fontSize = MaterialTheme.typography.body1.fontSize),
+                            artistTextStyle = PlaybackNowPlayingDefaults.artistTextStyle.copy(fontSize = MaterialTheme.typography.subtitle2.fontSize),
                         )
                     }
                 } else PlaybackMiniControls(
