@@ -9,10 +9,10 @@ import javax.inject.Singleton
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.receiveAsFlow
 import org.threeten.bp.Duration
@@ -39,11 +39,11 @@ class SnackbarManager @Inject constructor(
      * or [removeCurrentError] is called (if before that) `null` will be emitted to remove
      * the current error.
      */
-    val errors: Flow<Throwable?> = flow {
-        emit(null)
+    val errors: Flow<Throwable?> = channelFlow {
+        send(null)
 
         pendingErrors.receiveAsFlow().collectLatest {
-            emit(it)
+            send(it)
 
             // Wait for either a maxDuration timeout, or a remove signal (whichever comes first)
             merge(
@@ -52,7 +52,7 @@ class SnackbarManager @Inject constructor(
             ).firstOrNull()
 
             // Remove the error
-            emit(null)
+            send(null)
         }
     }
 

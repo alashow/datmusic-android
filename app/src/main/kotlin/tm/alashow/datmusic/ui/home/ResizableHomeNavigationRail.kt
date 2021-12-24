@@ -36,7 +36,7 @@ internal fun RowScope.ResizableHomeNavigationRail(
     setDragOffset: (Float) -> Unit = viewModel::setDragOffset,
 ) {
     ResizableLayout(
-        maxWidth = maxWidth,
+        availableWidth = maxWidth,
         baseWeight = baseWeight,
         minWeight = minWeight,
         maxWeight = maxWeight,

@@ -259,7 +259,7 @@ private fun RowScope.ResizablePlaybackQueue(
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
 ) {
     ResizableLayout(
-        maxWidth = maxWidth,
+        availableWidth = maxWidth,
         baseWeight = 0.6f,
         minWeight = 0.4f,
         maxWeight = 1.25f,
