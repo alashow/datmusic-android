@@ -14,6 +14,9 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -129,6 +132,7 @@ fun PlaybackMiniControls(
     val contentColor = adaptiveColor.contentColor
 
     Dismissable(onDismiss = { playbackConnection.transportControls?.stop() }) {
+        var dragOffset by remember { mutableStateOf(0f) }
         Surface(
             color = Color.Transparent,
             shape = MaterialTheme.shapes.small,
@@ -140,6 +144,18 @@ fun PlaybackMiniControls(
                     onClick = openPlaybackSheet,
                     onLongClick = onPlayPause,
                     onDoubleClick = onPlayPause
+                )
+                // open playback sheet on swipe up
+                .draggable(
+                    orientation = Orientation.Vertical,
+                    state = rememberDraggableState(
+                        onDelta = {
+                            dragOffset = it.coerceAtMost(0f)
+                        }
+                    ),
+                    onDragStarted = {
+                        if (dragOffset < 0) openPlaybackSheet()
+                    },
                 )
         ) {
             Column {
