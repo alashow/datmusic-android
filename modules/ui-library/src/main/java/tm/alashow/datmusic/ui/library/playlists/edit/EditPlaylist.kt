@@ -84,8 +84,6 @@ import tm.alashow.ui.simpleClickable
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.Orange
 
-private const val DRAGGABLE_ITEM_PREFIX = "draggable_"
-
 @Composable
 fun EditPlaylist(
     viewModel: EditPlaylistViewModel = hiltViewModel(),
