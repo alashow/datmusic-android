@@ -23,11 +23,8 @@ import tm.alashow.datmusic.domain.entities.DownloadRequest
 @HiltAndroidTest
 class DownloadRequestsDaoTest : BaseTest() {
 
-    @Inject
-    lateinit var database: AppDatabase
-
-    @Inject
-    lateinit var dao: DownloadRequestsDao
+    @Inject lateinit var database: AppDatabase
+    @Inject lateinit var dao: DownloadRequestsDao
 
     private val testItems = (1..5).map { SampleData.downloadRequest() }
     private val entriesComparator = compareByDescending(DownloadRequest::createdAt).thenBy(DownloadRequest::id)

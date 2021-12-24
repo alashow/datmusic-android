@@ -25,6 +25,9 @@ class DaosModule {
     fun audiosDaoBase(db: AppDatabase): PaginatedEntryDao<DatmusicSearchParams, Audio> = db.audiosDao()
 
     @Provides
+    fun audiosFtsDao(db: AppDatabase) = db.audiosFtsDao()
+
+    @Provides
     fun artistsDao(db: AppDatabase) = db.artistsDao()
 
     @Provides

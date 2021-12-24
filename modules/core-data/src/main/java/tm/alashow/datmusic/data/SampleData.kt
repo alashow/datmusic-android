@@ -4,6 +4,7 @@
  */
 package tm.alashow.datmusic.data
 
+import java.util.UUID
 import kotlin.math.abs
 import kotlin.random.Random
 import kotlin.random.nextInt
@@ -20,6 +21,8 @@ object SampleData {
     fun Random.id(): Long = abs(nextLong())
     fun Random.sid(): String = nextInt().toString()
 
+    fun randomString() = UUID.randomUUID().toString().replace("-", "")
+
     val Audio: Audio = audio()
     val Playlist: Playlist = playlist()
     val PlaylistAudio: PlaylistAudio = playlistAudioItems(Playlist, Audio).playlistAudio
@@ -29,12 +32,13 @@ object SampleData {
 
     fun audio() = Audio(
         id = "sample-audio-${random.id()}",
-        primaryKey = "sample-audio-${random.id()}",
+        primaryKey = "primary-sample-audio-${random.id()}",
         searchIndex = random.nextInt(),
         page = random.nextInt(),
         params = random.nextInt().toString(),
-        artist = "Artist ${random.nextInt()}",
-        title = "Title ${random.nextInt()}",
+        artist = "Artist ${randomString()}",
+        title = "Title ${randomString()}",
+        album = "Album ${randomString()}",
         duration = random.nextInt(100, 300)
     )
 
