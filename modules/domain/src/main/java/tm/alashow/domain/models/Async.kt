@@ -8,11 +8,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
+import tm.alashow.base.util.extensions.delayItem
 
 fun <T> Flow<T>.asAsyncFlow() =
     map { Success(it) as Async<T> }
         .onStart { emit(Loading()) }
         .catch { emit(Fail(it)) }
+
+fun <T> Flow<Async<T>>.delayLoading(timeMillis: Long = 100L) = delayItem(timeMillis, Loading())
 
 /**
  * The T generic is unused for some classes but since it is sealed and useful for Success and Fail,

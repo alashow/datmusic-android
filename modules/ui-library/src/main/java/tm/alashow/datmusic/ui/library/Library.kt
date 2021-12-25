@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.ContentAlpha
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
@@ -20,7 +19,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.ui.Scaffold
 import tm.alashow.base.util.extensions.Callback
@@ -39,6 +37,7 @@ import tm.alashow.ui.components.AppTopBar
 import tm.alashow.ui.components.EmptyErrorBox
 import tm.alashow.ui.components.FullScreenLoading
 import tm.alashow.ui.components.IconButton
+import tm.alashow.ui.theme.AppTheme
 
 @Composable
 fun Library() {
@@ -82,7 +81,6 @@ private fun Library(
 private fun LibraryTopBar(onCreatePlaylist: Callback = {}) {
     AppTopBar(
         title = stringResource(R.string.library_title),
-        actionsContentAlpha = ContentAlpha.medium,
         actions = {
             IconButton(
                 onClick = onCreatePlaylist,
@@ -90,7 +88,7 @@ private fun LibraryTopBar(onCreatePlaylist: Callback = {}) {
                 Icon(
                     Icons.Default.Add,
                     contentDescription = stringResource(R.string.playlist_create),
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier.size(AppTheme.specs.iconSize)
                 )
             }
         }

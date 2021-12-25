@@ -52,7 +52,7 @@ import tm.alashow.i18n.UiMessage
 
 typealias AudioDownloadItems = List<AudioDownloadItem>
 
-data class DownloadItems(val audios: AudioDownloadItems)
+data class DownloadItems(val audios: AudioDownloadItems = emptyList())
 
 class Downloader @Inject constructor(
     @ApplicationContext private val appContext: Context,

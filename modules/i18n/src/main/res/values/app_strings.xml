@@ -7,6 +7,8 @@
     <string name="app_launcher">Datmusic</string>
     <string name="app_label">Datmusic</string>
 
+    <string name="appBar.search.hint">Search query</string>
+
     <string name="search.title">Search</string>
     <string name="search.hint">Songs, albums, artists</string>
     <string name="search.hint.query">Search query</string>
@@ -44,6 +46,10 @@
 
     <string name="downloads.title">Downloads</string>
     <string name="downloads.empty">No Downloads</string>
+
+    <string name="downloads.filter.search.hint">Search in downloads</string>
+    <string name="downloads.filter.noResults">No results</string>
+    <string name="downloads.filter.noResults.forQuery">No results for %1$s</string>
 
     <string name="downloads.download.status.paused">Paused</string>
     <string name="downloads.download.status.queued">Queued</string>

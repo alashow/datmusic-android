@@ -46,6 +46,7 @@ abstract class AudiosFtsDao {
         INNER JOIN audios_fts AS fts ON d.id = fts.id
         WHERE d.entity_type = 'Audio' 
             AND audios_fts MATCH :query
+        GROUP BY d.id
         ORDER BY d.created_at DESC, d.id ASC
         """
     )

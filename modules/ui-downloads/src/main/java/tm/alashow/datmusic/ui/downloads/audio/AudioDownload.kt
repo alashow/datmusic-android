@@ -70,6 +70,7 @@ import tm.alashow.ui.theme.AppTheme
 @Composable
 internal fun AudioDownload(
     audioDownloadItem: AudioDownloadItem,
+    modifier: Modifier = Modifier,
     onAudioPlay: (AudioDownloadItem) -> Unit,
     actionHandler: AudioDownloadItemActionHandler = LocalAudioDownloadItemActionHandler.current
 ) {
@@ -79,7 +80,7 @@ internal fun AudioDownload(
 
     Column(
         verticalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
-        modifier = Modifier
+        modifier = modifier
             .clickable {
                 if (downloadInfo.isComplete()) onAudioPlay(audioDownloadItem)
                 else menuVisible = true
