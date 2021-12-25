@@ -5,6 +5,7 @@
 package tm.alashow.datmusic.downloader.observers
 
 import com.tonyodev.fetch2.Fetch
+import com.tonyodev.fetch2.Status
 import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -33,15 +34,20 @@ class ObserveDownloads @Inject constructor(
         val audiosSortOptions: List<DownloadAudioItemSortOption> = DownloadAudioItemSortOptions.ALL,
         val defaultSortOption: DownloadAudioItemSortOption = DownloadAudioItemSortOptions.ALL.first(),
         val audiosSortOption: DownloadAudioItemSortOption = defaultSortOption,
+        val defaultStatusFilters: Set<DownloadStatusFilter> = setOf(DownloadStatusFilter.All),
+        val statusFilters: Set<DownloadStatusFilter> = defaultStatusFilters,
     ) {
         val hasQuery get() = query.isNotBlank()
         val hasSortingOption get() = audiosSortOption != defaultSortOption
-        val isEmpty get() = !hasQuery && !hasSortingOption
+        val hasStatusFilter get() = statusFilters != defaultStatusFilters
+        val hasNoFilters get() = !hasQuery && !hasSortingOption && !hasStatusFilter
+
+        val statuses get() = statusFilters.map { it.statuses }.flatten()
     }
 
-    private fun fetcherDownloads() = flow {
+    private fun fetcherDownloads(statusFilters: List<Status>) = flow {
         while (true) {
-            emit(fetcher.downloads())
+            emit(fetcher.downloads(statusFilters))
             delay(Downloader.DOWNLOADS_STATUS_REFRESH_INTERVAL)
         }
     }.distinctUntilChanged()
@@ -52,8 +58,8 @@ class ObserveDownloads @Inject constructor(
             else -> dao.entries()
         }
 
-        return combine(downloadsRequestsFlow, fetcherDownloads()) { downloadRequests, downloads ->
-            if (downloadRequests.isEmpty() && !params.isEmpty) {
+        return combine(downloadsRequestsFlow, fetcherDownloads(params.statuses)) { downloadRequests, downloads ->
+            if (downloadRequests.isEmpty() && !params.hasNoFilters) {
                 throw NoResultsForDownloadsFilter(params)
             }
 
@@ -62,6 +68,14 @@ class ObserveDownloads @Inject constructor(
                 .map { request ->
                     val downloadInfo = downloads.firstOrNull { dl -> dl.id == request.requestId }
                     AudioDownloadItem.from(request, request.audio, downloadInfo)
+                }
+                .filter {
+                    if (!params.hasStatusFilter) true
+                    else params.statuses.contains(it.downloadInfo.status)
+                }
+                .also {
+                    if (it.isEmpty() && !params.hasNoFilters)
+                        throw NoResultsForDownloadsFilter(params)
                 }
                 .let {
                     val comparator = params.audiosSortOption.comparator

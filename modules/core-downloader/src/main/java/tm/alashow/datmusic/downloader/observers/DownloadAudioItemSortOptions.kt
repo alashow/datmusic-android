@@ -26,7 +26,7 @@ object DownloadAudioItemSortOptions {
     data class ByDate(override val isDescending: Boolean = true) : DownloadAudioItemSortOption(
         R.string.downloads_filter_sort_byDate,
         isDescending,
-        if (isDescending) null // default sort option
+        if (isDescending) null // default sort in database
         else compareBy { it.downloadRequest.createdAt }
     ) {
         override fun toggleDescending() = copy(isDescending = !isDescending)
@@ -47,7 +47,6 @@ object DownloadAudioItemSortOptions {
         if (isDescending) compareByDescending { it.audio.artist }
         else compareBy { it.audio.artist }
     ) {
-
         override fun toggleDescending() = copy(isDescending = !isDescending)
     }
 
@@ -57,7 +56,6 @@ object DownloadAudioItemSortOptions {
         if (isDescending) compareByDescending { it.audio.album }
         else compareBy { it.audio.album }
     ) {
-        override fun toUiMessage() = UiMessage.Resource(R.string.downloads_filter_sort_byAlbum)
         override fun toggleDescending() = copy(isDescending = !isDescending)
     }
 
@@ -76,7 +74,6 @@ object DownloadAudioItemSortOptions {
         if (isDescending) compareByDescending { it.audio.duration }
         else compareBy { it.audio.duration }
     ) {
-        override fun toUiMessage() = UiMessage.Resource(R.string.downloads_filter_sort_byDuration)
         override fun toggleDescending() = copy(isDescending = !isDescending)
     }
 }

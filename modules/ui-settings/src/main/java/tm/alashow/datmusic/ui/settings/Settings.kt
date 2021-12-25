@@ -130,11 +130,12 @@ fun LazyListScope.settingsDownloadsSection(downloader: Downloader) {
             }
 
             SettingsItem(stringResource(R.string.settings_downloads_songsGrouping)) {
+                val downloadSongsGrouping = downloadsSongsGrouping ?: return@SettingsItem
                 SelectableDropdownMenu(
                     items = DownloadsSongsGrouping.values().toList(),
                     itemLabelMapper = { stringResource(it.labelRes) },
                     subtitles = DownloadsSongsGrouping.values().map { stringResource(it.exampleRes) },
-                    selectedItem = downloadsSongsGrouping,
+                    selectedItem = downloadSongsGrouping,
                     onItemSelect = { coroutine.launch { downloader.setDownloadsSongsGrouping(it) } },
                     modifier = Modifier.offset(x = 12.dp)
                 )

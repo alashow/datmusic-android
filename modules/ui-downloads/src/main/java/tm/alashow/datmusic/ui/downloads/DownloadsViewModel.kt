@@ -12,16 +12,16 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import tm.alashow.base.util.extensions.getStateFlow
 import tm.alashow.base.util.extensions.stateInDefault
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.downloader.observers.DownloadAudioItemSortOption
+import tm.alashow.datmusic.downloader.observers.DownloadStatusFilter
 import tm.alashow.datmusic.downloader.observers.ObserveDownloads
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.domain.models.Uninitialized
@@ -38,17 +38,19 @@ class DownloadsViewModel @Inject constructor(
     private val defaultParams = ObserveDownloads.Params()
 
     private val downloadsParamsState = MutableStateFlow(defaultParams)
-    private val searchQueryState = handle.getStateFlow("search_query", viewModelScope, defaultParams.query)
-    private val sortOptionState = MutableStateFlow(defaultParams.audiosSortOption)
+    private val searchQueryState = MutableStateFlow(defaultParams.query)
+    private val audiosSortOptionState = MutableStateFlow(defaultParams.audiosSortOption)
+    private val statusFiltersState = MutableStateFlow(defaultParams.statusFilters)
 
     private val downloads = observeDownloads.flow.stateInDefault(viewModelScope, Uninitialized)
     val state = combine(downloads.delayLoading(), downloadsParamsState, ::DownloadsViewState)
         .map {
             it.copy(
                 params = it.params.copy(
+                    // swap out current sort option to fix asc/desc flag
                     audiosSortOptions = it.params.audiosSortOptions.map { option ->
-                        when (option.isSameOption(sortOptionState.value)) {
-                            true -> sortOptionState.value
+                        when (option.isSameOption(audiosSortOptionState.value)) {
+                            true -> audiosSortOptionState.value
                             false -> option
                         }
                     }
@@ -58,16 +60,21 @@ class DownloadsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            downloadsParamsState.collectLatest(observeDownloads::invoke)
+            downloadsParamsState.debounce(60).collectLatest(observeDownloads::invoke)
         }
         viewModelScope.launch {
-            searchQueryState.filterNotNull().collectLatest {
+            searchQueryState.collectLatest {
                 downloadsParamsState.value = downloadsParamsState.value.copy(query = it)
             }
         }
         viewModelScope.launch {
-            sortOptionState.filterNotNull().collectLatest {
+            audiosSortOptionState.collectLatest {
                 downloadsParamsState.value = downloadsParamsState.value.copy(audiosSortOption = it)
+            }
+        }
+        viewModelScope.launch {
+            statusFiltersState.collectLatest {
+                downloadsParamsState.value = downloadsParamsState.value.copy(statusFilters = it)
             }
         }
     }
@@ -76,13 +83,31 @@ class DownloadsViewModel @Inject constructor(
         searchQueryState.value = query
     }
 
-    fun onAudiosSortOptionChange(sortOption: DownloadAudioItemSortOption) {
-        val isReselecting = sortOption.isSameOption(sortOptionState.value)
-        sortOptionState.value = if (isReselecting) sortOption.toggleDescending() else sortOption
+    fun onAudiosSortOptionSelect(sortOption: DownloadAudioItemSortOption) {
+        val isReselecting = sortOption.isSameOption(audiosSortOptionState.value)
+        audiosSortOptionState.value = if (isReselecting) sortOption.toggleDescending() else sortOption
     }
 
-    fun onClearFilters() {
-        sortOptionState.value = defaultParams.audiosSortOption
+    fun onStatusFilterSelect(statusFilter: DownloadStatusFilter) {
+        val current = statusFiltersState.value
+        // allow multiple selections except when default is selected
+        statusFiltersState.value = when {
+            statusFilter.isDefault -> defaultParams.defaultStatusFilters // reset to default
+            current.contains(statusFilter) -> current - statusFilter // deselect
+            else -> statusFiltersState.value + statusFilter // select
+        }.let {
+            when {
+                it.isEmpty() -> defaultParams.defaultStatusFilters // reset to default
+                !statusFilter.isDefault -> it.filterNot { it.isDefault }.toSet() // remove default
+                else -> it // has no default but has some selections
+            }
+        }
+    }
+
+    fun onClearFilter() {
+        searchQueryState.value = ""
+        audiosSortOptionState.value = defaultParams.audiosSortOption
+        statusFiltersState.value = defaultParams.defaultStatusFilters
     }
 
     fun playAudioDownload(audioDownloadItem: AudioDownloadItem) = viewModelScope.launch {

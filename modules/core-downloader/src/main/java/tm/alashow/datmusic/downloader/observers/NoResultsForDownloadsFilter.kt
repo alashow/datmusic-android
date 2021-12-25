@@ -13,11 +13,11 @@ data class NoResultsForDownloadsFilter(val params: ObserveDownloads.Params) :
     ValidationErrorException(
         ValidationError(
             when (params.hasQuery) {
-                true -> UiMessage.Resource(R.string.downloads_filter_noResults)
-                false -> UiMessage.Resource(
+                true -> UiMessage.Resource(
                     R.string.downloads_filter_noResults_forQuery,
                     listOf(params.query)
                 )
+                else -> UiMessage.Resource(R.string.downloads_filter_noResults)
             }
         )
     )

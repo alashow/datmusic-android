@@ -62,6 +62,7 @@ import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.downloader.DownloadItems
 import tm.alashow.datmusic.downloader.observers.DownloadAudioItemSortOption
+import tm.alashow.datmusic.downloader.observers.DownloadStatusFilter
 import tm.alashow.datmusic.downloader.observers.NoResultsForDownloadsFilter
 import tm.alashow.datmusic.ui.downloads.audio.AudioDownload
 import tm.alashow.domain.models.Fail
@@ -115,18 +116,26 @@ private fun DownloadsAppBar(
         searchQuery = query
         viewModel.onSearchQueryChange(query.text)
     }
+    val onClearFilter = {
+        filterActive = false
+        searchQuery = TextFieldValue()
+        viewModel.onClearFilter()
+    }
 
     AppTopBar(
         title = stringResource(R.string.downloads_title),
         filterActive = searchQuery.text.isNotBlank() || filterActive,
         filterContent = {
             DownloadsFilters(
-                hasSortingOption = viewState.params.hasSortingOption,
                 searchQuery = searchQuery,
                 onQueryChange = onQueryChange,
+                hasSortingOption = viewState.params.hasSortingOption,
                 audiosSortOptions = viewState.params.audiosSortOptions,
                 audiosSortOption = viewState.params.audiosSortOption,
-                onAudiosSortOptionChange = viewModel::onAudiosSortOptionChange,
+                onAudiosSortOptionSelect = viewModel::onAudiosSortOptionSelect,
+                hasStatusFilter = viewState.params.hasStatusFilter,
+                statusFilters = viewState.params.statusFilters,
+                onStatusFilterSelect = viewModel::onStatusFilterSelect,
                 onClose = {
                     filterActive = false
                     onQueryChange(TextFieldValue())
@@ -134,14 +143,18 @@ private fun DownloadsAppBar(
             )
         },
         actions = {
-            IconButton(onClick = { filterActive = true }) {
+            IconButton(
+                onClick = { filterActive = true },
+                onLongClick = onClearFilter
+            ) {
                 Icon(
                     Icons.Default.FilterList,
                     contentDescription = null,
-                    modifier = Modifier.size(AppTheme.specs.iconSizeSmall)
+                    modifier = Modifier.size(AppTheme.specs.iconSizeSmall),
+                    tint = if (viewState.params.hasNoFilters) LocalContentColor.current else MaterialTheme.colors.secondary
                 )
             }
-        }
+        },
     )
 }
 
@@ -150,9 +163,12 @@ private fun DownloadsFilters(
     searchQuery: TextFieldValue,
     onQueryChange: (TextFieldValue) -> Unit,
     hasSortingOption: Boolean,
+    hasStatusFilter: Boolean,
     audiosSortOptions: List<DownloadAudioItemSortOption>,
     audiosSortOption: DownloadAudioItemSortOption,
-    onAudiosSortOptionChange: (DownloadAudioItemSortOption) -> Unit,
+    onAudiosSortOptionSelect: (DownloadAudioItemSortOption) -> Unit,
+    statusFilters: Set<DownloadStatusFilter>,
+    onStatusFilterSelect: (DownloadStatusFilter) -> Unit,
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
     context: Context = LocalContext.current,
@@ -182,7 +198,7 @@ private fun DownloadsFilters(
                 SelectableDropdownMenu(
                     items = audiosSortOptions,
                     selectedItem = audiosSortOption,
-                    onItemSelect = onAudiosSortOptionChange,
+                    onItemSelect = onAudiosSortOptionSelect,
                     border = ButtonDefaults.outlinedBorder,
                     leadingIcon = Icons.Default.Sort,
                     leadingIconColor = if (hasSortingOption) MaterialTheme.colors.secondary else LocalContentColor.current,
@@ -204,9 +220,11 @@ private fun DownloadsFilters(
             }
             item {
                 SelectableDropdownMenu(
-                    items = listOf("All", "Downloaded", "Downloading", "Failed", "Paused"),
-                    selectedItem = "All",
-                    onItemSelect = {},
+                    items = DownloadStatusFilter.values().toList(),
+                    selectedItem = statusFilters.first(),
+                    selectedItems = statusFilters,
+                    onItemSelect = onStatusFilterSelect,
+                    leadingIconColor = if (hasStatusFilter) MaterialTheme.colors.secondary else LocalContentColor.current,
                     border = ButtonDefaults.outlinedBorder,
                     leadingIcon = Icons.Default.FilterAlt,
                 )

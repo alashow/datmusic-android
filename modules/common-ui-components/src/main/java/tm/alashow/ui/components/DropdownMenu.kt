@@ -5,6 +5,7 @@
 package tm.alashow.ui.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -41,12 +42,15 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
 import tm.alashow.ui.theme.AppTheme
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun <T> SelectableDropdownMenu(
     items: List<T>,
-    selectedItem: T?,
+    selectedItem: T,
     onItemSelect: (T) -> Unit,
     modifier: Modifier = Modifier,
+    selectedItems: Set<T> = setOf(selectedItem),
+    multipleSelectionsLabel: @Composable (Set<T>) -> String = { _ -> stringResource(R.string.dropdown_selected_multiple) },
     itemLabelMapper: @Composable (T) -> String = { it.toString().replace("_", " ") },
     itemSuffixMapper: @Composable (RowScope.(T) -> Unit)? = null,
     subtitles: List<String?>? = null,
@@ -74,7 +78,12 @@ fun <T> SelectableDropdownMenu(
                 )
                 Spacer(Modifier.width(AppTheme.specs.paddingSmall))
             }
-            Text(text = if (selectedItem != null) itemLabelMapper(selectedItem) else "    ")
+            val selectedText = when (selectedItems.size) {
+                0 -> "    "
+                1 -> itemLabelMapper(selectedItems.first())
+                else -> multipleSelectionsLabel(selectedItems)
+            }
+            Text(text = selectedText)
             Spacer(Modifier.width(AppTheme.specs.paddingSmall))
             Icon(painter = rememberVectorPainter(dropIcon), contentDescription = null)
         }
@@ -88,14 +97,14 @@ fun <T> SelectableDropdownMenu(
                     onClick = {
                         expanded = !expanded
                         onItemSelect(item)
-                    }
+                    },
                 ) {
                     Column {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            val contentColor = if (selectedItem == item) MaterialTheme.colors.secondary else MaterialTheme.colors.onBackground
+                            val contentColor = if (item in selectedItems) MaterialTheme.colors.secondary else MaterialTheme.colors.onBackground
                             CompositionLocalProvider(LocalContentColor provides contentColor) {
                                 Text(itemLabelMapper(item))
                                 if (itemSuffixMapper != null)

@@ -323,7 +323,8 @@ class Downloader @Inject constructor(
 
     val hasDownloadsLocation = downloadsLocationUri.map { it.isSome() }
 
-    val downloadsSongsGrouping = preferences.get(DOWNLOADS_SONGS_GROUPING, "").map { DownloadsSongsGrouping.from(it) }
+    val downloadsSongsGrouping = preferences.get(DOWNLOADS_SONGS_GROUPING, "")
+        .map { DownloadsSongsGrouping.from(it) }
 
     suspend fun setDownloadsSongsGrouping(songsGrouping: DownloadsSongsGrouping) {
         analytics.event("downloads.setSongsGrouping", mapOf("type" to songsGrouping.name))
