@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.OutlinedButton
@@ -20,6 +21,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.ui.Scaffold
 import kotlinx.coroutines.launch
@@ -130,10 +132,11 @@ fun LazyListScope.settingsDownloadsSection(downloader: Downloader) {
             SettingsItem(stringResource(R.string.settings_downloads_songsGrouping)) {
                 SelectableDropdownMenu(
                     items = DownloadsSongsGrouping.values().toList(),
-                    labelMapper = { stringResource(it.labelRes) },
+                    itemLabelMapper = { stringResource(it.labelRes) },
                     subtitles = DownloadsSongsGrouping.values().map { stringResource(it.exampleRes) },
                     selectedItem = downloadsSongsGrouping,
                     onItemSelect = { coroutine.launch { downloader.setDownloadsSongsGrouping(it) } },
+                    modifier = Modifier.offset(x = 12.dp)
                 )
             }
         }
@@ -148,13 +151,15 @@ fun LazyListScope.settingsThemeSection(themeState: ThemeState, setThemeState: (T
                 items = DarkModePreference.values().toList(),
                 selectedItem = themeState.darkModePreference,
                 onItemSelect = { setThemeState(themeState.copy(darkModePreference = it)) },
+                modifier = Modifier.offset(x = 12.dp)
             )
         }
         SettingsItem(stringResource(R.string.settings_theme_colorPalette)) {
             SelectableDropdownMenu(
                 items = ColorPalettePreference.values().toList(),
                 selectedItem = themeState.colorPalettePreference,
-                onItemSelect = { setThemeState(themeState.copy(colorPalettePreference = it)) }
+                onItemSelect = { setThemeState(themeState.copy(colorPalettePreference = it)) },
+                modifier = Modifier.offset(x = 12.dp)
             )
         }
     }

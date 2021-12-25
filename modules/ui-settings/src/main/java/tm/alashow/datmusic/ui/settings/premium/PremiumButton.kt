@@ -36,7 +36,7 @@ fun PremiumButton(viewModel: PremiumSettingsViewModel = hiltViewModel()) {
         premiumStatus.handleClick(
             context = context as Activity,
             onPermissionActive = { viewModel.refreshPremiumStatus() },
-            onPermissionError = { context.toast(it.toUiMessage().asString(context)) }
+            onPermissionError = { context.toast(it.asString(context)) }
         )
     }
 }

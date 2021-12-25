@@ -50,6 +50,12 @@
     <string name="downloads.filter.search.hint">Search in downloads</string>
     <string name="downloads.filter.noResults">No results</string>
     <string name="downloads.filter.noResults.forQuery">No results for %1$s</string>
+    <string name="downloads.filter.sort.byDate">By Date</string>
+    <string name="downloads.filter.sort.byTitle">By Title</string>
+    <string name="downloads.filter.sort.byArtist">By Artist</string>
+    <string name="downloads.filter.sort.byAlbum">By Album</string>
+    <string name="downloads.filter.sort.bySize">By Size</string>
+    <string name="downloads.filter.sort.byDuration">By Duration</string>
 
     <string name="downloads.download.status.paused">Paused</string>
     <string name="downloads.download.status.queued">Queued</string>

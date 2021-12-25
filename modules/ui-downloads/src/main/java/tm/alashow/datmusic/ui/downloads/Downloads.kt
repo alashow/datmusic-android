@@ -4,52 +4,77 @@
  */
 package tm.alashow.datmusic.ui.downloads
 
-import androidx.compose.animation.animateContentSize
+import android.content.Context
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
+import androidx.compose.material.LocalContentColor
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Sort
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.insets.ui.LocalScaffoldPadding
 import com.google.accompanist.insets.ui.Scaffold
 import tm.alashow.base.util.asString
 import tm.alashow.base.util.toUiMessage
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.downloader.DownloadItems
+import tm.alashow.datmusic.downloader.observers.DownloadAudioItemSortOption
 import tm.alashow.datmusic.downloader.observers.NoResultsForDownloadsFilter
 import tm.alashow.datmusic.ui.downloads.audio.AudioDownload
 import tm.alashow.domain.models.Fail
 import tm.alashow.domain.models.Loading
 import tm.alashow.domain.models.Success
 import tm.alashow.domain.models.Uninitialized
+import tm.alashow.ui.components.AppBarNavigationIcon
 import tm.alashow.ui.components.AppTopBar
 import tm.alashow.ui.components.EmptyErrorBox
+import tm.alashow.ui.components.FullScreenLoading
 import tm.alashow.ui.components.IconButton
 import tm.alashow.ui.components.SearchTextField
-import tm.alashow.ui.components.fullScreenLoading
+import tm.alashow.ui.components.SelectableDropdownMenu
 import tm.alashow.ui.theme.AppTheme
 
 @Composable
@@ -63,19 +88,17 @@ private fun Downloads(viewModel: DownloadsViewModel) {
     val viewState by rememberFlowWithLifecycle(viewModel.state).collectAsState(DownloadsViewState.Empty)
 
     Scaffold(
-        topBar = {
-            DownloadsAppBar(onSearchQueryChange = viewModel::onSearchQueryChange)
-        },
+        topBar = { DownloadsAppBar(viewModel) },
         modifier = Modifier.fillMaxSize()
     ) { padding ->
-        LazyColumn(
-            state = listState,
-            contentPadding = padding,
-        ) {
-            when (val asyncDownloads = viewState.downloads) {
-                is Fail -> downloadsError(asyncDownloads)
-                is Success -> downloadsList(asyncDownloads(), viewModel::playAudioDownload)
-                is Uninitialized, is Loading -> fullScreenLoading()
+        when (val asyncDownloads = viewState.downloads) {
+            is Uninitialized, is Loading -> FullScreenLoading()
+            is Fail -> DownloadsError(asyncDownloads)
+            is Success -> LazyColumn(
+                state = listState,
+                contentPadding = padding,
+            ) {
+                downloadsList(asyncDownloads(), viewModel::playAudioDownload)
             }
         }
     }
@@ -83,37 +106,38 @@ private fun Downloads(viewModel: DownloadsViewModel) {
 
 @Composable
 private fun DownloadsAppBar(
-    onSearchQueryChange: (String) -> Unit = {},
+    viewModel: DownloadsViewModel,
 ) {
+    val viewState by rememberFlowWithLifecycle(viewModel.state).collectAsState(DownloadsViewState.Empty)
     var filterActive by rememberSaveable { mutableStateOf(false) }
     var searchQuery by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue()) }
     val onQueryChange = { query: TextFieldValue ->
         searchQuery = query
-        onSearchQueryChange(query.text)
+        viewModel.onSearchQueryChange(query.text)
     }
+
     AppTopBar(
-        modifier = Modifier.animateContentSize(),
         title = stringResource(R.string.downloads_title),
-        // padding to match the height of search content, could be removed when we have more filter
-        titleModifier = Modifier.padding(bottom = 12.dp),
         filterActive = searchQuery.text.isNotBlank() || filterActive,
         filterContent = {
-            SearchTextField(
-                value = searchQuery,
-                onValueChange = onQueryChange,
-                hint = stringResource(R.string.downloads_filter_search_hint),
-                autoFocus = true,
+            DownloadsFilters(
+                hasSortingOption = viewState.params.hasSortingOption,
+                searchQuery = searchQuery,
+                onQueryChange = onQueryChange,
+                audiosSortOptions = viewState.params.audiosSortOptions,
+                audiosSortOption = viewState.params.audiosSortOption,
+                onAudiosSortOptionChange = viewModel::onAudiosSortOptionChange,
+                onClose = {
+                    filterActive = false
+                    onQueryChange(TextFieldValue())
+                },
             )
-        },
-        onCloseFilter = {
-            filterActive = false
-            onQueryChange(TextFieldValue())
         },
         actions = {
             IconButton(onClick = { filterActive = true }) {
                 Icon(
                     Icons.Default.FilterList,
-                    contentDescription = null, // TODO:
+                    contentDescription = null,
                     modifier = Modifier.size(AppTheme.specs.iconSizeSmall)
                 )
             }
@@ -121,8 +145,79 @@ private fun DownloadsAppBar(
     )
 }
 
-private fun LazyListScope.downloadsError(asyncDownloads: Fail<DownloadItems>) {
-    item {
+@Composable
+private fun DownloadsFilters(
+    searchQuery: TextFieldValue,
+    onQueryChange: (TextFieldValue) -> Unit,
+    hasSortingOption: Boolean,
+    audiosSortOptions: List<DownloadAudioItemSortOption>,
+    audiosSortOption: DownloadAudioItemSortOption,
+    onAudiosSortOptionChange: (DownloadAudioItemSortOption) -> Unit,
+    onClose: () -> Unit,
+    modifier: Modifier = Modifier,
+    context: Context = LocalContext.current,
+) {
+    BackHandler(onBack = onClose)
+    var iconSize by remember { mutableStateOf(IntSize.Zero) }
+    Column(modifier) {
+        Row(Modifier.padding(end = AppTheme.specs.padding)) {
+            AppBarNavigationIcon(onClick = onClose, modifier = Modifier.onGloballyPositioned { iconSize = it.size })
+            SearchTextField(
+                value = searchQuery,
+                onValueChange = onQueryChange,
+                hint = stringResource(R.string.downloads_filter_search_hint),
+                autoFocus = true,
+            )
+        }
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(
+                top = AppTheme.specs.paddingTiny,
+                start = with(LocalDensity.current) { iconSize.width.toDp() }
+            ),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall),
+        ) {
+            item {
+                SelectableDropdownMenu(
+                    items = audiosSortOptions,
+                    selectedItem = audiosSortOption,
+                    onItemSelect = onAudiosSortOptionChange,
+                    border = ButtonDefaults.outlinedBorder,
+                    leadingIcon = Icons.Default.Sort,
+                    leadingIconColor = if (hasSortingOption) MaterialTheme.colors.secondary else LocalContentColor.current,
+                    itemLabelMapper = { it.asString(context) },
+                    itemSuffixMapper = {
+                        if (it == audiosSortOption) {
+                            Spacer(Modifier.width(AppTheme.specs.paddingLarge))
+                            Icon(
+                                rememberVectorPainter(
+                                    if (it.isDescending) Icons.Default.ArrowDownward
+                                    else Icons.Default.ArrowUpward
+                                ),
+                                modifier = Modifier.size(14.dp),
+                                contentDescription = null,
+                            )
+                        }
+                    }
+                )
+            }
+            item {
+                SelectableDropdownMenu(
+                    items = listOf("All", "Downloaded", "Downloading", "Failed", "Paused"),
+                    selectedItem = "All",
+                    onItemSelect = {},
+                    border = ButtonDefaults.outlinedBorder,
+                    leadingIcon = Icons.Default.FilterAlt,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun DownloadsError(asyncDownloads: Fail<DownloadItems>) {
+    Box(Modifier.padding(LocalScaffoldPadding.current)) {
         val error = asyncDownloads.error
         val errorMessage = asyncDownloads.error.toUiMessage().asString(LocalContext.current)
         when (error) {
@@ -136,7 +231,7 @@ private fun LazyListScope.downloadsError(asyncDownloads: Fail<DownloadItems>) {
             else -> EmptyErrorBox(
                 message = errorMessage,
                 retryVisible = false,
-                modifier = Modifier.fillParentMaxHeight()
+                modifier = Modifier.fillMaxSize()
             )
         }
     }

@@ -26,5 +26,6 @@ data class Specs(
 
     val iconSize: Dp = 36.dp,
     val iconSizeSmall: Dp = 28.dp,
+    val iconSizeTiny: Dp = 18.dp,
     val iconSizeLarge: Dp = 48.dp,
 )

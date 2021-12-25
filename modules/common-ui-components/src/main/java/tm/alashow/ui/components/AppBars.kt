@@ -4,7 +4,6 @@
  */
 package tm.alashow.ui.components
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -66,19 +65,15 @@ fun AppTopBar(
     titleModifier: Modifier = Modifier,
     navigationIcon: @Composable (() -> Unit)? = null,
     filterActive: Boolean = false,
-    onCloseFilter: () -> Unit = {},
     filterContent: @Composable RowScope.() -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
 ) {
-    if (filterActive)
-        BackHandler(onBack = onCloseFilter)
     Row(
         modifier = modifier
             .fillMaxWidth()
             .translucentSurface()
             .statusBarsPadding()
-            .padding(vertical = AppTheme.specs.padding)
-            .padding(end = AppTheme.specs.padding)
+            .padding(vertical = if (filterActive) 4.dp else AppTheme.specs.padding)
             .simpleClickable {
                 Timber.d("Caught app bar click through")
             },
@@ -90,10 +85,8 @@ fun AppTopBar(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                if (isFilterActive) {
-                    AppBarNavigationIcon(onClick = onCloseFilter)
-                    filterContent()
-                } else {
+                if (isFilterActive) filterContent()
+                else {
                     Row(titleModifier, verticalAlignment = Alignment.CenterVertically) {
                         if (navigationIcon == null) {
                             Spacer(TitleInsetWithoutIcon)
@@ -112,7 +105,7 @@ fun AppTopBar(
                             )
                         }
                     }
-                    AppBarActionsRow(actions = actions)
+                    AppBarActionsRow(actions = actions, modifier = Modifier.padding(end = AppTheme.specs.padding))
                 }
             }
         }

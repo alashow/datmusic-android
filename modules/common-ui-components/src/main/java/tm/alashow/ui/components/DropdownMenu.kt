@@ -4,11 +4,14 @@
  */
 package tm.alashow.ui.components
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ContentAlpha
@@ -18,8 +21,8 @@ import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
@@ -30,10 +33,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import tm.alashow.ui.theme.AppTheme
 
 @Composable
@@ -42,22 +47,36 @@ fun <T> SelectableDropdownMenu(
     selectedItem: T?,
     onItemSelect: (T) -> Unit,
     modifier: Modifier = Modifier,
-    labelMapper: @Composable (T) -> String = { it.toString().replace("_", " ") },
+    itemLabelMapper: @Composable (T) -> String = { it.toString().replace("_", " ") },
+    itemSuffixMapper: @Composable (RowScope.(T) -> Unit)? = null,
     subtitles: List<String?>? = null,
+    leadingIcon: ImageVector? = null,
+    leadingIconColor: Color = LocalContentColor.current,
+    border: BorderStroke? = null,
 ) {
     var expanded by remember { mutableStateOf(false) }
     val dropIcon = if (expanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown
 
-    Column(modifier = modifier) {
-        TextButton(
+    Column {
+        OutlinedButton(
             onClick = { expanded = !expanded },
             colors = ButtonDefaults.textButtonColors(contentColor = LocalContentColor.current),
-            contentPadding = PaddingValues(vertical = AppTheme.specs.paddingSmall, horizontal = AppTheme.specs.paddingSmall),
-            modifier = Modifier.offset(x = 12.dp)
+            contentPadding = PaddingValues(AppTheme.specs.paddingSmall),
+            border = border,
+            modifier = modifier
         ) {
-            Text(text = if (selectedItem != null) labelMapper(selectedItem) else "    ")
+            if (leadingIcon != null) {
+                Icon(
+                    painter = rememberVectorPainter(leadingIcon),
+                    contentDescription = null,
+                    modifier = Modifier.width(AppTheme.specs.iconSizeTiny),
+                    tint = leadingIconColor,
+                )
+                Spacer(Modifier.width(AppTheme.specs.paddingSmall))
+            }
+            Text(text = if (selectedItem != null) itemLabelMapper(selectedItem) else "    ")
             Spacer(Modifier.width(AppTheme.specs.paddingSmall))
-            Icon(painter = rememberVectorPainter(dropIcon), contentDescription = "")
+            Icon(painter = rememberVectorPainter(dropIcon), contentDescription = null)
         }
         DropdownMenu(
             expanded = expanded,
@@ -72,10 +91,17 @@ fun <T> SelectableDropdownMenu(
                     }
                 ) {
                     Column {
-                        Text(
-                            text = labelMapper(item),
-                            color = if (selectedItem == item) MaterialTheme.colors.secondary else MaterialTheme.colors.onBackground
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            val contentColor = if (selectedItem == item) MaterialTheme.colors.secondary else MaterialTheme.colors.onBackground
+                            CompositionLocalProvider(LocalContentColor provides contentColor) {
+                                Text(itemLabelMapper(item))
+                                if (itemSuffixMapper != null)
+                                    itemSuffixMapper(item)
+                            }
+                        }
 
                         if (subtitles != null) {
                             val subtitle = subtitles[index]
