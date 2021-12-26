@@ -13,6 +13,8 @@ import kotlinx.coroutines.withContext
 import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.base.util.extensions.writeToFile
 import tm.alashow.data.AsyncInteractor
+import tm.alashow.data.LastRequests
+import tm.alashow.data.PreferencesStore
 import tm.alashow.data.ResultInteractor
 import tm.alashow.datmusic.coreLibrary.R
 import tm.alashow.datmusic.data.db.daos.AudiosDao
@@ -25,17 +27,19 @@ import tm.alashow.datmusic.domain.entities.DownloadRequest
 
 class CreateDatmusicBackup @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val dispatchers: CoroutineDispatchers,
+    private val preferencesStore: PreferencesStore,
     private val audiosDao: AudiosDao,
     private val playlistsDao: PlaylistsDao,
     private val playlistWithAudiosDao: PlaylistsWithAudiosDao,
     private val downloadRequestsDao: DownloadRequestsDao,
-    private val dispatchers: CoroutineDispatchers,
     private val clearUnusedEntities: ClearUnusedEntities,
     private val createOrGetPlaylist: CreateOrGetPlaylist,
 ) : ResultInteractor<Unit, DatmusicBackupData>() {
 
     override suspend fun doWork(params: Unit) = withContext(dispatchers.io) {
         clearUnusedEntities()
+        LastRequests.clearAll(preferencesStore)
 
         val downloadRequestAudios = downloadRequestsDao.getByType(DownloadRequest.Type.Audio)
         val downloadedAudioIds = downloadRequestAudios.map { it.id }

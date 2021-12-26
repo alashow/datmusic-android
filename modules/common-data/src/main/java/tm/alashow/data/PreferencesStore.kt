@@ -17,7 +17,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
 import tm.alashow.base.util.RemoteLogger
-import tm.alashow.domain.models.*
+import tm.alashow.domain.models.DEFAULT_JSON_FORMAT
+import tm.alashow.domain.models.None
+import tm.alashow.domain.models.Optional
+import tm.alashow.domain.models.some
 
 private const val STORE_NAME = "app_preferences"
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = STORE_NAME)
@@ -25,6 +28,8 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = STO
 private val json = DEFAULT_JSON_FORMAT
 
 class PreferencesStore @Inject constructor(@ApplicationContext private val context: Context) {
+
+    fun getStore() = context.dataStore
 
     suspend fun <T> remove(key: Preferences.Key<T>) {
         context.dataStore.edit { settings ->

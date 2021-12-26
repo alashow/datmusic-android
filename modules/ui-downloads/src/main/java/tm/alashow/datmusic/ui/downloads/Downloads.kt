@@ -60,7 +60,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import tm.alashow.base.util.asString
 import tm.alashow.base.util.toUiMessage
-import tm.alashow.common.compose.LogCompositions
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.downloader.DownloadItems
@@ -181,7 +180,6 @@ private fun DownloadsFilters(
     modifier: Modifier = Modifier,
     context: Context = LocalContext.current,
 ) {
-    LogCompositions(tag = "DownlodsFilter")
     LifecycleRespectingBackHandler(onBack = onClose)
     var iconSize by remember { mutableStateOf(IntSize.Zero) }
     Column(modifier) {

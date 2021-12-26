@@ -9,7 +9,7 @@ import androidx.annotation.StringRes
 import com.andretietz.retroauth.AuthenticationCanceledException
 import retrofit2.HttpException
 import tm.alashow.base.R
-import tm.alashow.base.util.extensions.orNA
+import tm.alashow.base.util.extensions.simpleName
 import tm.alashow.domain.models.errors.ApiErrorException
 import tm.alashow.domain.models.errors.EmptyResultException
 import tm.alashow.i18n.UiMessage
@@ -44,7 +44,7 @@ fun Throwable?.localizedMessage(): Int = when (this) {
 fun Throwable?.toUiMessage() = when (this) {
     is UiMessageConvertable -> toUiMessage()
     else -> when (val message = localizedMessage()) {
-        R.string.error_unknown -> UiMessage.Plain(this?.message.orNA())
+        R.string.error_unknown -> UiMessage.Plain(this?.message ?: this?.simpleName ?: "")
         else -> UiMessage.Resource(message)
     }
 }

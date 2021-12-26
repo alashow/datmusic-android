@@ -17,6 +17,16 @@ class LastRequests(
 ) {
     companion object {
         private const val defaultParams = "default"
+        private const val keyPrefix = "last_requests_"
+
+        suspend fun clearAll(config: PreferencesStore) {
+            val preferences = config.getStore().data.first()
+            preferences.asMap().forEach { (key, _) ->
+                if (key.name.startsWith(keyPrefix)) {
+                    config.remove(key)
+                }
+            }
+        }
     }
 
     private fun getPreferenceKey(params: String) = longPreferencesKey("last_requests_${name}_$params")
