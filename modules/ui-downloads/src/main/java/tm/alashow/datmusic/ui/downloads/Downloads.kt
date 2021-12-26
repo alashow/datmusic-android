@@ -145,7 +145,8 @@ private fun DownloadsAppBar(
         actions = {
             IconButton(
                 onClick = { filterVisible = true },
-                onLongClick = onClearFilter
+                onLongClick = onClearFilter,
+                onLongClickLabel = stringResource(R.string.downloads_filter_clear),
             ) {
                 Icon(
                     Icons.Default.FilterList,

@@ -48,6 +48,7 @@
     <string name="downloads.empty">No Downloads</string>
 
     <string name="downloads.filter.search.hint">Search in downloads</string>
+    <string name="downloads.filter.clear">Clear filters</string>
     <string name="downloads.filter.noResults">No results</string>
     <string name="downloads.filter.noResults.forQuery">No results for %1$s</string>
     <string name="downloads.filter.sort.byDate">By date</string>
