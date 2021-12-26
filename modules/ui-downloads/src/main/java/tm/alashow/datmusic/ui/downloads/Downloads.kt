@@ -39,6 +39,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -55,8 +56,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.ui.LocalScaffoldPadding
 import com.google.accompanist.insets.ui.Scaffold
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import tm.alashow.base.util.asString
 import tm.alashow.base.util.toUiMessage
+import tm.alashow.common.compose.LogCompositions
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.downloader.DownloadItems
@@ -109,6 +113,7 @@ private fun Downloads(viewModel: DownloadsViewModel) {
 private fun DownloadsAppBar(
     viewModel: DownloadsViewModel,
 ) {
+    val coroutine = rememberCoroutineScope()
     val viewState by rememberFlowWithLifecycle(viewModel.state).collectAsState(DownloadsViewState.Empty)
     var filterVisible by remember { mutableStateOf(false) }
     var searchQuery by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue()) }
@@ -139,6 +144,8 @@ private fun DownloadsAppBar(
                 onClose = {
                     filterVisible = false
                     onQueryChange(TextFieldValue())
+                    // fix weird race condition with SearchTextField trying to set back previous text after clearing
+                    coroutine.launch { delay(3); onQueryChange(TextFieldValue()) }
                 },
             )
         },
@@ -174,6 +181,7 @@ private fun DownloadsFilters(
     modifier: Modifier = Modifier,
     context: Context = LocalContext.current,
 ) {
+    LogCompositions(tag = "DownlodsFilter")
     LifecycleRespectingBackHandler(onBack = onClose)
     var iconSize by remember { mutableStateOf(IntSize.Zero) }
     Column(modifier) {

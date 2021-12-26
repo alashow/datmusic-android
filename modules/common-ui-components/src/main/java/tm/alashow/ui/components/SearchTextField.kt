@@ -63,8 +63,7 @@ fun SearchTextField(
 ) {
     val focusRequester = remember { FocusRequester() }
     DisposableEffect(autoFocus) {
-        if (autoFocus)
-            focusRequester.requestFocus()
+        if (autoFocus) focusRequester.requestFocus()
         onDispose { }
     }
 
