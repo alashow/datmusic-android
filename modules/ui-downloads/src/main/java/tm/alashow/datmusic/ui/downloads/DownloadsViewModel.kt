@@ -7,6 +7,7 @@ package tm.alashow.datmusic.ui.downloads
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +18,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import tm.alashow.base.util.event
+import tm.alashow.base.util.extensions.simpleName
 import tm.alashow.base.util.extensions.stateInDefault
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.downloader.Downloader
@@ -33,6 +36,7 @@ class DownloadsViewModel @Inject constructor(
     private val downloader: Downloader,
     private val observeDownloads: ObserveDownloads,
     private val playbackConnection: PlaybackConnection,
+    private val analytics: FirebaseAnalytics,
 ) : ViewModel() {
 
     private val defaultParams = ObserveDownloads.Params()
@@ -84,11 +88,13 @@ class DownloadsViewModel @Inject constructor(
     }
 
     fun onAudiosSortOptionSelect(sortOption: DownloadAudioItemSortOption) {
+        analytics.event("downloads.filter.sort", mapOf("type" to sortOption.simpleName, "descending" to sortOption.isDescending))
         val isReselecting = sortOption.isSameOption(audiosSortOptionState.value)
         audiosSortOptionState.value = if (isReselecting) sortOption.toggleDescending() else sortOption
     }
 
     fun onStatusFilterSelect(statusFilter: DownloadStatusFilter) {
+        analytics.event("downloads.filter.status", mapOf("status" to statusFilter.name))
         val current = statusFiltersState.value
         // allow multiple selections except when default is selected
         statusFiltersState.value = when {
@@ -105,6 +111,7 @@ class DownloadsViewModel @Inject constructor(
     }
 
     fun onClearFilter() {
+        analytics.event("downloads.filter.clear")
         searchQueryState.value = ""
         audiosSortOptionState.value = defaultParams.audiosSortOption
         statusFiltersState.value = defaultParams.defaultStatusFilters
