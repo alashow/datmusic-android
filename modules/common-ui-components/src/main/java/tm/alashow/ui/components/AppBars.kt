@@ -4,8 +4,10 @@
  */
 package tm.alashow.ui.components
 
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -79,34 +81,34 @@ fun AppTopBar(
             },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Crossfade(targetState = filterVisible) { isFilterActive ->
-            Row(
-                Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                if (isFilterActive) filterContent()
-                else {
-                    Row(titleModifier, verticalAlignment = Alignment.CenterVertically) {
-                        if (navigationIcon == null) {
-                            Spacer(TitleInsetWithoutIcon)
-                        } else {
-                            Box(TitleIconModifier) {
-                                CompositionLocalProvider(
-                                    LocalContentAlpha provides ContentAlpha.high,
-                                    content = navigationIcon
-                                )
-                            }
-                        }
-                        ProvideTextStyle(value = MaterialTheme.typography.h6) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .animateContentSize(spring(dampingRatio = Spring.DampingRatioLowBouncy)),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            if (filterVisible) filterContent()
+            else {
+                Row(titleModifier, verticalAlignment = Alignment.CenterVertically) {
+                    if (navigationIcon == null) {
+                        Spacer(TitleInsetWithoutIcon)
+                    } else {
+                        Box(TitleIconModifier) {
                             CompositionLocalProvider(
                                 LocalContentAlpha provides ContentAlpha.high,
-                                content = titleContent
+                                content = navigationIcon
                             )
                         }
                     }
-                    AppBarActionsRow(actions = actions, modifier = Modifier.padding(end = AppTheme.specs.padding))
+                    ProvideTextStyle(value = MaterialTheme.typography.h6) {
+                        CompositionLocalProvider(
+                            LocalContentAlpha provides ContentAlpha.high,
+                            content = titleContent
+                        )
+                    }
                 }
+                AppBarActionsRow(actions = actions, modifier = Modifier.padding(end = AppTheme.specs.padding))
             }
         }
     }
