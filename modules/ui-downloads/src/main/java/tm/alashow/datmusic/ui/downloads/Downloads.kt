@@ -5,7 +5,6 @@
 package tm.alashow.datmusic.ui.downloads
 
 import android.content.Context
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -69,6 +68,7 @@ import tm.alashow.domain.models.Fail
 import tm.alashow.domain.models.Loading
 import tm.alashow.domain.models.Success
 import tm.alashow.domain.models.Uninitialized
+import tm.alashow.ui.LifecycleRespectingBackHandler
 import tm.alashow.ui.components.AppBarNavigationIcon
 import tm.alashow.ui.components.AppTopBar
 import tm.alashow.ui.components.EmptyErrorBox
@@ -174,7 +174,7 @@ private fun DownloadsFilters(
     modifier: Modifier = Modifier,
     context: Context = LocalContext.current,
 ) {
-    BackHandler(onBack = onClose)
+    LifecycleRespectingBackHandler(onBack = onClose)
     var iconSize by remember { mutableStateOf(IntSize.Zero) }
     Column(modifier) {
         Row(Modifier.padding(end = AppTheme.specs.padding)) {
