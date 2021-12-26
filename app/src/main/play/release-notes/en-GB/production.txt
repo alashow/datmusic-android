@@ -1,9 +1,2 @@
-v2.1.96
-- Fix crash on search network error caused by snackbar
-- Open playback sheet when swipe up detected on playback mini controls
-
-v2.1.95
-- Add Shuffle button to media detail screens
-- Two column layout for playback sheet on wide screens / landscape mode
-- Cache adaptive color results in memory
-- Wait for custom theme to load when main activity is creating/restarting
+v2.2.0
+- Downloads filter: fast in app search, sort options, filter by download status
