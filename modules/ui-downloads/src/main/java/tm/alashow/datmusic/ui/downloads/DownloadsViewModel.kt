@@ -121,16 +121,14 @@ class DownloadsViewModel @Inject constructor(
             }
             playbackConnection.playFromDownloads(downloadIndex)
         } else {
-            downloads.collectLatest {
-                it.whenSuccess {
-                    val audioIds = it.audios.map { it.audio.id }
-                    val downloadIndex = audioIds.indexOf(audioDownloadItem.audio.id)
-                    if (downloadIndex < 0) {
-                        Timber.e("Audio not found in downloads: ${audioDownloadItem.audio.id}")
-                        return@whenSuccess
-                    }
-                    playbackConnection.playFromDownloads(downloadIndex, audioIds)
+            downloads.first().whenSuccess {
+                val audioIds = it.audios.map { it.audio.id }
+                val downloadIndex = audioIds.indexOf(audioDownloadItem.audio.id)
+                if (downloadIndex < 0) {
+                    Timber.e("Audio not found in downloads: ${audioDownloadItem.audio.id}")
+                    return@whenSuccess
                 }
+                playbackConnection.playFromDownloads(downloadIndex, audioIds)
             }
         }
     }
