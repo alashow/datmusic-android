@@ -4,7 +4,16 @@
  */
 package tm.alashow.datmusic.ui.downloads
 
-data class DownloadsViewState(val a: String = "") {
+import tm.alashow.datmusic.downloader.DownloadItems
+import tm.alashow.datmusic.downloader.observers.ObserveDownloads
+import tm.alashow.domain.models.Async
+import tm.alashow.domain.models.Uninitialized
+
+data class DownloadsViewState(
+    val downloads: Async<DownloadItems> = Uninitialized,
+    val params: ObserveDownloads.Params = ObserveDownloads.Params()
+) {
+
     companion object {
         val Empty = DownloadsViewState()
     }

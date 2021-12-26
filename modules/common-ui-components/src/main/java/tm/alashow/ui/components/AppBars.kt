@@ -5,11 +5,14 @@
 package tm.alashow.ui.components
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -35,6 +38,8 @@ import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.insets.ui.TopAppBar
+import timber.log.Timber
+import tm.alashow.ui.simpleClickable
 import tm.alashow.ui.theme.AppBarAlphas
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.topAppBarTitleStyle
@@ -46,63 +51,65 @@ val AppBarHeight = 56.dp
 private val AppBarHorizontalPadding = 4.dp
 
 private val TitleInsetWithoutIcon = Modifier.width(16.dp - AppBarHorizontalPadding)
-private val TitleIconModifier = Modifier
-    .fillMaxHeight()
-    .width(72.dp - AppBarHorizontalPadding)
+private val TitleIconModifier = Modifier.width(72.dp - AppBarHorizontalPadding)
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AppTopBar(
-    modifier: Modifier = Modifier,
     title: String,
+    modifier: Modifier = Modifier,
     titleContent: @Composable () -> Unit = {
         Text(
             title,
             style = topAppBarTitleStyle()
         )
     },
+    titleModifier: Modifier = Modifier,
     navigationIcon: @Composable (() -> Unit)? = null,
+    filterVisible: Boolean = false,
+    filterContent: @Composable RowScope.() -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
-    actionsContentAlpha: Float = ContentAlpha.medium
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .translucentSurface()
             .statusBarsPadding()
-            .padding(vertical = AppTheme.specs.padding)
-            .padding(end = AppTheme.specs.padding),
+            .padding(vertical = if (filterVisible) 4.dp else AppTheme.specs.padding)
+            .simpleClickable {
+                Timber.d("Caught app bar click through")
+            },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (navigationIcon == null) {
-            Spacer(TitleInsetWithoutIcon)
-        } else {
-            Row(TitleIconModifier, verticalAlignment = Alignment.CenterVertically) {
-                CompositionLocalProvider(
-                    LocalContentAlpha provides ContentAlpha.high,
-                    content = navigationIcon
-                )
-            }
-        }
-
         Row(
-            Modifier.weight(1f),
-            verticalAlignment = Alignment.CenterVertically
+            Modifier
+                .fillMaxWidth()
+                .animateContentSize(spring(dampingRatio = Spring.DampingRatioLowBouncy)),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            ProvideTextStyle(value = MaterialTheme.typography.h6) {
-                CompositionLocalProvider(
-                    LocalContentAlpha provides ContentAlpha.high,
-                    content = titleContent
-                )
+            if (filterVisible) filterContent()
+            else {
+                Row(titleModifier, verticalAlignment = Alignment.CenterVertically) {
+                    if (navigationIcon == null) {
+                        Spacer(TitleInsetWithoutIcon)
+                    } else {
+                        Box(TitleIconModifier) {
+                            CompositionLocalProvider(
+                                LocalContentAlpha provides ContentAlpha.high,
+                                content = navigationIcon
+                            )
+                        }
+                    }
+                    ProvideTextStyle(value = MaterialTheme.typography.h6) {
+                        CompositionLocalProvider(
+                            LocalContentAlpha provides ContentAlpha.high,
+                            content = titleContent
+                        )
+                    }
+                }
+                AppBarActionsRow(actions = actions, modifier = Modifier.padding(end = AppTheme.specs.padding))
             }
-        }
-
-        CompositionLocalProvider(LocalContentAlpha provides actionsContentAlpha) {
-            Row(
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically,
-                content = actions
-            )
         }
     }
 }
@@ -114,6 +121,7 @@ fun CollapsingTopBar(
     modifier: Modifier = Modifier,
     collapsed: Float = 1f,
     onNavigationClick: () -> Unit = {},
+    actions: @Composable RowScope.() -> Unit = {},
 ) {
     val appBarColor = translucentSurfaceColor()
     val backgroundColor = appBarColor.copy(alpha = collapsed.coerceAtMost(AppBarAlphas.translucentBarAlpha()))
@@ -126,15 +134,44 @@ fun CollapsingTopBar(
         contentColor = contentColor,
         contentPadding = rememberInsetsPaddingValues(LocalWindowInsets.current.statusBars),
         title = {
-            Text(title, style = topAppBarTitleStyleSmall(), modifier = Modifier.alpha(collapsed))
+            Text(
+                title, style = topAppBarTitleStyleSmall(),
+                modifier = Modifier.alpha(collapsed)
+            )
         },
-        navigationIcon = {
-            IconButton(onClick = onNavigationClick) {
-                Icon(
-                    rememberVectorPainter(Icons.Filled.ArrowBack),
-                    contentDescription = stringResource(R.string.generic_back),
-                )
-            }
-        },
+        actions = actions,
+        navigationIcon = { AppBarNavigationIcon(onClick = onNavigationClick) },
     )
+}
+
+@Composable
+private fun AppBarActionsRow(
+    modifier: Modifier = Modifier,
+    actions: @Composable RowScope.() -> Unit,
+) {
+    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+        Row(
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = modifier,
+            content = actions
+        )
+    }
+}
+
+@Composable
+fun AppBarNavigationIcon(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    contentDescription: String? = stringResource(R.string.generic_back),
+) {
+    IconButton(
+        onClick = onClick,
+        modifier = modifier
+    ) {
+        Icon(
+            rememberVectorPainter(Icons.Filled.ArrowBack),
+            contentDescription = contentDescription,
+        )
+    }
 }

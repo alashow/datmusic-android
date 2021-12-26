@@ -15,7 +15,10 @@ import tm.alashow.base.imageloading.CoilAppInitializer
 import tm.alashow.base.inititializer.AppInitializers
 import tm.alashow.base.inititializer.ThreeTenAbpInitializer
 import tm.alashow.base.inititializer.TimberInitializer
+import tm.alashow.base.migrator.AppMigrator
 import tm.alashow.base.util.CoroutineDispatchers
+import tm.alashow.data.PreferencesStore
+import tm.alashow.datmusic.data.migrators.AudiosFtsAppMigration
 import tm.alashow.datmusic.fcm.FcmTokenRegistrator
 import tm.alashow.datmusic.notifications.NotificationsInitializer
 import tm.alashow.datmusic.util.RemoteConfigInitializer
@@ -50,7 +53,15 @@ class AppModule {
             coilAppInitializer,
             fcmTokenRegistrator,
             remoteConfigInitializer,
-            subscriptionsInitializer
+            subscriptionsInitializer,
         )
     }
+
+    @Provides
+    @Singleton
+    fun appMigrator(
+        dispatchers: CoroutineDispatchers,
+        preferencesStore: PreferencesStore,
+        audiosFtsAppMigration: AudiosFtsAppMigration
+    ) = AppMigrator(dispatchers, preferencesStore, setOf(audiosFtsAppMigration))
 }

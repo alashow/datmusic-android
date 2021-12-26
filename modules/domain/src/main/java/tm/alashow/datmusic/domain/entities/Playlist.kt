@@ -66,6 +66,7 @@ data class Playlist(
 
 typealias PlaylistAudioId = Long
 
+@Serializable
 @Entity(
     tableName = "playlist_audios",
     indices = [Index("playlist_id"), Index("audio_id")],
@@ -78,8 +79,6 @@ typealias PlaylistAudioId = Long
         )
     ]
 )
-
-@Serializable
 data class PlaylistAudio(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id", defaultValue = "0")

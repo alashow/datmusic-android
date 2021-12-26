@@ -12,7 +12,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,15 +20,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -42,36 +33,33 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.platform.WindowInfo
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.WindowInsets
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
-import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import tm.alashow.base.util.click
-import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.common.compose.collectEvent
 import tm.alashow.common.compose.getNavArgument
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.data.DatmusicSearchParams.BackendType
 import tm.alashow.navigation.screens.QUERY_KEY
 import tm.alashow.ui.components.ChipsRow
+import tm.alashow.ui.components.SearchTextField
 import tm.alashow.ui.theme.AppTheme
-import tm.alashow.ui.theme.borderlessTextFieldColors
 import tm.alashow.ui.theme.topAppBarTitleStyle
 import tm.alashow.ui.theme.translucentSurface
 
@@ -110,7 +98,7 @@ private fun Search(
 ) {
     val searchBarHideThreshold = 3
     val searchBarHeight = 200.dp
-    val searchBarHidden = remember { Animatable(0f) }
+    val searchBarVisibility = remember { Animatable(0f) }
 
     // hide search bar when scrolling after some scroll
     LaunchedEffect(listState) {
@@ -119,7 +107,7 @@ private fun Search(
             .distinctUntilChanged()
             .map { if (listState.firstVisibleItemIndex > searchBarHideThreshold) it else false }
             .map { if (it) 1f else 0f }
-            .collectLatest { searchBarHidden.animateTo(it) }
+            .collectLatest { searchBarVisibility.animateTo(it) }
     }
 
     collectEvent(viewModel.onSearchEvent) {
@@ -131,8 +119,8 @@ private fun Search(
             SearchAppBar(
                 modifier = Modifier
                     .graphicsLayer {
-                        alpha = 1 - searchBarHidden.value
-                        translationY = searchBarHeight.value * (-searchBarHidden.value)
+                        alpha = 1 - searchBarVisibility.value
+                        translationY = searchBarHeight.value * (-searchBarVisibility.value)
                     },
                 state = viewState,
                 onQueryChange = { actioner(SearchAction.QueryChange(it)) },
@@ -156,7 +144,10 @@ private fun SearchAppBar(
     titleModifier: Modifier = Modifier,
     onQueryChange: (String) -> Unit = {},
     onSearch: () -> Unit = {},
-    onBackendTypeSelect: (SearchAction.SelectBackendType) -> Unit = {}
+    onBackendTypeSelect: (SearchAction.SelectBackendType) -> Unit = {},
+    focusManager: FocusManager = LocalFocusManager.current,
+    windowInfo: WindowInfo = LocalWindowInfo.current,
+    windowInsets: WindowInsets = LocalWindowInsets.current,
 ) {
     val initialQuery = (getNavArgument(QUERY_KEY) ?: "").toString()
 
@@ -168,9 +159,8 @@ private fun SearchAppBar(
             .padding(bottom = AppTheme.specs.paddingTiny)
     ) {
         val keyboardController = LocalSoftwareKeyboardController.current
-        val focusManager = LocalFocusManager.current
-        val hasWindowFocus = LocalWindowInfo.current.isWindowFocused
-        val keyboardVisible = LocalWindowInsets.current.ime.isVisible
+        val hasWindowFocus = windowInfo.isWindowFocused
+        val keyboardVisible = windowInsets.ime.isVisible
 
         var focused by remember { mutableStateOf(false) }
         val searchActive = focused && hasWindowFocus && keyboardVisible
@@ -199,9 +189,12 @@ private fun SearchAppBar(
                 },
                 onSearch = { triggerSearch() },
                 hint = if (!searchActive) stringResource(R.string.search_hint) else stringResource(R.string.search_hint_query),
+                analyticsPrefix = "search",
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .onFocusChanged { focused = it.isFocused }
+                    .padding(horizontal = AppTheme.specs.padding)
+                    .onFocusChanged {
+                        focused = it.isFocused
+                    }
             )
 
             var backends = state.searchFilter.backends
@@ -249,56 +242,4 @@ private fun ColumnScope.SearchFilterPanel(
             }
         )
     }
-}
-
-@OptIn(ExperimentalAnimationApi::class)
-@Composable
-fun SearchTextField(
-    value: TextFieldValue,
-    onValueChange: (TextFieldValue) -> Unit,
-    modifier: Modifier = Modifier,
-    onSearch: () -> Unit = {},
-    hint: String,
-    maxLength: Int = 200,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(
-        imeAction = ImeAction.Search,
-        keyboardType = KeyboardType.Text,
-        capitalization = KeyboardCapitalization.Sentences
-    ),
-    keyboardActions: KeyboardActions = KeyboardActions(onSearch = { onSearch() }),
-    analytics: FirebaseAnalytics = LocalAnalytics.current
-) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = { if (it.text.length <= maxLength) onValueChange(it) },
-        placeholder = { Text(text = hint) },
-        trailingIcon = {
-            AnimatedVisibility(
-                visible = value.text.isNotEmpty(),
-                enter = expandIn(expandFrom = Alignment.Center),
-                exit = shrinkOut(shrinkTowards = Alignment.Center)
-            ) {
-                IconButton(
-                    onClick = {
-                        onValueChange(TextFieldValue())
-                        analytics.click("search.clear")
-                    },
-                ) {
-                    Icon(
-                        tint = MaterialTheme.colors.secondary,
-                        imageVector = Icons.Default.Clear,
-                        contentDescription = stringResource(R.string.generic_clear)
-                    )
-                }
-            }
-        },
-        colors = borderlessTextFieldColors(),
-        keyboardOptions = keyboardOptions,
-        keyboardActions = keyboardActions,
-        singleLine = true,
-        maxLines = 1,
-        modifier = modifier
-            .padding(horizontal = AppTheme.specs.padding)
-            .background(AppTheme.colors.onSurfaceInputBackground, MaterialTheme.shapes.small)
-    )
 }

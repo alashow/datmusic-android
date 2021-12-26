@@ -49,6 +49,8 @@
     <string name="time.duration.minutes">%1$d minute</string>
     <string name="time.duration.minutes.short">%1$d min</string>
 
+    <string name="dropdown.selected.multiple">Multiple</string>
+
     <string-array name="months">
         <item>January</item>
         <item>February</item>

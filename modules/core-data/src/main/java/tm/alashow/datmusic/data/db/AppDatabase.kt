@@ -11,21 +11,24 @@ import androidx.room.TypeConverters
 import tm.alashow.datmusic.data.db.daos.AlbumsDao
 import tm.alashow.datmusic.data.db.daos.ArtistsDao
 import tm.alashow.datmusic.data.db.daos.AudiosDao
+import tm.alashow.datmusic.data.db.daos.AudiosFtsDao
 import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
 import tm.alashow.datmusic.data.db.daos.PlaylistsDao
 import tm.alashow.datmusic.data.db.daos.PlaylistsWithAudiosDao
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
+import tm.alashow.datmusic.domain.entities.AudioFts
 import tm.alashow.datmusic.domain.entities.DownloadRequest
 import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.domain.entities.PlaylistAudio
 import tm.alashow.domain.models.BaseTypeConverters
 
 @Database(
-    version = 12,
+    version = 13,
     entities = [
         Audio::class,
+        AudioFts::class,
         Artist::class,
         Album::class,
         DownloadRequest::class,
@@ -43,12 +46,15 @@ import tm.alashow.domain.models.BaseTypeConverters
         AutoMigration(from = 9, to = 10, spec = AlbumDeleteAlbumIdColumnMigration::class),
         AutoMigration(from = 10, to = 11, spec = RenameAlbumOwnerIdToArtistIdColumnMigration::class),
         AutoMigration(from = 11, to = 12, spec = DownloadRequestDeleteEntityIdColumnMigration::class),
+        AutoMigration(from = 12, to = 13),
     ]
 )
 @TypeConverters(BaseTypeConverters::class, AppTypeConverters::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun audiosDao(): AudiosDao
+    abstract fun audiosFtsDao(): AudiosFtsDao
+
     abstract fun artistsDao(): ArtistsDao
     abstract fun albumsDao(): AlbumsDao
 
