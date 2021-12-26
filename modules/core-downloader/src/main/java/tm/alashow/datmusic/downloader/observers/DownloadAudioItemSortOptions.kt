@@ -14,8 +14,10 @@ abstract class DownloadAudioItemSortOption(
     override val isDescending: Boolean,
     override val comparator: Comparator<AudioDownloadItem>? = null,
 ) : SortOption<AudioDownloadItem>(isDescending, comparator) {
-    override fun toUiMessage() = UiMessage.Resource(labelRes)
     abstract override fun toggleDescending(): DownloadAudioItemSortOption
+
+    override fun toUiMessage() = UiMessage.Resource(labelRes)
+
     fun isSameOption(other: DownloadAudioItemSortOption) = labelRes == other.labelRes
 }
 

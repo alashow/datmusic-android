@@ -51,11 +51,11 @@
     <string name="downloads.filter.noResults">No results</string>
     <string name="downloads.filter.noResults.forQuery">No results for %1$s</string>
     <string name="downloads.filter.sort.byDate">By date</string>
-    <string name="downloads.filter.sort.byTitle">By title</string>
-    <string name="downloads.filter.sort.byArtist">By artist</string>
-    <string name="downloads.filter.sort.byAlbum">By album</string>
-    <string name="downloads.filter.sort.bySize">By size</string>
-    <string name="downloads.filter.sort.byDuration">By duration</string>
+    <string name="downloads.filter.sort.byTitle">By Title</string>
+    <string name="downloads.filter.sort.byArtist">By Artist</string>
+    <string name="downloads.filter.sort.byAlbum">By Album</string>
+    <string name="downloads.filter.sort.bySize">By Size</string>
+    <string name="downloads.filter.sort.byDuration">By Duration</string>
     <string name="downloads.filter.status.all">All</string>
 
     <string name="downloads.download.status.queued">Queued</string>
