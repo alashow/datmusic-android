@@ -495,18 +495,20 @@ class DatmusicPlayerImpl @Inject constructor(
 
         if (seekTo > 0) seekTo(seekTo)
 
-        if (queue == null) {
-            queue = mediaQueueBuilder.buildAudioList(mediaId).map { it.id }.apply {
-                if (isNotEmpty())
-                    when {
-                        mediaId.isShuffleIndex -> audioId = shuffled().first()
-                        mediaId.hasIndex -> audioId = if (mediaId.index < size) get(mediaId.index) else first()
-                    }
-            }
+        if (queue == null)
+            queue = mediaQueueBuilder.buildAudioList(mediaId).map { it.id }
+
+        if (queueTitle.isNullOrBlank())
             queueTitle = mediaQueueBuilder.buildQueueTitle(mediaId).toString()
-        }
 
         if (queue.isNotEmpty()) {
+            with(queue) {
+                when {
+                    mediaId.isShuffleIndex -> audioId = shuffled().first()
+                    mediaId.hasIndex -> audioId = if (mediaId.index < size) get(mediaId.index) else first()
+                }
+            }
+
             setData(queue, queueTitle)
             playAudio(audioId, if (mediaId.hasIndex) mediaId.index else queue.indexOf(audioId))
             if (mediaId.isShuffleIndex) setShuffleMode(SHUFFLE_MODE_ALL)

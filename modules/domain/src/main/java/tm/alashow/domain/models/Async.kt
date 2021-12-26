@@ -29,7 +29,7 @@ sealed class Async<out T>(val complete: Boolean, val shouldLoad: Boolean) {
 
     val isLoading get() = this is Loading
 
-    fun success(onOtherwise: () -> Unit, onSuccess: (T) -> Unit) = when (this) {
+    fun whenSuccess(onOtherwise: () -> Unit = {}, onSuccess: (T) -> Unit) = when (this) {
         is Success -> onSuccess(invoke())
         else -> onOtherwise()
     }

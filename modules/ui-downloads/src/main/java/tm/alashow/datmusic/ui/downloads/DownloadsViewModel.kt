@@ -111,13 +111,27 @@ class DownloadsViewModel @Inject constructor(
     }
 
     fun playAudioDownload(audioDownloadItem: AudioDownloadItem) = viewModelScope.launch {
-        val downloads = downloader.downloadRequests.first().audios
+        if (downloadsParamsState.value.hasNoFilters) {
+            val downloads = downloader.downloadRequests.first().audios
 
-        val downloadIndex = downloads.indexOfFirst { it.audio.id == audioDownloadItem.audio.id }
-        if (downloadIndex < 0) {
-            Timber.d("Audio not found in downloads: ${audioDownloadItem.audio.id}")
-            return@launch
+            val downloadIndex = downloads.indexOfFirst { it.audio.id == audioDownloadItem.audio.id }
+            if (downloadIndex < 0) {
+                Timber.e("Audio not found in downloads: ${audioDownloadItem.audio.id}")
+                return@launch
+            }
+            playbackConnection.playFromDownloads(downloadIndex)
+        } else {
+            downloads.collectLatest {
+                it.whenSuccess {
+                    val audioIds = it.audios.map { it.audio.id }
+                    val downloadIndex = audioIds.indexOf(audioDownloadItem.audio.id)
+                    if (downloadIndex < 0) {
+                        Timber.e("Audio not found in downloads: ${audioDownloadItem.audio.id}")
+                        return@whenSuccess
+                    }
+                    playbackConnection.playFromDownloads(downloadIndex, audioIds)
+                }
+            }
         }
-        playbackConnection.playFromDownloads(downloadIndex)
     }
 }
