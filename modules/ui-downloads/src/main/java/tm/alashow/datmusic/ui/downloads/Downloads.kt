@@ -110,21 +110,21 @@ private fun DownloadsAppBar(
     viewModel: DownloadsViewModel,
 ) {
     val viewState by rememberFlowWithLifecycle(viewModel.state).collectAsState(DownloadsViewState.Empty)
-    var filterActive by rememberSaveable { mutableStateOf(false) }
+    var filterVisible by remember { mutableStateOf(false) }
     var searchQuery by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue()) }
     val onQueryChange = { query: TextFieldValue ->
         searchQuery = query
         viewModel.onSearchQueryChange(query.text)
     }
     val onClearFilter = {
-        filterActive = false
+        filterVisible = false
         searchQuery = TextFieldValue()
         viewModel.onClearFilter()
     }
 
     AppTopBar(
         title = stringResource(R.string.downloads_title),
-        filterActive = searchQuery.text.isNotBlank() || filterActive,
+        filterVisible = searchQuery.text.isNotBlank() || filterVisible,
         filterContent = {
             DownloadsFilters(
                 searchQuery = searchQuery,
@@ -137,14 +137,14 @@ private fun DownloadsAppBar(
                 statusFilters = viewState.params.statusFilters,
                 onStatusFilterSelect = viewModel::onStatusFilterSelect,
                 onClose = {
-                    filterActive = false
+                    filterVisible = false
                     onQueryChange(TextFieldValue())
                 },
             )
         },
         actions = {
             IconButton(
-                onClick = { filterActive = true },
+                onClick = { filterVisible = true },
                 onLongClick = onClearFilter
             ) {
                 Icon(

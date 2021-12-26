@@ -64,7 +64,7 @@ fun AppTopBar(
     },
     titleModifier: Modifier = Modifier,
     navigationIcon: @Composable (() -> Unit)? = null,
-    filterActive: Boolean = false,
+    filterVisible: Boolean = false,
     filterContent: @Composable RowScope.() -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
 ) {
@@ -73,13 +73,13 @@ fun AppTopBar(
             .fillMaxWidth()
             .translucentSurface()
             .statusBarsPadding()
-            .padding(vertical = if (filterActive) 4.dp else AppTheme.specs.padding)
+            .padding(vertical = if (filterVisible) 4.dp else AppTheme.specs.padding)
             .simpleClickable {
                 Timber.d("Caught app bar click through")
             },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Crossfade(targetState = filterActive) { isFilterActive ->
+        Crossfade(targetState = filterVisible) { isFilterActive ->
             Row(
                 Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
