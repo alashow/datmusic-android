@@ -12,8 +12,14 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
 import tm.alashow.base.util.RemoteLogger
@@ -49,13 +55,13 @@ class PreferencesStore @Inject constructor(@ApplicationContext private val conte
     fun <T> optional(key: Preferences.Key<T>): Flow<Optional<T>> = context.dataStore.data
         .map { preferences -> some(preferences[key]) }
 
-    suspend fun <T> save(name: String, value: T, serializer: KSerializer<T>) {
-        val key = stringPreferencesKey(name)
+    suspend fun <T> save(keyName: String, value: T, serializer: KSerializer<T>) {
+        val key = stringPreferencesKey(keyName)
         save(key, json.encodeToString(serializer, value))
     }
 
-    fun <T> optional(name: String, serializer: KSerializer<T>): Flow<Optional<T>> {
-        val key = stringPreferencesKey(name)
+    fun <T> optional(keyName: String, serializer: KSerializer<T>): Flow<Optional<T>> {
+        val key = stringPreferencesKey(keyName)
         return optional(key).map {
             when (it) {
                 is Optional.Some<String> ->
@@ -70,12 +76,43 @@ class PreferencesStore @Inject constructor(@ApplicationContext private val conte
         }
     }
 
-    fun <T> get(name: String, serializer: KSerializer<T>, defaultValue: T): Flow<T> {
-        return optional(name, serializer).map {
+    fun <T> get(keyName: String, serializer: KSerializer<T>, defaultValue: T): Flow<T> {
+        return optional(keyName, serializer).map {
             when (it) {
                 is Optional.None -> defaultValue
                 else -> it.value()
             }
         }
+    }
+
+    fun <T> getStateFlow(
+        keyName: Preferences.Key<T>,
+        scope: CoroutineScope,
+        initialValue: T,
+        saveDebounce: Long = 0,
+    ): MutableStateFlow<T> {
+        val state = MutableStateFlow(initialValue)
+        scope.launch {
+            state.value = get(keyName, initialValue).first()
+            state.debounce(saveDebounce)
+                .collectLatest { save(keyName, it) }
+        }
+        return state
+    }
+
+    fun <T> getStateFlow(
+        keyName: String,
+        serializer: KSerializer<T>,
+        scope: CoroutineScope,
+        initialValue: T,
+        saveDebounce: Long = 0,
+    ): MutableStateFlow<T> {
+        val state = MutableStateFlow(initialValue)
+        scope.launch {
+            state.value = get(keyName, serializer, initialValue).first()
+            state.debounce(saveDebounce)
+                .collectLatest { save(keyName, it, serializer) }
+        }
+        return state
     }
 }

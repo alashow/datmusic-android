@@ -9,7 +9,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.analytics.FirebaseAnalytics
 import javax.inject.Inject
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
@@ -18,14 +17,17 @@ import tm.alashow.base.util.event
 import tm.alashow.data.PreferencesStore
 
 open class ResizableLayoutViewModel @Inject constructor(
-    private val preferencesStore: PreferencesStore,
+    preferencesStore: PreferencesStore,
+    preferenceKey: Preferences.Key<Float>,
+    defaultDragOffset: Float = 0f,
+    private val analyticsPrefix: String,
     private val analytics: FirebaseAnalytics,
-    private val preferenceKey: Preferences.Key<Float>,
-    private val defaultDragOffset: Float = 0f,
-    private val analyticsPrefix: String
 ) : ViewModel() {
 
-    private val dragOffsetState = MutableStateFlow(defaultDragOffset)
+    private val dragOffsetState = preferencesStore.getStateFlow(
+        preferenceKey, viewModelScope, defaultDragOffset,
+        saveDebounce = 200
+    )
     val dragOffset = dragOffsetState.asStateFlow()
 
     init {
@@ -39,15 +41,6 @@ open class ResizableLayoutViewModel @Inject constructor(
     }
 
     private fun persistDragOffset() {
-        viewModelScope.launch {
-            preferencesStore.get(preferenceKey, defaultDragOffset)
-                .collectLatest { dragOffsetState.value = it }
-        }
-        viewModelScope.launch {
-            dragOffsetState
-                .debounce(200)
-                .collectLatest { preferencesStore.save(preferenceKey, it) }
-        }
         viewModelScope.launch {
             dragOffsetState
                 .debounce(2000)
