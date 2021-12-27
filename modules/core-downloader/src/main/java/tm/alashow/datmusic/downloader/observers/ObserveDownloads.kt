@@ -59,10 +59,6 @@ class ObserveDownloads @Inject constructor(
         }
 
         return combine(downloadsRequestsFlow, fetcherDownloads(params.statuses)) { downloadRequests, downloads ->
-            if (downloadRequests.isEmpty() && !params.hasNoFilters) {
-                throw NoResultsForDownloadsFilter(params)
-            }
-
             val audioRequests = downloadRequests.filter { it.entityType == DownloadRequest.Type.Audio }
             val audioDownloads = audioRequests
                 .map { request ->
@@ -73,11 +69,9 @@ class ObserveDownloads @Inject constructor(
                     if (!params.hasStatusFilter) true
                     else params.statuses.contains(it.downloadInfo.status)
                 }
-                .also {
+                .let {
                     if (it.isEmpty() && !params.hasNoFilters)
                         throw NoResultsForDownloadsFilter(params)
-                }
-                .let {
                     val comparator = params.audiosSortOption.comparator
                     if (comparator != null) it.sortedWith(comparator)
                     else it
