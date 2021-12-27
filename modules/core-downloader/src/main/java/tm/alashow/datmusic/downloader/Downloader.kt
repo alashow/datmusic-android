@@ -34,6 +34,7 @@ import timber.log.Timber
 import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.base.util.event
 import tm.alashow.data.PreferencesStore
+import tm.alashow.data.db.RoomRepo
 import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
 import tm.alashow.datmusic.data.repos.audio.AudioSaveType
@@ -63,7 +64,7 @@ class Downloader @Inject constructor(
     private val audiosRepo: AudiosRepo,
     private val fetcher: Fetch,
     private val analytics: FirebaseAnalytics,
-) {
+) : RoomRepo<String, DownloadRequest>(dao, dispatchers) {
 
     companion object {
         const val DOWNLOADS_STATUS_REFRESH_INTERVAL = 1500L

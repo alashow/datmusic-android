@@ -114,6 +114,7 @@ private fun DownloadsAppBar(
 ) {
     val coroutine = rememberCoroutineScope()
     val viewState by rememberFlowWithLifecycle(viewModel.state).collectAsState(DownloadsViewState.Empty)
+    val downloadsIsEmpty = viewState.downloads is Success && viewState.downloads()!!.audios.isEmpty()
     var filterVisible by remember { mutableStateOf(false) }
     var searchQuery by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue()) }
     val onQueryChange = { query: TextFieldValue ->
@@ -144,23 +145,24 @@ private fun DownloadsAppBar(
                     filterVisible = false
                     onQueryChange(TextFieldValue())
                     // fix weird race condition with SearchTextField trying to set back previous text after clearing
-                    coroutine.launch { delay(3); onQueryChange(TextFieldValue()) }
+                    coroutine.launch { delay(10); onQueryChange(TextFieldValue()) }
                 },
             )
         },
         actions = {
-            IconButton(
-                onClick = { filterVisible = true },
-                onLongClick = onClearFilter,
-                onLongClickLabel = stringResource(R.string.downloads_filter_clear),
-            ) {
-                Icon(
-                    Icons.Default.FilterList,
-                    contentDescription = null,
-                    modifier = Modifier.size(AppTheme.specs.iconSizeSmall),
-                    tint = if (viewState.params.hasNoFilters) LocalContentColor.current else MaterialTheme.colors.secondary
-                )
-            }
+            if (!downloadsIsEmpty)
+                IconButton(
+                    onClick = { filterVisible = true },
+                    onLongClick = onClearFilter,
+                    onLongClickLabel = stringResource(R.string.downloads_filter_clear),
+                ) {
+                    Icon(
+                        Icons.Default.FilterList,
+                        contentDescription = null,
+                        modifier = Modifier.size(AppTheme.specs.iconSizeSmall),
+                        tint = if (viewState.params.hasNoFilters) LocalContentColor.current else MaterialTheme.colors.secondary
+                    )
+                }
         },
     )
 }
