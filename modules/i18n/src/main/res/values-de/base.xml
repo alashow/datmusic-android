@@ -1,2 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="notifications.defaultChannel">Standard Kanal</string>
+
+    <string name="generic.back">Zurück</string>
+    <string name="generic.close">Schließen</string>
+    <string name="generic.clear">Löschen</string>
+    <string name="generic.clipboard.copied">Kopiert</string>
+
+    <string name="dialog.warning">Warnung</string>
+    <string name="dialog.confirm">Bestätigen</string>
+    <string name="dialog.confirm.no">Nein</string>
+    <string name="dialog.confirm.yes">@string/dialog.ok</string>
+    <string name="dialog.ok">@android:string/ok</string>
+    <string name="dialog.dismiss">@string/generic.close</string>
+
+    <string name="unknown">Unbekannt</string>
+    <string name="error.title">Fehler</string>
+    <string name="error.subtitle">Hoppla :(</string>
+    <string name="error.tryAgain">Erneut versuchen</string>
+    <string name="error.network">Netzwerk Fehler</string>
+    <string name="error.server">Server Fehler</string>
+    <string name="error.auth">Berechtigung Fehlerhaft</string>
+    <string name="error.noAuth">Melden Sie sich erst an</string>
+    <string name="error.notFound">Nicht gefunden</string>
+    <string name="error.api">API Fehler</string>
+    <string name="error.empty.title">Leer</string>
+    <string name="error.empty">Keine Ergebnisse</string>
+    <string name="error.blank">Darf nicht leer sein</string>
+    <string name="error.unknown">Unbekannter Fhler</string>
+    <string name="error.errorLogOut">Ausloggen fehlgeschlagen, versuchen Sie die App Einstellungen zurück zu setzen</string>
+    <string name="error.alreadyLogined">Bereits angemeldet</string>
+    <string name="error.loading">Laden fehlgeschlagen. Berühren um erneut zu versuchen</string>
+    <string name="error.retry">Erneut versuchen</string>
+    <string name="error.serverUnavailable">Server nicht erreichbar</string>
+
+    <string name="error.validation.textShort">Eingabe ist zu kurz</string>
+    <string name="error.validation.textLong">Eingabe ist zu lang</string>
+
+    <string name="error.database">Datenbank Fehler</string>
+    <string name="error.database.validation.notFound">Eintrag nicht gefunden</string>
+
+    <string name="time.duration">%1$d Stunde(n) %2$d min.</string>
+    <string name="time.duration.short">%1$dh %2$dmin</string>
+    <string name="time.duration.minutes">%1$d Minute(n)</string>
+    <string name="time.duration.minutes.short">%1$d min</string>
+
+    <string name="dropdown.selected.multiple">Mehrere</string>
+
+    <string-array name="months">
+        <item>Januar</item>
+        <item>Februar</item>
+        <item>März</item>
+        <item>April</item>
+        <item>Mai</item>
+        <item>Juni</item>
+        <item>Juli</item>
+        <item>August</item>
+        <item>September</item>
+        <item>Oktober</item>
+        <item>November</item>
+        <item>Dezember</item>
+    </string-array>
+
+    <string-array name="months.short">
+        <item>Jan</item>
+        <item>Feb</item>
+        <item>Mär</item>
+        <item>Apr</item>
+        <item>Mai</item>
+        <item>Jun</item>
+        <item>Jul</item>
+        <item>Aug</item>
+        <item>Sept</item>
+        <item>Okt</item>
+        <item>Nov</item>
+        <item>Dez</item>
+    </string-array>
+
+    <string-array name="weeks.short">
+        <item>Mon</item>
+        <item>Die</item>
+        <item>Mit</item>
+        <item>Don</item>
+        <item>Fre</item>
+        <item>Sam</item>
+        <item>Son</item>
+    </string-array>
+</resources>
