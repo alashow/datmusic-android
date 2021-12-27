@@ -11,7 +11,6 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
@@ -22,7 +21,6 @@ import tm.alashow.base.util.event
 import tm.alashow.base.util.extensions.simpleName
 import tm.alashow.base.util.extensions.stateInDefault
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
-import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.downloader.observers.DownloadAudioItemSortOption
 import tm.alashow.datmusic.downloader.observers.DownloadStatusFilter
 import tm.alashow.datmusic.downloader.observers.ObserveDownloads
@@ -33,14 +31,12 @@ import tm.alashow.domain.models.delayLoading
 @HiltViewModel
 class DownloadsViewModel @Inject constructor(
     handle: SavedStateHandle,
-    private val downloader: Downloader,
     private val observeDownloads: ObserveDownloads,
     private val playbackConnection: PlaybackConnection,
     private val analytics: FirebaseAnalytics,
 ) : ViewModel() {
 
     private val defaultParams = ObserveDownloads.Params()
-
     private val downloadsParamsState = MutableStateFlow(defaultParams)
     private val searchQueryState = MutableStateFlow(defaultParams.query)
     private val audiosSortOptionState = MutableStateFlow(defaultParams.audiosSortOption)
@@ -48,37 +44,34 @@ class DownloadsViewModel @Inject constructor(
 
     private val downloads = observeDownloads.flow.stateInDefault(viewModelScope, Uninitialized)
     val state = combine(downloads.delayLoading(), downloadsParamsState, ::DownloadsViewState)
-        .map {
-            it.copy(
-                params = it.params.copy(
-                    // swap out current sort option to fix asc/desc flag
-                    audiosSortOptions = it.params.audiosSortOptions.map { option ->
-                        when (option.isSameOption(audiosSortOptionState.value)) {
-                            true -> audiosSortOptionState.value
-                            false -> option
-                        }
-                    }
-                )
-            )
-        }
 
     init {
+        buildDownloadsParamsState()
         viewModelScope.launch {
-            downloadsParamsState.debounce(60).collectLatest(observeDownloads::invoke)
+            downloadsParamsState
+                .debounce(60)
+                .collect(observeDownloads::invoke)
         }
-        viewModelScope.launch {
-            searchQueryState.collectLatest {
+    }
+
+    private fun buildDownloadsParamsState() = viewModelScope.launch {
+        launch {
+            searchQueryState.collect {
                 downloadsParamsState.value = downloadsParamsState.value.copy(query = it)
             }
         }
-        viewModelScope.launch {
-            audiosSortOptionState.collectLatest {
-                downloadsParamsState.value = downloadsParamsState.value.copy(audiosSortOption = it)
+        launch {
+            statusFiltersState.collect {
+                downloadsParamsState.value = downloadsParamsState.value.copy(statusFilters = it)
             }
         }
-        viewModelScope.launch {
-            statusFiltersState.collectLatest {
-                downloadsParamsState.value = downloadsParamsState.value.copy(statusFilters = it)
+        launch {
+            audiosSortOptionState.collect { sortOption ->
+                val current = downloadsParamsState.value
+                downloadsParamsState.value = current.copy(
+                    audiosSortOption = sortOption,
+                    audiosSortOptions = current.audiosSortOptions.map { if (it.isSameOption(sortOption)) sortOption else it }
+                )
             }
         }
     }
@@ -118,25 +111,16 @@ class DownloadsViewModel @Inject constructor(
     }
 
     fun playAudioDownload(audioDownloadItem: AudioDownloadItem) = viewModelScope.launch {
-        if (downloadsParamsState.value.hasNoFilters) {
-            val downloads = downloader.downloadRequests.first().audios
-
-            val downloadIndex = downloads.indexOfFirst { it.audio.id == audioDownloadItem.audio.id }
+        downloads.first().whenSuccess { (downloadAudios) ->
+            val audioIds = downloadAudios.map { it.audio.id }
+            val downloadIndex = audioIds.indexOf(audioDownloadItem.audio.id)
             if (downloadIndex < 0) {
                 Timber.e("Audio not found in downloads: ${audioDownloadItem.audio.id}")
-                return@launch
+                return@whenSuccess
             }
-            playbackConnection.playFromDownloads(downloadIndex)
-        } else {
-            downloads.first().whenSuccess {
-                val audioIds = it.audios.map { it.audio.id }
-                val downloadIndex = audioIds.indexOf(audioDownloadItem.audio.id)
-                if (downloadIndex < 0) {
-                    Timber.e("Audio not found in downloads: ${audioDownloadItem.audio.id}")
-                    return@whenSuccess
-                }
-                playbackConnection.playFromDownloads(downloadIndex, audioIds)
-            }
+            if (downloadsParamsState.value.hasNoFilters) {
+                playbackConnection.playFromDownloads(downloadIndex)
+            } else playbackConnection.playFromDownloads(downloadIndex, audioIds)
         }
     }
 }
