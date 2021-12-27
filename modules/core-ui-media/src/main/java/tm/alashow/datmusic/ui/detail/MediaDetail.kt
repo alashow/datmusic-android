@@ -9,6 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -16,6 +17,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.VectorPainter
 import androidx.compose.ui.platform.LocalContext
@@ -29,7 +31,8 @@ import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.Navigator
 import tm.alashow.ui.LocalAdaptiveColorResult
 import tm.alashow.ui.adaptiveColor
-import tm.alashow.ui.components.CollapsingTopBar
+import tm.alashow.ui.components.AppBarNavigationIcon
+import tm.alashow.ui.components.AppTopBar
 import tm.alashow.ui.components.FullScreenLoading
 
 @Composable
@@ -51,12 +54,10 @@ fun <DetailType> MediaDetail(
     val headerOffsetProgress = coverHeaderScrollProgress(listState)
     Scaffold(
         topBar = {
-            CollapsingTopBar(
-                title = stringResource(titleRes),
-                collapsed = headerOffsetProgress.value.muteUntil(0.75f),
-                onNavigationClick = {
-                    navigator.goBack()
-                },
+            AppTopBar(
+                title = viewState.title ?: stringResource(titleRes),
+                collapsedProgress = headerOffsetProgress.value.muteUntil(0.9f),
+                navigationIcon = { AppBarNavigationIcon(onClick = navigator::goBack) },
             )
         }
     ) { padding ->
@@ -109,12 +110,12 @@ private fun <DetailType, T : MediaDetailViewState<DetailType>> MediaDetailConten
         val isLight = MaterialTheme.colors.isLight
         val listBackgroundMod = if (isLight) adaptiveBackground else Modifier
         val headerBackgroundMod = if (isLight) Modifier else adaptiveBackground
-        CompositionLocalProvider(
-            LocalAdaptiveColorResult provides adaptiveColor
-        ) {
+        CompositionLocalProvider(LocalAdaptiveColorResult provides adaptiveColor) {
             LazyColumn(
                 state = listState,
-                contentPadding = PaddingValues(bottom = padding.calculateTopPadding() + padding.calculateBottomPadding()),
+                contentPadding = PaddingValues(
+                    bottom = padding.calculateTopPadding() + padding.calculateBottomPadding()
+                ),
                 modifier = listBackgroundMod.fillMaxSize(),
             ) {
                 val details = viewState.details()
