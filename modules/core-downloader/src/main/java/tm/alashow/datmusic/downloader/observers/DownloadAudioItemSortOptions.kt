@@ -7,6 +7,8 @@ package tm.alashow.datmusic.downloader.observers
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.downloader.R
 import tm.alashow.domain.models.SortOption
+import tm.alashow.domain.models.compareByDescendingSerializable
+import tm.alashow.domain.models.compareBySerializable
 import tm.alashow.i18n.UiMessage
 
 abstract class DownloadAudioItemSortOption(
@@ -29,7 +31,7 @@ object DownloadAudioItemSortOptions {
         R.string.downloads_filter_sort_byDate,
         isDescending,
         if (isDescending) null // default sort in database
-        else compareBy { it.downloadRequest.createdAt }
+        else compareBySerializable { it.downloadRequest.createdAt }
     ) {
         override fun toggleDescending() = copy(isDescending = !isDescending)
     }
@@ -37,8 +39,8 @@ object DownloadAudioItemSortOptions {
     data class ByTitle(override val isDescending: Boolean = false) : DownloadAudioItemSortOption(
         R.string.downloads_filter_sort_byTitle,
         isDescending,
-        if (isDescending) compareByDescending { it.audio.title }
-        else compareBy { it.audio.title }
+        if (isDescending) compareByDescendingSerializable { it.audio.title }
+        else compareBySerializable { it.audio.title }
     ) {
         override fun toggleDescending() = copy(isDescending = !isDescending)
     }
@@ -46,8 +48,8 @@ object DownloadAudioItemSortOptions {
     data class ByArtist(override val isDescending: Boolean = false) : DownloadAudioItemSortOption(
         R.string.downloads_filter_sort_byArtist,
         isDescending,
-        if (isDescending) compareByDescending { it.audio.artist }
-        else compareBy { it.audio.artist }
+        if (isDescending) compareByDescendingSerializable { it.audio.artist }
+        else compareBySerializable { it.audio.artist }
     ) {
         override fun toggleDescending() = copy(isDescending = !isDescending)
     }
@@ -55,8 +57,8 @@ object DownloadAudioItemSortOptions {
     data class ByAlbum(override val isDescending: Boolean = false) : DownloadAudioItemSortOption(
         R.string.downloads_filter_sort_byAlbum,
         isDescending,
-        if (isDescending) compareByDescending { it.audio.album }
-        else compareBy { it.audio.album }
+        if (isDescending) compareByDescendingSerializable { it.audio.album }
+        else compareBySerializable { it.audio.album }
     ) {
         override fun toggleDescending() = copy(isDescending = !isDescending)
     }
@@ -64,8 +66,8 @@ object DownloadAudioItemSortOptions {
     data class BySize(override val isDescending: Boolean = true) : DownloadAudioItemSortOption(
         R.string.downloads_filter_sort_bySize,
         isDescending,
-        if (isDescending) compareByDescending { it.downloadInfo.total }
-        else compareBy { it.downloadInfo.total }
+        if (isDescending) compareByDescendingSerializable { it.downloadInfo.total }
+        else compareBySerializable { it.downloadInfo.total }
     ) {
         override fun toggleDescending() = copy(isDescending = !isDescending)
     }
@@ -73,8 +75,8 @@ object DownloadAudioItemSortOptions {
     data class ByDuration(override val isDescending: Boolean = true) : DownloadAudioItemSortOption(
         R.string.downloads_filter_sort_byDuration,
         isDescending,
-        if (isDescending) compareByDescending { it.audio.duration }
-        else compareBy { it.audio.duration }
+        if (isDescending) compareByDescendingSerializable { it.audio.duration }
+        else compareBySerializable { it.audio.duration }
     ) {
         override fun toggleDescending() = copy(isDescending = !isDescending)
     }

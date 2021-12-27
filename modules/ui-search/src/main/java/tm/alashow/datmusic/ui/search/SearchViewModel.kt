@@ -20,7 +20,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -75,7 +74,7 @@ internal class SearchViewModel @Inject constructor(
     private val onSearchEventChannel = Channel<SearchEvent>(Channel.CONFLATED)
     val onSearchEvent = onSearchEventChannel.receiveAsFlow()
 
-    val state = combine(searchFilter.filterNotNull(), snackbarManager.errors, captchaError, ::SearchViewState)
+    val state = combine(searchFilter, snackbarManager.errors, captchaError, ::SearchViewState)
         .stateInDefault(viewModelScope, SearchViewState.Empty)
 
     init {
@@ -101,7 +100,7 @@ internal class SearchViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            combine(searchTrigger.filterNotNull(), searchFilter.filterNotNull(), ::SearchEvent)
+            combine(searchTrigger, searchFilter, ::SearchEvent)
                 .debounce(SEARCH_DEBOUNCE_MILLIS)
                 .collectLatest {
                     search(it)

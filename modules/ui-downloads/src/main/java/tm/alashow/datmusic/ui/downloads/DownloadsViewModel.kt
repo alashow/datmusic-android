@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import tm.alashow.base.util.event
+import tm.alashow.base.util.extensions.getStateFlow
 import tm.alashow.base.util.extensions.simpleName
 import tm.alashow.base.util.extensions.stateInDefault
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
@@ -38,9 +39,9 @@ class DownloadsViewModel @Inject constructor(
 
     private val defaultParams = ObserveDownloads.Params()
     private val downloadsParamsState = MutableStateFlow(defaultParams)
-    private val searchQueryState = MutableStateFlow(defaultParams.query)
-    private val audiosSortOptionState = MutableStateFlow(defaultParams.audiosSortOption)
-    private val statusFiltersState = MutableStateFlow(defaultParams.statusFilters)
+    private val searchQueryState = handle.getStateFlow("search_query", viewModelScope, defaultParams.query)
+    private val audiosSortOptionState = handle.getStateFlow("sort_option", viewModelScope, defaultParams.audiosSortOption)
+    private val statusFiltersState = handle.getStateFlow("status_filter", viewModelScope, defaultParams.statusFilters)
 
     private val downloads = observeDownloads.flow.stateInDefault(viewModelScope, Uninitialized)
     val state = combine(downloads.delayLoading(), downloadsParamsState, ::DownloadsViewState)
