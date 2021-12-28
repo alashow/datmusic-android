@@ -70,7 +70,7 @@ fun Search() {
 
 @Composable
 internal fun Search(
-    viewModel: SearchViewModel,
+    viewModel: SearchViewModel = hiltViewModel(),
 ) {
     Search(viewModel) { action ->
         viewModel.submitAction(action)
@@ -86,15 +86,20 @@ internal fun Search(
     val viewState by rememberFlowWithLifecycle(viewModel.state).collectAsState(SearchViewState.Empty)
     val listState = rememberLazyListState()
 
-    Search(viewState, actioner, viewModel, listState)
+    Search(
+        viewState = viewState,
+        viewModel = viewModel,
+        listState = listState,
+        actioner = actioner
+    )
 }
 
 @Composable
 private fun Search(
     viewState: SearchViewState,
-    actioner: (SearchAction) -> Unit,
     viewModel: SearchViewModel,
-    listState: LazyListState
+    listState: LazyListState,
+    actioner: (SearchAction) -> Unit,
 ) {
     val searchBarHideThreshold = 3
     val searchBarHeight = 200.dp
@@ -110,6 +115,7 @@ private fun Search(
             .collectLatest { searchBarVisibility.animateTo(it) }
     }
 
+    // scroll up when new search event is fired
     collectEvent(viewModel.onSearchEvent) {
         listState.scrollToItem(0)
     }
