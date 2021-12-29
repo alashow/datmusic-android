@@ -125,7 +125,8 @@ internal fun SearchList(
     val hasMultiplePagers = pagers.size > 1
 
     if (pagersAreEmpty && !pagersAreLoading && refreshErrorState == null) {
-        FullScreenLoading(delayMillis = 400)
+        // TODO: show different state when Albums or Artists selected and query is empty
+        FullScreenLoading(delayMillis = 100)
         return
     }
 

@@ -7,6 +7,7 @@ package tm.alashow.data
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -27,6 +28,7 @@ import tm.alashow.domain.models.InvokeSuccess
 import tm.alashow.domain.models.Loading
 import tm.alashow.domain.models.Success
 import tm.alashow.domain.models.Uninitialized
+import tm.alashow.domain.models.asAsyncFlow
 
 abstract class Interactor<in P> {
     operator fun invoke(params: P, timeoutMs: Long = defaultTimeoutMs): Flow<InvokeStatus> {
@@ -101,6 +103,7 @@ abstract class SuspendingWorkInteractor<P : Any, T> : SubjectInteractor<P, T>() 
     abstract suspend fun doWork(params: P): T
 }
 
+@OptIn(ExperimentalCoroutinesApi::class)
 abstract class SubjectInteractor<P, T> {
     // Ideally this would be buffer = 0, since we use flatMapLatest below, BUT invoke is not
     // suspending. This means that we can't suspend while flatMapLatest cancels any
@@ -116,11 +119,18 @@ abstract class SubjectInteractor<P, T> {
         paramState.tryEmit(params)
     }
 
+    suspend fun execute(params: P): T = createObservable(params).first()
+
     protected abstract fun createObservable(params: P): Flow<T>
 
     val flow: Flow<T> = paramState
         .distinctUntilChanged()
         .flatMapLatest { createObservable(it) }
+        .distinctUntilChanged()
+
+    val asyncFlow: Flow<Async<T>> = paramState
+        .distinctUntilChanged()
+        .flatMapLatest { createObservable(it).asAsyncFlow() }
         .distinctUntilChanged()
 
     suspend fun get(): T = flow.first()

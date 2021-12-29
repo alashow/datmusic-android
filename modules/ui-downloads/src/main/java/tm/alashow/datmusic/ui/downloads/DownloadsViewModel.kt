@@ -42,7 +42,7 @@ class DownloadsViewModel @Inject constructor(
     private val audiosSortOptionState = handle.getStateFlow("sort_option", viewModelScope, defaultParams.audiosSortOption)
     private val statusFiltersState = handle.getStateFlow("status_filter", viewModelScope, defaultParams.statusFilters)
 
-    private val downloads = observeDownloads.flow.stateInDefault(viewModelScope, Uninitialized)
+    private val downloads = observeDownloads.asyncFlow.stateInDefault(viewModelScope, Uninitialized)
     val state = combine(downloads.delayLoading(), downloadsParamsState, ::DownloadsViewState)
 
     init {

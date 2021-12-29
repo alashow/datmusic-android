@@ -20,14 +20,12 @@ import tm.alashow.datmusic.domain.entities.DownloadRequest
 import tm.alashow.datmusic.downloader.DownloadItems
 import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.downloader.downloads
-import tm.alashow.domain.models.Async
-import tm.alashow.domain.models.asAsyncFlow
 
 class ObserveDownloads @Inject constructor(
     private val fetcher: Fetch,
     private val dao: DownloadRequestsDao,
     private val audiosFtsDao: AudiosFtsDao,
-) : SubjectInteractor<ObserveDownloads.Params, Async<DownloadItems>>() {
+) : SubjectInteractor<ObserveDownloads.Params, DownloadItems>() {
 
     data class Params(
         val query: String = "",
@@ -52,7 +50,7 @@ class ObserveDownloads @Inject constructor(
         }
     }.distinctUntilChanged()
 
-    override fun createObservable(params: Params): Flow<Async<DownloadItems>> {
+    override fun createObservable(params: Params): Flow<DownloadItems> {
         val downloadsRequestsFlow = when {
             params.hasQuery -> audiosFtsDao.searchDownloads("*${params.query}*")
             else -> dao.entries()
@@ -78,6 +76,6 @@ class ObserveDownloads @Inject constructor(
                 }
 
             DownloadItems(audioDownloads)
-        }.distinctUntilChanged().asAsyncFlow()
+        }
     }
 }

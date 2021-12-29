@@ -20,13 +20,8 @@ import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import okhttp3.internal.toImmutableList
@@ -83,27 +78,6 @@ class Downloader @Inject constructor(
     }
 
     private fun downloaderMessage(message: UiMessage<*>) = downloaderEvent(DownloaderEvent.DownloaderMessage(message))
-
-    private val fetcherDownloads = flow {
-        while (true) {
-            emit(fetcher.downloads())
-            delay(DOWNLOADS_STATUS_REFRESH_INTERVAL)
-        }
-    }.distinctUntilChanged()
-
-    /**
-     * Emits download requests mapped with download info from [fetcher].
-     */
-    val downloadRequests: Flow<DownloadItems> = combine(dao.entries(), fetcherDownloads) { downloadRequests, downloads ->
-        val audioRequests = downloadRequests.filter { it.entityType == DownloadRequest.Type.Audio }
-
-        val audioDownloads = audioRequests.map { request ->
-            val downloadInfo = downloads.firstOrNull { dl -> dl.id == request.requestId }
-            AudioDownloadItem.from(request, request.audio, downloadInfo)
-        }
-
-        DownloadItems(audioDownloads)
-    }
 
     /**
      * Audio item pending for download. Used when waiting for download location.
