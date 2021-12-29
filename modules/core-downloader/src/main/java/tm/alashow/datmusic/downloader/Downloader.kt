@@ -112,7 +112,7 @@ class Downloader @Inject constructor(
         val songsGrouping = downloadsSongsGrouping.first()
 
         val file = try {
-            val documents = DocumentFile.fromTreeUri(appContext, downloadsLocation) ?: error("Couldn't resolve downloads location folder")
+            val documents = DocumentFile.fromSingleUri(appContext, downloadsLocation) ?: error("Couldn't resolve downloads location folder")
             audio.documentFile(documents, songsGrouping)
         } catch (e: Exception) {
             Timber.e(e, "Error while creating new audio file")
@@ -265,11 +265,9 @@ class Downloader @Inject constructor(
         }
     }
 
-    suspend fun findAudioDownload(audioId: String): Optional<Audio> {
-        return audiosRepo.find(audioId)?.apply {
-            audioDownloadItem = getAudioDownload(id).orNull()
-        }.orNone()
-    }
+    suspend fun findAudioDownload(audioId: String): Optional<Audio> = audiosRepo.find(audioId)
+        ?.apply { audioDownloadItem = getAudioDownload(id).orNull() }
+        .orNone()
 
     /**
      * Builds [AudioDownloadItem] from given audio id if it exists and satisfies [allowedStatuses].
@@ -304,8 +302,6 @@ class Downloader @Inject constructor(
         preferences.save(DOWNLOADS_SONGS_GROUPING, songsGrouping.name)
     }
 
-    fun requestNewDownloadsLocations() = downloaderEvent(DownloaderEvent.ChooseDownloadsLocation)
-
     suspend fun setDownloadsLocation(uri: Uri?) {
         if (uri == null) {
             Timber.e("Downloads URI is null")
@@ -324,15 +320,17 @@ class Downloader @Inject constructor(
         }
     }
 
+    private fun requestNewDownloadsLocation() = downloaderEvent(DownloaderEvent.ChooseDownloadsLocation)
+
     private suspend fun verifyAndGetDownloadsLocationUri(): Uri? {
         when (val downloadLocation = downloadsLocationUri.first()) {
-            is None -> requestNewDownloadsLocations()
+            is None -> requestNewDownloadsLocation()
             is Optional.Some -> {
                 val uri = downloadLocation()
                 val writeableAndReadable =
                     appContext.contentResolver.persistedUriPermissions.firstOrNull { it.uri == uri && it.isWritePermission && it.isReadPermission } != null
                 if (!writeableAndReadable) {
-                    requestNewDownloadsLocations()
+                    requestNewDownloadsLocation()
                 } else return uri
             }
         }
