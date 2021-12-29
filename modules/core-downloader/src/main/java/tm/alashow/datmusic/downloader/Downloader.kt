@@ -35,7 +35,6 @@ import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.base.util.event
 import tm.alashow.data.PreferencesStore
 import tm.alashow.data.db.RoomRepo
-import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
 import tm.alashow.datmusic.data.repos.audio.AudioSaveType
 import tm.alashow.datmusic.data.repos.audio.AudiosRepo
@@ -57,10 +56,9 @@ data class DownloadItems(val audios: AudioDownloadItems = emptyList())
 
 class Downloader @Inject constructor(
     @ApplicationContext private val appContext: Context,
-    private val dispatchers: CoroutineDispatchers,
+    dispatchers: CoroutineDispatchers,
     private val preferences: PreferencesStore,
     private val dao: DownloadRequestsDao,
-    private val audiosDao: AudiosDao,
     private val audiosRepo: AudiosRepo,
     private val fetcher: Fetch,
     private val analytics: FirebaseAnalytics,
