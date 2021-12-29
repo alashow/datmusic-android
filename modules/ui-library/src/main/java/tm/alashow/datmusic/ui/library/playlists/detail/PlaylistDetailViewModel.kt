@@ -42,7 +42,7 @@ class PlaylistDetailViewModel @Inject constructor(
 
     private val playlistId = handle.get<Long>(PLAYLIST_ID_KEY) as PlaylistId
 
-    val state = combine(playlist.flow, playlistDetails.flow, ::PlaylistDetailViewState)
+    val state = combine(playlist.flow, playlistDetails.asyncFlow, ::PlaylistDetailViewState)
         .map {
             if (it.playlistDetails.complete && !it.isEmpty) {
                 it.copy(audiosCountDuration = AudiosCountDuration.from(it.playlistDetails.invoke()?.asAudios().orEmpty()))

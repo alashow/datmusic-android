@@ -26,7 +26,7 @@ class ArtistDetailViewModel @Inject constructor(
 
     private val artistParams = DatmusicArtistParams(handle.get<String>(ARTIST_ID_KEY)!!)
 
-    val state = combine(artist.flow, artistDetails.flow, ::ArtistDetailViewState)
+    val state = combine(artist.flow, artistDetails.asyncFlow, ::ArtistDetailViewState)
         .stateInDefault(viewModelScope, ArtistDetailViewState.Empty)
 
     init {

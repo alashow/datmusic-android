@@ -11,8 +11,6 @@ import tm.alashow.datmusic.data.repos.playlist.PlaylistsRepo
 import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.domain.entities.PlaylistId
 import tm.alashow.datmusic.domain.entities.PlaylistItems
-import tm.alashow.domain.models.Async
-import tm.alashow.domain.models.asAsyncFlow
 
 class ObservePlaylist @Inject constructor(
     private val playlistsRepo: PlaylistsRepo
@@ -28,8 +26,7 @@ class ObservePlaylistExistence @Inject constructor(
 
 class ObservePlaylistDetails @Inject constructor(
     private val playlistsRepo: PlaylistsRepo
-) : SubjectInteractor<PlaylistId, Async<PlaylistItems>>() {
+) : SubjectInteractor<PlaylistId, PlaylistItems>() {
     override fun createObservable(params: PlaylistId) = playlistsRepo
         .playlistItems(params)
-        .asAsyncFlow()
 }

@@ -11,8 +11,6 @@ import tm.alashow.datmusic.data.DatmusicArtistParams
 import tm.alashow.datmusic.data.db.daos.ArtistsDao
 import tm.alashow.datmusic.data.interactors.artist.GetArtistDetails
 import tm.alashow.datmusic.domain.entities.Artist
-import tm.alashow.domain.models.Async
-import tm.alashow.domain.models.asAsyncFlow
 
 class ObserveArtist @Inject constructor(
     private val artistsDao: ArtistsDao,
@@ -22,6 +20,6 @@ class ObserveArtist @Inject constructor(
 
 class ObserveArtistDetails @Inject constructor(
     private val getArtistDetails: GetArtistDetails,
-) : SubjectInteractor<GetArtistDetails.Params, Async<Artist>>() {
-    override fun createObservable(params: GetArtistDetails.Params) = getArtistDetails(params).asAsyncFlow()
+) : SubjectInteractor<GetArtistDetails.Params, Artist>() {
+    override fun createObservable(params: GetArtistDetails.Params) = getArtistDetails(params)
 }
