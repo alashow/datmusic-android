@@ -37,7 +37,7 @@ repositories {
 
 dependencies {
 	api Deps.Kotlin.stdlib
-	api Deps.Kotlin.serializationRuntime
+	api Deps.Kotlin.serializationJson
 	api Deps.Kotlin.coroutinesCore
 
 	api Deps.Utils.coil
