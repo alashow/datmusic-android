@@ -55,12 +55,12 @@ import tm.alashow.datmusic.data.DatmusicSearchParams.BackendType
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
+import tm.alashow.datmusic.domain.models.errors.EmptyResultException
 import tm.alashow.datmusic.ui.albums.AlbumColumn
 import tm.alashow.datmusic.ui.albums.AlbumsDefaults
 import tm.alashow.datmusic.ui.artists.ArtistColumn
 import tm.alashow.datmusic.ui.artists.ArtistsDefaults
 import tm.alashow.datmusic.ui.audios.AudioRow
-import tm.alashow.domain.models.errors.EmptyResultException
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.Navigator
 import tm.alashow.navigation.screens.LeafScreen

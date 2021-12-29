@@ -2,12 +2,12 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.domain.models.errors
+package tm.alashow.datmusic.domain.models.errors
 
 import androidx.annotation.StringRes
 import org.threeten.bp.Instant
-import tm.alashow.domain.R
-import tm.alashow.domain.models.ApiResponse
+import tm.alashow.coreDomain.R
+import tm.alashow.datmusic.domain.models.ApiResponse
 
 open class ApiErrorException(
     open val error: ApiResponse.Error = ApiResponse.Error(),

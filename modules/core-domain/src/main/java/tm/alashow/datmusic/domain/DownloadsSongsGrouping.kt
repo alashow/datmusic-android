@@ -4,7 +4,7 @@
  */
 package tm.alashow.datmusic.domain
 
-import tm.alashow.domain.R
+import tm.alashow.coreDomain.R
 
 enum class DownloadsSongsGrouping(val labelRes: Int, val exampleRes: Int) {
     ByAlbum(R.string.settings_downloads_songsGrouping_byAlbum, R.string.settings_downloads_songsGrouping_byAlbum_example),

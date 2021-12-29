@@ -10,8 +10,8 @@ import tm.alashow.data.resultApiCall
 import tm.alashow.datmusic.data.DatmusicAlbumParams
 import tm.alashow.datmusic.data.DatmusicAlbumParams.Companion.toQueryMap
 import tm.alashow.datmusic.data.api.DatmusicEndpoints
-import tm.alashow.domain.models.ApiResponse
-import tm.alashow.domain.models.checkForErrors
+import tm.alashow.datmusic.domain.models.ApiResponse
+import tm.alashow.datmusic.domain.models.checkForErrors
 
 class DatmusicAlbumDataSource @Inject constructor(
     private val endpoints: DatmusicEndpoints,

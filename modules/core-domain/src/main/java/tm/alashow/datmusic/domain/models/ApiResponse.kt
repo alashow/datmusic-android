@@ -2,15 +2,15 @@
  * Copyright (C) 2018, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.domain.models
+package tm.alashow.datmusic.domain.models
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
-import tm.alashow.domain.models.errors.ApiErrorException
-import tm.alashow.domain.models.errors.mapToApiError
+import tm.alashow.datmusic.domain.models.errors.ApiErrorException
+import tm.alashow.datmusic.domain.models.errors.mapToApiError
 
 @Serializable
 data class ApiResponse(

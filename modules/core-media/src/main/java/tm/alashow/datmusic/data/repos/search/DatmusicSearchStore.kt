@@ -26,7 +26,7 @@ import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
-import tm.alashow.domain.models.errors.requireNonEmpty
+import tm.alashow.datmusic.domain.models.errors.requireNonEmpty
 
 typealias DatmusicSearchStore<T> = Store<DatmusicSearchParams, List<T>>
 

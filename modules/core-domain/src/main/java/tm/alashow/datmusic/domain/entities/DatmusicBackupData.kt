@@ -6,7 +6,7 @@ package tm.alashow.datmusic.domain.entities
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import tm.alashow.domain.R
+import tm.alashow.coreDomain.R
 import tm.alashow.domain.models.JSON
 import tm.alashow.i18n.UiMessage
 import tm.alashow.i18n.ValidationError

@@ -35,8 +35,8 @@ import tm.alashow.datmusic.data.observers.search.ObservePagedDatmusicSearch
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
+import tm.alashow.datmusic.domain.models.errors.ApiCaptchaError
 import tm.alashow.datmusic.playback.PlaybackConnection
-import tm.alashow.domain.models.errors.ApiCaptchaError
 import tm.alashow.navigation.screens.QUERY_KEY
 import tm.alashow.navigation.screens.SEARCH_BACKENDS_KEY
 

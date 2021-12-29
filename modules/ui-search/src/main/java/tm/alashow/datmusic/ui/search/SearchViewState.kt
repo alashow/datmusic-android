@@ -10,7 +10,7 @@ import tm.alashow.datmusic.data.BackendTypes
 import tm.alashow.datmusic.data.CaptchaSolution
 import tm.alashow.datmusic.data.DatmusicSearchParams.BackendType
 import tm.alashow.datmusic.data.DatmusicSearchParams.BackendType.Companion.asBackendTypes
-import tm.alashow.domain.models.errors.ApiCaptchaError
+import tm.alashow.datmusic.domain.models.errors.ApiCaptchaError
 
 @Parcelize
 internal data class SearchFilter(

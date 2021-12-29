@@ -1,17 +1,16 @@
 /*
-* Copyright (C) 2021, Alashov Berkeli
+* Copyright (C) 2019, Alashov Berkeli
 * All rights reserved.
 */
-
 
 import tm.alashow.buildSrc.App
 import tm.alashow.buildSrc.Deps
 
 plugins {
 	id "com.android.library"
-	id "dagger.hilt.android.plugin"
 	id "kotlin-android"
-	id "kotlin-kapt"
+	id "kotlin-parcelize"
+	id "org.jetbrains.kotlin.plugin.serialization"
 }
 
 android {
@@ -19,6 +18,10 @@ android {
 
 	defaultConfig {
 		minSdkVersion App.minSdkVersion
+	}
+
+	lintOptions {
+		disable "GradleCompatible"
 	}
 
 	compileOptions {
@@ -29,15 +32,15 @@ android {
 
 repositories {
 	mavenCentral()
+	maven { url "https://jitpack.io" }
+	jcenter()
 }
 
 dependencies {
-	api project(":modules:core-media")
+	api Deps.Android.Room.runtime
 
-	implementation Deps.Dagger.hilt
-	kapt Deps.Dagger.compiler
-	kapt Deps.Dagger.hiltCompiler
+	api Deps.Utils.fetch
 
-	testImplementation project(":modules:common-testing")
-	kaptTest Deps.Dagger.hiltCompiler
+	api project(":modules:common-domain")
+	implementation project(":modules:base")
 }

@@ -50,5 +50,5 @@ dependencies {
 	api Deps.Android.documentFile
 
 	api project(":modules:base")
-	api project(":modules:domain")
+	api project(":modules:core-domain")
 }

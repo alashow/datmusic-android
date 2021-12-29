@@ -14,7 +14,7 @@ import retrofit2.http.QueryMap
 import tm.alashow.datmusic.data.DatmusicSearchParams
 import tm.alashow.datmusic.domain.entities.AlbumId
 import tm.alashow.datmusic.domain.entities.ArtistId
-import tm.alashow.domain.models.ApiResponse
+import tm.alashow.datmusic.domain.models.ApiResponse
 
 interface DatmusicEndpoints {
 
