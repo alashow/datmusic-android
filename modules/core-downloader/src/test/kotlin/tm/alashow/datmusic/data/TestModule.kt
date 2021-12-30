@@ -10,6 +10,12 @@ import dagger.hilt.components.SingletonComponent
 import tm.alashow.base.di.TestAppModule
 import tm.alashow.datmusic.data.db.TestDatabaseModule
 
-@Module(includes = [TestAppModule::class, TestDatabaseModule::class])
+@Module(
+    includes = [
+        TestAppModule::class,
+        TestDatabaseModule::class,
+        TestDownloaderModule::class,
+    ]
+)
 @InstallIn(SingletonComponent::class)
 class TestModule

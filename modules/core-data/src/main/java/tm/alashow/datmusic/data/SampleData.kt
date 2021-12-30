@@ -39,6 +39,8 @@ object SampleData {
         artist = "Artist ${randomString()}",
         title = "Title ${randomString()}",
         album = "Album ${randomString()}",
+        downloadUrl = "https://test.com/test-download.mp3",
+        streamUrl = "https://test.com/test-stream.mp3",
         duration = random.nextInt(100, 300)
     )
 

@@ -149,8 +149,20 @@ suspend fun Fetch.downloads(statuses: List<Status> = emptyList()): List<Download
     }
 }
 
-suspend fun Fetch.downloadInfo(id: Int): Download? = suspendCoroutine { continuation ->
+suspend fun Fetch.getDownloadInfo(id: Int): Download? = suspendCoroutine { continuation ->
     getDownload(id) {
         continuation.resume(it)
     }
+}
+
+suspend fun Fetch.enqueueSync(request: Request): FetchEnqueueResult = suspendCoroutine { continuation ->
+    enqueue(
+        request,
+        { request ->
+            continuation.resume(FetchEnqueueSuccessful(request))
+        },
+        { error ->
+            continuation.resume(FetchEnqueueFailed(error))
+        }
+    )
 }

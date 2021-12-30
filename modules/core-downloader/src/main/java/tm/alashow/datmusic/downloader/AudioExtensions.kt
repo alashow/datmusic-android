@@ -9,7 +9,9 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaExtractor
 import android.media.MediaMetadataRetriever
+import android.net.Uri
 import android.os.Build
+import androidx.core.net.toFile
 import androidx.documentfile.provider.DocumentFile
 import java.io.FileNotFoundException
 import timber.log.Timber
@@ -22,12 +24,24 @@ val filenameIllegalChars = setOf('|', '/', '\\', '?', '*', '<', '>', '"', ':')
 private fun String.cleanIllegalChars(chars: Set<Char> = filenameIllegalChars, replacement: Char = '_') =
     map { if (it in chars) replacement else it }.joinToString("")
 
+fun Uri.toDocumentFile(context: Context) = when (scheme) {
+    "file" -> DocumentFile.fromFile(toFile())
+    else -> DocumentFile.fromTreeUri(context, this)
+} ?: error("Couldn't resolve uri to document file")
+
 fun DocumentFile.getOrCreateDir(name: String) = findFile(name.cleanIllegalChars())
     ?: createDirectory(name.cleanIllegalChars())
     ?: error("Couldn't create folder:$name")
 
-private fun Audio.createDocumentFile(parent: DocumentFile) = parent.createFile(fileMimeType(), fileDisplayName().cleanIllegalChars())
-    ?: error("Couldn't create document file")
+fun Audio.createDocumentFile(parent: DocumentFile): DocumentFile {
+    var newFile = parent.createFile(fileMimeType(), fileDisplayName().cleanIllegalChars())
+    // normal saf would return new file name if file already existed,
+    // so we need to have similar behavior for raw files (document files opened via DocumentFile.fromFile)
+    if (newFile == null && parent.uri.scheme == "file") {
+        newFile = parent.listFiles().find { it.name?.startsWith(fileDisplayName()) == true }
+    }
+    return newFile ?: error("Couldn't create document file")
+}
 
 fun Audio.documentFile(parent: DocumentFile, songsGrouping: DownloadsSongsGrouping): DocumentFile {
     if (!parent.exists())

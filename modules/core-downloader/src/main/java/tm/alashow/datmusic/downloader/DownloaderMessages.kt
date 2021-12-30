@@ -13,7 +13,7 @@ val AudioDownloadErrorFileCreate = UiMessage.Resource(R.string.downloader_enqueu
 val AudioDownloadErrorInvalidUrl = UiMessage.Resource(R.string.downloader_enqueue_audio_error_invalidUrl)
 
 val AudioDownloadQueued = UiMessage.Resource(R.string.downloader_enqueue_audio_queued)
-val AudioDownloadResumingExisting = UiMessage.Resource(R.string.downloader_enqueue_audio_existing_resuming)
+val AudioDownloadResumedExisting = UiMessage.Resource(R.string.downloader_enqueue_audio_existing_resuming)
 val AudioDownloadAlreadyQueued = UiMessage.Resource(R.string.downloader_enqueue_audio_existing_alreadyQueued)
 val AudioDownloadAlreadyCompleted = UiMessage.Resource(R.string.downloader_enqueue_audio_existing_completed)
 fun audioDownloadExistingUnknownStatus(status: Status) = UiMessage.Resource(R.string.downloader_enqueue_audio_existing_unknown, listOf(status))
