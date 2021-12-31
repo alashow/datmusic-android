@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import tm.alashow.base.util.event
@@ -24,6 +25,7 @@ import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.downloader.observers.DownloadAudioItemSortOption
 import tm.alashow.datmusic.downloader.observers.DownloadStatusFilter
 import tm.alashow.datmusic.downloader.observers.ObserveDownloads
+import tm.alashow.datmusic.downloader.observers.failWithNoResultsIfEmpty
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.domain.models.Uninitialized
 import tm.alashow.domain.models.delayLoading
@@ -43,7 +45,9 @@ class DownloadsViewModel @Inject constructor(
     private val statusFiltersState = handle.getStateFlow("status_filter", viewModelScope, defaultParams.statusFilters)
 
     private val downloads = observeDownloads.asyncFlow.stateInDefault(viewModelScope, Uninitialized)
-    val state = combine(downloads.delayLoading(), downloadsParamsState, ::DownloadsViewState)
+    val state = combine(downloads.delayLoading(), downloadsParamsState) { downloads, params ->
+        DownloadsViewState(downloads.failWithNoResultsIfEmpty(params), params)
+    }
 
     init {
         buildDownloadsParamsState()

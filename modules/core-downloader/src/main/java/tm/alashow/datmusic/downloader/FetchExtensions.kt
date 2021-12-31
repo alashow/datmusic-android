@@ -138,13 +138,21 @@ fun createFetchListener(fetch: Fetch): Flow<Downloadable?> = callbackFlow {
     }
 }
 
-suspend fun Fetch.downloads(statuses: List<Status> = emptyList()): List<Download> = suspendCoroutine { continuation ->
+suspend fun Fetch.downloads(
+    ids: Set<Int> = emptySet(),
+    statuses: List<Status> = emptyList()
+): List<Download> = suspendCoroutine { continuation ->
     when (statuses.isEmpty()) {
-        true -> getDownloads {
-            continuation.resume(it)
+        true -> when (ids.isEmpty()) {
+            true -> getDownloads {
+                continuation.resume(it)
+            }
+            else -> getDownloads(ids.toList()) {
+                continuation.resume(it)
+            }
         }
         else -> getDownloadsWithStatus(statuses) {
-            continuation.resume(it)
+            continuation.resume(it.filter { it.id in ids })
         }
     }
 }

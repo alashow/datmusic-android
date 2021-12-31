@@ -7,11 +7,13 @@ package tm.alashow.datmusic.downloader.observers
 import com.tonyodev.fetch2.Fetch
 import com.tonyodev.fetch2.Status
 import javax.inject.Inject
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import tm.alashow.data.SubjectInteractor
 import tm.alashow.datmusic.data.db.daos.AudiosFtsDao
 import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
@@ -20,6 +22,9 @@ import tm.alashow.datmusic.domain.entities.DownloadRequest
 import tm.alashow.datmusic.downloader.DownloadItems
 import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.downloader.downloads
+import tm.alashow.domain.models.Async
+import tm.alashow.domain.models.Fail
+import tm.alashow.domain.models.Success
 
 class ObserveDownloads @Inject constructor(
     private val fetcher: Fetch,
@@ -43,39 +48,42 @@ class ObserveDownloads @Inject constructor(
         val statuses get() = statusFilters.map { it.statuses }.flatten()
     }
 
-    private fun fetcherDownloads(statusFilters: List<Status>) = flow {
+    private fun fetcherDownloads(downloadRequests: List<DownloadRequest> = emptyList(), statuses: List<Status>) = flow {
+        val requestsById = downloadRequests.associateBy { it.requestId }
         while (true) {
-            emit(fetcher.downloads(statusFilters))
+            fetcher.downloads(ids = requestsById.keys, statuses = statuses)
+                .map { requestsById.getValue(it.id) to it }
+                .also { emit(it) }
             delay(Downloader.DOWNLOADS_STATUS_REFRESH_INTERVAL)
         }
     }.distinctUntilChanged()
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun createObservable(params: Params): Flow<DownloadItems> {
         val downloadsRequestsFlow = when {
             params.hasQuery -> audiosFtsDao.searchDownloads("*${params.query}*")
             else -> dao.entries()
         }
 
-        return combine(downloadsRequestsFlow, fetcherDownloads(params.statuses)) { downloadRequests, downloads ->
-            val audioRequests = downloadRequests.filter { it.entityType == DownloadRequest.Type.Audio }
-            val audioDownloads = audioRequests
-                .map { request ->
-                    val downloadInfo = downloads.firstOrNull { dl -> dl.id == request.requestId }
-                    AudioDownloadItem.from(request, request.audio, downloadInfo)
-                }
-                .filter {
-                    if (!params.hasStatusFilter) true
-                    else params.statuses.contains(it.downloadInfo.status)
-                }
-                .let {
-                    if (it.isEmpty() && !params.hasNoFilters)
-                        throw NoResultsForDownloadsFilter(params)
-                    val comparator = params.audiosSortOption.comparator
-                    if (comparator != null) it.sortedWith(comparator)
-                    else it
-                }
-
-            DownloadItems(audioDownloads)
-        }
+        return downloadsRequestsFlow.flatMapLatest { fetcherDownloads(it, params.statuses) }
+            .map {
+                val audioDownloads = it.filter { pair -> pair.first.entityType == DownloadRequest.Type.Audio }
+                    .map { (request, info) ->
+                        AudioDownloadItem.from(request, request.audio, info)
+                    }.let { items ->
+                        val comparator = params.audiosSortOption.comparator
+                        if (comparator != null) items.sortedWith(comparator)
+                        else items
+                    }
+                DownloadItems(audioDownloads)
+            }
     }
+}
+
+fun Async<DownloadItems>.failWithNoResultsIfEmpty(params: ObserveDownloads.Params) = let {
+    if (it is Success) {
+        if (it().audios.isEmpty() && !params.hasNoFilters)
+            Fail(NoResultsForDownloadsFilter(params))
+        else it
+    } else it
 }

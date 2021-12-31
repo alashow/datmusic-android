@@ -30,7 +30,7 @@ object DownloadAudioItemSortOptions {
     data class ByDate(override val isDescending: Boolean = true) : DownloadAudioItemSortOption(
         R.string.downloads_filter_sort_byDate,
         isDescending,
-        if (isDescending) null // default sort in database
+        if (isDescending) compareByDescendingSerializable { it.downloadRequest.createdAt }
         else compareBySerializable { it.downloadRequest.createdAt }
     ) {
         override fun toggleDescending() = copy(isDescending = !isDescending)
