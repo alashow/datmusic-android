@@ -37,9 +37,7 @@ repositories {
 }
 
 dependencies {
-	api Deps.Android.Room.runtime
-
 	api Deps.Utils.fetch
-
+	api Deps.Android.Room.runtime
 	implementation project(":modules:base")
 }

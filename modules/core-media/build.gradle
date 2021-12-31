@@ -36,7 +36,6 @@ repositories {
 }
 
 dependencies {
-	api project(":modules:common-data")
 	api project(":modules:core-data")
 
 	kapt Deps.Dagger.compiler

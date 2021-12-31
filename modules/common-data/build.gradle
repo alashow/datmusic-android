@@ -39,16 +39,16 @@ dependencies {
 	kapt Deps.Dagger.compiler
 	kapt Deps.Dagger.hiltCompiler
 
+	api Deps.Utils.store
+
 	api Deps.Android.Room.ktx
 	api Deps.Android.Room.paging
 	kapt Deps.Android.Room.compiler
 
 	api Deps.Android.Paging.runtime
-	api Deps.Utils.store
 
 	api Deps.Android.dataStore
-	api Deps.Android.documentFile
 
 	api project(":modules:base")
-	api project(":modules:core-domain")
+	api project(":modules:common-domain")
 }
