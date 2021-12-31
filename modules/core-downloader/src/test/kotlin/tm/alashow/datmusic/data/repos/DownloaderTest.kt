@@ -137,7 +137,7 @@ class DownloaderTest : BaseTest() {
     }
 
     @Test
-    fun `enqueueAudio doesn't enqueue when downloads location not set`() = runTest {
+    fun `enqueueAudio fails when downloads location is not set`() = runTest {
         val testItem = testItems.first().audio
 
         assertThat(repo.enqueueAudio(audio = testItem)).isFalse()
@@ -146,7 +146,7 @@ class DownloaderTest : BaseTest() {
     }
 
     @Test
-    fun `enqueueAudio doesn't enqueue when downloads location not set but then retries after setting it`() = runTest {
+    fun `enqueueAudio fails if downloads location not set but then retries after setting it`() = runTest {
         val testItem = testItems.first().audio
 
         assertThat(repo.enqueueAudio(audio = testItem)).isFalse()
@@ -157,7 +157,7 @@ class DownloaderTest : BaseTest() {
     }
 
     @Test
-    fun `enqueueAudio doesn't enqueue when downloads location folder does not exist`() = runTest {
+    fun `enqueueAudio fails if downloads location folder does not exist`() = runTest {
         val testItem = testItems.first().audio
         createTestDownloadsLocation().apply {
             repo.setDownloadsLocation(second)
@@ -175,7 +175,7 @@ class DownloaderTest : BaseTest() {
     }
 
     @Test
-    fun `enqueueAudio doesn't allow enqueuing audio without download url`() = runTest {
+    fun `enqueueAudio fails if given audio without download url `() = runTest {
         val testItem = testItems.first().audio.copy(downloadUrl = null)
         repo.setDownloadsLocation(createTestDownloadsLocation().second)
 
@@ -185,7 +185,7 @@ class DownloaderTest : BaseTest() {
     }
 
     @Test
-    fun `enqueueAudio doesn't allow enqueuing already enqueued audio`() = runTest {
+    fun `enqueueAudio fails if existing request for same audio exists`() = runTest {
         val testItem = testItems.first().audio
         repo.setDownloadsLocation(createTestDownloadsLocation().second)
 
@@ -196,7 +196,7 @@ class DownloaderTest : BaseTest() {
     }
 
     @Test
-    fun `enqueueAudio deletes previous request if failed or cancelled when existing audio download re-requested`() = runTest {
+    fun `enqueueAudio succeeds and deletes existing request if it's status is Failed or Cancelled`() = runTest {
         val testItem = testItems.first().audio
         repo.setDownloadsLocation(createTestDownloadsLocation().second)
 
@@ -212,7 +212,7 @@ class DownloaderTest : BaseTest() {
     }
 
     @Test
-    fun `enqueueAudio resumes existing request if there's paused request exists`() = runTest {
+    fun `enqueueAudio fails and resumes existing request with Paused status`() = runTest {
         val testItem = testItems.first().audio
         repo.setDownloadsLocation(createTestDownloadsLocation().second)
 
@@ -228,7 +228,7 @@ class DownloaderTest : BaseTest() {
     }
 
     @Test
-    fun `enqueueAudio fails if existing request with queued, downloading, or none status exists`() = runTest {
+    fun `enqueueAudio fails if existing request with Queued, Downloading, or None status exists`() = runTest {
         val testItem = testItems.first().audio
         repo.setDownloadsLocation(createTestDownloadsLocation().second)
 
@@ -243,7 +243,7 @@ class DownloaderTest : BaseTest() {
     }
 
     @Test
-    fun `enqueueAudio fails if existing request with completed status exists and file also exists`() = runTest {
+    fun `enqueueAudio fails if existing request with Completed status exists and file also exists`() = runTest {
         val testItem = testItems.first().audio
         val downloadsFolder = createTestDownloadsLocation().second
         repo.setDownloadsLocation(downloadsFolder)
@@ -264,7 +264,7 @@ class DownloaderTest : BaseTest() {
     }
 
     @Test
-    fun `enqueueAudio succeeds if existing request with completed status exists but file doesn't exist`() = runTest {
+    fun `enqueueAudio succeeds if existing request with Completed status exists but file doesn't exist`() = runTest {
         val testItem = testItems.first().audio
         repo.setDownloadsLocation(createTestDownloadsLocation().second)
 

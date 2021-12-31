@@ -328,11 +328,11 @@ class Downloader @Inject constructor(
     }
 
     private suspend fun getAudioDownloadFileDestination(audio: Audio): DocumentFile? {
-        val downloadsLocation = verifyAndGetDownloadsLocationUri() ?: return null
+        val downloadsLocationUri = verifyAndGetDownloadsLocationUri() ?: return null
         val songsGrouping = downloadsSongsGrouping.first()
 
         val file = try {
-            val downloadsLocationFolder = downloadsLocation.toDocumentFile(appContext)
+            val downloadsLocationFolder = downloadsLocationUri.toDocumentFile(appContext)
             audio.documentFile(downloadsLocationFolder, songsGrouping)
         } catch (e: Exception) {
             Timber.e(e, "Error while creating new audio file")
