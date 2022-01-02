@@ -11,6 +11,7 @@ import com.tonyodev.fetch2.Fetch
 import com.tonyodev.fetch2.Request
 import com.tonyodev.fetch2.Status
 import com.tonyodev.fetch2.database.DownloadInfo
+import com.tonyodev.fetch2core.Func
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.channels.awaitClose
@@ -138,22 +139,22 @@ fun createFetchListener(fetch: Fetch): Flow<Downloadable?> = callbackFlow {
     }
 }
 
+fun Fetch.getDownloadsWithIdsAndStatus(
+    ids: Set<Int>?,
+    statuses: List<Status>?,
+    callback: Func<List<Download>>?,
+) = getDownloadsWithStatus(statuses.orEmpty()) {
+    callback?.call(it.filter { dl -> dl.id in ids.orEmpty() })
+}
+
 suspend fun Fetch.downloads(
-    ids: Set<Int> = emptySet(),
+    ids: Set<Int>,
     statuses: List<Status> = emptyList()
 ): List<Download> = suspendCoroutine { continuation ->
-    when (statuses.isEmpty()) {
-        true -> when (ids.isEmpty()) {
-            true -> getDownloads {
-                continuation.resume(it)
-            }
-            else -> getDownloads(ids.toList()) {
-                continuation.resume(it)
-            }
-        }
-        else -> getDownloadsWithStatus(statuses) {
-            continuation.resume(it.filter { it.id in ids })
-        }
+    if (ids.isEmpty()) continuation.resume(emptyList())
+    else when (statuses.isEmpty()) {
+        true -> getDownloads(ids.toList()) { continuation.resume(it) }
+        else -> getDownloadsWithIdsAndStatus(ids, statuses) { continuation.resume(it) }
     }
 }
 

@@ -54,6 +54,7 @@ dependencies {
 	api Deps.Testing.junit
 	api Deps.Testing.mockito
 	api Deps.Testing.mockitoKotlin
+	api Deps.Testing.mockk
 	api Deps.Testing.truth
 	api Deps.Testing.turbine
 	api Deps.Testing.robolectric

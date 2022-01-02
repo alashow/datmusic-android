@@ -14,7 +14,7 @@ import tm.alashow.i18n.UiMessage
 abstract class DownloadAudioItemSortOption(
     private val labelRes: Int,
     override val isDescending: Boolean,
-    override val comparator: Comparator<AudioDownloadItem>? = null,
+    override val comparator: Comparator<AudioDownloadItem>,
 ) : SortOption<AudioDownloadItem>(isDescending, comparator) {
     abstract override fun toggleDescending(): DownloadAudioItemSortOption
 

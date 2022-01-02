@@ -70,11 +70,8 @@ class ObserveDownloads @Inject constructor(
                 val audioDownloads = it.filter { pair -> pair.first.entityType == DownloadRequest.Type.Audio }
                     .map { (request, info) ->
                         AudioDownloadItem.from(request, request.audio, info)
-                    }.let { items ->
-                        val comparator = params.audiosSortOption.comparator
-                        if (comparator != null) items.sortedWith(comparator)
-                        else items
                     }
+                    .sortedWith(params.audiosSortOption.comparator)
                 DownloadItems(audioDownloads)
             }
     }

@@ -198,6 +198,7 @@ object Deps {
         const val robolectric = "org.robolectric:robolectric:4.7.3"
         const val mockito = "org.mockito:mockito-core:4.2.0"
         const val mockitoKotlin = "org.mockito.kotlin:mockito-kotlin:4.0.0"
+        const val mockk = "io.mockk:mockk:1.12.2"
         const val turbine = "app.cash.turbine:turbine:0.7.0"
     }
 }
