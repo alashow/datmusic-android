@@ -71,6 +71,7 @@ import tm.alashow.domain.models.Fail
 import tm.alashow.domain.models.Loading
 import tm.alashow.domain.models.Success
 import tm.alashow.domain.models.Uninitialized
+import tm.alashow.ui.Delayed
 import tm.alashow.ui.LifecycleRespectingBackHandler
 import tm.alashow.ui.components.AppBarNavigationIcon
 import tm.alashow.ui.components.AppTopBar
@@ -271,11 +272,13 @@ private fun LazyListScope.downloadsList(
 ) {
     if (downloads.audios.isEmpty()) {
         item {
-            EmptyErrorBox(
-                message = stringResource(R.string.downloads_empty),
-                retryVisible = false,
-                modifier = Modifier.fillParentMaxHeight()
-            )
+            Delayed {
+                EmptyErrorBox(
+                    message = stringResource(R.string.downloads_empty),
+                    retryVisible = false,
+                    modifier = Modifier.fillParentMaxHeight()
+                )
+            }
         }
     }
 

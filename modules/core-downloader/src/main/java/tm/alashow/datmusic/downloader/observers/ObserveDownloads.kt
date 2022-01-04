@@ -4,16 +4,12 @@
  */
 package tm.alashow.datmusic.downloader.observers
 
-import com.tonyodev.fetch2.Fetch
+import com.tonyodev.fetch2.Download
 import com.tonyodev.fetch2.Status
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import tm.alashow.data.SubjectInteractor
 import tm.alashow.datmusic.data.db.daos.AudiosFtsDao
 import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
@@ -21,13 +17,13 @@ import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.domain.entities.DownloadRequest
 import tm.alashow.datmusic.downloader.DownloadItems
 import tm.alashow.datmusic.downloader.Downloader
-import tm.alashow.datmusic.downloader.downloads
+import tm.alashow.datmusic.downloader.manager.FetchDownloadManager
 import tm.alashow.domain.models.Async
 import tm.alashow.domain.models.Fail
 import tm.alashow.domain.models.Success
 
 class ObserveDownloads @Inject constructor(
-    private val fetcher: Fetch,
+    private val fetch: FetchDownloadManager,
     private val dao: DownloadRequestsDao,
     private val audiosFtsDao: AudiosFtsDao,
 ) : SubjectInteractor<ObserveDownloads.Params, DownloadItems>() {
@@ -48,10 +44,13 @@ class ObserveDownloads @Inject constructor(
         val statuses get() = statusFilters.map { it.statuses }.flatten()
     }
 
-    private fun fetcherDownloads(downloadRequests: List<DownloadRequest> = emptyList(), statuses: List<Status>) = flow {
+    private fun fetcherDownloads(
+        downloadRequests: List<DownloadRequest> = emptyList(),
+        statuses: List<Status>
+    ): Flow<List<Pair<DownloadRequest, Download>>> = flow {
         val requestsById = downloadRequests.associateBy { it.requestId }
         while (true) {
-            fetcher.downloads(ids = requestsById.keys, statuses = statuses)
+            fetch.getDownloadsWithIdsAndStatuses(ids = requestsById.keys, statuses = statuses)
                 .map { requestsById.getValue(it.id) to it }
                 .also { emit(it) }
             delay(Downloader.DOWNLOADS_STATUS_REFRESH_INTERVAL)
@@ -68,9 +67,7 @@ class ObserveDownloads @Inject constructor(
         return downloadsRequestsFlow.flatMapLatest { fetcherDownloads(it, params.statuses) }
             .map {
                 val audioDownloads = it.filter { pair -> pair.first.entityType == DownloadRequest.Type.Audio }
-                    .map { (request, info) ->
-                        AudioDownloadItem.from(request, request.audio, info)
-                    }
+                    .map { (request, info) -> AudioDownloadItem.from(request, request.audio, info) }
                     .sortedWith(params.audiosSortOption.comparator)
                 DownloadItems(audioDownloads)
             }

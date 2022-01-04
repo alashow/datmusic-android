@@ -4,7 +4,6 @@
  */
 package tm.alashow.datmusic.downloader
 
-import com.tonyodev.fetch2.Error
 import tm.alashow.datmusic.downloader.DownloaderEvent.ChooseDownloadsLocation.message
 import tm.alashow.i18n.UiMessage
 import tm.alashow.i18n.UiMessageConvertable
@@ -21,11 +20,11 @@ sealed class DownloaderEvent : UiMessageConvertable {
     }
 
     data class DownloaderMessage(val message: UiMessage<*>) : DownloaderEvent()
-    data class DownloaderFetchError(val error: Error) : DownloaderEvent()
+    data class DownloaderFetchError(val error: Throwable) : DownloaderEvent()
 
     override fun toUiMessage() = when (this) {
         is ChooseDownloadsLocation -> message
         is DownloaderMessage -> message
-        is DownloaderFetchError -> UiMessage.Error(this.error.throwable ?: RuntimeException("Fetch error: ${this.error.name}"))
+        is DownloaderFetchError -> UiMessage.Error(this.error)
     }
 }

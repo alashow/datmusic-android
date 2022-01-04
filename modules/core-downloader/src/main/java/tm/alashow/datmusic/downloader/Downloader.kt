@@ -11,7 +11,6 @@ import androidx.core.net.toUri
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.documentfile.provider.DocumentFile
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.tonyodev.fetch2.Fetch
 import com.tonyodev.fetch2.Request
 import com.tonyodev.fetch2.Status
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -37,6 +36,10 @@ import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.domain.entities.DownloadItem
 import tm.alashow.datmusic.domain.entities.DownloadRequest
+import tm.alashow.datmusic.downloader.manager.DownloadEnqueueFailed
+import tm.alashow.datmusic.downloader.manager.DownloadEnqueueResult
+import tm.alashow.datmusic.downloader.manager.DownloadEnqueueSuccessful
+import tm.alashow.datmusic.downloader.manager.FetchDownloadManager
 import tm.alashow.domain.models.None
 import tm.alashow.domain.models.Optional
 import tm.alashow.domain.models.orNone
@@ -53,10 +56,10 @@ const val INTENT_READ_WRITE_FLAG = Intent.FLAG_GRANT_READ_URI_PERMISSION or Inte
 class Downloader @Inject constructor(
     @ApplicationContext private val appContext: Context,
     dispatchers: CoroutineDispatchers,
+    private val fetcher: FetchDownloadManager,
     private val preferences: PreferencesStore,
     private val dao: DownloadRequestsDao,
     private val audiosRepo: AudiosRepo,
-    private val fetcher: Fetch,
     private val analytics: FirebaseAnalytics,
 ) : RoomRepo<String, DownloadRequest>(dao, dispatchers) {
 
@@ -123,12 +126,11 @@ class Downloader @Inject constructor(
         val fetchRequest = Request(downloadUrl, fileDestination.uri)
 
         return when (val enqueueResult = enqueueDownloadRequest(downloadRequest, fetchRequest)) {
-            is FetchEnqueueSuccessful -> {
-                Timber.i("Successfully enqueued audio to download")
+            is DownloadEnqueueSuccessful -> {
                 downloaderMessage(AudioDownloadQueued)
                 true
             }
-            is FetchEnqueueFailed -> {
+            is DownloadEnqueueFailed -> {
                 Timber.e(enqueueResult.toString())
                 downloaderEvent(DownloaderEvent.DownloaderFetchError(enqueueResult.error))
                 false
@@ -146,7 +148,7 @@ class Downloader @Inject constructor(
 
         if (existingRequest) {
             val oldRequest = dao.entry(downloadRequest.id).first()
-            val downloadInfo = fetcher.getDownloadInfo(oldRequest.requestId)
+            val downloadInfo = fetcher.getDownload(oldRequest.requestId)
             if (downloadInfo != null) {
                 when (downloadInfo.status) {
                     Status.FAILED, Status.CANCELLED -> {
@@ -194,10 +196,10 @@ class Downloader @Inject constructor(
         return true
     }
 
-    private suspend fun enqueueDownloadRequest(downloadRequest: DownloadRequest, request: Request): FetchEnqueueResult {
-        val enqueueResult = fetcher.enqueueSync(request)
+    private suspend fun enqueueDownloadRequest(downloadRequest: DownloadRequest, request: Request): DownloadEnqueueResult<Request> {
+        val enqueueResult = fetcher.enqueue(request)
 
-        if (enqueueResult is FetchEnqueueSuccessful) {
+        if (enqueueResult is DownloadEnqueueSuccessful) {
             val newRequest = enqueueResult.updatedRequest
             try {
                 dao.insert(downloadRequest.copy(requestId = newRequest.id))
@@ -209,19 +211,19 @@ class Downloader @Inject constructor(
         return enqueueResult
     }
 
-    fun pause(vararg downloadItems: DownloadItem) {
+    suspend fun pause(vararg downloadItems: DownloadItem) {
         fetcher.pause(downloadItems.map { it.downloadInfo.id })
     }
 
-    fun resume(vararg downloadItems: DownloadItem) {
+    suspend fun resume(vararg downloadItems: DownloadItem) {
         fetcher.resume(downloadItems.map { it.downloadInfo.id })
     }
 
-    fun cancel(vararg downloadItems: DownloadItem) {
+    suspend fun cancel(vararg downloadItems: DownloadItem) {
         fetcher.cancel(downloadItems.map { it.downloadInfo.id })
     }
 
-    fun retry(vararg downloadItems: DownloadItem) {
+    suspend fun retry(vararg downloadItems: DownloadItem) {
         fetcher.retry(downloadItems.map { it.downloadInfo.id })
     }
 
@@ -249,7 +251,7 @@ class Downloader @Inject constructor(
     suspend fun getAudioDownload(audioId: String, vararg allowedStatuses: Status = arrayOf(Status.COMPLETED)): Optional<AudioDownloadItem> {
         if (dao.exists(audioId) > 0) {
             val request = dao.entry(audioId).first()
-            val downloadInfo = fetcher.getDownloadInfo(request.requestId)
+            val downloadInfo = fetcher.getDownload(request.requestId)
             if (downloadInfo != null) {
                 if (downloadInfo.status in allowedStatuses)
                     return some(AudioDownloadItem.from(request, request.audio, downloadInfo))

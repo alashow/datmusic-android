@@ -6,7 +6,6 @@ package tm.alashow.datmusic.data.observers
 
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
-import com.tonyodev.fetch2.Fetch
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import javax.inject.Inject
@@ -20,28 +19,25 @@ import tm.alashow.datmusic.data.SampleData
 import tm.alashow.datmusic.data.createTestDownloadsLocation
 import tm.alashow.datmusic.data.db.AppDatabase
 import tm.alashow.datmusic.data.db.DatabaseModule
+import tm.alashow.datmusic.data.repos.artist.DatmusicArtistDetailsStoreModule
 import tm.alashow.datmusic.data.repos.audio.AudiosRepo
-import tm.alashow.datmusic.domain.entities.DownloadRequest
 import tm.alashow.datmusic.downloader.Downloader
-import tm.alashow.datmusic.downloader.DownloaderModule
 import tm.alashow.datmusic.downloader.observers.DownloadAudioItemSortOption
 import tm.alashow.datmusic.downloader.observers.DownloadAudioItemSortOptions
 import tm.alashow.datmusic.downloader.observers.DownloadStatusFilter
 import tm.alashow.datmusic.downloader.observers.ObserveDownloads
 
 @HiltAndroidTest
-@UninstallModules(DatabaseModule::class, DownloaderModule::class)
+@UninstallModules(DatabaseModule::class, DatmusicArtistDetailsStoreModule::class)
 class ObserveDownloadsTest : BaseTest() {
 
     @Inject lateinit var database: AppDatabase
     @Inject lateinit var repo: Downloader
     @Inject lateinit var audiosRepo: AudiosRepo
-    @Inject lateinit var fetcher: Fetch
     @Inject lateinit var preferencesStore: PreferencesStore
     @Inject lateinit var observeDownloads: ObserveDownloads
 
     private val testItems = (1..5).map { SampleData.downloadRequest() }
-    private val entriesComparator = compareByDescending(DownloadRequest::createdAt).thenBy(DownloadRequest::id)
     private val testParams = ObserveDownloads.Params()
 
     private fun testAudiosSortOption(sortOption: DownloadAudioItemSortOption) = runTest {

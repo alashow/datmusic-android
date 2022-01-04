@@ -11,47 +11,36 @@ import com.tonyodev.fetch2.Status
 import com.tonyodev.fetch2.database.DownloadInfo
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
-import io.mockk.every
-import io.mockk.verify
+import io.mockk.coEvery
+import io.mockk.coVerify
 import javax.inject.Inject
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Test
 import tm.alashow.base.testing.BaseTest
 import tm.alashow.data.PreferencesStore
-import tm.alashow.datmusic.data.SampleData
-import tm.alashow.datmusic.data.answerFailedEnqueue
-import tm.alashow.datmusic.data.answerGetDownload
-import tm.alashow.datmusic.data.answerGetDownloadWithStatus
-import tm.alashow.datmusic.data.createTestDownloadsLocation
+import tm.alashow.datmusic.data.*
 import tm.alashow.datmusic.data.db.AppDatabase
 import tm.alashow.datmusic.data.db.DatabaseModule
 import tm.alashow.datmusic.data.repos.audio.AudiosRepo
 import tm.alashow.datmusic.domain.DownloadsSongsGrouping
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.domain.entities.DownloadRequest
-import tm.alashow.datmusic.downloader.AudioDownloadAlreadyCompleted
-import tm.alashow.datmusic.downloader.AudioDownloadAlreadyQueued
-import tm.alashow.datmusic.downloader.AudioDownloadErrorInvalidUrl
-import tm.alashow.datmusic.downloader.AudioDownloadQueued
-import tm.alashow.datmusic.downloader.AudioDownloadResumedExisting
-import tm.alashow.datmusic.downloader.Downloader
-import tm.alashow.datmusic.downloader.DownloaderEvent
-import tm.alashow.datmusic.downloader.DownloaderModule
-import tm.alashow.datmusic.downloader.DownloadsFolderNotFound
-import tm.alashow.datmusic.downloader.createDocumentFile
+import tm.alashow.datmusic.downloader.*
+import tm.alashow.datmusic.downloader.manager.FetchDownloadManager
 import tm.alashow.domain.models.None
 import tm.alashow.domain.models.orNull
 import tm.alashow.i18n.UiMessage
 
 @HiltAndroidTest
-@UninstallModules(DatabaseModule::class, DownloaderModule::class)
+@UninstallModules(DatabaseModule::class)
 class DownloaderTest : BaseTest() {
 
     @Inject lateinit var database: AppDatabase
     @Inject lateinit var repo: Downloader
     @Inject lateinit var audiosRepo: AudiosRepo
     @Inject lateinit var fetcher: Fetch
+    @Inject lateinit var fetch: FetchDownloadManager
     @Inject lateinit var preferencesStore: PreferencesStore
 
     private val testItems = (1..5).map { SampleData.downloadRequest() }
@@ -185,10 +174,10 @@ class DownloaderTest : BaseTest() {
         assertThat(repo.enqueueAudio(audio = testItem)).isTrue()
 
         listOf(Status.FAILED, Status.CANCELLED).forEachIndexed { index, status ->
-            every { fetcher.getDownload(any(), any()) }
+            coEvery { fetch.getDownload(any()) }
                 .answerGetDownloadWithStatus(status)
             assertThat(repo.enqueueAudio(audio = testItem)).isTrue()
-            verify { fetcher.delete(any<Int>()) }
+            coVerify { fetch.delete(any<Int>()) }
             repo.awaitMessages(AudioDownloadQueued)
         }
     }
@@ -201,10 +190,10 @@ class DownloaderTest : BaseTest() {
         assertThat(repo.enqueueAudio(audio = testItem)).isTrue()
 
         listOf(Status.PAUSED).forEachIndexed { index, status ->
-            every { fetcher.getDownload(any(), any()) }
+            coEvery { fetch.getDownload(any()) }
                 .answerGetDownloadWithStatus(status)
             assertThat(repo.enqueueAudio(audio = testItem)).isFalse()
-            verify { fetcher.resume(any<Int>()) }
+            coVerify { fetch.resume(any<Int>()) }
             repo.awaitMessages(AudioDownloadResumedExisting)
         }
     }
@@ -217,7 +206,7 @@ class DownloaderTest : BaseTest() {
         assertThat(repo.enqueueAudio(audio = testItem)).isTrue()
 
         listOf(Status.NONE, Status.QUEUED, Status.DOWNLOADING).forEach { status ->
-            every { fetcher.getDownload(any(), any()) }
+            coEvery { fetch.getDownload(any()) }
                 .answerGetDownloadWithStatus(status)
             assertThat(repo.enqueueAudio(audio = testItem)).isFalse()
             repo.awaitMessages(AudioDownloadAlreadyQueued)
@@ -232,7 +221,7 @@ class DownloaderTest : BaseTest() {
 
         assertThat(repo.enqueueAudio(audio = testItem)).isTrue()
 
-        every { fetcher.getDownload(any(), any()) }.answerGetDownload {
+        coEvery { fetch.getDownload(any()) }.answerGetDownload {
             it.apply {
                 status = Status.COMPLETED
                 file = testItem.createDocumentFile(downloadsFolder).uri.toString()
@@ -251,11 +240,11 @@ class DownloaderTest : BaseTest() {
 
         assertThat(repo.enqueueAudio(audio = testItem)).isTrue()
 
-        every { fetcher.getDownload(any(), any()) }
+        coEvery { fetch.getDownload(any()) }
             .answerGetDownloadWithStatus(Status.COMPLETED)
         // assuming default mock download file doesn't exist
         assertThat(repo.enqueueAudio(audio = testItem)).isTrue()
-        verify { fetcher.delete(any<Int>()) }
+        coVerify { fetch.delete(any<Int>()) }
         repo.awaitMessages(AudioDownloadQueued)
     }
 
@@ -266,7 +255,7 @@ class DownloaderTest : BaseTest() {
 
         assertThat(repo.enqueueAudio(audio = testItem)).isTrue()
 
-        every { fetcher.getDownload(any(), any()) }
+        coEvery { fetch.getDownload(any()) }
             .answerGetDownload { null }
         // assuming default mock download file doesn't exist
         assertThat(repo.enqueueAudio(audio = testItem)).isTrue()
@@ -278,7 +267,7 @@ class DownloaderTest : BaseTest() {
         val testItem = testItems.first().audio
         repo.setDownloadsLocation(createTestDownloadsLocation().second)
 
-        every { fetcher.enqueue(any(), any(), any()) }
+        coEvery { fetch.enqueue(any()) }
             .answerFailedEnqueue()
         assertThat(repo.enqueueAudio(audio = testItem)).isFalse()
         repo.downloaderEvents.test {
@@ -323,19 +312,19 @@ class DownloaderTest : BaseTest() {
             val downloadItem = AudioDownloadItem(downloadRequest, DownloadInfo(), testItem)
 
             repo.pause(downloadItem)
-            verify { fetcher.pause(listOf(downloadItem.downloadInfo.id)) }
+            coVerify { fetch.pause(listOf(downloadItem.downloadInfo.id)) }
 
             repo.resume(downloadItem)
-            verify { fetcher.resume(listOf(downloadItem.downloadInfo.id)) }
+            coVerify { fetch.resume(listOf(downloadItem.downloadInfo.id)) }
 
             repo.cancel(downloadItem)
-            verify { fetcher.cancel(listOf(downloadItem.downloadInfo.id)) }
+            coVerify { fetch.cancel(listOf(downloadItem.downloadInfo.id)) }
 
             repo.retry(downloadItem)
-            verify { fetcher.retry(listOf(downloadItem.downloadInfo.id)) }
+            coVerify { fetch.retry(listOf(downloadItem.downloadInfo.id)) }
 
             repo.remove(downloadItem)
-            verify { fetcher.remove(listOf(downloadItem.downloadInfo.id)) }
+            coVerify { fetch.remove(listOf(downloadItem.downloadInfo.id)) }
             assertThat(awaitItem()).isNull()
 
             // re-enqueue because it was just removed above
@@ -343,7 +332,7 @@ class DownloaderTest : BaseTest() {
             awaitItem()
 
             repo.delete(downloadItem)
-            verify { fetcher.delete(listOf(downloadItem.downloadInfo.id)) }
+            coVerify { fetch.delete(listOf(downloadItem.downloadInfo.id)) }
             assertThat(awaitItem()).isNull()
         }
     }
@@ -357,17 +346,17 @@ class DownloaderTest : BaseTest() {
         // assuming default getAudioDownload allowedStatues is COMPLETED and mocked status is NONE
         assertThat(repo.getAudioDownload(testItem.id).orNull()?.audio)
             .isNull()
-        every { fetcher.getDownload(any(), any()) }
+        coEvery { fetch.getDownload(any()) }
             .answerGetDownloadWithStatus(Status.COMPLETED)
         assertThat(repo.getAudioDownload(testItem.id).orNull()?.audio)
             .isEqualTo(testItem)
 
-        every { fetcher.getDownload(any(), any()) }
+        coEvery { fetch.getDownload(any()) }
             .answerGetDownloadWithStatus(Status.FAILED)
         assertThat(repo.getAudioDownload(testItem.id, Status.FAILED).orNull()?.audio)
             .isEqualTo(testItem)
 
-        every { fetcher.getDownload(any(), any()) }
+        coEvery { fetch.getDownload(any()) }
             .answerGetDownload { null }
         assertThat(repo.getAudioDownload(testItem.id, Status.NONE).orNull()?.audio)
             .isNull()
@@ -396,7 +385,7 @@ class DownloaderTest : BaseTest() {
         val testItem = testItems.first().audio
         repo.setDownloadsLocation(createTestDownloadsLocation().second)
         assertThat(repo.enqueueAudio(audio = testItem)).isTrue()
-        every { fetcher.getDownload(any(), any()) }
+        coEvery { fetch.getDownload(any()) }
             .answerGetDownloadWithStatus(Status.COMPLETED)
         val result = repo.findAudioDownload(testItem.id).value()
         assertThat(result.id)

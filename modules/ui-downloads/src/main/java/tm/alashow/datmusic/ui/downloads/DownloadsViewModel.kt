@@ -10,11 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import tm.alashow.base.util.event
