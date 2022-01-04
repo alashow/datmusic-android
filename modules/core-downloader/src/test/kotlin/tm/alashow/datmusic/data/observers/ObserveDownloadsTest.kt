@@ -21,7 +21,6 @@ import tm.alashow.datmusic.data.answerGetDownloadsWithIdsAndStatus
 import tm.alashow.datmusic.data.createTestDownloadsLocation
 import tm.alashow.datmusic.data.db.AppDatabase
 import tm.alashow.datmusic.data.db.DatabaseModule
-import tm.alashow.datmusic.data.repos.artist.DatmusicArtistDetailsStoreModule
 import tm.alashow.datmusic.data.repos.audio.AudiosRepo
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.downloader.DownloadItems
@@ -32,7 +31,7 @@ import tm.alashow.domain.models.Fail
 import tm.alashow.domain.models.Loading
 
 @HiltAndroidTest
-@UninstallModules(DatabaseModule::class, DatmusicArtistDetailsStoreModule::class)
+@UninstallModules(DatabaseModule::class)
 class ObserveDownloadsTest : BaseTest() {
 
     @Inject lateinit var database: AppDatabase
