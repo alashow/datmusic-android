@@ -46,18 +46,23 @@ fun MockKStubScope<Download?, Download?>.answerGetDownload(
     }
 }
 
-fun MockKStubScope<List<Download>, List<Download>>.answerGetDownloads() {
+fun MockKStubScope<List<Download>, List<Download>>.answerGetDownloads(
+    transform: (DownloadInfo) -> DownloadInfo = { it }
+) {
     answers {
         val downloadId = firstArg<List<Int>>()
-        downloadId.map { it.toDownloadInfo() }
+        downloadId.map { transform(it.toDownloadInfo()) }
     }
 }
 
-fun MockKStubScope<List<Download>, List<Download>>.answerGetDownloadsWithIdsAndStatus() {
+fun MockKStubScope<List<Download>, List<Download>>.answerGetDownloadsWithIdsAndStatus(
+    transform: (DownloadInfo) -> DownloadInfo = { it },
+    resultTransform: (List<DownloadInfo>) -> List<DownloadInfo> = { it }
+) {
     answers {
         val downloadId = firstArg<Set<Int>>()
         val requestedStatuses = secondArg<List<Status>>()
         val stasuses = if (requestedStatuses.isEmpty()) Status.values().toList() else requestedStatuses
-        downloadId.map { it.toDownloadInfo(stasuses.random()) }
+        resultTransform(downloadId.map { transform(it.toDownloadInfo(stasuses.random())) })
     }
 }

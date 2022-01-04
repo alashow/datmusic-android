@@ -23,7 +23,7 @@ import tm.alashow.domain.models.Fail
 import tm.alashow.domain.models.Success
 
 class ObserveDownloads @Inject constructor(
-    private val fetch: FetchDownloadManager,
+    private val fetcher: FetchDownloadManager,
     private val dao: DownloadRequestsDao,
     private val audiosFtsDao: AudiosFtsDao,
 ) : SubjectInteractor<ObserveDownloads.Params, DownloadItems>() {
@@ -50,7 +50,7 @@ class ObserveDownloads @Inject constructor(
     ): Flow<List<Pair<DownloadRequest, Download>>> = flow {
         val requestsById = downloadRequests.associateBy { it.requestId }
         while (true) {
-            fetch.getDownloadsWithIdsAndStatuses(ids = requestsById.keys, statuses = statuses)
+            fetcher.getDownloadsWithIdsAndStatuses(ids = requestsById.keys, statuses = statuses)
                 .map { requestsById.getValue(it.id) to it }
                 .also { emit(it) }
             delay(Downloader.DOWNLOADS_STATUS_REFRESH_INTERVAL)

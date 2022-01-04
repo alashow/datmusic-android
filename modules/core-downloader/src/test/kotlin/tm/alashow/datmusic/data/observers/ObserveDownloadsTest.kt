@@ -8,6 +8,7 @@ import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
+import io.mockk.coEvery
 import javax.inject.Inject
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -16,16 +17,19 @@ import org.junit.Test
 import tm.alashow.base.testing.BaseTest
 import tm.alashow.data.PreferencesStore
 import tm.alashow.datmusic.data.SampleData
+import tm.alashow.datmusic.data.answerGetDownloadsWithIdsAndStatus
 import tm.alashow.datmusic.data.createTestDownloadsLocation
 import tm.alashow.datmusic.data.db.AppDatabase
 import tm.alashow.datmusic.data.db.DatabaseModule
 import tm.alashow.datmusic.data.repos.artist.DatmusicArtistDetailsStoreModule
 import tm.alashow.datmusic.data.repos.audio.AudiosRepo
+import tm.alashow.datmusic.domain.entities.Audio
+import tm.alashow.datmusic.downloader.DownloadItems
 import tm.alashow.datmusic.downloader.Downloader
-import tm.alashow.datmusic.downloader.observers.DownloadAudioItemSortOption
-import tm.alashow.datmusic.downloader.observers.DownloadAudioItemSortOptions
-import tm.alashow.datmusic.downloader.observers.DownloadStatusFilter
-import tm.alashow.datmusic.downloader.observers.ObserveDownloads
+import tm.alashow.datmusic.downloader.manager.FetchDownloadManager
+import tm.alashow.datmusic.downloader.observers.*
+import tm.alashow.domain.models.Fail
+import tm.alashow.domain.models.Loading
 
 @HiltAndroidTest
 @UninstallModules(DatabaseModule::class, DatmusicArtistDetailsStoreModule::class)
@@ -36,9 +40,12 @@ class ObserveDownloadsTest : BaseTest() {
     @Inject lateinit var audiosRepo: AudiosRepo
     @Inject lateinit var preferencesStore: PreferencesStore
     @Inject lateinit var observeDownloads: ObserveDownloads
+    @Inject lateinit var fetcher: FetchDownloadManager
 
     private val testItems = (1..5).map { SampleData.downloadRequest() }
     private val testParams = ObserveDownloads.Params()
+
+    private fun Audio.toTestQueries() = listOf(title, artist, album ?: "")
 
     private fun testAudiosSortOption(sortOption: DownloadAudioItemSortOption) = runTest {
         val params = testParams.copy(audiosSortOption = sortOption)
@@ -114,6 +121,80 @@ class ObserveDownloadsTest : BaseTest() {
 
             assertThat(awaitItem().audios.first().audio)
                 .isEqualTo(testItem)
+        }
+    }
+
+    @Test
+    fun `returns list of audio downloads filtered by search query`() = runTest {
+        val testItem = testItems.first().audio
+        assertThat(repo.enqueueAudio(audio = testItem))
+            .isTrue()
+        testItem.toTestQueries().forEach {
+            val params = testParams.copy(query = it)
+            observeDownloads(params)
+            observeDownloads.flow.test {
+                assertThat(awaitItem().audios.first().audio)
+                    .isEqualTo(testItem)
+            }
+        }
+    }
+
+    @Test
+    fun `returns empty list if audio downloads filtered by status is empty then returns items when filters changed`() = runTest {
+        val params = testParams.copy(statusFilters = setOf(DownloadStatusFilter.Downloading))
+        val testItem = testItems.first().audio
+
+        assertThat(repo.enqueueAudio(audio = testItem))
+            .isTrue()
+        coEvery { fetcher.getDownloadsWithIdsAndStatuses(any(), any()) }
+            .answerGetDownloadsWithIdsAndStatus {
+                emptyList()
+            }
+        observeDownloads(params)
+        observeDownloads.flow.test {
+            assertThat(awaitItem().audios)
+                .isEmpty()
+            coEvery { fetcher.getDownloadsWithIdsAndStatuses(any(), any()) }
+                .answerGetDownloadsWithIdsAndStatus()
+            observeDownloads(params.copy(statusFilters = setOf(DownloadStatusFilter.Queued)))
+            assertThat(awaitItem().audios.first().audio)
+                .isEqualTo(testItem)
+        }
+    }
+
+    @Test
+    fun `fails with NoResults if failWithNoResultsIfEmpty is applied to flow and status filters are used`() = runTest {
+        val params = testParams.copy(statusFilters = setOf(DownloadStatusFilter.Paused))
+        val testItem = testItems.first().audio
+
+        assertThat(repo.enqueueAudio(audio = testItem))
+            .isTrue()
+        coEvery { fetcher.getDownloadsWithIdsAndStatuses(any(), any()) }
+            .answerGetDownloadsWithIdsAndStatus {
+                emptyList()
+            }
+        observeDownloads(params)
+        observeDownloads.asyncFlow.test {
+            assertThat(awaitItem())
+                .isEqualTo(Loading<DownloadItems>())
+            assertThat(awaitItem().failWithNoResultsIfEmpty(params))
+                .isEqualTo(Fail<DownloadItems>(NoResultsForDownloadsFilter(params)))
+        }
+    }
+
+    @Test
+    fun `fails with NoResults if failWithNoResultsIfEmpty is applied to flow and non matching search query is used`() = runTest {
+        val params = testParams.copy(query = "random string")
+        val testItem = testItems.first().audio
+
+        assertThat(repo.enqueueAudio(audio = testItem))
+            .isTrue()
+        observeDownloads(params)
+        observeDownloads.asyncFlow.test {
+            assertThat(awaitItem())
+                .isEqualTo(Loading<DownloadItems>())
+            assertThat(awaitItem().failWithNoResultsIfEmpty(params))
+                .isEqualTo(Fail<DownloadItems>(NoResultsForDownloadsFilter(params)))
         }
     }
 }
