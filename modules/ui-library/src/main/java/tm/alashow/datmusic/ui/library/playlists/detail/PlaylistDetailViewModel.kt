@@ -10,21 +10,22 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import tm.alashow.base.util.event
+import tm.alashow.base.util.extensions.getStateFlow
+import tm.alashow.base.util.extensions.simpleName
 import tm.alashow.base.util.extensions.stateInDefault
 import tm.alashow.datmusic.data.interactors.playlist.RemovePlaylistItems
-import tm.alashow.datmusic.data.observers.playlist.ObservePlaylist
-import tm.alashow.datmusic.data.observers.playlist.ObservePlaylistDetails
-import tm.alashow.datmusic.data.observers.playlist.ObservePlaylistExistence
+import tm.alashow.datmusic.data.observers.playlist.*
 import tm.alashow.datmusic.domain.entities.PlaylistAudioId
 import tm.alashow.datmusic.domain.entities.PlaylistId
 import tm.alashow.datmusic.domain.entities.PlaylistItem
 import tm.alashow.datmusic.domain.entities.asAudios
+import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.ui.utils.AudiosCountDuration
+import tm.alashow.domain.models.delayLoading
 import tm.alashow.navigation.Navigator
 import tm.alashow.navigation.screens.PLAYLIST_ID_KEY
 import tm.alashow.navigation.screens.RootScreen
@@ -36,28 +37,55 @@ class PlaylistDetailViewModel @Inject constructor(
     private val playlistExistense: ObservePlaylistExistence,
     private val playlistDetails: ObservePlaylistDetails,
     private val removePlaylistItems: RemovePlaylistItems,
+    private val navigator: Navigator,
+    private val playbackConnection: PlaybackConnection,
     private val analytics: FirebaseAnalytics,
-    private val navigator: Navigator
 ) : ViewModel() {
 
     private val playlistId = handle.get<Long>(PLAYLIST_ID_KEY) as PlaylistId
+    private val defaultParams = ObservePlaylistDetails.Params(playlistId = playlistId)
+    private val paramsState = MutableStateFlow(defaultParams)
+    private val searchQueryState = handle.getStateFlow("search_query", viewModelScope, defaultParams.query)
+    private val sortOptionState = handle.getStateFlow("sort_option", viewModelScope, defaultParams.sortOption)
 
-    val state = combine(playlist.flow, playlistDetails.asyncFlow, ::PlaylistDetailViewState)
+    private val playlistItems = playlistDetails.asyncFlow.delayLoading()
+    val state = combine(playlist.flow, playlistItems, paramsState, ::PlaylistDetailViewState)
         .map {
             if (it.playlistDetails.complete && !it.isEmpty) {
                 it.copy(audiosCountDuration = AudiosCountDuration.from(it.playlistDetails.invoke()?.asAudios().orEmpty()))
             } else it
         }
+        .map {
+            it.copy(playlistDetails = it.playlistDetails.failWithNoResultsIfEmpty(it.params))
+        }
         .stateInDefault(viewModelScope, PlaylistDetailViewState.Empty)
 
     init {
         load()
+        buildParamsState()
+    }
+
+    private fun buildParamsState() = viewModelScope.launch {
+        launch {
+            searchQueryState.collect {
+                paramsState.value = paramsState.value.copy(query = it)
+            }
+        }
+        launch {
+            sortOptionState.collect { sortOption ->
+                val current = paramsState.value
+                paramsState.value = current.copy(
+                    sortOption = sortOption,
+                    sortOptions = current.sortOptions.map { if (it.isSameOption(sortOption)) sortOption else it }
+                )
+            }
+        }
     }
 
     private fun load() {
         playlist(playlistId)
-        playlistDetails(playlistId)
         playlistExistense(playlistId)
+        viewModelScope.launch { paramsState.collectLatest(playlistDetails::invoke) }
         viewModelScope.launch {
             playlistExistense.flow.collectLatest { exists ->
                 if (!exists) navigator.goBack()
@@ -73,5 +101,37 @@ class PlaylistDetailViewModel @Inject constructor(
     fun removePlaylistItem(id: PlaylistAudioId) = viewModelScope.launch {
         analytics.event("playlist.item.remove")
         removePlaylistItems.execute(listOf(id))
+    }
+
+    fun onPlayAudio(item: PlaylistItem) = viewModelScope.launch {
+        analytics.event("playlist.play", mapOf("audioId" to item.audio.id))
+        playlistItems.first().whenSuccess { playlistItems ->
+            val audioIds = playlistItems.map { it.audio.id }
+            val itemIndex = audioIds.indexOf(item.audio.id)
+            if (itemIndex < 0) {
+                Timber.e("Playlist item not found: ${item.audio.id}")
+                return@whenSuccess
+            }
+            val playlistId = item.playlistAudio.playlistId
+            if (paramsState.value.hasNoFilters) {
+                playbackConnection.playPlaylist(playlistId, itemIndex)
+            } else playbackConnection.playPlaylist(playlistId, itemIndex, audioIds)
+        }
+    }
+
+    fun onSearchQueryChange(query: String) {
+        searchQueryState.value = query
+    }
+
+    fun onSortOptionSelect(sortOption: PlaylistItemSortOption) {
+        analytics.event("playlist.filter.sort", mapOf("type" to sortOption.simpleName, "descending" to sortOption.isDescending))
+        val isReselecting = sortOption.isSameOption(sortOptionState.value)
+        sortOptionState.value = if (isReselecting) sortOption.toggleDescending() else sortOption
+    }
+
+    fun onClearFilter() {
+        analytics.event("playlist.filter.clear")
+        searchQueryState.value = ""
+        sortOptionState.value = defaultParams.sortOption
     }
 }

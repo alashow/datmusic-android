@@ -12,10 +12,10 @@ import tm.alashow.domain.models.compareBySerializable
 import tm.alashow.i18n.UiMessage
 
 abstract class DownloadAudioItemSortOption(
-    private val labelRes: Int,
+    override val labelRes: Int,
     override val isDescending: Boolean,
     override val comparator: Comparator<AudioDownloadItem>,
-) : SortOption<AudioDownloadItem>(isDescending, comparator) {
+) : SortOption<AudioDownloadItem>(labelRes, isDescending, comparator) {
     abstract override fun toggleDescending(): DownloadAudioItemSortOption
 
     override fun toUiMessage() = UiMessage.Resource(labelRes)

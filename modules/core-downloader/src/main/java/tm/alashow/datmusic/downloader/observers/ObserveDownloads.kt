@@ -11,12 +11,12 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import tm.alashow.data.SubjectInteractor
-import tm.alashow.datmusic.data.db.daos.AudiosFtsDao
 import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.domain.entities.DownloadRequest
 import tm.alashow.datmusic.downloader.DownloadItems
 import tm.alashow.datmusic.downloader.Downloader
+import tm.alashow.datmusic.downloader.interactors.SearchDownloads
 import tm.alashow.datmusic.downloader.manager.FetchDownloadManager
 import tm.alashow.domain.models.Async
 import tm.alashow.domain.models.Fail
@@ -25,7 +25,7 @@ import tm.alashow.domain.models.Success
 class ObserveDownloads @Inject constructor(
     private val fetcher: FetchDownloadManager,
     private val dao: DownloadRequestsDao,
-    private val audiosFtsDao: AudiosFtsDao,
+    private val searchDownloads: SearchDownloads,
 ) : SubjectInteractor<ObserveDownloads.Params, DownloadItems>() {
 
     data class Params(
@@ -60,7 +60,7 @@ class ObserveDownloads @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun createObservable(params: Params): Flow<DownloadItems> {
         val downloadsRequestsFlow = when {
-            params.hasQuery -> audiosFtsDao.searchDownloads("*${params.query}*")
+            params.hasQuery -> searchDownloads("*${params.query}*")
             else -> dao.entries()
         }
 

@@ -59,6 +59,7 @@ class EditPlaylistViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val playlistId = requireNotNull(handle.get<PlaylistId>(PLAYLIST_ID_KEY))
+    private val playlistDetailParams = ObservePlaylistDetails.Params(playlistId)
 
     private val nameState = MutableStateFlow(TextFieldValue())
     val name = nameState.filterNotNull()
@@ -80,7 +81,7 @@ class EditPlaylistViewModel @Inject constructor(
 
     init {
         observePlaylist(playlistId)
-        observePlaylistDetails(playlistId)
+        observePlaylistDetails(playlistDetailParams)
 
         viewModelScope.launch {
             val playlist = observePlaylist.get()

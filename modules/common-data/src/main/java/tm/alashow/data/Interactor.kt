@@ -115,8 +115,9 @@ abstract class SubjectInteractor<P, T> {
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
 
-    operator fun invoke(params: P) {
+    operator fun invoke(params: P): Flow<T> {
         paramState.tryEmit(params)
+        return flow
     }
 
     suspend fun execute(params: P): T = createObservable(params).first()

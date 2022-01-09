@@ -55,6 +55,7 @@ fun <T> SelectableDropdownMenu(
     itemSuffixMapper: @Composable (RowScope.(T) -> Unit)? = null,
     subtitles: List<String?>? = null,
     leadingIcon: ImageVector? = null,
+    iconOnly: Boolean = false,
     leadingIconColor: Color = LocalContentColor.current,
     border: BorderStroke? = null,
 ) {
@@ -76,16 +77,18 @@ fun <T> SelectableDropdownMenu(
                     modifier = Modifier.width(AppTheme.specs.iconSizeTiny),
                     tint = leadingIconColor,
                 )
+                if (!iconOnly) Spacer(Modifier.width(AppTheme.specs.paddingSmall))
+            }
+            if (!iconOnly) {
+                val selectedText = when (selectedItems.size) {
+                    0 -> "    "
+                    1 -> itemLabelMapper(selectedItems.first())
+                    else -> multipleSelectionsLabel(selectedItems)
+                }
+                Text(text = selectedText)
                 Spacer(Modifier.width(AppTheme.specs.paddingSmall))
+                Icon(painter = rememberVectorPainter(dropIcon), contentDescription = null)
             }
-            val selectedText = when (selectedItems.size) {
-                0 -> "    "
-                1 -> itemLabelMapper(selectedItems.first())
-                else -> multipleSelectionsLabel(selectedItems)
-            }
-            Text(text = selectedText)
-            Spacer(Modifier.width(AppTheme.specs.paddingSmall))
-            Icon(painter = rememberVectorPainter(dropIcon), contentDescription = null)
         }
         DropdownMenu(
             expanded = expanded,

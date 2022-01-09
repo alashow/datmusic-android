@@ -78,7 +78,7 @@ interface PlaybackConnection {
     fun playNextAudio(audio: Audio)
     fun playAudios(audios: List<Audio>, index: Int = 0, title: QueueTitle = QueueTitle())
     fun playArtist(artistId: ArtistId, index: Int = 0)
-    fun playPlaylist(playlistId: PlaylistId, index: Int = 0)
+    fun playPlaylist(playlistId: PlaylistId, index: Int = 0, queue: List<AudioId> = emptyList())
     fun playAlbum(albumId: AlbumId, index: Int = 0)
     fun playFromDownloads(index: Int = 0, queue: List<AudioId> = emptyList())
     fun playWithQuery(query: String, audioId: String)
@@ -218,8 +218,14 @@ class PlaybackConnectionImpl(
         )
     }
 
-    override fun playPlaylist(playlistId: PlaylistId, index: Int) {
-        transportControls?.playFromMediaId(MediaId(MEDIA_TYPE_PLAYLIST, playlistId.toString(), index).toString(), null)
+    override fun playPlaylist(playlistId: PlaylistId, index: Int, queue: List<AudioId>) {
+        transportControls?.playFromMediaId(
+            MediaId(MEDIA_TYPE_PLAYLIST, playlistId.toString(), index).toString(),
+            Bundle().apply {
+                if (queue.isNotEmpty())
+                    putStringArray(QUEUE_LIST_KEY, queue.toTypedArray())
+            }
+        )
     }
 
     override fun playArtist(artistId: ArtistId, index: Int) {

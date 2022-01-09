@@ -41,13 +41,13 @@ repositories {
 }
 
 dependencies {
-	api project(':modules:common-compose')
-	api project(":modules:common-ui-theme")
-	api project(":modules:common-ui-components")
-	api project(":modules:core-ui-downloader")
-	api project(":modules:core-ui-media")
-	api project(":modules:core-ui-library")
-	api project(":modules:navigation")
+	implementation project(":modules:common-compose")
+	implementation project(":modules:common-ui-theme")
+	implementation project(":modules:common-ui-components")
+	implementation project(":modules:core-ui-downloader")
+	implementation project(":modules:core-ui-media")
+	implementation project(":modules:core-ui-library")
+	implementation project(":modules:navigation")
 
 	implementation Deps.Dagger.hilt
 	kapt Deps.Dagger.compiler

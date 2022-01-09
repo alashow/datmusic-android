@@ -51,7 +51,7 @@
     <string name="downloads.filter.clear">Clear filters</string>
     <string name="downloads.filter.noResults">No results</string>
     <string name="downloads.filter.noResults.forQuery">No results for %1$s</string>
-    <string name="downloads.filter.sort.byDate">By date</string>
+    <string name="downloads.filter.sort.byDate">By Date</string>
     <string name="downloads.filter.sort.byTitle">By Title</string>
     <string name="downloads.filter.sort.byArtist">By Artist</string>
     <string name="downloads.filter.sort.byAlbum">By Album</string>
@@ -110,6 +110,17 @@
     <string name="playlist.edit.done">Save</string>
     <string name="playlist.edit.removed">Removed from playlist</string>
     <string name="playlist.edit.removed.undo">Undo</string>
+
+    <string name="playlist.detail.filter.search.hint">Search in playlist</string>
+    <string name="playlist.detail.filter.clear">Clear filters</string>
+    <string name="playlist.detail.filter.noResults">No results</string>
+    <string name="playlist.detail.filter.noResults.forQuery">No results for %1$s</string>
+
+    <string name="playlist.detail.filter.sort.byCustom">Custom</string>
+    <string name="playlist.detail.filter.sort.byTitle">By Title</string>
+    <string name="playlist.detail.filter.sort.byArtist">By Artist</string>
+    <string name="playlist.detail.filter.sort.byAlbum">By Album</string>
+    <string name="playlist.detail.filter.sort.byDuration">By Duration</string>
 
     <string name="playlist.download.queued">Playlist queued to download</string>
     <string name="playlist.download.queuedCount">%1$d songs were queued to download</string>

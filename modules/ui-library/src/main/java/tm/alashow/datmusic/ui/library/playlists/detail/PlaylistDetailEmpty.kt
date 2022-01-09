@@ -12,6 +12,7 @@ import tm.alashow.datmusic.ui.detail.MediaDetailEmpty
 import tm.alashow.datmusic.ui.library.R
 import tm.alashow.domain.models.Async
 import tm.alashow.domain.models.Success
+import tm.alashow.ui.Delayed
 import tm.alashow.ui.components.EmptyErrorBox
 
 class PlaylistDetailEmpty : MediaDetailEmpty<PlaylistItems>() {
@@ -23,12 +24,14 @@ class PlaylistDetailEmpty : MediaDetailEmpty<PlaylistItems>() {
     ) {
         if (details is Success && detailsEmpty) {
             list.item {
-                EmptyErrorBox(
-                    onRetryClick = onEmptyRetry,
-                    message = stringResource(R.string.playlist_empty),
-                    retryLabel = stringResource(R.string.playlist_empty_addSongs),
-                    modifier = Modifier.fillParentMaxHeight(0.5f)
-                )
+                Delayed {
+                    EmptyErrorBox(
+                        onRetryClick = onEmptyRetry,
+                        message = stringResource(R.string.playlist_empty),
+                        retryLabel = stringResource(R.string.playlist_empty_addSongs),
+                        modifier = Modifier.fillParentMaxHeight(0.5f)
+                    )
+                }
             }
         }
     }

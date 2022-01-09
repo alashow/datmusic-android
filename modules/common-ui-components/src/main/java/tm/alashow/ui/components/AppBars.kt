@@ -5,9 +5,6 @@
 package tm.alashow.ui.components
 
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -79,9 +76,7 @@ fun AppTopBar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(
-                Modifier
-                    .fillMaxWidth()
-                    .animateContentSize(spring(dampingRatio = Spring.DampingRatioLowBouncy)),
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {

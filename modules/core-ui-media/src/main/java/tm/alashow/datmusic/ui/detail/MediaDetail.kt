@@ -24,15 +24,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.google.accompanist.insets.ui.Scaffold
 import tm.alashow.base.util.extensions.Callback
-import tm.alashow.base.util.extensions.muteUntil
 import tm.alashow.base.util.extensions.orNA
 import tm.alashow.domain.models.Incomplete
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.Navigator
 import tm.alashow.ui.LocalAdaptiveColorResult
 import tm.alashow.ui.adaptiveColor
-import tm.alashow.ui.components.AppBarNavigationIcon
-import tm.alashow.ui.components.AppTopBar
 import tm.alashow.ui.components.FullScreenLoading
 
 @Composable
@@ -43,6 +40,7 @@ fun <DetailType> MediaDetail(
     onFailRetry: Callback,
     onEmptyRetry: Callback,
     mediaDetailContent: MediaDetailContent<DetailType>,
+    mediaDetailTopBar: MediaDetailTopBar = MediaDetailTopBar(),
     mediaDetailHeader: MediaDetailHeader = MediaDetailHeader(),
     mediaDetailFail: MediaDetailFail<DetailType> = MediaDetailFail(),
     mediaDetailEmpty: MediaDetailEmpty<DetailType> = MediaDetailEmpty(),
@@ -54,10 +52,10 @@ fun <DetailType> MediaDetail(
     val headerOffsetProgress = coverHeaderScrollProgress(listState)
     Scaffold(
         topBar = {
-            AppTopBar(
+            mediaDetailTopBar(
                 title = viewState.title ?: stringResource(titleRes),
-                collapsedProgress = headerOffsetProgress.value.muteUntil(0.9f),
-                navigationIcon = { AppBarNavigationIcon(onClick = navigator::goBack) },
+                collapsedProgress = headerOffsetProgress,
+                onGoBack = navigator::goBack,
             )
         }
     ) { padding ->
@@ -110,6 +108,7 @@ private fun <DetailType, T : MediaDetailViewState<DetailType>> MediaDetailConten
         val isLight = MaterialTheme.colors.isLight
         val listBackgroundMod = if (isLight) adaptiveBackground else Modifier
         val headerBackgroundMod = if (isLight) Modifier else adaptiveBackground
+
         CompositionLocalProvider(LocalAdaptiveColorResult provides adaptiveColor) {
             LazyColumn(
                 state = listState,
@@ -120,7 +119,6 @@ private fun <DetailType, T : MediaDetailViewState<DetailType>> MediaDetailConten
             ) {
                 val details = viewState.details()
                 val detailsLoading = details is Incomplete
-
                 mediaDetailHeader(
                     list = this,
                     listState = listState,

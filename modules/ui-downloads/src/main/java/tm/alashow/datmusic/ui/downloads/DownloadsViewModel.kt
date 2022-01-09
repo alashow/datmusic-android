@@ -23,7 +23,6 @@ import tm.alashow.datmusic.downloader.observers.DownloadStatusFilter
 import tm.alashow.datmusic.downloader.observers.ObserveDownloads
 import tm.alashow.datmusic.downloader.observers.failWithNoResultsIfEmpty
 import tm.alashow.datmusic.playback.PlaybackConnection
-import tm.alashow.domain.models.Uninitialized
 import tm.alashow.domain.models.delayLoading
 
 @HiltViewModel
@@ -40,10 +39,10 @@ class DownloadsViewModel @Inject constructor(
     private val audiosSortOptionState = handle.getStateFlow("sort_option", viewModelScope, defaultParams.audiosSortOption)
     private val statusFiltersState = handle.getStateFlow("status_filter", viewModelScope, defaultParams.statusFilters)
 
-    private val downloads = observeDownloads.asyncFlow.stateInDefault(viewModelScope, Uninitialized)
+    private val downloads = observeDownloads.asyncFlow
     val state = combine(downloads.delayLoading(), downloadsParamsState) { downloads, params ->
         DownloadsViewState(downloads.failWithNoResultsIfEmpty(params), params)
-    }
+    }.stateInDefault(viewModelScope, DownloadsViewState.Empty)
 
     init {
         buildDownloadsParamsState()
