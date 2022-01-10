@@ -53,6 +53,7 @@ private fun PlaylistDetail(
             onPlayAudio = viewModel::onPlayAudio
         ),
         mediaDetailTopBar = PlaylistDetailTopBar(
+            filterIconVisible = !viewState.isEmpty && viewState.params.hasNoFilters,
             filterVisible = filterVisible,
             setFilterVisible = { filterVisible = it },
             onSearchQueryChange = viewModel::onSearchQueryChange,

@@ -33,6 +33,7 @@ import tm.alashow.ui.components.AppTopBar
 import tm.alashow.ui.theme.AppTheme
 
 class PlaylistDetailTopBar(
+    private val filterIconVisible: Boolean,
     private val filterVisible: Boolean,
     private val setFilterVisible: (Boolean) -> Unit,
     private val hasSortingOption: Boolean,
@@ -80,17 +81,18 @@ class PlaylistDetailTopBar(
                 )
             },
             actions = {
-                IconButton(
-                    onClick = { setFilterVisible(true) },
-                    onLongClick = onClearFilter,
-                    onLongClickLabel = stringResource(R.string.playlist_detail_filter_clear),
-                ) {
-                    Icon(
-                        Icons.Default.FilterList,
-                        contentDescription = null,
-                        modifier = Modifier.size(AppTheme.specs.iconSizeSmall),
-                    )
-                }
+                if (filterIconVisible)
+                    IconButton(
+                        onClick = { setFilterVisible(true) },
+                        onLongClick = onClearFilter,
+                        onLongClickLabel = stringResource(R.string.playlist_detail_filter_clear),
+                    ) {
+                        Icon(
+                            Icons.Default.FilterList,
+                            contentDescription = null,
+                            modifier = Modifier.size(AppTheme.specs.iconSizeSmall),
+                        )
+                    }
             }
         )
     }
