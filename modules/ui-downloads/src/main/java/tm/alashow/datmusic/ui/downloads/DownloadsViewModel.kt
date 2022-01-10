@@ -17,6 +17,7 @@ import tm.alashow.base.util.event
 import tm.alashow.base.util.extensions.getStateFlow
 import tm.alashow.base.util.extensions.simpleName
 import tm.alashow.base.util.extensions.stateInDefault
+import tm.alashow.base.util.searchQueryAnalytics
 import tm.alashow.data.PreferencesStore
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.downloader.observers.DownloadAudioItemSortOption
@@ -53,6 +54,9 @@ class DownloadsViewModel @Inject constructor(
             downloadsParamsState
                 .debounce(60)
                 .collect(observeDownloads::invoke)
+        }
+        viewModelScope.launch {
+            searchQueryState.searchQueryAnalytics(analytics, "downloads.filter")
         }
     }
 

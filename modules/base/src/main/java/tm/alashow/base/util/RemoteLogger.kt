@@ -9,8 +9,13 @@ import android.os.Bundle
 import android.util.Log
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filter
 import timber.log.Timber
 import tm.alashow.base.util.extensions.asString
+import tm.alashow.base.util.extensions.isNotNullandNotBlank
 
 fun report(throwable: Throwable?) =
     throwable?.run { FirebaseCrashlytics.getInstance().recordException(throwable) }
@@ -58,3 +63,13 @@ fun FirebaseAnalytics.click(event: String, args: LogArgs = null) = event("click.
 
 fun Context.event(event: String, args: LogArgs = null) = FirebaseAnalytics.getInstance(this).event(event, args)
 fun Context.click(event: String, args: LogArgs = null) = FirebaseAnalytics.getInstance(this).click(event, args)
+
+suspend fun Flow<String?>.searchQueryAnalytics(
+    analytics: FirebaseAnalytics,
+    prefix: String,
+    debounceMillis: Long = 3000L,
+) = filter { it.isNotNullandNotBlank() }
+    .debounce(debounceMillis)
+    .collectLatest {
+        analytics.event("$prefix.query", mapOf("query" to it))
+    }

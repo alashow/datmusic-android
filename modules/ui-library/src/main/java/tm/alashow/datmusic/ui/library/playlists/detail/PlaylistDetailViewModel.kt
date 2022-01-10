@@ -17,6 +17,7 @@ import tm.alashow.base.util.event
 import tm.alashow.base.util.extensions.getStateFlow
 import tm.alashow.base.util.extensions.simpleName
 import tm.alashow.base.util.extensions.stateInDefault
+import tm.alashow.base.util.searchQueryAnalytics
 import tm.alashow.data.PreferencesStore
 import tm.alashow.datmusic.data.interactors.playlist.RemovePlaylistItems
 import tm.alashow.datmusic.data.observers.playlist.*
@@ -66,6 +67,9 @@ class PlaylistDetailViewModel @Inject constructor(
     init {
         load()
         buildParamsState()
+        viewModelScope.launch {
+            searchQueryState.searchQueryAnalytics(analytics, "playlist.filter")
+        }
     }
 
     private fun buildParamsState() = viewModelScope.launch {
