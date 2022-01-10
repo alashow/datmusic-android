@@ -27,7 +27,7 @@ class PlaylistDetailContent(
     override fun invoke(list: LazyListScope, details: Async<PlaylistItems>, detailsLoading: Boolean): Boolean {
         val playlistAudios = when (details) {
             is Success -> details()
-            is Loading -> (1..5).map { PlaylistItem(PlaylistAudio(it.toLong())) }
+            is Loading -> (1..10).map { PlaylistItem(PlaylistAudio(it.toLong())) }
             else -> emptyList()
         }
 

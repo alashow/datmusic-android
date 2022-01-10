@@ -6,10 +6,7 @@ package tm.alashow.datmusic.ui.library.playlists.detail
 
 import android.content.Context
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Icon
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
@@ -32,6 +29,7 @@ import tm.alashow.datmusic.ui.detail.MediaDetailTopBar
 import tm.alashow.datmusic.ui.library.R
 import tm.alashow.ui.LifecycleRespectingBackHandler
 import tm.alashow.ui.components.*
+import tm.alashow.ui.components.AppTopBar
 import tm.alashow.ui.theme.AppTheme
 
 class PlaylistDetailTopBar(
@@ -111,7 +109,7 @@ class PlaylistDetailTopBar(
     ) {
         LifecycleRespectingBackHandler(onBack = onClose)
         Row(
-            Modifier.padding(
+            modifier.padding(
                 end = AppTheme.specs.padding,
                 bottom = AppTheme.specs.paddingTiny
             ),

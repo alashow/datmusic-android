@@ -94,6 +94,7 @@ class PlaylistDetailViewModel @Inject constructor(
     }
 
     fun refresh() = load()
+
     fun addSongs() = navigator.navigate(RootScreen.Search.route)
 
     fun removePlaylistItem(item: PlaylistItem) = removePlaylistItem(item.playlistAudio.id)
@@ -107,9 +108,9 @@ class PlaylistDetailViewModel @Inject constructor(
         analytics.event("playlist.play", mapOf("audioId" to item.audio.id))
         playlistItems.first().whenSuccess { playlistItems ->
             val audioIds = playlistItems.map { it.audio.id }
-            val itemIndex = audioIds.indexOf(item.audio.id)
+            val itemIndex = playlistItems.map { it.playlistAudio.id }.indexOf(item.playlistAudio.id)
             if (itemIndex < 0) {
-                Timber.e("Playlist item not found: ${item.audio.id}")
+                Timber.e("Playlist item not found: $item")
                 return@whenSuccess
             }
             val playlistId = item.playlistAudio.playlistId

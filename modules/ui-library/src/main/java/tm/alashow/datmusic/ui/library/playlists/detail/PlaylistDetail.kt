@@ -47,6 +47,7 @@ private fun PlaylistDetail(
             if (playlistId != null)
                 navigator.navigate(EditPlaylistScreen.buildRoute(playlistId))
         },
+        isHeaderVisible = !filterVisible,
         mediaDetailContent = PlaylistDetailContent(
             onRemoveFromPlaylist = viewModel::removePlaylistItem,
             onPlayAudio = viewModel::onPlayAudio

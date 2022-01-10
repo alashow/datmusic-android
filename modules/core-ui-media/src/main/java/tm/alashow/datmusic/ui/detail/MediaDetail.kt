@@ -9,7 +9,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -17,11 +16,11 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.VectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.ui.Scaffold
 import tm.alashow.base.util.extensions.Callback
 import tm.alashow.base.util.extensions.orNA
@@ -45,6 +44,7 @@ fun <DetailType> MediaDetail(
     mediaDetailFail: MediaDetailFail<DetailType> = MediaDetailFail(),
     mediaDetailEmpty: MediaDetailEmpty<DetailType> = MediaDetailEmpty(),
     headerCoverIcon: VectorPainter? = null,
+    isHeaderVisible: Boolean = true,
     extraHeaderContent: @Composable ColumnScope.() -> Unit = {},
     navigator: Navigator = LocalNavigator.current,
 ) {
@@ -71,6 +71,7 @@ fun <DetailType> MediaDetail(
             mediaDetailFail = mediaDetailFail,
             mediaDetailEmpty = mediaDetailEmpty,
             headerCoverIcon = headerCoverIcon,
+            isHeaderVisible = isHeaderVisible,
             extraHeaderContent = extraHeaderContent,
         )
     }
@@ -88,6 +89,7 @@ private fun <DetailType, T : MediaDetailViewState<DetailType>> MediaDetailConten
     mediaDetailFail: MediaDetailFail<DetailType>,
     mediaDetailEmpty: MediaDetailEmpty<DetailType>,
     headerCoverIcon: VectorPainter? = null,
+    isHeaderVisible: Boolean = true,
     extraHeaderContent: @Composable ColumnScope.() -> Unit,
     padding: PaddingValues = PaddingValues(),
 ) {
@@ -109,26 +111,32 @@ private fun <DetailType, T : MediaDetailViewState<DetailType>> MediaDetailConten
         val listBackgroundMod = if (isLight) adaptiveBackground else Modifier
         val headerBackgroundMod = if (isLight) Modifier else adaptiveBackground
 
+        val topPadding = if (isHeaderVisible) 0.dp else padding.calculateTopPadding()
+        val bottomPadding = (if (isHeaderVisible) padding.calculateTopPadding() else 0.dp) + padding.calculateBottomPadding()
+
         CompositionLocalProvider(LocalAdaptiveColorResult provides adaptiveColor) {
             LazyColumn(
                 state = listState,
                 contentPadding = PaddingValues(
-                    bottom = padding.calculateTopPadding() + padding.calculateBottomPadding()
+                    top = topPadding,
+                    bottom = bottomPadding,
                 ),
                 modifier = listBackgroundMod.fillMaxSize(),
             ) {
                 val details = viewState.details()
                 val detailsLoading = details is Incomplete
-                mediaDetailHeader(
-                    list = this,
-                    listState = listState,
-                    headerBackgroundMod = headerBackgroundMod,
-                    title = viewState.title.orNA(),
-                    artwork = artwork,
-                    onTitleClick = onTitleClick,
-                    headerCoverIcon = headerCoverIcon,
-                    extraHeaderContent = extraHeaderContent,
-                )
+
+                if (isHeaderVisible)
+                    mediaDetailHeader(
+                        list = this,
+                        listState = listState,
+                        headerBackgroundMod = headerBackgroundMod,
+                        title = viewState.title.orNA(),
+                        artwork = artwork,
+                        onTitleClick = onTitleClick,
+                        headerCoverIcon = headerCoverIcon,
+                        extraHeaderContent = extraHeaderContent,
+                    )
 
                 val isEmpty = mediaDetailContent(
                     list = this,

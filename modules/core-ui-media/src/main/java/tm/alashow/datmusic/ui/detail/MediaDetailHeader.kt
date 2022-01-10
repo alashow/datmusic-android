@@ -36,8 +36,8 @@ fun coverHeaderScrollProgress(listState: LazyListState, height: Dp = CoverHeader
     val density = LocalDensity.current.density
     val headerProgress = remember { mutableStateOf(0f) }
     LaunchedEffect(listState) {
-        snapshotFlow { listState.firstVisibleItemScrollOffset }
-            .map { (it / density).dp / height }
+        snapshotFlow { listState.layoutInfo }
+            .map { (listState.firstVisibleItemScrollOffset / density).dp / height }
             .map { if (listState.firstVisibleItemIndex == 0) it else 1f }
             .map { it.coerceIn(0f, 1f) }
             .distinctUntilChanged()
