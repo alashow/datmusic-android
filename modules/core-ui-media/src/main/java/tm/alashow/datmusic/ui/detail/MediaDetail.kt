@@ -153,6 +153,7 @@ private fun <DetailType, T : MediaDetailViewState<DetailType>> MediaDetailConten
                 mediaDetailEmpty(
                     list = this,
                     details = details,
+                    isHeaderVisible = isHeaderVisible,
                     detailsEmpty = isEmpty,
                     onEmptyRetry = onEmptyRetry
                 )

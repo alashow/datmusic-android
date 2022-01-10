@@ -15,6 +15,7 @@ open class MediaDetailEmpty<T> {
     open operator fun invoke(
         list: LazyListScope,
         details: Async<T>,
+        isHeaderVisible: Boolean,
         detailsEmpty: Boolean,
         onEmptyRetry: () -> Unit
     ) {
@@ -22,7 +23,7 @@ open class MediaDetailEmpty<T> {
             list.item {
                 EmptyErrorBox(
                     onRetryClick = onEmptyRetry,
-                    modifier = Modifier.fillParentMaxHeight(0.5f)
+                    modifier = Modifier.fillParentMaxHeight(if (isHeaderVisible) 0.5f else 1f)
                 )
             }
         }

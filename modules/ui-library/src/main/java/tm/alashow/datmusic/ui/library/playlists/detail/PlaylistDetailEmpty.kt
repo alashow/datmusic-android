@@ -19,6 +19,7 @@ class PlaylistDetailEmpty : MediaDetailEmpty<PlaylistItems>() {
     override operator fun invoke(
         list: LazyListScope,
         details: Async<PlaylistItems>,
+        isHeaderVisible: Boolean,
         detailsEmpty: Boolean,
         onEmptyRetry: () -> Unit
     ) {
@@ -29,7 +30,7 @@ class PlaylistDetailEmpty : MediaDetailEmpty<PlaylistItems>() {
                         onRetryClick = onEmptyRetry,
                         message = stringResource(R.string.playlist_empty),
                         retryLabel = stringResource(R.string.playlist_empty_addSongs),
-                        modifier = Modifier.fillParentMaxHeight(0.5f)
+                        modifier = Modifier.fillParentMaxHeight(if (isHeaderVisible) 0.5f else 1f)
                     )
                 }
             }
