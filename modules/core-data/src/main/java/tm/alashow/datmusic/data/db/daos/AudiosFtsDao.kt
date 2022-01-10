@@ -34,6 +34,7 @@ abstract class AudiosFtsDao {
         INNER JOIN audios_fts AS fts ON pa.audio_id = fts.id
         WHERE pa.playlist_id = :playlistId
             AND audios_fts MATCH :query
+        GROUP BY pa.id
         ORDER BY pa.position
         """
     )

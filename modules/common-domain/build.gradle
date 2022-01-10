@@ -1,0 +1,43 @@
+/*
+* Copyright (C) 2019, Alashov Berkeli
+* All rights reserved.
+*/
+
+import tm.alashow.buildSrc.App
+import tm.alashow.buildSrc.Deps
+
+plugins {
+	id "com.android.library"
+	id "kotlin-android"
+	id "kotlin-parcelize"
+	id "org.jetbrains.kotlin.plugin.serialization"
+}
+
+android {
+	compileSdkVersion App.compileSdkVersion
+
+	defaultConfig {
+		minSdkVersion App.minSdkVersion
+	}
+
+	lintOptions {
+		disable "GradleCompatible"
+	}
+
+	compileOptions {
+		sourceCompatibility JavaVersion.VERSION_1_8
+		targetCompatibility JavaVersion.VERSION_1_8
+	}
+}
+
+repositories {
+	mavenCentral()
+	maven { url "https://jitpack.io" }
+	jcenter()
+}
+
+dependencies {
+	api Deps.Utils.fetch
+	api Deps.Android.Room.runtime
+	implementation project(":modules:base")
+}

@@ -10,11 +10,11 @@ import androidx.compose.animation.expandIn
 import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
@@ -30,10 +30,13 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.google.firebase.analytics.FirebaseAnalytics
 import tm.alashow.base.util.click
 import tm.alashow.common.compose.LocalAnalytics
@@ -49,7 +52,10 @@ fun SearchTextField(
     onSearch: () -> Unit = {},
     withIcon: Boolean = false,
     autoFocus: Boolean = false,
-    textStyle: TextStyle = LocalTextStyle.current,
+    textStyle: TextStyle = MaterialTheme.typography.subtitle2.copy(
+        fontSize = 13.sp,
+        fontWeight = FontWeight.Bold
+    ),
     hint: String = stringResource(R.string.search_hint_query),
     maxLength: Int = 200,
     analyticsPrefix: String = "search",
@@ -102,6 +108,7 @@ fun SearchTextField(
         colors = borderlessTextFieldColors(),
         modifier = modifier
             .fillMaxWidth()
+            .heightIn(min = 16.dp)
             .background(AppTheme.colors.onSurfaceInputBackground, MaterialTheme.shapes.small)
             .focusRequester(focusRequester)
     )

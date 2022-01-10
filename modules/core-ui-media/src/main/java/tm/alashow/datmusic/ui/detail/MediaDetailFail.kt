@@ -15,7 +15,7 @@ import tm.alashow.ui.components.ErrorBox
 
 open class MediaDetailFail<T> {
 
-    operator fun invoke(
+    open operator fun invoke(
         list: LazyListScope,
         details: Async<T>,
         onFailRetry: () -> Unit,

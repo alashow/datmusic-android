@@ -4,38 +4,37 @@
  */
 package tm.alashow.datmusic.downloader.observers
 
-import com.tonyodev.fetch2.Fetch
+import com.tonyodev.fetch2.Download
 import com.tonyodev.fetch2.Status
 import javax.inject.Inject
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.*
 import tm.alashow.data.SubjectInteractor
-import tm.alashow.datmusic.data.db.daos.AudiosFtsDao
 import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.domain.entities.DownloadRequest
 import tm.alashow.datmusic.downloader.DownloadItems
 import tm.alashow.datmusic.downloader.Downloader
-import tm.alashow.datmusic.downloader.downloads
+import tm.alashow.datmusic.downloader.interactors.SearchDownloads
+import tm.alashow.datmusic.downloader.manager.FetchDownloadManager
 import tm.alashow.domain.models.Async
-import tm.alashow.domain.models.asAsyncFlow
+import tm.alashow.domain.models.Fail
+import tm.alashow.domain.models.Success
 
 class ObserveDownloads @Inject constructor(
-    private val fetcher: Fetch,
+    private val fetcher: FetchDownloadManager,
     private val dao: DownloadRequestsDao,
-    private val audiosFtsDao: AudiosFtsDao,
-) : SubjectInteractor<ObserveDownloads.Params, Async<DownloadItems>>() {
+    private val searchDownloads: SearchDownloads,
+) : SubjectInteractor<ObserveDownloads.Params, DownloadItems>() {
 
     data class Params(
         val query: String = "",
         val audiosSortOptions: List<DownloadAudioItemSortOption> = DownloadAudioItemSortOptions.ALL,
         val defaultSortOption: DownloadAudioItemSortOption = DownloadAudioItemSortOptions.ALL.first(),
         val audiosSortOption: DownloadAudioItemSortOption = defaultSortOption,
-        val defaultStatusFilters: Set<DownloadStatusFilter> = setOf(DownloadStatusFilter.All),
-        val statusFilters: Set<DownloadStatusFilter> = defaultStatusFilters,
+        val defaultStatusFilters: HashSet<DownloadStatusFilter> = hashSetOf(DownloadStatusFilter.All),
+        val statusFilters: HashSet<DownloadStatusFilter> = defaultStatusFilters,
     ) {
         val hasQuery get() = query.isNotBlank()
         val hasSortingOption get() = audiosSortOption != defaultSortOption
@@ -45,45 +44,40 @@ class ObserveDownloads @Inject constructor(
         val statuses get() = statusFilters.map { it.statuses }.flatten()
     }
 
-    private fun fetcherDownloads(statusFilters: List<Status>) = flow {
+    private fun fetcherDownloads(
+        downloadRequests: List<DownloadRequest> = emptyList(),
+        statuses: List<Status>
+    ): Flow<List<Pair<DownloadRequest, Download>>> = flow {
+        val requestsById = downloadRequests.associateBy { it.requestId }
         while (true) {
-            emit(fetcher.downloads(statusFilters))
+            fetcher.getDownloadsWithIdsAndStatuses(ids = requestsById.keys, statuses = statuses)
+                .map { requestsById.getValue(it.id) to it }
+                .also { emit(it) }
             delay(Downloader.DOWNLOADS_STATUS_REFRESH_INTERVAL)
         }
     }.distinctUntilChanged()
 
-    override fun createObservable(params: Params): Flow<Async<DownloadItems>> {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun createObservable(params: Params): Flow<DownloadItems> {
         val downloadsRequestsFlow = when {
-            params.hasQuery -> audiosFtsDao.searchDownloads("*${params.query}*")
+            params.hasQuery -> searchDownloads("*${params.query}*")
             else -> dao.entries()
         }
 
-        return combine(downloadsRequestsFlow, fetcherDownloads(params.statuses)) { downloadRequests, downloads ->
-            if (downloadRequests.isEmpty() && !params.hasNoFilters) {
-                throw NoResultsForDownloadsFilter(params)
+        return downloadsRequestsFlow.flatMapLatest { fetcherDownloads(it, params.statuses) }
+            .map {
+                val audioDownloads = it.filter { pair -> pair.first.entityType == DownloadRequest.Type.Audio }
+                    .map { (request, info) -> AudioDownloadItem.from(request, request.audio, info) }
+                    .sortedWith(params.audiosSortOption.comparator)
+                DownloadItems(audioDownloads)
             }
-
-            val audioRequests = downloadRequests.filter { it.entityType == DownloadRequest.Type.Audio }
-            val audioDownloads = audioRequests
-                .map { request ->
-                    val downloadInfo = downloads.firstOrNull { dl -> dl.id == request.requestId }
-                    AudioDownloadItem.from(request, request.audio, downloadInfo)
-                }
-                .filter {
-                    if (!params.hasStatusFilter) true
-                    else params.statuses.contains(it.downloadInfo.status)
-                }
-                .also {
-                    if (it.isEmpty() && !params.hasNoFilters)
-                        throw NoResultsForDownloadsFilter(params)
-                }
-                .let {
-                    val comparator = params.audiosSortOption.comparator
-                    if (comparator != null) it.sortedWith(comparator)
-                    else it
-                }
-
-            DownloadItems(audioDownloads)
-        }.distinctUntilChanged().asAsyncFlow()
     }
+}
+
+fun Async<DownloadItems>.failWithNoResultsIfEmpty(params: ObserveDownloads.Params) = let {
+    if (it is Success) {
+        if (it().audios.isEmpty() && !params.hasNoFilters)
+            Fail(NoResultsForDownloadsFilter(params))
+        else it
+    } else it
 }

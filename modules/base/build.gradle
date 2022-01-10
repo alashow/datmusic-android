@@ -37,7 +37,7 @@ repositories {
 
 dependencies {
 	api Deps.Kotlin.stdlib
-	api Deps.Kotlin.serializationRuntime
+	api Deps.Kotlin.serializationJson
 	api Deps.Kotlin.coroutinesCore
 
 	api Deps.Utils.coil
@@ -56,6 +56,7 @@ dependencies {
 	api Deps.Retrofit.retroAuth
 	api Deps.Retrofit.kotlinSerializerConverter
 
+	api Deps.Android.documentFile
 	api Deps.Android.Paging.runtime
 	api Deps.Android.Paging.common
 

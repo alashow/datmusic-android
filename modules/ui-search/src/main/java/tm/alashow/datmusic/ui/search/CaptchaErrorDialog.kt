@@ -48,7 +48,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import kotlin.random.Random
 import tm.alashow.base.util.event
 import tm.alashow.common.compose.LocalAnalytics
-import tm.alashow.domain.models.errors.ApiCaptchaError
+import tm.alashow.datmusic.domain.models.errors.ApiCaptchaError
 import tm.alashow.ui.components.TextRoundedButton
 import tm.alashow.ui.components.shimmer
 import tm.alashow.ui.theme.AppTheme

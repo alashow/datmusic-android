@@ -10,8 +10,8 @@ import com.andretietz.retroauth.AuthenticationCanceledException
 import retrofit2.HttpException
 import tm.alashow.base.R
 import tm.alashow.base.util.extensions.simpleName
-import tm.alashow.domain.models.errors.ApiErrorException
-import tm.alashow.domain.models.errors.EmptyResultException
+import tm.alashow.datmusic.domain.models.errors.ApiErrorException
+import tm.alashow.datmusic.domain.models.errors.EmptyResultException
 import tm.alashow.i18n.UiMessage
 import tm.alashow.i18n.UiMessageConvertable
 

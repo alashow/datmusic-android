@@ -44,13 +44,14 @@ class CreateDatmusicBackup @Inject constructor(
         val downloadRequestAudios = downloadRequestsDao.getByType(DownloadRequest.Type.Audio)
         val downloadedAudioIds = downloadRequestAudios.map { it.id }
 
-        createOrGetPlaylist.execute(
-            CreateOrGetPlaylist.Params(
-                name = context.getString(R.string.playlist_create_downloadsBackupTemplate),
-                audioIds = downloadedAudioIds,
-                ignoreExistingAudios = true,
+        if (downloadedAudioIds.isNotEmpty())
+            createOrGetPlaylist.execute(
+                CreateOrGetPlaylist.Params(
+                    name = context.getString(R.string.playlist_create_downloadsBackupTemplate),
+                    audioIds = downloadedAudioIds,
+                    ignoreExistingAudios = true,
+                )
             )
-        )
 
         val audios = audiosDao.entries().first()
         val playlists = playlistsDao.entries().first().map { it.copyForBackup() }

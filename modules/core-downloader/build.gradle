@@ -37,4 +37,7 @@ dependencies {
 	implementation Deps.Dagger.hilt
 	kapt Deps.Dagger.compiler
 	kapt Deps.Dagger.hiltCompiler
+
+	testImplementation project(":modules:common-testing")
+	kaptTest Deps.Dagger.hiltCompiler
 }

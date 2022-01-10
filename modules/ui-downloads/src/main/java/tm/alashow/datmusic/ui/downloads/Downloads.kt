@@ -5,6 +5,9 @@
 package tm.alashow.datmusic.ui.downloads
 
 import android.content.Context
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -71,6 +74,7 @@ import tm.alashow.domain.models.Fail
 import tm.alashow.domain.models.Loading
 import tm.alashow.domain.models.Success
 import tm.alashow.domain.models.Uninitialized
+import tm.alashow.ui.Delayed
 import tm.alashow.ui.LifecycleRespectingBackHandler
 import tm.alashow.ui.components.AppBarNavigationIcon
 import tm.alashow.ui.components.AppTopBar
@@ -114,6 +118,7 @@ private fun DownloadsAppBar(
 ) {
     val coroutine = rememberCoroutineScope()
     val viewState by rememberFlowWithLifecycle(viewModel.state).collectAsState(DownloadsViewState.Empty)
+    val downloadsIsEmpty = viewState.downloads is Success && viewState.downloads()!!.audios.isEmpty()
     var filterVisible by remember { mutableStateOf(false) }
     var searchQuery by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue()) }
     val onQueryChange = { query: TextFieldValue ->
@@ -144,24 +149,26 @@ private fun DownloadsAppBar(
                     filterVisible = false
                     onQueryChange(TextFieldValue())
                     // fix weird race condition with SearchTextField trying to set back previous text after clearing
-                    coroutine.launch { delay(3); onQueryChange(TextFieldValue()) }
+                    coroutine.launch { delay(10); onQueryChange(TextFieldValue()) }
                 },
             )
         },
         actions = {
-            IconButton(
-                onClick = { filterVisible = true },
-                onLongClick = onClearFilter,
-                onLongClickLabel = stringResource(R.string.downloads_filter_clear),
-            ) {
-                Icon(
-                    Icons.Default.FilterList,
-                    contentDescription = null,
-                    modifier = Modifier.size(AppTheme.specs.iconSizeSmall),
-                    tint = if (viewState.params.hasNoFilters) LocalContentColor.current else MaterialTheme.colors.secondary
-                )
-            }
+            if (!downloadsIsEmpty)
+                IconButton(
+                    onClick = { filterVisible = true },
+                    onLongClick = onClearFilter,
+                    onLongClickLabel = stringResource(R.string.downloads_filter_clear),
+                ) {
+                    Icon(
+                        Icons.Default.FilterList,
+                        contentDescription = null,
+                        modifier = Modifier.size(AppTheme.specs.iconSizeSmall),
+                        tint = if (viewState.params.hasNoFilters) LocalContentColor.current else MaterialTheme.colors.secondary
+                    )
+                }
         },
+        modifier = Modifier.animateContentSize(spring(dampingRatio = Spring.DampingRatioLowBouncy))
     )
 }
 
@@ -269,11 +276,13 @@ private fun LazyListScope.downloadsList(
 ) {
     if (downloads.audios.isEmpty()) {
         item {
-            EmptyErrorBox(
-                message = stringResource(R.string.downloads_empty),
-                retryVisible = false,
-                modifier = Modifier.fillParentMaxHeight()
-            )
+            Delayed {
+                EmptyErrorBox(
+                    message = stringResource(R.string.downloads_empty),
+                    retryVisible = false,
+                    modifier = Modifier.fillParentMaxHeight()
+                )
+            }
         }
     }
 

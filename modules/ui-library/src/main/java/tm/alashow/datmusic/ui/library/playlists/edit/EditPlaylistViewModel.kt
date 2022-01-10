@@ -20,7 +20,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -39,7 +38,6 @@ import tm.alashow.datmusic.domain.entities.PlaylistAudioId
 import tm.alashow.datmusic.domain.entities.PlaylistId
 import tm.alashow.datmusic.domain.entities.PlaylistItem
 import tm.alashow.datmusic.domain.entities.PlaylistItems
-import tm.alashow.domain.models.Success
 import tm.alashow.i18n.ValidationError
 import tm.alashow.i18n.asValidationError
 import tm.alashow.navigation.Navigator
@@ -61,6 +59,7 @@ class EditPlaylistViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val playlistId = requireNotNull(handle.get<PlaylistId>(PLAYLIST_ID_KEY))
+    private val playlistDetailParams = ObservePlaylistDetails.Params(playlistId)
 
     private val nameState = MutableStateFlow(TextFieldValue())
     val name = nameState.filterNotNull()
@@ -82,15 +81,14 @@ class EditPlaylistViewModel @Inject constructor(
 
     init {
         observePlaylist(playlistId)
-        observePlaylistDetails(playlistId)
+        observePlaylistDetails(playlistDetailParams)
 
         viewModelScope.launch {
             val playlist = observePlaylist.get()
             nameState.value = TextFieldValue(playlist.name)
 
-            observePlaylistDetails.flow.filter { it is Success }.collectLatest {
-                val items = it.invoke().orEmpty()
-                playlistItems.value = items
+            observePlaylistDetails.flow.collectLatest {
+                playlistItems.value = it
             }
         }
     }

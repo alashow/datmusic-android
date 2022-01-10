@@ -13,9 +13,9 @@ object Deps {
         const val stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$version"
         const val gradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:$version"
         const val serialization = "org.jetbrains.kotlin:kotlin-serialization:$version"
-        const val serializationRuntime = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.1"
+        const val serializationJson = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2"
 
-        const val coroutinesVersion = "1.6.0-RC3"
+        const val coroutinesVersion = "1.6.0"
         const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
         const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
         const val coroutineTesting = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
@@ -131,7 +131,7 @@ object Deps {
 
         const val threeTen = "org.threeten:threetenbp:1.5.2"
 
-        const val coilVersion = "2.0.0-alpha05"
+        const val coilVersion = "2.0.0-alpha06"
         const val coil = "io.coil-kt:coil:$coilVersion"
         const val store = "com.dropbox.mobile.store:store4:4.0.4-KT15"
 
@@ -198,6 +198,7 @@ object Deps {
         const val robolectric = "org.robolectric:robolectric:4.7.3"
         const val mockito = "org.mockito:mockito-core:4.2.0"
         const val mockitoKotlin = "org.mockito.kotlin:mockito-kotlin:4.0.0"
+        const val mockk = "io.mockk:mockk:1.12.2"
         const val turbine = "app.cash.turbine:turbine:0.7.0"
     }
 }

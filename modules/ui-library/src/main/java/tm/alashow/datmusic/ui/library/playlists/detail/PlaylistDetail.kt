@@ -4,14 +4,11 @@
  */
 package tm.alashow.datmusic.ui.library.playlists.detail
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -39,6 +36,7 @@ private fun PlaylistDetail(
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
 ) {
     val viewState by rememberFlowWithLifecycle(viewModel.state).collectAsState(initial = PlaylistDetailViewState.Empty)
+    var filterVisible by rememberSaveable { mutableStateOf(false) }
     val playlistId = viewState.playlist?.id
     MediaDetail(
         viewState = viewState,
@@ -49,8 +47,23 @@ private fun PlaylistDetail(
             if (playlistId != null)
                 navigator.navigate(EditPlaylistScreen.buildRoute(playlistId))
         },
-        mediaDetailContent = PlaylistDetailContent.create(onRemoveFromPlaylist = viewModel::removePlaylistItem),
+        isHeaderVisible = !filterVisible,
+        mediaDetailContent = PlaylistDetailContent(
+            onRemoveFromPlaylist = viewModel::removePlaylistItem,
+            onPlayAudio = viewModel::onPlayAudio
+        ),
+        mediaDetailTopBar = PlaylistDetailTopBar(
+            filterVisible = filterVisible,
+            setFilterVisible = { filterVisible = it },
+            onSearchQueryChange = viewModel::onSearchQueryChange,
+            onClearFilter = viewModel::onClearFilter,
+            hasSortingOption = viewState.params.hasSortingOption,
+            sortOptions = viewState.params.sortOptions,
+            sortOption = viewState.params.sortOption,
+            onSortOptionSelect = viewModel::onSortOptionSelect,
+        ),
         mediaDetailEmpty = PlaylistDetailEmpty(),
+        mediaDetailFail = PlaylistDetailFail(),
         extraHeaderContent = {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -59,7 +72,7 @@ private fun PlaylistDetail(
                 PlaylistHeaderSubtitle(viewState)
                 ShuffleAdaptiveButton(
                     visible = !viewState.isLoading && !viewState.isEmpty,
-                    playbackConnection
+                    playbackConnection = playbackConnection,
                 ) {
                     if (playlistId != null)
                         playbackConnection.playPlaylist(playlistId, MEDIA_ID_INDEX_SHUFFLED)
@@ -73,8 +86,9 @@ private fun PlaylistDetail(
 private fun PlaylistHeaderSubtitle(viewState: PlaylistDetailViewState) {
     if (!viewState.isEmpty) {
         val resources = LocalContext.current.resources
-        viewState.audiosCountDuration?.let {
-            Text(it.localize(resources), style = MaterialTheme.typography.subtitle2)
-        }
-    }
+        val countDuration = viewState.audiosCountDuration
+        if (countDuration != null)
+            Text(countDuration.localize(resources), style = MaterialTheme.typography.subtitle2)
+        else Spacer(Modifier)
+    } else Spacer(Modifier)
 }

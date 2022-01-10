@@ -20,7 +20,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -36,8 +35,8 @@ import tm.alashow.datmusic.data.observers.search.ObservePagedDatmusicSearch
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
+import tm.alashow.datmusic.domain.models.errors.ApiCaptchaError
 import tm.alashow.datmusic.playback.PlaybackConnection
-import tm.alashow.domain.models.errors.ApiCaptchaError
 import tm.alashow.navigation.screens.QUERY_KEY
 import tm.alashow.navigation.screens.SEARCH_BACKENDS_KEY
 
@@ -58,7 +57,7 @@ internal class SearchViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val initialQuery = handle.get(QUERY_KEY) ?: ""
-    private val searchQuery = MutableStateFlow(initialQuery)
+    private val searchQuery = handle.getStateFlow(initialQuery, viewModelScope, initialQuery)
     private val searchFilter = handle.getStateFlow("search_filter", viewModelScope, SearchFilter.from(handle.get(SEARCH_BACKENDS_KEY)))
     private val searchTrigger = handle.getStateFlow("search_trigger", viewModelScope, SearchTrigger(initialQuery))
 
@@ -75,7 +74,7 @@ internal class SearchViewModel @Inject constructor(
     private val onSearchEventChannel = Channel<SearchEvent>(Channel.CONFLATED)
     val onSearchEvent = onSearchEventChannel.receiveAsFlow()
 
-    val state = combine(searchFilter.filterNotNull(), snackbarManager.errors, captchaError, ::SearchViewState)
+    val state = combine(searchFilter, snackbarManager.errors, captchaError, ::SearchViewState)
         .stateInDefault(viewModelScope, SearchViewState.Empty)
 
     init {
@@ -86,7 +85,7 @@ internal class SearchViewModel @Inject constructor(
                         searchQuery.value = action.query
 
                         // trigger search while typing if minerva is the only backend selected
-                        if (searchFilter.value?.hasMinervaOnly == true) {
+                        if (searchFilter.value.hasMinervaOnly) {
                             searchTrigger.value = SearchTrigger(searchQuery.value)
                         }
                     }
@@ -101,7 +100,7 @@ internal class SearchViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            combine(searchTrigger.filterNotNull(), searchFilter.filterNotNull(), ::SearchEvent)
+            combine(searchTrigger, searchFilter, ::SearchEvent)
                 .debounce(SEARCH_DEBOUNCE_MILLIS)
                 .collectLatest {
                     search(it)
@@ -151,10 +150,10 @@ internal class SearchViewModel @Inject constructor(
      * Queue given audio to play with current query as the queue.
      */
     private fun playAudio(audio: Audio) {
-        val query = searchTrigger.value?.query ?: searchQuery.value
+        val query = searchTrigger.value.query
         when {
-            searchFilter.value?.hasMinerva == true -> playbackConnection.playWithMinervaQuery(query, audio.id)
-            searchFilter.value?.hasFlacs == true -> playbackConnection.playWithFlacsQuery(query, audio.id)
+            searchFilter.value.hasMinerva -> playbackConnection.playWithMinervaQuery(query, audio.id)
+            searchFilter.value.hasFlacs -> playbackConnection.playWithFlacsQuery(query, audio.id)
             else -> playbackConnection.playWithQuery(query, audio.id)
         }
     }
@@ -164,7 +163,7 @@ internal class SearchViewModel @Inject constructor(
      */
     private fun selectBackendType(action: SearchAction.SelectBackendType) {
         analytics.event("search.selectBackend", mapOf("type" to action.backendType))
-        searchFilter.value = searchFilter.value?.copy(
+        searchFilter.value = searchFilter.value.copy(
             backends = when (action.selected) {
                 true -> setOf(action.backendType)
                 else -> SearchFilter.DefaultBackends

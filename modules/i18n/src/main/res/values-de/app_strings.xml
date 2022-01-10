@@ -1,2 +1,186 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="app_name">Datmusic</string>
+    <string name="app_launcher">Datmusic</string>
+    <string name="app_label">Datmusic</string>
+
+    <string name="appBar.search.hint">Suche</string>
+
+    <string name="search.title">Suche</string>
+    <string name="search.hint">Lieder, Alben, Künstler</string>
+    <string name="search.hint.query">Suche</string>
+
+    <string name="search.audios">Lieder</string>
+    <string name="search.artists">Künstler</string>
+    <string name="search.albums">Alben</string>
+    <string name="search.minerva">Minerva</string>
+    <string name="search.flacs">Flacs</string>
+
+    <string name="artists.detail.title">Künstler</string>
+
+    <string name="albums.detail.title">Alben</string>
+
+    <string name="audio.menu.cd">Audio Menü</string>
+    <string name="audio.menu.play">Abspielen</string>
+    <string name="audio.menu.playNext">nächstes Abspielen</string>
+    <string name="audio.menu.download">Herunterladen</string>
+    <string name="audio.menu.downloadById">Herunterladen</string>
+    <string name="audio.menu.copyLink">Link kopieren</string>
+
+    <string name="downloader.downloadsLocationSelect.title">Download Location</string>
+    <string name="downloader.downloadsLocationSelect.text">Klick weiter um Download Ziel auszuwählen</string>
+    <string name="downloader.downloadsLocationSelect.next">Weiter</string>
+
+    <string name="downloader.enqueue.downloadsLocationNotSelected">Download Ziel noch nicht ausgewählt</string>
+    <string name="downloader.enqueue.downloadsNotFound">Ausgewähltes Download Ziel nicht gefunden</string>
+    <string name="downloader.enqueue.audio.queued">Zur Download Liste hinzugefügt</string>
+    <string name="downloader.enqueue.audio.error.invalidUrl">Audio hat eine ungültige download url</string>
+    <string name="downloader.enqueue.audio.error.fileCreate">Konnte die Datei im Download Ziel nicht anlegen</string>
+    <string name="downloader.enqueue.audio.existing.resuming">Bestehenden Download wiederaufnehmen</string>
+    <string name="downloader.enqueue.audio.existing.alreadyQueued">Dieses Lied ist bereits in der Download Warteschlange</string>
+    <string name="downloader.enqueue.audio.existing.completed">Dieses Lied wurde bereits herunter geladen</string>
+    <string name="downloader.enqueue.audio.existing.unknown">Download ist bereits in der Warteschlange jedoch mit dem Status: %1$s</string>
+
+    <string name="downloads.title">Downloads</string>
+    <string name="downloads.empty">Keine Downloads</string>
+
+    <string name="downloads.filter.search.hint">Suche in Downloads</string>
+    <string name="downloads.filter.clear">Filter löschen</string>
+    <string name="downloads.filter.noResults">Keine Ergebnisse</string>
+    <string name="downloads.filter.noResults.forQuery">Keine Ergebnisse für %1$s</string>
+    <string name="downloads.filter.sort.byDate">Nach Datum</string>
+    <string name="downloads.filter.sort.byTitle">Nach Lied</string>
+    <string name="downloads.filter.sort.byArtist">Nach Artist</string>
+    <string name="downloads.filter.sort.byAlbum">Nach Album</string>
+    <string name="downloads.filter.sort.bySize">Nach Größe</string>
+    <string name="downloads.filter.sort.byDuration">Nach Länge</string>
+    <string name="downloads.filter.status.all">Alle</string>
+
+    <string name="downloads.download.status.queued">In Warteschlange</string>
+    <string name="downloads.download.status.downloading">Downloade</string>
+    <string name="downloads.download.status.paused">Pausiert</string>
+    <string name="downloads.download.status.cancelled">Abgebrochen</string>
+    <string name="downloads.download.status.failed">Fehler</string>
+    <string name="downloads.download.status.completed">Abgeschlossen</string>
+
+    <string name="downloads.download.play">Play</string>
+    <string name="downloads.download.playNext">Play next</string>
+    <string name="downloads.download.pause">Pause</string>
+    <string name="downloads.download.resume">Wiederaufnahme</string>
+    <string name="downloads.download.cancel">Abbrechen</string>
+    <string name="downloads.download.retry">Erneut versuchen</string>
+    <string name="downloads.download.open">Download öffnen</string>
+    <string name="downloads.download.remove">Download entfernen</string>
+    <string name="downloads.download.delete">Download löschen</string>
+
+    <string name="library.title">Bibliothek</string>
+    <string name="library.empty">Keine Einträge</string>
+
+    <string name="library.item.menu.cd">Bibliothek Menü</string>
+    <string name="library.item.menu.edit">Bearbeiten</string>
+    <string name="library.item.menu.delete">Löschen</string>
+    <string name="library.item.menu.download">Download</string>
+
+    <string name="playlist.title">Playliste</string>
+    <string name="playlist.empty">Playliste ist leer</string>
+    <string name="playlist.empty.addSongs">Lied hinzufügen</string>
+
+    <string name="playlist.audio.removeFromPlaylist">Von Playliste entfernen</string>
+
+    <string name="playlist.addTo">Zu Playliste hinzufügen</string>
+    <string name="playlist.addTo.multiple">Zu Playliste hinzufügen</string>
+    <string name="playlist.addTo.new">Neue Playliste</string>
+    <string name="playlist.addTo.added">Hinzugefügt zu %1$s</string>
+    <string name="playlist.addTo.open">Öffnen</string>
+
+    <string name="playlist.create">Playliste erstellen</string>
+    <string name="playlist.create.skipName">Überspringen</string>
+    <string name="playlist.create.label">Gib der Playliste einen Namen</string>
+    <string name="playlist.create.generatedTemplate">Meine Playliste #%1$d</string>
+
+    <string name="playlist.create.downloadsBackupTemplate">Downloads</string>
+
+    <string name="playlist.edit.label">Playliste bearbeiten</string>
+    <string name="playlist.edit.clearArtwork">Artwork entfernen</string>
+    <string name="playlist.edit.shuffle">Shuffle</string>
+    <string name="playlist.edit.delete">Playliste löschen</string>
+    <string name="playlist.edit.done">Speichern</string>
+    <string name="playlist.edit.removed">Von Playliste entfernt</string>
+    <string name="playlist.edit.removed.undo">Rückgängig</string>
+
+    <string name="playlist.download.queued">Playliste zur Download Warteschlange hinzugefügt</string>
+    <string name="playlist.download.queuedCount">%1$d Lieder zur Download Warteschlange hinzugefügt</string>
+    <string name="playlist.download.error.empty">Playliste ist leer</string>
+
+    <string name="playback.queue.title">Nächstes</string>
+    <string name="playback.queue.empty">Nichts in der Warteschlange :(</string>
+    <string name="playback.queue.addQueueToPlaylist">Warteschlange zur Playliste hinzugefügt</string>
+    <string name="playback.queue.saveAsPlaylist">Speichere Warteschlange als Playliste</string>
+    <string name="playback.queue.saveAsPlaylist.saved">Gespeichert als %1$s</string>
+    <string name="playback.queue.saveAsPlaylist.open">Öffnen</string>
+
+    <string name="playback.queue.removeFromQueue">Von Warteschlange entfernt</string>
+
+    <string name="playback.queueTitle.audio">Von Warteschlange abspielen</string>
+    <string name="playback.queueTitle.downloads">Von Downloads abspielen</string>
+    <string name="playback.queueTitle.artist">Von Artist abspielen</string>
+    <string name="playback.queueTitle.artist.value">Von Artist abspielen</string>
+    <string name="playback.queueTitle.album">Von Album abspielen</string>
+    <string name="playback.queueTitle.playlist">Von Playliste abspielen</string>
+    <string name="playback.queueTitle.search">Aus der Suche abspielen</string>
+
+    <plurals name="songs.count">
+        <item quantity="one">%1$d Lied</item>
+        <item quantity="other">%1$d Lieder</item>
+    </plurals>
+
+    <string name="settings.title">Einstellungen</string>
+
+    <string name="settings.theme">Theme</string>
+    <string name="settings.theme.darkMode">Dark mode</string>
+    <string name="settings.theme.colorPalette">Farbpalette</string>
+
+    <string name="settings.downloads">Downloads</string>
+    <string name="settings.downloads.location">Download Ziel</string>
+    <string name="settings.downloads.location.select">Auswählen</string>
+    <string name="settings.downloads.location.change">Ändern</string>
+    <string name="settings.downloads.songsGrouping">Gruppiere Lieder</string>
+    <string name="settings.downloads.songsGrouping.byAlbum">Nach Alben</string>
+    <string name="settings.downloads.songsGrouping.byAlbum.example">/Artist/Album/Lied</string>
+    <string name="settings.downloads.songsGrouping.byArtist">Nach Artist</string>
+    <string name="settings.downloads.songsGrouping.byArtist.example">/Artist/Lied</string>
+    <string name="settings.downloads.songsGrouping.flat">Flach</string>
+    <string name="settings.downloads.songsGrouping.flat.example">/Lied</string>
+
+    <string name="settings.about">Über</string>
+    <string name="settings.about.author">Author</string>
+    <string name="settings.about.author.text">Alashov Berkeli</string>
+    <string name="settings.about.author.link">https://alashov.com</string>
+    <string name="settings.about.version">Version</string>
+
+    <string name="settings.general">Allgemein</string>
+
+    <string name="settings.premium">Premium</string>
+    <string name="settings.premium.subscribe">Abonement</string>
+    <string name="settings.premium.view">Abonement ansehen</string>
+    <string name="settings.premium.disabled">Deaktiviert</string>
+
+    <string name="settings.library">Bibliothek</string>
+    <string name="settings.database">Datenbank</string>
+    <string name="settings.database.backup">Backup</string>
+    <string name="settings.database.backup.complete">Backup abgeschlossen</string>
+    <string name="settings.database.restore">Wiederherstellen</string>
+    <string name="settings.database.restore.complete">Wiederherstellen abgeschlossen</string>
+    <string name="settings.database.restore.NonMatchingVersion">Backup Datei hat nicht-übereinstimmende Version mit dieser App, wiederherstellung könnte fehlschlagen (%1$d vs Backup Version %2$d).</string>
+
+    <string name="subscriptions.required">Abonement benötigt für dieses Feature</string>
+
+    <string name="captcha.title">Captcha fehlerhaft</string>
+    <string name="captcha.hint">Tippen Sie die Buchstaben oben</string>
+    <string name="captcha.reload">Neu laden</string>
+    <string name="captcha.empty">Captcha darf nicht leer sein</string>
+    <string name="captcha.submit">Senden</string>
+
+    <string name="error.keyError">Schlüssel ungültig! App aktualisieren oder Kontaktieren Sie den Entwickler</string>
+    <string name="error.unavailable">Sie sind zu schnell</string>
+</resources>

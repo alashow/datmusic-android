@@ -115,7 +115,7 @@ fun LazyListScope.settingsDownloadsSection(downloader: Downloader) {
         Column(verticalArrangement = Arrangement.spacedBy(AppTheme.specs.padding)) {
             SettingsItem(stringResource(R.string.settings_downloads_location)) {
                 OutlinedButton(
-                    onClick = { downloader.requestNewDownloadsLocations() },
+                    onClick = { downloader.requestNewDownloadsLocation() },
                     colors = outlinedButtonColors()
                 ) {
                     if (downloadsLocationSelected != null) {

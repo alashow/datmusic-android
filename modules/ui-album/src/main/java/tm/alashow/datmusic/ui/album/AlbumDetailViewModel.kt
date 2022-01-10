@@ -41,7 +41,7 @@ class AlbumDetailViewModel @Inject constructor(
         requireNotNull(handle.get<String>(ALBUM_ACCESS_KEY))
     )
 
-    val state = combine(albumObserver.flow, albumDetails.flow, ::AlbumDetailViewState)
+    val state = combine(albumObserver.flow, albumDetails.asyncFlow, ::AlbumDetailViewState)
         .stateInDefault(viewModelScope, AlbumDetailViewState.Empty)
 
     init {

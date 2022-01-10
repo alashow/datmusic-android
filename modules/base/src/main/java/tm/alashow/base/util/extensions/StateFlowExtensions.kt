@@ -17,16 +17,16 @@ import kotlinx.coroutines.withContext
 fun <T> SavedStateHandle.getStateFlow(
     key: String,
     scope: CoroutineScope,
-    initialValue: T? = get(key),
-): MutableStateFlow<T?> = this.let { handle ->
-    val liveData = handle.getLiveData<T?>(key, initialValue).also { liveData ->
+    initialValue: T = get(key) ?: error("No initial value for key $key")
+): MutableStateFlow<T> = this.let { handle ->
+    val liveData = handle.getLiveData<T>(key, initialValue).also { liveData ->
         if (liveData.value === initialValue) {
             liveData.value = initialValue
         }
     }
-    val mutableStateFlow = MutableStateFlow(liveData.value)
+    val mutableStateFlow = MutableStateFlow(liveData.value ?: initialValue)
 
-    val observer: Observer<T?> = Observer { value ->
+    val observer: Observer<T> = Observer { value ->
         if (value != mutableStateFlow.value) {
             mutableStateFlow.value = value
         }

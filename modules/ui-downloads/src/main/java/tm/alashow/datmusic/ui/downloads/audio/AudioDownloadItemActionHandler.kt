@@ -43,21 +43,23 @@ fun audioDownloadItemActionHandler(
 
     return { action ->
         analytics.event("downloads.audio.${action.simpleName}", mapOf("id" to action.audio.audio.id))
-        when (action) {
-            is AudioDownloadItemAction.Play -> playbackConnection.playAudio(action.audio.audio)
-            is AudioDownloadItemAction.PlayNext -> playbackConnection.playNextAudio(action.audio.audio)
-            is AudioDownloadItemAction.Pause -> downloader.pause(action.audio)
-            is AudioDownloadItemAction.Resume -> downloader.resume(action.audio)
-            is AudioDownloadItemAction.Cancel -> downloader.cancel(action.audio)
-            is AudioDownloadItemAction.Retry -> downloader.retry(action.audio)
-            is AudioDownloadItemAction.Remove -> coroutine.launch { downloader.remove(action.audio) }
-            is AudioDownloadItemAction.Delete -> coroutine.launch { downloader.delete(action.audio) }
-            is AudioDownloadItemAction.Open -> IntentUtils.openFile(context, action.audio.downloadInfo.fileUri, action.audio.audio.fileMimeType())
-            is AudioDownloadItemAction.CopyLink -> {
-                clipboardManager.setText(AnnotatedString(action.audio.audio.downloadUrl ?: ""))
-                context.toast(R.string.generic_clipboard_copied)
+        coroutine.launch {
+            when (action) {
+                is AudioDownloadItemAction.Play -> playbackConnection.playAudio(action.audio.audio)
+                is AudioDownloadItemAction.PlayNext -> playbackConnection.playNextAudio(action.audio.audio)
+                is AudioDownloadItemAction.Pause -> downloader.pause(action.audio)
+                is AudioDownloadItemAction.Resume -> downloader.resume(action.audio)
+                is AudioDownloadItemAction.Cancel -> downloader.cancel(action.audio)
+                is AudioDownloadItemAction.Retry -> downloader.retry(action.audio)
+                is AudioDownloadItemAction.Remove -> downloader.remove(action.audio)
+                is AudioDownloadItemAction.Delete -> downloader.delete(action.audio)
+                is AudioDownloadItemAction.Open -> IntentUtils.openFile(context, action.audio.downloadInfo.fileUri, action.audio.audio.fileMimeType())
+                is AudioDownloadItemAction.CopyLink -> {
+                    clipboardManager.setText(AnnotatedString(action.audio.audio.downloadUrl ?: ""))
+                    context.toast(R.string.generic_clipboard_copied)
+                }
+                else -> Timber.e("Unhandled action: $action")
             }
-            else -> Timber.e("Unhandled action: $action")
         }
     }
 }

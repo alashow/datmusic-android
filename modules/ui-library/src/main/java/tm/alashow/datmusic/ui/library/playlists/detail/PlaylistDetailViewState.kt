@@ -5,6 +5,7 @@
 package tm.alashow.datmusic.ui.library.playlists.detail
 
 import android.content.Context
+import tm.alashow.datmusic.data.observers.playlist.ObservePlaylistDetails
 import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.domain.entities.PlaylistItems
 import tm.alashow.datmusic.ui.detail.MediaDetailViewState
@@ -13,12 +14,10 @@ import tm.alashow.domain.models.Async
 import tm.alashow.domain.models.Success
 import tm.alashow.domain.models.Uninitialized
 
-typealias DragMove = Pair<Int, Int>
-
 data class PlaylistDetailViewState(
     val playlist: Playlist? = null,
     val playlistDetails: Async<PlaylistItems> = Uninitialized,
-    val dragMove: DragMove? = null,
+    val params: ObservePlaylistDetails.Params = ObservePlaylistDetails.Params(),
     val audiosCountDuration: AudiosCountDuration? = null,
 ) : MediaDetailViewState<PlaylistItems> {
 
