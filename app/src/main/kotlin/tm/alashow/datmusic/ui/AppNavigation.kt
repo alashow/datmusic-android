@@ -4,6 +4,7 @@
  */
 package tm.alashow.datmusic.ui
 
+import androidx.compose.animation.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Stable
@@ -11,13 +12,11 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
+import androidx.navigation.*
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.navigation
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.navigation
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.coroutines.InternalCoroutinesApi
@@ -43,13 +42,13 @@ import tm.alashow.navigation.screens.RootScreen
 import tm.alashow.navigation.screens.bottomSheetScreen
 import tm.alashow.navigation.screens.composableScreen
 
-@OptIn(InternalCoroutinesApi::class, ExperimentalMaterialNavigationApi::class)
+@OptIn(InternalCoroutinesApi::class, ExperimentalMaterialNavigationApi::class, ExperimentalAnimationApi::class)
 @Composable
 internal fun AppNavigation(
     navController: NavHostController,
+    modifier: Modifier = Modifier,
     navigator: Navigator = LocalNavigator.current,
     analytics: FirebaseAnalytics = LocalAnalytics.current,
-    modifier: Modifier = Modifier
 ) {
     collectEvent(navigator.queue) { event ->
         analytics.event("navigator.navigate", mapOf("route" to event.route))
@@ -76,11 +75,14 @@ internal fun AppNavigation(
             else -> Unit
         }
     }
-
-    NavHost(
+    AnimatedNavHost(
         navController = navController,
         startDestination = RootScreen.Search.route,
-        modifier = modifier
+        modifier = modifier,
+        enterTransition = { defaultEnterTransition(initialState, targetState) },
+        exitTransition = { defaultExitTransition(initialState, targetState) },
+        popEnterTransition = { defaultPopEnterTransition() },
+        popExitTransition = { defaultPopExitTransition() },
     ) {
         addSearchRoot(navController)
         addDownloadsRoot(navController)
@@ -91,6 +93,7 @@ internal fun AppNavigation(
     }
 }
 
+@ExperimentalAnimationApi
 private fun NavGraphBuilder.addSearchRoot(navController: NavController) {
     navigation(
         route = RootScreen.Search.route,
@@ -102,6 +105,7 @@ private fun NavGraphBuilder.addSearchRoot(navController: NavController) {
     }
 }
 
+@ExperimentalAnimationApi
 private fun NavGraphBuilder.addDownloadsRoot(navController: NavController) {
     navigation(
         route = RootScreen.Downloads.route,
@@ -111,6 +115,7 @@ private fun NavGraphBuilder.addDownloadsRoot(navController: NavController) {
     }
 }
 
+@ExperimentalAnimationApi
 private fun NavGraphBuilder.addLibraryRoot(navController: NavController) {
     navigation(
         route = RootScreen.Library.route,
@@ -125,6 +130,7 @@ private fun NavGraphBuilder.addLibraryRoot(navController: NavController) {
     }
 }
 
+@ExperimentalAnimationApi
 private fun NavGraphBuilder.addSettingsRoot(navController: NavController) {
     navigation(
         route = RootScreen.Settings.route,
@@ -217,4 +223,47 @@ internal fun NavController.currentScreenAsState(): State<RootScreen> {
     }
 
     return selectedItem
+}
+
+@ExperimentalAnimationApi
+private fun AnimatedContentScope<*>.defaultEnterTransition(
+    initial: NavBackStackEntry,
+    target: NavBackStackEntry,
+): EnterTransition {
+    val initialNavGraph = initial.destination.hostNavGraph
+    val targetNavGraph = target.destination.hostNavGraph
+    // If we're crossing nav graphs (bottom navigation graphs), we crossfade
+    if (initialNavGraph.id != targetNavGraph.id) {
+        return fadeIn()
+    }
+    // Otherwise we're in the same nav graph, we can imply a direction
+    return fadeIn() + slideIntoContainer(AnimatedContentScope.SlideDirection.Start)
+}
+
+@ExperimentalAnimationApi
+private fun AnimatedContentScope<*>.defaultExitTransition(
+    initial: NavBackStackEntry,
+    target: NavBackStackEntry,
+): ExitTransition {
+    val initialNavGraph = initial.destination.hostNavGraph
+    val targetNavGraph = target.destination.hostNavGraph
+    // If we're crossing nav graphs (bottom navigation graphs), we crossfade
+    if (initialNavGraph.id != targetNavGraph.id) {
+        return fadeOut()
+    }
+    // Otherwise we're in the same nav graph, we can imply a direction
+    return fadeOut() + slideOutOfContainer(AnimatedContentScope.SlideDirection.Start)
+}
+
+private val NavDestination.hostNavGraph: NavGraph
+    get() = hierarchy.first { it is NavGraph } as NavGraph
+
+@ExperimentalAnimationApi
+private fun AnimatedContentScope<*>.defaultPopEnterTransition(): EnterTransition {
+    return fadeIn() + slideIntoContainer(AnimatedContentScope.SlideDirection.End)
+}
+
+@ExperimentalAnimationApi
+private fun AnimatedContentScope<*>.defaultPopExitTransition(): ExitTransition {
+    return fadeOut() + slideOutOfContainer(AnimatedContentScope.SlideDirection.End)
 }

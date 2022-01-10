@@ -4,6 +4,8 @@
  */
 package tm.alashow.navigation.screens
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
 import androidx.core.net.toUri
@@ -15,9 +17,9 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
-import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
+import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
 import tm.alashow.Config
@@ -177,8 +179,9 @@ sealed class LeafScreen(
     }
 }
 
-fun NavGraphBuilder.composableScreen(screen: LeafScreen, content: @Composable (NavBackStackEntry) -> Unit) {
-    composable(screen.createRoute(), screen.arguments, screen.deepLinks, content)
+@OptIn(ExperimentalAnimationApi::class)
+fun NavGraphBuilder.composableScreen(screen: LeafScreen, content: @Composable AnimatedVisibilityScope.(NavBackStackEntry) -> Unit) {
+    composable(screen.createRoute(), screen.arguments, screen.deepLinks, content = content)
 }
 
 @OptIn(ExperimentalMaterialNavigationApi::class)

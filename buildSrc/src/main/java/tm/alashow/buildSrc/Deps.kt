@@ -82,7 +82,8 @@ object Deps {
             const val swiperefresh = "com.google.accompanist:accompanist-swiperefresh:$version"
             const val systemUiController = "com.google.accompanist:accompanist-systemuicontroller:$version"
             const val navigationMaterial = "com.google.accompanist:accompanist-navigation-material:$version"
-            const val navigationFlowlayout = "com.google.accompanist:accompanist-flowlayout:$version"
+            const val navigationAnimation = "com.google.accompanist:accompanist-navigation-animation:$version"
+            const val flowlayout = "com.google.accompanist:accompanist-flowlayout:$version"
         }
 
         object Lifecycle {
