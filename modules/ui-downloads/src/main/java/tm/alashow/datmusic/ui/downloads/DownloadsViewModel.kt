@@ -17,6 +17,7 @@ import tm.alashow.base.util.event
 import tm.alashow.base.util.extensions.getStateFlow
 import tm.alashow.base.util.extensions.simpleName
 import tm.alashow.base.util.extensions.stateInDefault
+import tm.alashow.data.PreferencesStore
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.downloader.observers.DownloadAudioItemSortOption
 import tm.alashow.datmusic.downloader.observers.DownloadStatusFilter
@@ -30,14 +31,15 @@ class DownloadsViewModel @Inject constructor(
     handle: SavedStateHandle,
     private val observeDownloads: ObserveDownloads,
     private val playbackConnection: PlaybackConnection,
+    private val preferencesStore: PreferencesStore,
     private val analytics: FirebaseAnalytics,
 ) : ViewModel() {
 
     private val defaultParams = ObserveDownloads.Params()
     private val downloadsParamsState = MutableStateFlow(defaultParams)
     private val searchQueryState = handle.getStateFlow("search_query", viewModelScope, defaultParams.query)
-    private val audiosSortOptionState = handle.getStateFlow("sort_option", viewModelScope, defaultParams.audiosSortOption)
-    private val statusFiltersState = handle.getStateFlow("status_filter", viewModelScope, defaultParams.statusFilters)
+    private val audiosSortOptionState = preferencesStore.getStateFlow("sort_option", viewModelScope, defaultParams.audiosSortOption)
+    private val statusFiltersState = preferencesStore.getStateFlow("status_filters", viewModelScope, defaultParams.statusFilters)
 
     private val downloads = observeDownloads.asyncFlow
     val state = combine(downloads.delayLoading(), downloadsParamsState) { downloads, params ->
@@ -99,7 +101,7 @@ class DownloadsViewModel @Inject constructor(
                 !statusFilter.isDefault -> it.filterNot { it.isDefault }.toSet() // remove default
                 else -> it // has no default but has some selections
             }
-        }
+        }.toHashSet()
     }
 
     fun onClearFilter() {

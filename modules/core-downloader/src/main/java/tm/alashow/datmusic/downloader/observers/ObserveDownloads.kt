@@ -33,8 +33,8 @@ class ObserveDownloads @Inject constructor(
         val audiosSortOptions: List<DownloadAudioItemSortOption> = DownloadAudioItemSortOptions.ALL,
         val defaultSortOption: DownloadAudioItemSortOption = DownloadAudioItemSortOptions.ALL.first(),
         val audiosSortOption: DownloadAudioItemSortOption = defaultSortOption,
-        val defaultStatusFilters: Set<DownloadStatusFilter> = setOf(DownloadStatusFilter.All),
-        val statusFilters: Set<DownloadStatusFilter> = defaultStatusFilters,
+        val defaultStatusFilters: HashSet<DownloadStatusFilter> = hashSetOf(DownloadStatusFilter.All),
+        val statusFilters: HashSet<DownloadStatusFilter> = defaultStatusFilters,
     ) {
         val hasQuery get() = query.isNotBlank()
         val hasSortingOption get() = audiosSortOption != defaultSortOption

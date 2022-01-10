@@ -11,18 +11,16 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
+import java.io.Serializable
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
-import tm.alashow.base.util.RemoteLogger
+import timber.log.Timber
+import tm.alashow.base.util.extensions.decodeAsBase64Object
+import tm.alashow.base.util.extensions.encodeAsBase64String
 import tm.alashow.domain.models.DEFAULT_JSON_FORMAT
 import tm.alashow.domain.models.None
 import tm.alashow.domain.models.Optional
@@ -68,7 +66,7 @@ class PreferencesStore @Inject constructor(@ApplicationContext private val conte
                     try {
                         some(json.decodeFromString(serializer, it.value))
                     } catch (e: SerializationException) {
-                        RemoteLogger.exception(e)
+                        Timber.e(e)
                         None
                     }
                 else -> Optional.None
@@ -78,6 +76,36 @@ class PreferencesStore @Inject constructor(@ApplicationContext private val conte
 
     fun <T> get(keyName: String, serializer: KSerializer<T>, defaultValue: T): Flow<T> {
         return optional(keyName, serializer).map {
+            when (it) {
+                is Optional.None -> defaultValue
+                else -> it.value()
+            }
+        }
+    }
+
+    suspend inline fun <T : Serializable> save(keyName: String, value: T) {
+        val key = stringPreferencesKey(keyName)
+        save(key, value.encodeAsBase64String() ?: error("Failed to encode: $value"))
+    }
+
+    inline fun <reified T : Serializable> optional(keyName: String): Flow<Optional<T>> {
+        val key = stringPreferencesKey(keyName)
+        return optional(key).map {
+            when (it) {
+                is Optional.Some<String> ->
+                    try {
+                        some(it.value.decodeAsBase64Object<T>())
+                    } catch (e: Exception) {
+                        Timber.e(e)
+                        None
+                    }
+                else -> Optional.None
+            }
+        }
+    }
+
+    inline fun <reified T : Serializable> get(keyName: String, defaultValue: T): Flow<T> {
+        return optional<T>(keyName).map {
             when (it) {
                 is Optional.None -> defaultValue
                 else -> it.value()
@@ -112,6 +140,21 @@ class PreferencesStore @Inject constructor(@ApplicationContext private val conte
             state.value = get(keyName, serializer, initialValue).first()
             state.debounce(saveDebounce)
                 .collectLatest { save(keyName, it, serializer) }
+        }
+        return state
+    }
+
+    inline fun <reified T : Serializable> getStateFlow(
+        keyName: String,
+        scope: CoroutineScope,
+        initialValue: T,
+        saveDebounce: Long = 0,
+    ): MutableStateFlow<T> {
+        val state = MutableStateFlow(initialValue)
+        scope.launch {
+            state.value = get(keyName, initialValue).first()
+            state.debounce(saveDebounce)
+                .collectLatest { save(keyName, it) }
         }
         return state
     }

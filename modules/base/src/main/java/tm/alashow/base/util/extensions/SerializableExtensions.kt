@@ -7,7 +7,6 @@ package tm.alashow.base.util.extensions
 import android.util.Base64
 import java.io.*
 
-@Throws(IOException::class, ClassNotFoundException::class)
 inline fun <reified T> String.decodeAsBase64Object(): T? {
     val data = Base64.decode(toByteArray(), Base64.DEFAULT)
     val objectInputStream = ObjectInputStream(
@@ -20,7 +19,6 @@ inline fun <reified T> String.decodeAsBase64Object(): T? {
     else null
 }
 
-@Throws(IOException::class)
 fun Serializable.encodeAsBase64String(): String? {
     val byteArrayOutputStream = ByteArrayOutputStream()
     val objectOutputStream = ObjectOutputStream(byteArrayOutputStream)

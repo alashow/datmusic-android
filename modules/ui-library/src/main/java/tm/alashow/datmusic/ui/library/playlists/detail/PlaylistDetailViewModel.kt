@@ -17,6 +17,7 @@ import tm.alashow.base.util.event
 import tm.alashow.base.util.extensions.getStateFlow
 import tm.alashow.base.util.extensions.simpleName
 import tm.alashow.base.util.extensions.stateInDefault
+import tm.alashow.data.PreferencesStore
 import tm.alashow.datmusic.data.interactors.playlist.RemovePlaylistItems
 import tm.alashow.datmusic.data.observers.playlist.*
 import tm.alashow.datmusic.domain.entities.PlaylistAudioId
@@ -37,8 +38,9 @@ class PlaylistDetailViewModel @Inject constructor(
     private val playlistExistense: ObservePlaylistExistence,
     private val playlistDetails: ObservePlaylistDetails,
     private val removePlaylistItems: RemovePlaylistItems,
-    private val navigator: Navigator,
     private val playbackConnection: PlaybackConnection,
+    private val preferencesStore: PreferencesStore,
+    private val navigator: Navigator,
     private val analytics: FirebaseAnalytics,
 ) : ViewModel() {
 
@@ -46,7 +48,7 @@ class PlaylistDetailViewModel @Inject constructor(
     private val defaultParams = ObservePlaylistDetails.Params(playlistId = playlistId)
     private val paramsState = MutableStateFlow(defaultParams)
     private val searchQueryState = handle.getStateFlow("search_query", viewModelScope, defaultParams.query)
-    private val sortOptionState = handle.getStateFlow("sort_option", viewModelScope, defaultParams.sortOption)
+    private val sortOptionState = preferencesStore.getStateFlow("playlist_sort_option_$playlistId", viewModelScope, defaultParams.sortOption)
 
     private val playlistItems = playlistDetails.asyncFlow.delayLoading()
     val state = combine(playlist.flow, playlistItems, paramsState, ::PlaylistDetailViewState)
