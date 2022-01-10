@@ -25,6 +25,7 @@ import tm.alashow.datmusic.downloader.observers.ObserveDownloads
 import tm.alashow.datmusic.downloader.observers.failWithNoResultsIfEmpty
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.domain.models.delayLoading
+import tm.alashow.domain.models.filterSuccess
 
 @HiltViewModel
 class DownloadsViewModel @Inject constructor(
@@ -112,16 +113,15 @@ class DownloadsViewModel @Inject constructor(
     }
 
     fun playAudioDownload(audioDownloadItem: AudioDownloadItem) = viewModelScope.launch {
-        downloads.first().whenSuccess { (downloadAudios) ->
-            val audioIds = downloadAudios.map { it.audio.id }
-            val downloadIndex = audioIds.indexOf(audioDownloadItem.audio.id)
-            if (downloadIndex < 0) {
-                Timber.e("Audio not found in downloads: ${audioDownloadItem.audio.id}")
-                return@whenSuccess
-            }
-            if (downloadsParamsState.value.hasNoFilters) {
-                playbackConnection.playFromDownloads(downloadIndex)
-            } else playbackConnection.playFromDownloads(downloadIndex, audioIds)
+        val downloadAudios = downloads.filterSuccess().first()
+        val audioIds = downloadAudios.audios.map { it.audio.id }
+        val downloadIndex = audioIds.indexOf(audioDownloadItem.audio.id)
+        if (downloadIndex < 0) {
+            Timber.e("Audio not found in downloads: ${audioDownloadItem.audio.id}")
+            return@launch
         }
+        if (downloadsParamsState.value.hasNoFilters) {
+            playbackConnection.playFromDownloads(downloadIndex)
+        } else playbackConnection.playFromDownloads(downloadIndex, audioIds)
     }
 }

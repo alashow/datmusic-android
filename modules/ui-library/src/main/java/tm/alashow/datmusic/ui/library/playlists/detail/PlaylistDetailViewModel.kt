@@ -27,6 +27,7 @@ import tm.alashow.datmusic.domain.entities.asAudios
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.ui.utils.AudiosCountDuration
 import tm.alashow.domain.models.delayLoading
+import tm.alashow.domain.models.filterSuccess
 import tm.alashow.navigation.Navigator
 import tm.alashow.navigation.screens.PLAYLIST_ID_KEY
 import tm.alashow.navigation.screens.RootScreen
@@ -106,22 +107,6 @@ class PlaylistDetailViewModel @Inject constructor(
         removePlaylistItems.execute(listOf(id))
     }
 
-    fun onPlayAudio(item: PlaylistItem) = viewModelScope.launch {
-        analytics.event("playlist.play", mapOf("audioId" to item.audio.id))
-        playlistItems.first().whenSuccess { playlistItems ->
-            val audioIds = playlistItems.map { it.audio.id }
-            val itemIndex = playlistItems.map { it.playlistAudio.id }.indexOf(item.playlistAudio.id)
-            if (itemIndex < 0) {
-                Timber.e("Playlist item not found: $item")
-                return@whenSuccess
-            }
-            val playlistId = item.playlistAudio.playlistId
-            if (paramsState.value.hasNoFilters) {
-                playbackConnection.playPlaylist(playlistId, itemIndex)
-            } else playbackConnection.playPlaylist(playlistId, itemIndex, audioIds)
-        }
-    }
-
     fun onSearchQueryChange(query: String) {
         searchQueryState.value = query
     }
@@ -136,5 +121,20 @@ class PlaylistDetailViewModel @Inject constructor(
         analytics.event("playlist.filter.clear")
         searchQueryState.value = ""
         sortOptionState.value = defaultParams.sortOption
+    }
+
+    fun onPlayAudio(item: PlaylistItem) = viewModelScope.launch {
+        analytics.event("playlist.play", mapOf("audioId" to item.audio.id))
+        val playlistItems = playlistItems.filterSuccess().first()
+        val audioIds = playlistItems.map { it.audio.id }
+        val itemIndex = playlistItems.map { it.playlistAudio.id }.indexOf(item.playlistAudio.id)
+        if (itemIndex < 0) {
+            Timber.e("Playlist item not found: $item")
+            return@launch
+        }
+        val playlistId = item.playlistAudio.playlistId
+        if (paramsState.value.hasNoFilters) {
+            playbackConnection.playPlaylist(playlistId, itemIndex)
+        } else playbackConnection.playPlaylist(playlistId, itemIndex, audioIds)
     }
 }
