@@ -108,7 +108,7 @@ class ObserveDownloadsTest : BaseTest() {
 
     @Test
     fun `returns list of audio downloads filtered by status`() = runTest {
-        val params = testParams.copy(statusFilters = setOf(DownloadStatusFilter.Downloading))
+        val params = testParams.copy(statusFilters = hashSetOf(DownloadStatusFilter.Downloading))
         val testItem = testItems.first().audio
         observeDownloads(params)
         observeDownloads.flow.test {
@@ -140,7 +140,7 @@ class ObserveDownloadsTest : BaseTest() {
 
     @Test
     fun `returns empty list if audio downloads filtered by status is empty then returns items when filters changed`() = runTest {
-        val params = testParams.copy(statusFilters = setOf(DownloadStatusFilter.Downloading))
+        val params = testParams.copy(statusFilters = hashSetOf(DownloadStatusFilter.Downloading))
         val testItem = testItems.first().audio
 
         assertThat(repo.enqueueAudio(audio = testItem))
@@ -155,7 +155,7 @@ class ObserveDownloadsTest : BaseTest() {
                 .isEmpty()
             coEvery { fetcher.getDownloadsWithIdsAndStatuses(any(), any()) }
                 .answerGetDownloadsWithIdsAndStatus()
-            observeDownloads(params.copy(statusFilters = setOf(DownloadStatusFilter.Queued)))
+            observeDownloads(params.copy(statusFilters = hashSetOf(DownloadStatusFilter.Queued)))
             assertThat(awaitItem().audios.first().audio)
                 .isEqualTo(testItem)
         }
@@ -163,7 +163,7 @@ class ObserveDownloadsTest : BaseTest() {
 
     @Test
     fun `fails with NoResults if failWithNoResultsIfEmpty is applied to flow and status filters are used`() = runTest {
-        val params = testParams.copy(statusFilters = setOf(DownloadStatusFilter.Paused))
+        val params = testParams.copy(statusFilters = hashSetOf(DownloadStatusFilter.Paused))
         val testItem = testItems.first().audio
 
         assertThat(repo.enqueueAudio(audio = testItem))
