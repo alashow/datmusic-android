@@ -88,6 +88,8 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+// Slider with patches that allows custom [thumbRadius]
+
 /**
  * <a href="https://material.io/components/sliders" class="external" target="_blank">Material Design slider</a>.
  *

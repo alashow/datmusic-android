@@ -117,14 +117,15 @@ class PlaylistDetailTopBar(
         ) {
             AppBarNavigationIcon(onClick = onClose, Modifier.weight(1f))
             SearchTextField(
-                modifier = Modifier.weight(4f),
+                modifier = Modifier.weight(6f),
                 value = searchQuery,
                 onValueChange = onQueryChange,
                 hint = stringResource(R.string.playlist_detail_filter_search_hint),
                 autoFocus = true,
             )
-            Spacer(Modifier.width(AppTheme.specs.padding))
+            Spacer(Modifier.width(AppTheme.specs.paddingSmall))
             SelectableDropdownMenu(
+                modifier = Modifier.weight(1f),
                 items = sortOptions,
                 selectedItem = sortOption,
                 onItemSelect = onSortOptionSelect,

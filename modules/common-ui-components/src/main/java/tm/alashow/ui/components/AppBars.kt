@@ -82,7 +82,7 @@ fun AppTopBar(
             ) {
                 if (filterVisible) filterContent()
                 else {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(5f)) {
                         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
                             if (navigationIcon == null) Spacer(TitleInsetWithoutIcon)
                             else Box(TitleIconModifier) { navigationIcon() }
@@ -93,7 +93,12 @@ fun AppTopBar(
                             }
                         }
                     }
-                    AppBarActionsRow(actions = actions, modifier = Modifier.padding(end = AppTheme.specs.padding))
+                    AppBarActionsRow(
+                        actions = actions,
+                        modifier = Modifier
+                            .padding(end = AppTheme.specs.padding)
+                            .weight(1f)
+                    )
                 }
             }
         }

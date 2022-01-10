@@ -62,13 +62,12 @@ fun <T> SelectableDropdownMenu(
     var expanded by remember { mutableStateOf(false) }
     val dropIcon = if (expanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown
 
-    Column {
+    Column(modifier) {
         OutlinedButton(
             onClick = { expanded = !expanded },
             colors = ButtonDefaults.textButtonColors(contentColor = LocalContentColor.current),
             contentPadding = PaddingValues(AppTheme.specs.paddingSmall),
             border = border,
-            modifier = modifier
         ) {
             if (leadingIcon != null) {
                 Icon(
