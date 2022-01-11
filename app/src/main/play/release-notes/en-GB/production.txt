@@ -1,2 +1,7 @@
+v2.2.1
+- Playlist detail filter: search and sort playlist items
+- Persist filter and sort options in downloads and playlist detail across app restarts
+- Smaller search text fields
+
 v2.2.0
 - Downloads filter: fast in app search, sort options, filter by download status
