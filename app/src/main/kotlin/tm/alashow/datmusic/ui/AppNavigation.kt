@@ -177,19 +177,19 @@ private fun NavGraphBuilder.addEditPlaylist(navController: NavController) {
 }
 
 private fun NavGraphBuilder.addPlaylistDetails(navController: NavController, root: RootScreen) {
-    composableScreen(LeafScreen.PlaylistDetail(root = root)) {
+    composableScreen(LeafScreen.PlaylistDetail(rootRoute = root.route)) {
         PlaylistDetail()
     }
 }
 
 private fun NavGraphBuilder.addArtistDetails(navController: NavController, root: RootScreen) {
-    composableScreen(LeafScreen.ArtistDetails(root = root)) {
+    composableScreen(LeafScreen.ArtistDetails(rootRoute = root.route)) {
         ArtistDetail()
     }
 }
 
 private fun NavGraphBuilder.addAlbumDetails(navController: NavController, root: RootScreen) {
-    composableScreen(LeafScreen.AlbumDetails(root = root)) {
+    composableScreen(LeafScreen.AlbumDetails(rootRoute = root.route)) {
         AlbumDetail()
     }
 }
@@ -233,7 +233,7 @@ private fun AnimatedContentScope<*>.defaultEnterTransition(
     val initialNavGraph = initial.destination.hostNavGraph
     val targetNavGraph = target.destination.hostNavGraph
     // If we're crossing nav graphs (bottom navigation graphs), we crossfade
-    if (initialNavGraph.id != targetNavGraph.id) {
+    if (initialNavGraph.id != targetNavGraph.id || initial.destination.route == target.destination.route) {
         return fadeIn()
     }
     // Otherwise we're in the same nav graph, we can imply a direction
@@ -248,14 +248,14 @@ private fun AnimatedContentScope<*>.defaultExitTransition(
     val initialNavGraph = initial.destination.hostNavGraph
     val targetNavGraph = target.destination.hostNavGraph
     // If we're crossing nav graphs (bottom navigation graphs), we crossfade
-    if (initialNavGraph.id != targetNavGraph.id) {
+    if (initialNavGraph.id != targetNavGraph.id || initial.destination.route == target.destination.route) {
         return fadeOut()
     }
     // Otherwise we're in the same nav graph, we can imply a direction
     return fadeOut() + slideOutOfContainer(AnimatedContentScope.SlideDirection.Start)
 }
 
-private val NavDestination.hostNavGraph: NavGraph
+internal val NavDestination.hostNavGraph: NavGraph
     get() = hierarchy.first { it is NavGraph } as NavGraph
 
 @ExperimentalAnimationApi

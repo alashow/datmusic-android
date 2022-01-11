@@ -19,7 +19,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
-import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.google.accompanist.insets.navigationBarsPadding
@@ -33,6 +32,7 @@ import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.isActive
 import tm.alashow.datmusic.ui.AppNavigation
 import tm.alashow.datmusic.ui.currentScreenAsState
+import tm.alashow.datmusic.ui.hostNavGraph
 import tm.alashow.datmusic.ui.playback.PlaybackMiniControls
 import tm.alashow.navigation.screens.RootScreen
 import tm.alashow.ui.DismissableSnackbarHost
@@ -102,10 +102,9 @@ internal fun NavController.selectRootScreen(tab: RootScreen) {
 
         val currentEntry = currentBackStackEntry
         val currentDestination = currentEntry?.destination
-        val isReselected =
-            currentDestination?.hierarchy?.any { it.route == tab.route } == true
-        val isRootReselected =
-            currentDestination?.route == tab.startScreen.route
+        val hostGraphRoute = currentDestination?.hostNavGraph?.route
+        val isReselected = hostGraphRoute == tab.route
+        val isRootReselected = currentDestination?.route == tab.startScreen.createRoute()
 
         if (isReselected && !isRootReselected) {
             navigateUp()
