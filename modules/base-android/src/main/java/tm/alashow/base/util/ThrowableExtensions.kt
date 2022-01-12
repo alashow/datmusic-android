@@ -7,6 +7,13 @@ package tm.alashow.base.util
 import android.content.res.Resources
 import androidx.annotation.StringRes
 import com.andretietz.retroauth.AuthenticationCanceledException
+import java.io.InterruptedIOException
+import java.net.ProtocolException
+import java.net.SocketException
+import java.net.UnknownHostException
+import java.net.UnknownServiceException
+import java.nio.channels.ClosedChannelException
+import javax.net.ssl.SSLException
 import retrofit2.HttpException
 import tm.alashow.base.R
 import tm.alashow.base.util.extensions.simpleName
@@ -14,6 +21,13 @@ import tm.alashow.datmusic.domain.models.errors.ApiErrorException
 import tm.alashow.datmusic.domain.models.errors.EmptyResultException
 import tm.alashow.i18n.UiMessage
 import tm.alashow.i18n.UiMessageConvertable
+
+fun Throwable?.isNetworkException(): Boolean {
+    return this is SocketException || this is ClosedChannelException ||
+        this is InterruptedIOException || this is ProtocolException ||
+        this is SSLException || this is UnknownHostException ||
+        this is UnknownServiceException
+}
 
 @StringRes
 fun Throwable?.localizedTitle(): Int = when (this) {
@@ -37,8 +51,10 @@ fun Throwable?.localizedMessage(): Int = when (this) {
     }
     is AuthenticationCanceledException -> R.string.error_noAuth
     is AppError -> messageRes
-
-    else -> R.string.error_unknown
+    else -> when {
+        isNetworkException() -> R.string.error_network
+        else -> R.string.error_unknown
+    }
 }
 
 fun Throwable?.toUiMessage() = when (this) {
