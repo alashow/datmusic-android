@@ -4,14 +4,32 @@
  */
 package tm.alashow.datmusic.ui.search
 
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -34,8 +52,10 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import tm.alashow.common.compose.collectEvent
+import tm.alashow.common.compose.getNavArgument
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.data.DatmusicSearchParams.BackendType
+import tm.alashow.navigation.screens.QUERY_KEY
 import tm.alashow.ui.components.ChipsRow
 import tm.alashow.ui.components.SearchTextField
 import tm.alashow.ui.theme.AppTheme
@@ -101,7 +121,6 @@ private fun Search(
 
     Scaffold(
         topBar = {
-            val searchQuery by rememberFlowWithLifecycle(viewModel.searchQuery).collectAsState("")
             SearchAppBar(
                 modifier = Modifier
                     .graphicsLayer {
@@ -109,7 +128,6 @@ private fun Search(
                         translationY = searchBarHeight.value * (-searchBarVisibility.value)
                     },
                 state = viewState,
-                query = searchQuery,
                 onQueryChange = { actioner(SearchAction.QueryChange(it)) },
                 onSearch = { actioner(SearchAction.Search) },
                 onBackendTypeSelect = { actioner(it) }
@@ -127,7 +145,6 @@ private fun Search(
 @OptIn(ExperimentalAnimationApi::class, ExperimentalComposeUiApi::class)
 private fun SearchAppBar(
     state: SearchViewState,
-    query: String,
     onQueryChange: (String) -> Unit,
     onSearch: () -> Unit,
     modifier: Modifier = Modifier,
@@ -137,6 +154,7 @@ private fun SearchAppBar(
     windowInfo: WindowInfo = LocalWindowInfo.current,
     windowInsets: WindowInsets = LocalWindowInsets.current,
 ) {
+    val initialQuery = (getNavArgument(QUERY_KEY) ?: "").toString()
     Box(
         modifier = modifier
             .translucentSurface()
@@ -165,10 +183,13 @@ private fun SearchAppBar(
                 style = topAppBarTitleStyle(),
                 modifier = titleModifier.padding(start = AppTheme.specs.padding, top = AppTheme.specs.padding),
             )
-
+            var query by rememberSaveable { mutableStateOf(initialQuery) }
             SearchTextField(
                 value = query,
-                onValueChange = onQueryChange,
+                onValueChange = { value ->
+                    query = value
+                    onQueryChange(value)
+                },
                 onSearch = { triggerSearch() },
                 hint = if (!searchActive) stringResource(R.string.search_hint) else stringResource(R.string.search_hint_query),
                 analyticsPrefix = "search",
