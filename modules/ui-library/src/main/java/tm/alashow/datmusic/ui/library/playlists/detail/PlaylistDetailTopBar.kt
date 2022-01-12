@@ -13,15 +13,11 @@ import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Sort
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import tm.alashow.base.util.asString
 import tm.alashow.base.util.extensions.muteUntil
 import tm.alashow.datmusic.data.observers.playlist.PlaylistItemSortOption
@@ -35,11 +31,12 @@ import tm.alashow.ui.theme.AppTheme
 class PlaylistDetailTopBar(
     private val filterVisible: Boolean,
     private val setFilterVisible: (Boolean) -> Unit,
+    private val searchQuery: String,
+    private val onSearchQueryChange: (String) -> Unit = {},
     private val hasSortingOption: Boolean,
     private val sortOptions: List<PlaylistItemSortOption>,
     private val sortOption: PlaylistItemSortOption,
     private val onSortOptionSelect: (PlaylistItemSortOption) -> Unit,
-    private val onSearchQueryChange: (String) -> Unit = {},
     private val onClearFilter: () -> Unit = {}
 ) : MediaDetailTopBar() {
 
@@ -49,12 +46,6 @@ class PlaylistDetailTopBar(
         collapsedProgress: State<Float>,
         onGoBack: () -> Unit,
     ) {
-        val coroutine = rememberCoroutineScope()
-        var searchQuery by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue()) }
-        val onQueryChange = { query: TextFieldValue ->
-            searchQuery = query
-            onSearchQueryChange(query.text)
-        }
         val isCollapsedProgress by derivedStateOf {
             if (filterVisible) 1f
             else collapsedProgress.value.muteUntil(0.9f)
@@ -67,11 +58,10 @@ class PlaylistDetailTopBar(
             filterContent = {
                 PlaylistDetailFilters(
                     searchQuery = searchQuery,
-                    onQueryChange = onQueryChange,
+                    onQueryChange = onSearchQueryChange,
                     onClose = {
                         setFilterVisible(false)
-                        onQueryChange(TextFieldValue())
-                        coroutine.launch { delay(10); onQueryChange(TextFieldValue()) }
+                        onSearchQueryChange("")
                     },
                     hasSortingOption = hasSortingOption,
                     sortOptions = sortOptions,
@@ -97,8 +87,8 @@ class PlaylistDetailTopBar(
 
     @Composable
     fun PlaylistDetailFilters(
-        searchQuery: TextFieldValue,
-        onQueryChange: (TextFieldValue) -> Unit,
+        searchQuery: String,
+        onQueryChange: (String) -> Unit,
         onClose: () -> Unit,
         hasSortingOption: Boolean,
         sortOptions: List<PlaylistItemSortOption>,

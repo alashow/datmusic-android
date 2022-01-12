@@ -4,32 +4,14 @@
  */
 package tm.alashow.datmusic.ui.search
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.*
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.expandIn
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -41,7 +23,6 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.platform.WindowInfo
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.LocalWindowInsets
@@ -53,10 +34,8 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import tm.alashow.common.compose.collectEvent
-import tm.alashow.common.compose.getNavArgument
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.data.DatmusicSearchParams.BackendType
-import tm.alashow.navigation.screens.QUERY_KEY
 import tm.alashow.ui.components.ChipsRow
 import tm.alashow.ui.components.SearchTextField
 import tm.alashow.ui.theme.AppTheme
@@ -122,6 +101,7 @@ private fun Search(
 
     Scaffold(
         topBar = {
+            val searchQuery by rememberFlowWithLifecycle(viewModel.searchQuery).collectAsState("")
             SearchAppBar(
                 modifier = Modifier
                     .graphicsLayer {
@@ -129,6 +109,7 @@ private fun Search(
                         translationY = searchBarHeight.value * (-searchBarVisibility.value)
                     },
                 state = viewState,
+                query = searchQuery,
                 onQueryChange = { actioner(SearchAction.QueryChange(it)) },
                 onSearch = { actioner(SearchAction.Search) },
                 onBackendTypeSelect = { actioner(it) }
@@ -146,17 +127,16 @@ private fun Search(
 @OptIn(ExperimentalAnimationApi::class, ExperimentalComposeUiApi::class)
 private fun SearchAppBar(
     state: SearchViewState,
+    query: String,
+    onQueryChange: (String) -> Unit,
+    onSearch: () -> Unit,
     modifier: Modifier = Modifier,
     titleModifier: Modifier = Modifier,
-    onQueryChange: (String) -> Unit = {},
-    onSearch: () -> Unit = {},
     onBackendTypeSelect: (SearchAction.SelectBackendType) -> Unit = {},
     focusManager: FocusManager = LocalFocusManager.current,
     windowInfo: WindowInfo = LocalWindowInfo.current,
     windowInsets: WindowInsets = LocalWindowInsets.current,
 ) {
-    val initialQuery = (getNavArgument(QUERY_KEY) ?: "").toString()
-
     Box(
         modifier = modifier
             .translucentSurface()
@@ -186,13 +166,9 @@ private fun SearchAppBar(
                 modifier = titleModifier.padding(start = AppTheme.specs.padding, top = AppTheme.specs.padding),
             )
 
-            var query by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue(initialQuery)) }
             SearchTextField(
                 value = query,
-                onValueChange = { value ->
-                    query = value
-                    onQueryChange(value.text)
-                },
+                onValueChange = onQueryChange,
                 onSearch = { triggerSearch() },
                 hint = if (!searchActive) stringResource(R.string.search_hint) else stringResource(R.string.search_hint_query),
                 analyticsPrefix = "search",
@@ -203,12 +179,12 @@ private fun SearchAppBar(
                     }
             )
 
-            var backends = state.searchFilter.backends
+            var backends = state.filter.backends
             // this applies until default selections mean everything is chosen
             if (backends == SearchFilter.DefaultBackends)
                 backends = emptySet()
 
-            val filterVisible = searchActive || query.text.isNotBlank() || backends.isNotEmpty()
+            val filterVisible = searchActive || query.isNotBlank() || backends.isNotEmpty()
             SearchFilterPanel(visible = filterVisible, backends) { selectAction ->
                 onBackendTypeSelect(selectAction)
                 triggerSearch()

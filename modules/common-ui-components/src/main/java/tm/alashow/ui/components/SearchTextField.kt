@@ -34,7 +34,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -46,8 +45,8 @@ import tm.alashow.ui.theme.borderlessTextFieldColors
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun SearchTextField(
-    value: TextFieldValue,
-    onValueChange: (TextFieldValue) -> Unit,
+    value: String,
+    onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     onSearch: () -> Unit = {},
     withIcon: Boolean = false,
@@ -78,17 +77,17 @@ fun SearchTextField(
         leadingIcon = if (withIcon) {
             { SearchTextFieldIcon() }
         } else null,
-        onValueChange = { if (it.text.length <= maxLength) onValueChange(it) },
+        onValueChange = { if (it.length <= maxLength) onValueChange(it) },
         placeholder = { Text(text = hint, style = textStyle) },
         trailingIcon = {
             AnimatedVisibility(
-                visible = value.text.isNotEmpty(),
+                visible = value.isNotEmpty(),
                 enter = expandIn(expandFrom = Alignment.Center),
                 exit = shrinkOut(shrinkTowards = Alignment.Center)
             ) {
                 IconButton(
                     onClick = {
-                        onValueChange(TextFieldValue())
+                        onValueChange("")
                         analytics.click("$analyticsPrefix.clear")
                     },
                 ) {

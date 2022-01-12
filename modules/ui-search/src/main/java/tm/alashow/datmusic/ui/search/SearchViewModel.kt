@@ -14,13 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import tm.alashow.base.ui.SnackbarManager
@@ -57,9 +51,9 @@ internal class SearchViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val initialQuery = handle.get(QUERY_KEY) ?: ""
-    private val searchQuery = handle.getStateFlow(initialQuery, viewModelScope, initialQuery)
-    private val searchFilter = handle.getStateFlow("search_filter", viewModelScope, SearchFilter.from(handle.get(SEARCH_BACKENDS_KEY)))
-    private val searchTrigger = handle.getStateFlow("search_trigger", viewModelScope, SearchTrigger(initialQuery))
+    private val searchQueryState = handle.getStateFlow(initialQuery, viewModelScope, initialQuery)
+    private val searchFilterState = handle.getStateFlow("search_filter", viewModelScope, SearchFilter.from(handle.get(SEARCH_BACKENDS_KEY)))
+    private val searchTriggerState = handle.getStateFlow("search_trigger", viewModelScope, SearchTrigger(initialQuery))
 
     private val captchaError = MutableStateFlow<ApiCaptchaError?>(null)
 
@@ -74,22 +68,24 @@ internal class SearchViewModel @Inject constructor(
     private val onSearchEventChannel = Channel<SearchEvent>(Channel.CONFLATED)
     val onSearchEvent = onSearchEventChannel.receiveAsFlow()
 
-    val state = combine(searchFilter, snackbarManager.errors, captchaError, ::SearchViewState)
+    val state = combine(searchFilterState, snackbarManager.errors, captchaError, ::SearchViewState)
         .stateInDefault(viewModelScope, SearchViewState.Empty)
+
+    val searchQuery = searchQueryState.asStateFlow()
 
     init {
         viewModelScope.launch {
             pendingActions.collectLatest { action ->
                 when (action) {
                     is SearchAction.QueryChange -> {
-                        searchQuery.value = action.query
+                        searchQueryState.value = action.query
 
                         // trigger search while typing if minerva is the only backend selected
-                        if (searchFilter.value.hasMinervaOnly) {
-                            searchTrigger.value = SearchTrigger(searchQuery.value)
+                        if (searchFilterState.value.hasMinervaOnly) {
+                            searchTriggerState.value = SearchTrigger(searchQueryState.value)
                         }
                     }
-                    is SearchAction.Search -> searchTrigger.value = SearchTrigger(searchQuery.value)
+                    is SearchAction.Search -> searchTriggerState.value = SearchTrigger(searchQueryState.value)
                     is SearchAction.SelectBackendType -> selectBackendType(action)
                     is SearchAction.SubmitCaptcha -> submitCaptcha(action)
                     is SearchAction.AddError -> snackbarManager.addError(action.error)
@@ -100,7 +96,7 @@ internal class SearchViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            combine(searchTrigger, searchFilter, ::SearchEvent)
+            combine(searchTriggerState, searchFilterState, ::SearchEvent)
                 .debounce(SEARCH_DEBOUNCE_MILLIS)
                 .collectLatest {
                     search(it)
@@ -150,10 +146,10 @@ internal class SearchViewModel @Inject constructor(
      * Queue given audio to play with current query as the queue.
      */
     private fun playAudio(audio: Audio) {
-        val query = searchTrigger.value.query
+        val query = searchTriggerState.value.query
         when {
-            searchFilter.value.hasMinerva -> playbackConnection.playWithMinervaQuery(query, audio.id)
-            searchFilter.value.hasFlacs -> playbackConnection.playWithFlacsQuery(query, audio.id)
+            searchFilterState.value.hasMinerva -> playbackConnection.playWithMinervaQuery(query, audio.id)
+            searchFilterState.value.hasFlacs -> playbackConnection.playWithFlacsQuery(query, audio.id)
             else -> playbackConnection.playWithQuery(query, audio.id)
         }
     }
@@ -163,7 +159,7 @@ internal class SearchViewModel @Inject constructor(
      */
     private fun selectBackendType(action: SearchAction.SelectBackendType) {
         analytics.event("search.selectBackend", mapOf("type" to action.backendType))
-        searchFilter.value = searchFilter.value.copy(
+        searchFilterState.value = searchFilterState.value.copy(
             backends = when (action.selected) {
                 true -> setOf(action.backendType)
                 else -> SearchFilter.DefaultBackends
@@ -176,8 +172,8 @@ internal class SearchViewModel @Inject constructor(
      */
     private fun submitCaptcha(action: SearchAction.SubmitCaptcha) {
         captchaError.value = null
-        searchTrigger.value = SearchTrigger(
-            query = searchQuery.value,
+        searchTriggerState.value = SearchTrigger(
+            query = searchQueryState.value,
             captchaSolution = CaptchaSolution(
                 action.captchaError.error.captchaId,
                 action.captchaError.error.captchaIndex,
