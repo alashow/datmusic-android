@@ -1,3 +1,9 @@
+v2.2.4
+- Navigation animations
+- Scrollbars in downloads and playlist detail
+- Fix crash when filtering with too many downloads
+- Fix network error messages
+
 v2.2.1
 - Playlist detail filter: search and sort playlist items
 - Persist filter and sort options in downloads and playlist detail across app restarts
