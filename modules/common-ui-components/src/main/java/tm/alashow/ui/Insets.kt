@@ -21,7 +21,7 @@ import com.google.accompanist.insets.LocalWindowInsets
 @Composable
 fun KeyboardSpacer(
     modifier: Modifier = Modifier,
-    confirmHeight: (Dp) -> Dp = { it / 2 },
+    confirmHeight: (Dp) -> Dp = { it },
 ) {
     val imeVisible = LocalWindowInsets.current.ime.isVisible
     val imeHeight = with(LocalDensity.current) { LocalWindowInsets.current.ime.bottom.toDp() }

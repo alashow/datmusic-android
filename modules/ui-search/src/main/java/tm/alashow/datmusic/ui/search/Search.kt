@@ -41,7 +41,6 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.platform.WindowInfo
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.LocalWindowInsets
@@ -146,17 +145,16 @@ private fun Search(
 @OptIn(ExperimentalAnimationApi::class, ExperimentalComposeUiApi::class)
 private fun SearchAppBar(
     state: SearchViewState,
+    onQueryChange: (String) -> Unit,
+    onSearch: () -> Unit,
     modifier: Modifier = Modifier,
     titleModifier: Modifier = Modifier,
-    onQueryChange: (String) -> Unit = {},
-    onSearch: () -> Unit = {},
     onBackendTypeSelect: (SearchAction.SelectBackendType) -> Unit = {},
     focusManager: FocusManager = LocalFocusManager.current,
     windowInfo: WindowInfo = LocalWindowInfo.current,
     windowInsets: WindowInsets = LocalWindowInsets.current,
 ) {
     val initialQuery = (getNavArgument(QUERY_KEY) ?: "").toString()
-
     Box(
         modifier = modifier
             .translucentSurface()
@@ -185,13 +183,12 @@ private fun SearchAppBar(
                 style = topAppBarTitleStyle(),
                 modifier = titleModifier.padding(start = AppTheme.specs.padding, top = AppTheme.specs.padding),
             )
-
-            var query by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue(initialQuery)) }
+            var query by rememberSaveable { mutableStateOf(initialQuery) }
             SearchTextField(
                 value = query,
                 onValueChange = { value ->
                     query = value
-                    onQueryChange(value.text)
+                    onQueryChange(value)
                 },
                 onSearch = { triggerSearch() },
                 hint = if (!searchActive) stringResource(R.string.search_hint) else stringResource(R.string.search_hint_query),
@@ -203,12 +200,12 @@ private fun SearchAppBar(
                     }
             )
 
-            var backends = state.searchFilter.backends
+            var backends = state.filter.backends
             // this applies until default selections mean everything is chosen
             if (backends == SearchFilter.DefaultBackends)
                 backends = emptySet()
 
-            val filterVisible = searchActive || query.text.isNotBlank() || backends.isNotEmpty()
+            val filterVisible = searchActive || query.isNotBlank() || backends.isNotEmpty()
             SearchFilterPanel(visible = filterVisible, backends) { selectAction ->
                 onBackendTypeSelect(selectAction)
                 triggerSearch()
