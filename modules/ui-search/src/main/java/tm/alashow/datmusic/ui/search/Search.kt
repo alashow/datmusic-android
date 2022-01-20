@@ -23,7 +23,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -82,7 +81,7 @@ internal fun Search(
     viewModel: SearchViewModel,
     actioner: (SearchAction) -> Unit
 ) {
-    val viewState by rememberFlowWithLifecycle(viewModel.state).collectAsState(SearchViewState.Empty)
+    val viewState by rememberFlowWithLifecycle(viewModel.state)
     val listState = rememberLazyListState()
 
     Search(

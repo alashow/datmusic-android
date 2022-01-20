@@ -12,10 +12,9 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import tm.alashow.base.util.event
 import tm.alashow.base.util.extensions.orBlank
@@ -34,10 +33,10 @@ class CreatePlaylistViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val nameState = MutableStateFlow(TextFieldValue())
-    val name = nameState.filterNotNull()
+    val name = nameState.asStateFlow()
 
     private val nameErrorState = MutableStateFlow<ValidationError?>(null)
-    val nameError = nameErrorState.asSharedFlow()
+    val nameError = nameErrorState.asStateFlow()
 
     fun setPlaylistName(value: TextFieldValue) {
         nameState.value = value

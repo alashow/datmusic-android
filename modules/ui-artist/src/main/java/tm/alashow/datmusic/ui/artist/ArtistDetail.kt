@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -32,7 +31,7 @@ private fun ArtistDetail(
     viewModel: ArtistDetailViewModel,
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
 ) {
-    val viewState by rememberFlowWithLifecycle(viewModel.state).collectAsState(initial = ArtistDetailViewState.Empty)
+    val viewState by rememberFlowWithLifecycle(viewModel.state)
     val artistId = viewState.artist?.id
     MediaDetail(
         viewState = viewState,

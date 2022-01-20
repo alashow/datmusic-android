@@ -12,13 +12,13 @@ import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.navigation.screens.RootScreen
 import tm.alashow.ui.ResizableLayout
 
@@ -32,7 +32,7 @@ internal fun RowScope.ResizableHomeNavigationRail(
     minWeight: Float = 0.9f,
     maxWeight: Float = 12f,
     viewModel: ResizableHomeNavigationRailViewModel = hiltViewModel(),
-    dragOffset: State<Float> = viewModel.dragOffset.collectAsState(),
+    dragOffset: State<Float> = rememberFlowWithLifecycle(viewModel.dragOffset),
     setDragOffset: (Float) -> Unit = viewModel::setDragOffset,
 ) {
     ResizableLayout(

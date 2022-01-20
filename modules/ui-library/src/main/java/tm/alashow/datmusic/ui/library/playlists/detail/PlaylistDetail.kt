@@ -35,7 +35,7 @@ private fun PlaylistDetail(
     navigator: Navigator = LocalNavigator.current,
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
 ) {
-    val viewState by rememberFlowWithLifecycle(viewModel.state).collectAsState(initial = PlaylistDetailViewState.Empty)
+    val viewState by rememberFlowWithLifecycle(viewModel.state)
     var filterVisible by rememberSaveable { mutableStateOf(false) }
     val playlistId = viewState.playlist?.id
     MediaDetail(

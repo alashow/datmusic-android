@@ -23,7 +23,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.NavigationRailDefaults
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,8 +31,6 @@ import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.common.compose.rememberFlowWithLifecycle
-import tm.alashow.datmusic.playback.NONE_PLAYBACK_STATE
-import tm.alashow.datmusic.playback.NONE_PLAYING
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.isActive
 import tm.alashow.datmusic.ui.playback.PlaybackMiniControls
@@ -98,8 +95,8 @@ internal fun HomeNavigationRail(
                 }
                 if (isBigPlaybackMode) {
                     val bigPlaybackModeWeight = 3f + ((maxWidth - NAVIGATION_RAIL_BIG_MODE_MIN_WIDTH) / NAVIGATION_RAIL_BIG_MODE_MIN_WIDTH * 2.5f)
-                    val playbackState by rememberFlowWithLifecycle(playbackConnection.playbackState).collectAsState(NONE_PLAYBACK_STATE)
-                    val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying).collectAsState(NONE_PLAYING)
+                    val playbackState by rememberFlowWithLifecycle(playbackConnection.playbackState)
+                    val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying)
                     val visible = (playbackState to nowPlaying).isActive
                     AnimatedVisibility(
                         visible = visible,

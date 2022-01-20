@@ -13,14 +13,13 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
+import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.ui.library.R
 import tm.alashow.datmusic.ui.library.playlists.PlaylistNameInput
 import tm.alashow.ui.KeyboardSpacer
@@ -32,8 +31,8 @@ import tm.alashow.ui.theme.AppTheme
 fun CreatePlaylist(
     viewModel: CreatePlaylistViewModel = hiltViewModel()
 ) {
-    val name by viewModel.name.collectAsState(TextFieldValue())
-    val nameError by viewModel.nameError.collectAsState(null)
+    val name by rememberFlowWithLifecycle(viewModel.name)
+    val nameError by rememberFlowWithLifecycle(viewModel.nameError)
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,

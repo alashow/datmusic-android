@@ -38,7 +38,6 @@ import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Sort
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -88,7 +87,7 @@ fun Downloads() {
 @Composable
 private fun Downloads(viewModel: DownloadsViewModel) {
     val listState = rememberLazyListState()
-    val viewState by rememberFlowWithLifecycle(viewModel.state).collectAsState(DownloadsViewState.Empty)
+    val viewState by rememberFlowWithLifecycle(viewModel.state)
 
     Scaffold(
         topBar = { DownloadsAppBar(viewModel) },
@@ -111,7 +110,7 @@ private fun Downloads(viewModel: DownloadsViewModel) {
 private fun DownloadsAppBar(
     viewModel: DownloadsViewModel,
 ) {
-    val viewState by rememberFlowWithLifecycle(viewModel.state).collectAsState(DownloadsViewState.Empty)
+    val viewState by rememberFlowWithLifecycle(viewModel.state)
     val downloadsIsEmpty = viewState.downloads is Success && viewState.downloads()!!.audios.isEmpty()
     var filterVisible by remember { mutableStateOf(false) }
     val onClearFilter = {

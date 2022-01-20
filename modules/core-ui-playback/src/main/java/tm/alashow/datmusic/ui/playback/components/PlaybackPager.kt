@@ -7,7 +7,6 @@ package tm.alashow.datmusic.ui.playback.components
 import android.support.v4.media.MediaMetadataCompat
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,6 +25,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import tm.alashow.common.compose.LocalPlaybackConnection
+import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.models.toAudio
@@ -39,7 +39,7 @@ internal fun PlaybackPager(
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
     content: @Composable (Audio, Int, Modifier) -> Unit,
 ) {
-    val playbackQueue by playbackConnection.playbackQueue.collectAsState()
+    val playbackQueue by rememberFlowWithLifecycle(playbackConnection.playbackQueue)
     val playbackCurrentIndex = playbackQueue.currentIndex
     var lastRequestedPage by remember(playbackQueue, nowPlaying) {
         mutableStateOf<Int?>(

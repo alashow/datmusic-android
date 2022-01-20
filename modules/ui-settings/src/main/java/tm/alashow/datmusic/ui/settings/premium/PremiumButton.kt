@@ -6,7 +6,6 @@ package tm.alashow.datmusic.ui.settings.premium
 
 import android.app.Activity
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -24,7 +23,7 @@ import tm.alashow.datmusic.ui.settings.SettingsLoadingButton
 
 @Composable
 fun PremiumButton(viewModel: PremiumSettingsViewModel = hiltViewModel()) {
-    val premiumStatus by rememberFlowWithLifecycle(viewModel.premiumStatus).collectAsState(PremiumStatus.Unknown)
+    val premiumStatus by rememberFlowWithLifecycle(viewModel.premiumStatus)
     val context = LocalContext.current
 
     SettingsLoadingButton(

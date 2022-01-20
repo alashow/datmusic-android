@@ -9,7 +9,6 @@ import androidx.compose.material.ScaffoldState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -68,14 +67,13 @@ private fun DatmusicCore(
     content: @Composable () -> Unit
 ) {
     SnackbarMessagesListener()
-    rememberFlowWithLifecycle(themeViewModel.themeState).collectAsState(null).value?.apply {
-        AppTheme(this) {
-            NavigatorHost {
-                DownloaderHost {
-                    PlaybackHost {
-                        DatmusicActionHandlers {
-                            content()
-                        }
+    val themeState by rememberFlowWithLifecycle(themeViewModel.themeState)
+    AppTheme(themeState) {
+        NavigatorHost {
+            DownloaderHost {
+                PlaybackHost {
+                    DatmusicActionHandlers {
+                        content()
                     }
                 }
             }

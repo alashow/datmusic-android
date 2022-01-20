@@ -40,7 +40,6 @@ import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.RemoveCircleOutline
 import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -88,8 +87,8 @@ import tm.alashow.ui.theme.Orange
 fun EditPlaylist(
     viewModel: EditPlaylistViewModel = hiltViewModel(),
 ) {
-    val playlistItems by rememberFlowWithLifecycle(viewModel.playlistAudios).collectAsState(null)
-    val lastRemovedItem by rememberFlowWithLifecycle(viewModel.lastRemovedItem).collectAsState(null)
+    val playlistItems by rememberFlowWithLifecycle(viewModel.playlistAudios)
+    val lastRemovedItem by rememberFlowWithLifecycle(viewModel.lastRemovedItem)
     Scaffold(
         bottomBar = {
             PlaylistLastRemovedItemSnackbar(
@@ -100,12 +99,10 @@ fun EditPlaylist(
             )
         }
     ) {
-        if (playlistItems != null) {
-            EditPlaylist(
-                viewModel = viewModel,
-                playlistItems = playlistItems.orEmpty(),
-            )
-        }
+        EditPlaylist(
+            viewModel = viewModel,
+            playlistItems = playlistItems,
+        )
     }
 }
 
@@ -115,10 +112,9 @@ fun EditPlaylist(
     viewModel: EditPlaylistViewModel,
     playlistItems: PlaylistItems,
 ) {
-    val playlist by rememberFlowWithLifecycle(viewModel.playlist).collectAsState(Playlist())
-
-    val name by rememberFlowWithLifecycle(viewModel.name).collectAsState(TextFieldValue())
-    val nameError by rememberFlowWithLifecycle(viewModel.nameError).collectAsState(null)
+    val playlist by rememberFlowWithLifecycle(viewModel.playlist)
+    val name by rememberFlowWithLifecycle(viewModel.name)
+    val nameError by rememberFlowWithLifecycle(viewModel.nameError)
 
     val reorderableState = rememberReorderState()
     val itemsBeforeContent = 2

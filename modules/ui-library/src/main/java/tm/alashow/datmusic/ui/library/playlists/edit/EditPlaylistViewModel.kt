@@ -15,17 +15,16 @@ import javax.inject.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.burnoutcrew.reorderable.move
 import tm.alashow.base.util.event
 import tm.alashow.base.util.extensions.orBlank
+import tm.alashow.base.util.extensions.stateInDefault
 import tm.alashow.datmusic.data.interactors.playlist.ClearPlaylistArtwork
 import tm.alashow.datmusic.data.interactors.playlist.DeletePlaylist
 import tm.alashow.datmusic.data.interactors.playlist.RemovePlaylistItems
@@ -34,6 +33,7 @@ import tm.alashow.datmusic.data.interactors.playlist.UpdatePlaylist
 import tm.alashow.datmusic.data.interactors.playlist.UpdatePlaylistItems
 import tm.alashow.datmusic.data.observers.playlist.ObservePlaylist
 import tm.alashow.datmusic.data.observers.playlist.ObservePlaylistDetails
+import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.domain.entities.PlaylistAudioId
 import tm.alashow.datmusic.domain.entities.PlaylistId
 import tm.alashow.datmusic.domain.entities.PlaylistItem
@@ -62,19 +62,20 @@ class EditPlaylistViewModel @Inject constructor(
     private val playlistDetailParams = ObservePlaylistDetails.Params(playlistId)
 
     private val nameState = MutableStateFlow(TextFieldValue())
-    val name = nameState.filterNotNull()
+    val name = nameState.asStateFlow()
 
     private val nameErrorState = MutableStateFlow<ValidationError?>(null)
-    val nameError = nameErrorState.asSharedFlow()
+    val nameError = nameErrorState.asStateFlow()
 
-    val playlist = observePlaylist.flow.filterNotNull()
+    val playlist = observePlaylist.flow
+        .stateInDefault(viewModelScope, Playlist())
 
     private val playlistItems = MutableStateFlow<PlaylistItems>(emptyList())
     private val removedPlaylistItems = MutableStateFlow<Set<PlaylistItem>>(setOf())
 
     val playlistAudios = combine(playlistItems, removedPlaylistItems, ::Pair).map { (items, removed) ->
         items.filterNot { removed.contains(it) }
-    }
+    }.stateInDefault(viewModelScope, emptyList())
 
     private val lastRemovedItemState = MutableStateFlow<RemovedFromPlaylist?>(null)
     val lastRemovedItem = lastRemovedItemState.asStateFlow()

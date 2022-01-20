@@ -7,7 +7,6 @@ package tm.alashow.datmusic.ui.settings.backup
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -22,7 +21,7 @@ import tm.alashow.ui.theme.AppTheme
 
 @Composable
 fun BackupRestoreButton(viewModel: BackupRestoreViewModel = hiltViewModel()) {
-    val viewState by rememberFlowWithLifecycle(viewModel.state).collectAsState(BackupRestoreViewState.Empty)
+    val viewState by rememberFlowWithLifecycle(viewModel.state)
 
     val backupOutputFilePickerLauncher = rememberLauncherForActivityResult(contract = CreateFileContract(BACKUP_FILE_PARAMS)) {
         if (it != null) viewModel.backupTo(it)
