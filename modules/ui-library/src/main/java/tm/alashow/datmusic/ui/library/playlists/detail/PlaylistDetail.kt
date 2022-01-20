@@ -40,6 +40,7 @@ private fun PlaylistDetail(
     val playlistId = viewState.playlist?.id
     MediaDetail(
         viewState = viewState,
+        scrollbarsEnabled = viewState.isLoaded && !viewState.isEmpty,
         titleRes = R.string.playlist_title,
         onFailRetry = viewModel::refresh,
         onEmptyRetry = viewModel::addSongs,
