@@ -84,117 +84,116 @@ internal fun AppNavigation(
         popEnterTransition = { defaultPopEnterTransition() },
         popExitTransition = { defaultPopExitTransition() },
     ) {
-        addSearchRoot(navController)
-        addDownloadsRoot(navController)
-        addLibraryRoot(navController)
-        addSettingsRoot(navController)
-
-        addPlaybackSheet(navController)
+        addSearchRoot()
+        addDownloadsRoot()
+        addLibraryRoot()
+        addSettingsRoot()
+        addPlaybackSheet()
     }
 }
 
 @ExperimentalAnimationApi
-private fun NavGraphBuilder.addSearchRoot(navController: NavController) {
+private fun NavGraphBuilder.addSearchRoot() {
     navigation(
         route = RootScreen.Search.route,
         startDestination = LeafScreen.Search().createRoute()
     ) {
-        addSearch(navController)
-        addArtistDetails(navController, RootScreen.Search)
-        addAlbumDetails(navController, RootScreen.Search)
+        addSearch()
+        addArtistDetails(RootScreen.Search)
+        addAlbumDetails(RootScreen.Search)
     }
 }
 
 @ExperimentalAnimationApi
-private fun NavGraphBuilder.addDownloadsRoot(navController: NavController) {
+private fun NavGraphBuilder.addDownloadsRoot() {
     navigation(
         route = RootScreen.Downloads.route,
         startDestination = LeafScreen.Downloads().createRoute()
     ) {
-        addDownloads(navController)
+        addDownloads()
     }
 }
 
 @ExperimentalAnimationApi
-private fun NavGraphBuilder.addLibraryRoot(navController: NavController) {
+private fun NavGraphBuilder.addLibraryRoot() {
     navigation(
         route = RootScreen.Library.route,
         startDestination = LeafScreen.Library().createRoute()
     ) {
-        addLibrary(navController)
-        addCreatePlaylist(navController)
-        addEditPlaylist(navController)
-        addPlaylistDetails(navController, RootScreen.Library)
-        addArtistDetails(navController, RootScreen.Library)
-        addAlbumDetails(navController, RootScreen.Library)
+        addLibrary()
+        addCreatePlaylist()
+        addEditPlaylist()
+        addPlaylistDetails(RootScreen.Library)
+        addArtistDetails(RootScreen.Library)
+        addAlbumDetails(RootScreen.Library)
     }
 }
 
 @ExperimentalAnimationApi
-private fun NavGraphBuilder.addSettingsRoot(navController: NavController) {
+private fun NavGraphBuilder.addSettingsRoot() {
     navigation(
         route = RootScreen.Settings.route,
         startDestination = LeafScreen.Settings().createRoute()
     ) {
-        addSettings(navController)
+        addSettings()
     }
 }
 
-private fun NavGraphBuilder.addSearch(navController: NavController) {
+private fun NavGraphBuilder.addSearch() {
     composableScreen(LeafScreen.Search()) {
         Search()
     }
 }
 
-private fun NavGraphBuilder.addSettings(navController: NavController) {
+private fun NavGraphBuilder.addSettings() {
     composableScreen(LeafScreen.Settings()) {
         Settings()
     }
 }
 
-private fun NavGraphBuilder.addDownloads(navController: NavController) {
+private fun NavGraphBuilder.addDownloads() {
     composableScreen(LeafScreen.Downloads()) {
         Downloads()
     }
 }
 
-private fun NavGraphBuilder.addLibrary(navController: NavController) {
+private fun NavGraphBuilder.addLibrary() {
     composableScreen(LeafScreen.Library()) {
         Library()
     }
 }
 
-private fun NavGraphBuilder.addCreatePlaylist(navController: NavController) {
+private fun NavGraphBuilder.addCreatePlaylist() {
     bottomSheetScreen(LeafScreen.CreatePlaylist()) {
         CreatePlaylist()
     }
 }
 
-private fun NavGraphBuilder.addEditPlaylist(navController: NavController) {
+private fun NavGraphBuilder.addEditPlaylist() {
     bottomSheetScreen(EditPlaylistScreen()) {
         EditPlaylist()
     }
 }
 
-private fun NavGraphBuilder.addPlaylistDetails(navController: NavController, root: RootScreen) {
+private fun NavGraphBuilder.addPlaylistDetails(root: RootScreen) {
     composableScreen(LeafScreen.PlaylistDetail(rootRoute = root.route)) {
         PlaylistDetail()
     }
 }
 
-private fun NavGraphBuilder.addArtistDetails(navController: NavController, root: RootScreen) {
+private fun NavGraphBuilder.addArtistDetails(root: RootScreen) {
     composableScreen(LeafScreen.ArtistDetails(rootRoute = root.route)) {
         ArtistDetail()
     }
 }
 
-private fun NavGraphBuilder.addAlbumDetails(navController: NavController, root: RootScreen) {
+private fun NavGraphBuilder.addAlbumDetails(root: RootScreen) {
     composableScreen(LeafScreen.AlbumDetails(rootRoute = root.route)) {
         AlbumDetail()
     }
 }
 
-private fun NavGraphBuilder.addPlaybackSheet(navController: NavController) {
+private fun NavGraphBuilder.addPlaybackSheet() {
     bottomSheetScreen(LeafScreen.PlaybackSheet()) {
         PlaybackSheet()
     }
