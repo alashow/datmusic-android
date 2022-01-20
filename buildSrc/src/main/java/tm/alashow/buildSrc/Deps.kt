@@ -48,8 +48,8 @@ object Deps {
         const val archCoreTesting = "androidx.arch.core:core-testing:2.1.0"
 
         object Compose {
-            const val version = "1.1.0-rc01"
-            const val compilerVersion = "1.1.0-rc02"
+            const val version = "1.2.0-alpha01"
+            const val compilerVersion = version
 
             const val ui = "androidx.compose.ui:ui:$version"
             const val uiUtil = "androidx.compose.ui:ui-util:$version"
@@ -58,7 +58,7 @@ object Deps {
             const val material = "androidx.compose.material:material:$version"
             const val materialIcons = "androidx.compose.material:material-icons-core:$version"
             const val materialIconsExtended = "androidx.compose.material:material-icons-extended:$version"
-            const val constraintLayout = "androidx.constraintlayout:constraintlayout-compose:1.0.0-rc02"
+            const val constraintLayout = "androidx.constraintlayout:constraintlayout-compose:1.0.0"
             const val liveData = "androidx.compose.runtime:runtime-livedata:$version"
             const val activity = "androidx.activity:activity-compose:$activityVersion"
             const val viewModels = "androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0"
@@ -72,7 +72,7 @@ object Deps {
         }
 
         object Accompanist {
-            private const val version = "0.22.0-rc"
+            private const val version = "0.24.0-alpha"
 
             const val insets = "com.google.accompanist:accompanist-insets:$version"
             const val insetsUi = "com.google.accompanist:accompanist-insets-ui:$version"
@@ -98,7 +98,7 @@ object Deps {
         }
 
         object Room {
-            private const val versiion = "2.4.0"
+            private const val versiion = "2.4.1"
 
             const val compiler = "androidx.room:room-compiler:$versiion"
             const val runtime = "androidx.room:room-runtime:$versiion"
