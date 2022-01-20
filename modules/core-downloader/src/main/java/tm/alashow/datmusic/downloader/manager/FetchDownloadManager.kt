@@ -15,8 +15,28 @@ import kotlin.coroutines.suspendCoroutine
 import tm.alashow.base.util.extensions.simpleName
 
 class FetchDownloadManager @Inject constructor(
-    private val fetch: Fetch
+    private val fetch: Fetch,
 ) : DownloadManager<Int, Request, Status, Download> {
+
+    private suspend fun Fetch.getDownloadsByIds(ids: List<Int>): List<Download> = suspendCoroutine { continuation ->
+        getDownloads(ids) { continuation.resume(it) }
+    }
+
+    private suspend fun Fetch.getDownloadsByIdsChunked(
+        ids: List<Int>,
+        // some sqlite versions have SQLITE_MAX_VARIABLE_NUMBER set to 999, so chunk size should be less than that
+        chunkSize: Int = 900,
+    ): List<Download> {
+        return ids.chunked(chunkSize).map { idsChunk ->
+            getDownloadsByIds(idsChunk)
+        }.flatten()
+    }
+
+    private suspend fun Fetch.getDownloadsByIdsAndStatus(ids: Set<Int>, statuses: List<Status>): List<Download> = suspendCoroutine { continuation ->
+        getDownloadsWithStatus(statuses) {
+            continuation.resume(it.filter { dl -> dl.id in ids })
+        }
+    }
 
     override suspend fun enqueue(request: Request): DownloadEnqueueResult<Request> = suspendCoroutine { continuation ->
         fetch.enqueue(
@@ -38,14 +58,14 @@ class FetchDownloadManager @Inject constructor(
         fetch.getDownloads { continuation.resume(it) }
     }
 
-    override suspend fun getDownloadsWithIdsAndStatuses(ids: Set<Int>, statuses: List<Status>): List<Download> =
-        suspendCoroutine { continuation ->
-            if (ids.isEmpty()) continuation.resume(emptyList())
-            else when (statuses.isEmpty()) {
-                true -> fetch.getDownloads(ids.toList()) { continuation.resume(it) }
-                else -> fetch.getDownloadsWithStatus(statuses) { continuation.resume(it.filter { dl -> dl.id in ids }) }
-            }
+    override suspend fun getDownloadsWithIdsAndStatuses(ids: Set<Int>, statuses: List<Status>): List<Download> {
+        return if (ids.isEmpty())
+            emptyList()
+        else when (statuses.isEmpty()) {
+            true -> fetch.getDownloadsByIdsChunked(ids.toList())
+            else -> fetch.getDownloadsByIdsAndStatus(ids, statuses)
         }
+    }
 
     override suspend fun getDownloadsWithStatuses(statuses: List<Status>): List<Download> =
         suspendCoroutine { continuation ->

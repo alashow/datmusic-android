@@ -14,7 +14,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Album
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,7 +45,7 @@ private fun AlbumDetail(
     viewModel: AlbumDetailViewModel,
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
 ) {
-    val viewState by rememberFlowWithLifecycle(viewModel.state).collectAsState(initial = AlbumDetailViewState.Empty)
+    val viewState by rememberFlowWithLifecycle(viewModel.state)
     val albumId = viewState.album?.id
     MediaDetail(
         viewState = viewState,

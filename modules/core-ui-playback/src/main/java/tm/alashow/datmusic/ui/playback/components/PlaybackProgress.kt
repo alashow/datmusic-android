@@ -24,7 +24,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,10 +56,7 @@ internal fun PlaybackProgress(
     thumbRadius: Dp = 4.dp,
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current
 ) {
-    val progressState by rememberFlowWithLifecycle(playbackConnection.playbackProgress).collectAsState(
-        PlaybackProgressState()
-    )
-
+    val progressState by rememberFlowWithLifecycle(playbackConnection.playbackProgress)
     val (draggingProgress, setDraggingProgress) = remember { mutableStateOf<Float?>(null) }
 
     Box {

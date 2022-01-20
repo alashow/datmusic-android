@@ -32,7 +32,6 @@ import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,7 +53,6 @@ import tm.alashow.datmusic.playback.hasPrevious
 import tm.alashow.datmusic.playback.isError
 import tm.alashow.datmusic.playback.isPlayEnabled
 import tm.alashow.datmusic.playback.isPlaying
-import tm.alashow.datmusic.playback.models.PlaybackModeState
 import tm.alashow.datmusic.playback.playPause
 import tm.alashow.datmusic.playback.title
 import tm.alashow.datmusic.playback.toggleRepeatMode
@@ -146,7 +144,7 @@ internal fun PlaybackControls(
     smallRippleRadius: Dp = 30.dp,
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current
 ) {
-    val playbackMode by rememberFlowWithLifecycle(playbackConnection.playbackMode).collectAsState(PlaybackModeState())
+    val playbackMode by rememberFlowWithLifecycle(playbackConnection.playbackMode)
     Row(
         modifier = modifier.width(288.dp),
         horizontalArrangement = Arrangement.Center,

@@ -34,7 +34,7 @@ internal data class SearchFilter(
 }
 
 internal data class SearchViewState(
-    val searchFilter: SearchFilter = SearchFilter(),
+    val filter: SearchFilter = SearchFilter(),
     val error: Throwable? = null,
     val captchaError: ApiCaptchaError? = null,
 ) {

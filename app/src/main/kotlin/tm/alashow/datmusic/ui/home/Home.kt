@@ -12,14 +12,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.ScaffoldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
-import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.google.accompanist.insets.navigationBarsPadding
@@ -27,12 +25,11 @@ import com.google.accompanist.insets.ui.Scaffold
 import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.common.compose.LocalScaffoldState
 import tm.alashow.common.compose.rememberFlowWithLifecycle
-import tm.alashow.datmusic.playback.NONE_PLAYBACK_STATE
-import tm.alashow.datmusic.playback.NONE_PLAYING
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.isActive
 import tm.alashow.datmusic.ui.AppNavigation
 import tm.alashow.datmusic.ui.currentScreenAsState
+import tm.alashow.datmusic.ui.hostNavGraph
 import tm.alashow.datmusic.ui.playback.PlaybackMiniControls
 import tm.alashow.navigation.screens.RootScreen
 import tm.alashow.ui.DismissableSnackbarHost
@@ -48,8 +45,8 @@ internal fun Home(
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
 ) {
     val selectedTab by navController.currentScreenAsState()
-    val playbackState by rememberFlowWithLifecycle(playbackConnection.playbackState).collectAsState(NONE_PLAYBACK_STATE)
-    val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying).collectAsState(NONE_PLAYING)
+    val playbackState by rememberFlowWithLifecycle(playbackConnection.playbackState)
+    val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying)
 
     val isPlayerActive = (playbackState to nowPlaying).isActive
     val bottomBarHeight = HomeBottomNavigationHeight * (if (isPlayerActive) 1.15f else 1f)
@@ -102,10 +99,9 @@ internal fun NavController.selectRootScreen(tab: RootScreen) {
 
         val currentEntry = currentBackStackEntry
         val currentDestination = currentEntry?.destination
-        val isReselected =
-            currentDestination?.hierarchy?.any { it.route == tab.route } == true
-        val isRootReselected =
-            currentDestination?.route == tab.startScreen.route
+        val hostGraphRoute = currentDestination?.hostNavGraph?.route
+        val isReselected = hostGraphRoute == tab.route
+        val isRootReselected = currentDestination?.route == tab.startScreen.createRoute()
 
         if (isReselected && !isRootReselected) {
             navigateUp()

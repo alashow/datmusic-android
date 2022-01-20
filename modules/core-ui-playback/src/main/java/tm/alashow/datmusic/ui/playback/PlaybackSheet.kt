@@ -44,7 +44,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -81,7 +80,6 @@ import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.downloader.audioHeader
 import tm.alashow.datmusic.playback.NONE_PLAYBACK_STATE
-import tm.alashow.datmusic.playback.NONE_PLAYING
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.artwork
 import tm.alashow.datmusic.playback.isIdle
@@ -155,9 +153,9 @@ internal fun PlaybackSheetContent(
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
     viewModel: PlaybackViewModel = hiltViewModel(),
 ) {
-    val playbackState by rememberFlowWithLifecycle(playbackConnection.playbackState).collectAsState(NONE_PLAYBACK_STATE)
-    val playbackQueue by rememberFlowWithLifecycle(playbackConnection.playbackQueue).collectAsState(PlaybackQueue())
-    val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying).collectAsState(NONE_PLAYING)
+    val playbackState by rememberFlowWithLifecycle(playbackConnection.playbackState)
+    val playbackQueue by rememberFlowWithLifecycle(playbackConnection.playbackQueue)
+    val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying)
     val pagerState = rememberPagerState(playbackQueue.currentIndex)
 
     val adaptiveColor by adaptiveColor(nowPlaying.artwork, initial = MaterialTheme.colors.onBackground)
@@ -254,7 +252,7 @@ private fun RowScope.ResizablePlaybackQueue(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
     resizableLayoutViewModel: ResizablePlaybackSheetLayoutViewModel = hiltViewModel(),
-    dragOffset: State<Float> = rememberFlowWithLifecycle(resizableLayoutViewModel.dragOffset).collectAsState(0f),
+    dragOffset: State<Float> = rememberFlowWithLifecycle(resizableLayoutViewModel.dragOffset),
     setDragOffset: (Float) -> Unit = resizableLayoutViewModel::setDragOffset,
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
 ) {

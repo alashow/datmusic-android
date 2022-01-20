@@ -43,7 +43,6 @@ import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,8 +60,6 @@ import tm.alashow.base.util.extensions.orNA
 import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.Audio
-import tm.alashow.datmusic.playback.NONE_PLAYBACK_STATE
-import tm.alashow.datmusic.playback.NONE_PLAYING
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.artwork
 import tm.alashow.datmusic.playback.artworkUri
@@ -71,7 +68,6 @@ import tm.alashow.datmusic.playback.isBuffering
 import tm.alashow.datmusic.playback.isError
 import tm.alashow.datmusic.playback.isPlayEnabled
 import tm.alashow.datmusic.playback.isPlaying
-import tm.alashow.datmusic.playback.models.PlaybackProgressState
 import tm.alashow.datmusic.playback.playPause
 import tm.alashow.datmusic.ui.playback.components.PlaybackPager
 import tm.alashow.datmusic.ui.playback.components.animatePlaybackProgress
@@ -95,8 +91,8 @@ fun PlaybackMiniControls(
     contentPadding: PaddingValues = PaddingValues(),
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current
 ) {
-    val playbackState by rememberFlowWithLifecycle(playbackConnection.playbackState).collectAsState(NONE_PLAYBACK_STATE)
-    val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying).collectAsState(NONE_PLAYING)
+    val playbackState by rememberFlowWithLifecycle(playbackConnection.playbackState)
+    val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying)
 
     val visible = (playbackState to nowPlaying).isActive
     AnimatedVisibility(
@@ -271,7 +267,7 @@ private fun PlaybackProgress(
     color: Color,
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
 ) {
-    val progressState by rememberFlowWithLifecycle(playbackConnection.playbackProgress).collectAsState(PlaybackProgressState())
+    val progressState by rememberFlowWithLifecycle(playbackConnection.playbackProgress)
     val sizeModifier = Modifier
         .height(2.dp)
         .fillMaxWidth()

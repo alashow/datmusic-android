@@ -15,10 +15,10 @@ private const val PATH = "update_playlist"
 
 data class EditPlaylistScreen(
     override val route: String = "$PATH/{$PLAYLIST_ID_KEY}",
-    override val root: RootScreen = RootScreen.Library,
+    override val rootRoute: String = RootScreen.Library.route,
     override val path: String = PATH,
 ) : LeafScreen(
-    route, root,
+    route, rootRoute,
     arguments = listOf(
         navArgument(PLAYLIST_ID_KEY) {
             type = NavType.LongType

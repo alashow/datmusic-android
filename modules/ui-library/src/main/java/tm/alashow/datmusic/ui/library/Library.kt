@@ -15,7 +15,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -29,7 +28,6 @@ import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.ui.library.items.LibraryItemRow
 import tm.alashow.datmusic.ui.library.playlists.PlaylistRow
 import tm.alashow.domain.models.Success
-import tm.alashow.domain.models.Uninitialized
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.Navigator
 import tm.alashow.navigation.screens.LeafScreen
@@ -51,7 +49,7 @@ private fun Library(
     navigator: Navigator = LocalNavigator.current
 ) {
     val listState = rememberLazyListState()
-    val asyncLibraryItems by rememberFlowWithLifecycle(viewModel.libraryItems).collectAsState(Uninitialized)
+    val asyncLibraryItems by rememberFlowWithLifecycle(viewModel.libraryItems)
 
     Scaffold(
         topBar = {

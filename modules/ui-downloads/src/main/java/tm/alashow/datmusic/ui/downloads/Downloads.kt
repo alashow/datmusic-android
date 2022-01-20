@@ -38,12 +38,9 @@ import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Sort
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,15 +49,12 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.ui.LocalScaffoldPadding
 import com.google.accompanist.insets.ui.Scaffold
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import tm.alashow.base.util.asString
 import tm.alashow.base.util.toUiMessage
 import tm.alashow.common.compose.rememberFlowWithLifecycle
@@ -75,6 +69,7 @@ import tm.alashow.domain.models.Loading
 import tm.alashow.domain.models.Success
 import tm.alashow.domain.models.Uninitialized
 import tm.alashow.ui.Delayed
+import tm.alashow.ui.LazyColumnScrollbar
 import tm.alashow.ui.LifecycleRespectingBackHandler
 import tm.alashow.ui.components.AppBarNavigationIcon
 import tm.alashow.ui.components.AppTopBar
@@ -93,7 +88,7 @@ fun Downloads() {
 @Composable
 private fun Downloads(viewModel: DownloadsViewModel) {
     val listState = rememberLazyListState()
-    val viewState by rememberFlowWithLifecycle(viewModel.state).collectAsState(DownloadsViewState.Empty)
+    val viewState by rememberFlowWithLifecycle(viewModel.state)
 
     Scaffold(
         topBar = { DownloadsAppBar(viewModel) },
@@ -102,11 +97,13 @@ private fun Downloads(viewModel: DownloadsViewModel) {
         when (val asyncDownloads = viewState.downloads) {
             is Uninitialized, is Loading -> FullScreenLoading()
             is Fail -> DownloadsError(asyncDownloads)
-            is Success -> LazyColumn(
-                state = listState,
-                contentPadding = padding,
-            ) {
-                downloadsList(asyncDownloads(), viewModel::playAudioDownload)
+            is Success -> LazyColumnScrollbar(listState) {
+                LazyColumn(
+                    state = listState,
+                    contentPadding = padding,
+                ) {
+                    downloadsList(asyncDownloads(), viewModel::playAudioDownload)
+                }
             }
         }
     }
@@ -116,28 +113,23 @@ private fun Downloads(viewModel: DownloadsViewModel) {
 private fun DownloadsAppBar(
     viewModel: DownloadsViewModel,
 ) {
-    val coroutine = rememberCoroutineScope()
-    val viewState by rememberFlowWithLifecycle(viewModel.state).collectAsState(DownloadsViewState.Empty)
+    val viewState by rememberFlowWithLifecycle(viewModel.state)
     val downloadsIsEmpty = viewState.downloads is Success && viewState.downloads()!!.audios.isEmpty()
     var filterVisible by remember { mutableStateOf(false) }
-    var searchQuery by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue()) }
-    val onQueryChange = { query: TextFieldValue ->
-        searchQuery = query
-        viewModel.onSearchQueryChange(query.text)
-    }
     val onClearFilter = {
         filterVisible = false
-        searchQuery = TextFieldValue()
         viewModel.onClearFilter()
     }
 
     AppTopBar(
         title = stringResource(R.string.downloads_title),
-        filterVisible = searchQuery.text.isNotBlank() || filterVisible,
+        filterVisible = viewState.params.query.isNotBlank() || filterVisible,
         filterContent = {
             DownloadsFilters(
-                searchQuery = searchQuery,
-                onQueryChange = onQueryChange,
+                searchQuery = viewState.params.query,
+                onQueryChange = {
+                    viewModel.onSearchQueryChange(it)
+                },
                 hasSortingOption = viewState.params.hasSortingOption,
                 audiosSortOptions = viewState.params.audiosSortOptions,
                 audiosSortOption = viewState.params.audiosSortOption,
@@ -147,9 +139,7 @@ private fun DownloadsAppBar(
                 onStatusFilterSelect = viewModel::onStatusFilterSelect,
                 onClose = {
                     filterVisible = false
-                    onQueryChange(TextFieldValue())
-                    // fix weird race condition with SearchTextField trying to set back previous text after clearing
-                    coroutine.launch { delay(10); onQueryChange(TextFieldValue()) }
+                    viewModel.onSearchQueryChange("")
                 },
             )
         },
@@ -174,8 +164,8 @@ private fun DownloadsAppBar(
 
 @Composable
 private fun DownloadsFilters(
-    searchQuery: TextFieldValue,
-    onQueryChange: (TextFieldValue) -> Unit,
+    searchQuery: String,
+    onQueryChange: (String) -> Unit,
     hasSortingOption: Boolean,
     hasStatusFilter: Boolean,
     audiosSortOptions: List<DownloadAudioItemSortOption>,

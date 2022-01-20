@@ -13,6 +13,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.launch
 import tm.alashow.base.ui.ThemeState
 import tm.alashow.base.util.event
+import tm.alashow.base.util.extensions.stateInDefault
 import tm.alashow.data.PreferencesStore
 import tm.alashow.ui.theme.DefaultTheme
 
@@ -28,6 +29,7 @@ class ThemeViewModel @Inject constructor(
 ) : ViewModel() {
 
     val themeState = preferences.get(PreferenceKeys.THEME_STATE_KEY, ThemeState.serializer(), DefaultTheme)
+        .stateInDefault(viewModelScope, DefaultTheme)
 
     fun applyThemeState(themeState: ThemeState) {
         analytics.event("theme.apply", mapOf("darkMode" to themeState.isDarkMode, "palette" to themeState.colorPalettePreference.name))

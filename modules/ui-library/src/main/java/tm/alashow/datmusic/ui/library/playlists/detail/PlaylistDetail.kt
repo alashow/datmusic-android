@@ -35,11 +35,12 @@ private fun PlaylistDetail(
     navigator: Navigator = LocalNavigator.current,
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
 ) {
-    val viewState by rememberFlowWithLifecycle(viewModel.state).collectAsState(initial = PlaylistDetailViewState.Empty)
+    val viewState by rememberFlowWithLifecycle(viewModel.state)
     var filterVisible by rememberSaveable { mutableStateOf(false) }
     val playlistId = viewState.playlist?.id
     MediaDetail(
         viewState = viewState,
+        scrollbarsEnabled = viewState.isLoaded && !viewState.isEmpty,
         titleRes = R.string.playlist_title,
         onFailRetry = viewModel::refresh,
         onEmptyRetry = viewModel::addSongs,
@@ -55,11 +56,12 @@ private fun PlaylistDetail(
         mediaDetailTopBar = PlaylistDetailTopBar(
             filterVisible = filterVisible,
             setFilterVisible = { filterVisible = it },
-            onSearchQueryChange = viewModel::onSearchQueryChange,
-            onClearFilter = viewModel::onClearFilter,
+            searchQuery = viewState.params.query,
             hasSortingOption = viewState.params.hasSortingOption,
             sortOptions = viewState.params.sortOptions,
             sortOption = viewState.params.sortOption,
+            onSearchQueryChange = viewModel::onSearchQueryChange,
+            onClearFilter = viewModel::onClearFilter,
             onSortOptionSelect = viewModel::onSortOptionSelect,
         ),
         mediaDetailEmpty = PlaylistDetailEmpty(),

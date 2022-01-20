@@ -21,7 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Explicit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,6 +37,7 @@ import com.google.accompanist.placeholder.material.placeholder
 import tm.alashow.base.util.extensions.interpunctize
 import tm.alashow.base.util.millisToDuration
 import tm.alashow.common.compose.LocalPlaybackConnection
+import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.models.PlaybackQueue.NowPlayingAudio.Companion.isCurrentAudio
@@ -144,7 +144,7 @@ fun AudioRowItem(
 ) {
     val isCurrentAudio = when (observeNowPlayingAudio) {
         true -> {
-            val nowPlayingAudio by playbackConnection.nowPlayingAudio.collectAsState()
+            val nowPlayingAudio by rememberFlowWithLifecycle(playbackConnection.nowPlayingAudio)
             nowPlayingAudio.isCurrentAudio(audio, audioIndex)
         }
         else -> false

@@ -51,11 +51,9 @@ fun Settings(
     themeViewModel: ThemeViewModel = hiltViewModel(),
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
-    val themeState by rememberFlowWithLifecycle(themeViewModel.themeState).collectAsState(initial = null)
-    val settingsLinks by rememberFlowWithLifecycle(viewModel.settingsLinks).collectAsState(emptyList())
-    themeState?.let { theme ->
-        Settings(theme, themeViewModel::applyThemeState, settingsLinks)
-    }
+    val themeState by rememberFlowWithLifecycle(themeViewModel.themeState)
+    val settingsLinks by rememberFlowWithLifecycle(viewModel.settingsLinks)
+    Settings(themeState, themeViewModel::applyThemeState, settingsLinks)
 }
 
 @Composable

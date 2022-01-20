@@ -15,7 +15,6 @@ import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,7 +53,7 @@ fun AddToPlaylistMenu(
     modifier: Modifier = Modifier,
     viewModel: AddToPlaylistViewModel = hiltViewModel()
 ) {
-    val playlists by rememberFlowWithLifecycle(viewModel.playlists).collectAsState(emptyList())
+    val playlists by rememberFlowWithLifecycle(viewModel.playlists)
 
     if (visible)
         AddToPlaylistDropdownMenu(

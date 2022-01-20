@@ -15,6 +15,7 @@ import tm.alashow.base.ui.SnackbarAction
 import tm.alashow.base.ui.SnackbarManager
 import tm.alashow.base.ui.SnackbarMessage
 import tm.alashow.base.util.event
+import tm.alashow.base.util.extensions.stateInDefault
 import tm.alashow.datmusic.data.interactors.playlist.AddToPlaylist
 import tm.alashow.datmusic.data.interactors.playlist.CreatePlaylist
 import tm.alashow.datmusic.data.observers.playlist.ObservePlaylists
@@ -45,7 +46,7 @@ class AddToPlaylistViewModel @Inject constructor(
     private val navigator: Navigator,
 ) : ViewModel() {
 
-    val playlists = observePlaylists.flow
+    val playlists = observePlaylists.flow.stateInDefault(viewModelScope, emptyList())
 
     init {
         observePlaylists(Params())
