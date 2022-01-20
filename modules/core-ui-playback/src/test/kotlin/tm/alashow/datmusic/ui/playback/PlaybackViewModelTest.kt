@@ -110,7 +110,7 @@ class PlaybackViewModelTest : BaseTest() {
     fun `onTitleClick navigates to search albums route`() = runTest {
         viewModel.onTitleClick()
 
-        navigator.assertNextRouteContains(LeafScreen.Search().root?.route, DatmusicSearchParams.BackendType.ALBUMS.type)
+        navigator.assertNextRouteContains(LeafScreen.Search().rootRoute, DatmusicSearchParams.BackendType.ALBUMS.type)
     }
 
     @Test
@@ -118,7 +118,7 @@ class PlaybackViewModelTest : BaseTest() {
         viewModel.onArtistClick()
 
         navigator.assertNextRouteContains(
-            LeafScreen.Search().root?.route,
+            LeafScreen.Search().rootRoute,
             DatmusicSearchParams.BackendType.ALBUMS.type,
             DatmusicSearchParams.BackendType.ARTISTS.type
         )
