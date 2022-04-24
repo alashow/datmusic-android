@@ -37,7 +37,7 @@ class ClearUnusedEntities @Inject constructor(
 
         val audioIds = downloadedAudioIds + audioIdsInPlaylists
 
-        val deletedAudios = audiosDao.deleteExcept(audioIds)
+        val deletedAudios = audiosDao.deleteExceptChunked(audioIds)
         val deletedArtists = artistsDao.deleteAll()
         val deletedAlbums = albumsDao.deleteAll()
         val result = Result(deletedAudios, deletedArtists, deletedAlbums, audioIds)

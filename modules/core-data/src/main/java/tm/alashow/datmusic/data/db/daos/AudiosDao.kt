@@ -11,6 +11,7 @@ import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 import tm.alashow.data.db.PaginatedEntryDao
 import tm.alashow.datmusic.data.DatmusicSearchParams
+import tm.alashow.datmusic.data.db.SQLITE_MAX_VARIABLES
 import tm.alashow.datmusic.domain.entities.Audio
 
 @Dao
@@ -23,6 +24,16 @@ abstract class AudiosDao : PaginatedEntryDao<DatmusicSearchParams, Audio>() {
     @Transaction
     @Query("DELETE FROM audios WHERE id NOT IN (:ids)")
     abstract suspend fun deleteExcept(ids: List<String>): Int
+
+    @Transaction
+    @Query("DELETE FROM audios WHERE id NOT IN (:ids)")
+    suspend fun deleteExceptChunked(ids: List<String>): Int {
+        var deleted = 0
+        for (chunk in ids.chunked(SQLITE_MAX_VARIABLES)) {
+            deleted += deleteExcept(chunk)
+        }
+        return deleted
+    }
 
     @Transaction
     @Query("SELECT * FROM audios ORDER BY page ASC, search_index ASC")

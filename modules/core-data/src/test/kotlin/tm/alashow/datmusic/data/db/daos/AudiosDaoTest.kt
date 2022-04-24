@@ -63,6 +63,19 @@ class AudiosDaoTest : BaseTest() {
     }
 
     @Test
+    fun deleteExceptChunked() = runTest {
+        dao.insertAll(testItems)
+
+        val idWhitelist = testItems.shuffled().map { it.id }.take(2)
+        dao.deleteExceptChunked(idWhitelist)
+
+        dao.entries().test {
+            assertThat(awaitItem().map { it.id })
+                .containsExactlyElementsIn(idWhitelist)
+        }
+    }
+
+    @Test
     fun entries() = runTest {
         val items = testItems.sortedWith(entriesComparator)
         dao.insertAll(items)

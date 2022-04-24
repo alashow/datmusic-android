@@ -24,6 +24,8 @@ import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.domain.entities.PlaylistAudio
 import tm.alashow.domain.models.BaseTypeConverters
 
+const val SQLITE_MAX_VARIABLES = 900
+
 @Database(
     version = 13,
     entities = [
