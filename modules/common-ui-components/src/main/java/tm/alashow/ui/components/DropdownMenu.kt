@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import tm.alashow.ui.theme.AppTheme
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -132,11 +133,13 @@ fun <T> SelectableDropdownMenu(
 fun MoreVerticalIcon(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
+    rippleRadius: Dp = IconRippleRadiusMedium,
     contentDescription: String = stringResource(R.string.audio_menu_cd)
 ) {
     IconButton(
         onClick = onClick,
-        modifier = modifier
+        rippleRadius = rippleRadius,
+        modifier = modifier,
     ) {
         Icon(
             painter = rememberVectorPainter(Icons.Default.MoreVert),
