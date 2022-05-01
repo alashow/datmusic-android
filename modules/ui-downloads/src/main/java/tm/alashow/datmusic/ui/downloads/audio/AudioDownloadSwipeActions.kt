@@ -55,12 +55,10 @@ fun AudioDownloadBoxWithSwipeActions(
 @Composable
 fun openAudioDownloadSwipeAction(
     audioDownloadItem: AudioDownloadItem,
-    weight: Double = 1.0,
     backgroundColor: Color = Blue,
     actionHandler: AudioDownloadItemActionHandler = LocalAudioDownloadItemActionHandler.current,
 ) = SwipeAction(
     background = backgroundColor,
-    weight = weight,
     icon = {
         Icon(
             modifier = Modifier.padding(AppTheme.specs.padding),
@@ -78,7 +76,6 @@ fun openAudioDownloadSwipeAction(
 @Composable
 fun removeAudioDownloadSwipeAction(
     audioDownloadItem: AudioDownloadItem,
-    weight: Double = 1.0,
     backgroundColor: Color = Orange,
     actionHandler: AudioDownloadItemActionHandler = LocalAudioDownloadItemActionHandler.current,
 ) = SwipeAction(
@@ -94,19 +91,16 @@ fun removeAudioDownloadSwipeAction(
     onSwipe = {
         actionHandler(AudioDownloadItemAction.Remove(audioDownloadItem))
     },
-    weight = weight,
     isUndo = false,
 )
 
 @Composable
 fun deleteAudioDownloadSwipeAction(
     audioDownloadItem: AudioDownloadItem,
-    weight: Double = 1.0,
     backgroundColor: Color = Red,
     actionHandler: AudioDownloadItemActionHandler = LocalAudioDownloadItemActionHandler.current
 ) = SwipeAction(
     background = backgroundColor,
-    weight = weight,
     icon = {
         Icon(
             modifier = Modifier.padding(AppTheme.specs.padding),

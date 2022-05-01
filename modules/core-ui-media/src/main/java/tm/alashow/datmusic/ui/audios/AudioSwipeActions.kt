@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.QueueMusic
 import androidx.compose.runtime.Composable
@@ -18,7 +19,9 @@ import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.ui.DEFAULT_SWIPE_ACTION_THRESHOLD
+import tm.alashow.ui.contentColor
 import tm.alashow.ui.theme.AppTheme
+import tm.alashow.ui.theme.Blue
 import tm.alashow.ui.theme.LocalAdaptiveColor
 
 @Composable
@@ -61,12 +64,10 @@ fun addAudioToQueueSwipeAction(
 @Composable
 fun addAudioToPlaylistSwipeAction(
     onAddToPlaylist: () -> Unit,
-    weight: Double = 1.0,
     backgroundColor: Color = LocalAdaptiveColor.current.color,
     iconColor: Color = LocalAdaptiveColor.current.contentColor,
 ) = SwipeAction(
     background = backgroundColor,
-    weight = weight,
     icon = {
         Icon(
             modifier = Modifier.padding(AppTheme.specs.padding),
@@ -76,5 +77,26 @@ fun addAudioToPlaylistSwipeAction(
         )
     },
     onSwipe = onAddToPlaylist,
+    isUndo = false,
+)
+
+@Composable
+fun audioDownloadPlaylistSwipeAction(
+    audio: Audio,
+    backgroundColor: Color = Blue,
+    actionHandler: AudioActionHandler = LocalAudioActionHandler.current,
+) = SwipeAction(
+    background = backgroundColor,
+    icon = {
+        Icon(
+            modifier = Modifier.padding(AppTheme.specs.padding),
+            painter = rememberVectorPainter(Icons.Default.Download),
+            tint = backgroundColor.contentColor(),
+            contentDescription = null
+        )
+    },
+    onSwipe = {
+        actionHandler(AudioItemAction.Download(audio))
+    },
     isUndo = false,
 )

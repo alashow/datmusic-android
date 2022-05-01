@@ -67,6 +67,7 @@ fun AudioRow(
     observeNowPlayingAudio: Boolean = true,
     extraActionLabels: List<Int> = emptyList(),
     extraEndSwipeActions: List<SwipeAction> = emptyList(),
+    hasDownloadSwipeAction: Boolean = true,
     onExtraAction: (AudioItemAction.ExtraAction) -> Unit = {},
     isSwipeable: Boolean = true,
 ) {
@@ -89,11 +90,14 @@ fun AudioRow(
             onExtraAction = onExtraAction,
         )
     }
-    if (isSwipeable) {
+    if (isSwipeable && !isPlaceholder) {
         AudioBoxWithSwipeActions(
             audio = audio,
             content = { content() },
-            extraEndActions = extraEndSwipeActions,
+            extraEndActions = buildList {
+                if (hasDownloadSwipeAction) add(audioDownloadPlaylistSwipeAction(audio))
+                addAll(extraEndSwipeActions)
+            },
             onAddToPlaylist = { setAddToPlaylistVisible(true) },
         )
     } else content()
