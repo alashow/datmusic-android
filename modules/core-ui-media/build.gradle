@@ -39,9 +39,11 @@ repositories {
 }
 
 dependencies {
-	api project(':modules:common-compose')
+	api project(":modules:common-compose")
 	api project(":modules:common-ui-theme")
 	api project(":modules:common-ui-components")
 	api project(":modules:core-ui-library")
 	api project(":modules:navigation")
+
+	implementation Deps.Android.Compose.swipe
 }

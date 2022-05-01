@@ -69,6 +69,7 @@ object Deps {
 
             const val coil = "io.coil-kt:coil-compose:${Utils.coilVersion}"
             const val reorderable = "org.burnoutcrew.composereorderable:reorderable:0.7.4"
+            const val swipe = "me.saket.swipe:swipe:1.0.0"
         }
 
         object Accompanist {
