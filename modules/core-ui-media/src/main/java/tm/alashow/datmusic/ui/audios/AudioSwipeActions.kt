@@ -55,9 +55,7 @@ fun addAudioToQueueSwipeAction(
             contentDescription = null
         )
     },
-    onSwipe = {
-        actionHandler(AudioItemAction.PlayNext(audio))
-    },
+    onSwipe = { actionHandler(AudioItemAction.PlayNext(audio)) },
     isUndo = false,
 )
 
@@ -95,8 +93,7 @@ fun audioDownloadPlaylistSwipeAction(
             contentDescription = null
         )
     },
-    onSwipe = {
-        actionHandler(AudioItemAction.Download(audio))
-    },
+    onSwipe = { actionHandler(AudioItemAction.Download(audio)) },
+    weight = 1.5,
     isUndo = false,
 )

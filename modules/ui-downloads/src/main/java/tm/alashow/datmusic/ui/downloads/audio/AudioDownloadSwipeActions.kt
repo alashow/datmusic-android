@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.OpenInNew
+import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,6 +22,7 @@ import me.saket.swipe.SwipeableActionsBox
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.downloader.isComplete
 import tm.alashow.datmusic.downloader.isIncomplete
+import tm.alashow.datmusic.downloader.isQueued
 import tm.alashow.datmusic.ui.audios.addAudioToPlaylistSwipeAction
 import tm.alashow.datmusic.ui.audios.addAudioToQueueSwipeAction
 import tm.alashow.ui.DEFAULT_SWIPE_ACTION_THRESHOLD
@@ -41,12 +44,16 @@ fun AudioDownloadBoxWithSwipeActions(
         startActions = listOf(addAudioToQueueSwipeAction(audioDownloadItem.audio)),
         endActions = buildList {
             add(addAudioToPlaylistSwipeAction(onAddToPlaylist))
-            if (audioDownloadItem.downloadInfo.isIncomplete()) {
-                add(deleteAudioDownloadSwipeAction(audioDownloadItem))
-            }
-            if (audioDownloadItem.downloadInfo.isComplete()) {
-                add(openAudioDownloadSwipeAction(audioDownloadItem))
-                add(removeAudioDownloadSwipeAction(audioDownloadItem))
+            with(audioDownloadItem.downloadInfo) {
+                if (isQueued()) {
+                    add(pauseAudioDownloadSwipeAction(audioDownloadItem))
+                    add(cancelAudioDownloadSwipeAction(audioDownloadItem))
+                }
+                if (isIncomplete()) add(deleteAudioDownloadSwipeAction(audioDownloadItem))
+                if (isComplete()) {
+                    add(openAudioDownloadSwipeAction(audioDownloadItem))
+                    add(removeAudioDownloadSwipeAction(audioDownloadItem))
+                }
             }
         },
     )
@@ -69,6 +76,48 @@ fun openAudioDownloadSwipeAction(
     },
     onSwipe = {
         actionHandler(AudioDownloadItemAction.Open(audioDownloadItem))
+    },
+    isUndo = false,
+)
+
+@Composable
+fun pauseAudioDownloadSwipeAction(
+    audioDownloadItem: AudioDownloadItem,
+    backgroundColor: Color = Orange,
+    actionHandler: AudioDownloadItemActionHandler = LocalAudioDownloadItemActionHandler.current,
+) = SwipeAction(
+    background = backgroundColor,
+    icon = {
+        Icon(
+            modifier = Modifier.padding(AppTheme.specs.padding),
+            painter = rememberVectorPainter(Icons.Default.Pause),
+            tint = backgroundColor.contentColor(),
+            contentDescription = null
+        )
+    },
+    onSwipe = {
+        actionHandler(AudioDownloadItemAction.Pause(audioDownloadItem))
+    },
+    isUndo = false,
+)
+
+@Composable
+fun cancelAudioDownloadSwipeAction(
+    audioDownloadItem: AudioDownloadItem,
+    backgroundColor: Color = Red,
+    actionHandler: AudioDownloadItemActionHandler = LocalAudioDownloadItemActionHandler.current,
+) = SwipeAction(
+    background = backgroundColor,
+    icon = {
+        Icon(
+            modifier = Modifier.padding(AppTheme.specs.padding),
+            painter = rememberVectorPainter(Icons.Default.Cancel),
+            tint = backgroundColor.contentColor(),
+            contentDescription = null
+        )
+    },
+    onSwipe = {
+        actionHandler(AudioDownloadItemAction.Cancel(audioDownloadItem))
     },
     isUndo = false,
 )
