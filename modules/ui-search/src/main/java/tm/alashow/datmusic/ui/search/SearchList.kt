@@ -362,7 +362,6 @@ internal fun LazyListScope.audioList(pagingItems: LazyPagingItems<Audio>, onPlay
             isPlaceholder = audio == null,
             playOnClick = false,
             onPlayAudio = onPlayAudio,
-            isSwipeable = true
         )
     }
 

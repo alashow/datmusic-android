@@ -5,7 +5,6 @@
 package tm.alashow.datmusic.ui.audios
 
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,7 +19,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Explicit
-import androidx.compose.material.icons.filled.QueueMusic
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -29,19 +27,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.hapticfeedback.HapticFeedback
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.placeholder.material.placeholder
 import me.saket.swipe.SwipeAction
-import me.saket.swipe.SwipeableActionsBox
 import tm.alashow.base.util.extensions.interpunctize
 import tm.alashow.base.util.millisToDuration
 import tm.alashow.common.compose.LocalPlaybackConnection
@@ -73,12 +66,16 @@ fun AudioRow(
     audioIndex: Int? = null,
     observeNowPlayingAudio: Boolean = true,
     extraActionLabels: List<Int> = emptyList(),
+    extraEndSwipeActions: List<SwipeAction> = emptyList(),
     onExtraAction: (AudioItemAction.ExtraAction) -> Unit = {},
-    isSwipeable: Boolean = false,
+    isSwipeable: Boolean = true,
 ) {
+    val (addToPlaylistVisible, setAddToPlaylistVisible) = remember { mutableStateOf(false) }
     val content = @Composable {
-        AudioRowWithActions(
+        AudioRowWithMenu(
             audio = audio,
+            addToPlaylistVisible = addToPlaylistVisible,
+            setAddToPlaylistVisible = setAddToPlaylistVisible,
             modifier = modifier,
             imageSize = imageSize,
             isPlaceholder = isPlaceholder,
@@ -92,19 +89,21 @@ fun AudioRow(
             onExtraAction = onExtraAction,
         )
     }
-    if (isSwipeable)
-        SwipeableActionsBox(
-            startActions = listOf(AddToQueueSwipeAction(audio)),
-            swipeThreshold = 22.dp,
-            backgroundUntilSwipeThreshold = Color.Transparent,
+    if (isSwipeable) {
+        AudioBoxWithSwipeActions(
+            audio = audio,
             content = { content() },
+            extraEndActions = extraEndSwipeActions,
+            onAddToPlaylist = { setAddToPlaylistVisible(true) },
         )
-    else content()
+    } else content()
 }
 
 @Composable
-private fun AudioRowWithActions(
+private fun AudioRowWithMenu(
     audio: Audio,
+    addToPlaylistVisible: Boolean,
+    setAddToPlaylistVisible: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     imageSize: Dp = AudiosDefaults.imageSize,
     isPlaceholder: Boolean = false,
@@ -135,7 +134,6 @@ private fun AudioRowWithActions(
                 }
             }
             .fillMaxWidth()
-            .background(MaterialTheme.colors.background)
             .padding(AppTheme.specs.inputPaddings)
     ) {
         AudioRowItem(
@@ -158,7 +156,6 @@ private fun AudioRowWithActions(
         )
 
         if (!isPlaceholder) {
-            val (addToPlaylistVisible, setAddToPlaylistVisible) = remember { mutableStateOf(false) }
             AddToPlaylistMenu(audio, addToPlaylistVisible, setAddToPlaylistVisible)
             AudioDropdownMenu(
                 expanded = menuVisible,
@@ -260,24 +257,3 @@ fun AudioRowItem(
         }
     }
 }
-
-@Composable
-fun AddToQueueSwipeAction(
-    audio: Audio,
-    actionHandler: AudioActionHandler = LocalAudioActionHandler.current,
-    haptic: HapticFeedback = LocalHapticFeedback.current,
-) = SwipeAction(
-    background = MaterialTheme.colors.secondary,
-    icon = {
-        Icon(
-            modifier = Modifier.padding(16.dp),
-            painter = rememberVectorPainter(Icons.Default.QueueMusic),
-            contentDescription = null
-        )
-    },
-    onSwipe = {
-        haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-        actionHandler(AudioItemAction.PlayNext(audio))
-    },
-    isUndo = false,
-)

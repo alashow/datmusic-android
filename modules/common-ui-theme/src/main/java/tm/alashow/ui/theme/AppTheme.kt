@@ -11,6 +11,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -18,12 +19,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import tm.alashow.base.ui.ThemeState
+import tm.alashow.ui.AdaptiveColorResult
+import tm.alashow.ui.toAdaptiveColor
 
-val LocalThemeState = staticCompositionLocalOf<ThemeState> {
+val LocalThemeState = compositionLocalOf<ThemeState> {
     error("No LocalThemeState provided")
 }
-private val LocalAppColors = staticCompositionLocalOf<AppColors> {
+private val LocalAppColors = compositionLocalOf<AppColors> {
     error("No LocalAppColors provided")
+}
+val LocalAdaptiveColor = compositionLocalOf<AdaptiveColorResult> {
+    error("No LocalAdaptiveColorResult provided")
 }
 private val LocalSpecs = staticCompositionLocalOf<Specs> {
     error("No LocalSpecs provided")
@@ -55,6 +61,7 @@ fun ProvideAppTheme(
     CompositionLocalProvider(
         LocalThemeState provides theme,
         LocalAppColors provides appColors,
+        LocalAdaptiveColor provides appColors.materialColors.secondary.toAdaptiveColor(isDarkColors = !appColors.materialColors.isLight),
         LocalSpecs provides specs,
         content = content
     )
@@ -83,5 +90,8 @@ fun MaterialThemePatches(content: @Composable () -> Unit) {
         handleColor = MaterialTheme.colors.secondary,
         backgroundColor = MaterialTheme.colors.secondary.copy(alpha = 0.4f)
     )
-    CompositionLocalProvider(LocalTextSelectionColors provides textSelectionColors, content = content)
+    CompositionLocalProvider(
+        LocalTextSelectionColors provides textSelectionColors,
+        content = content
+    )
 }

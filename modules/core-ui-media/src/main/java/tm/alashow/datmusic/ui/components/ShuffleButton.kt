@@ -25,9 +25,9 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import tm.alashow.base.util.extensions.Callback
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.playPause
-import tm.alashow.ui.LocalAdaptiveColorResult
 import tm.alashow.ui.components.IconButton
 import tm.alashow.ui.theme.AppTheme
+import tm.alashow.ui.theme.LocalAdaptiveColor
 
 @OptIn(ExperimentalFoundationApi::class, androidx.compose.animation.ExperimentalAnimationApi::class)
 @Composable
@@ -74,8 +74,8 @@ fun ShuffleAdaptiveButton(
     visible: Boolean,
     playbackConnection: PlaybackConnection,
     modifier: Modifier = Modifier,
-    tint: Color = LocalAdaptiveColorResult.current.contentColor,
-    background: Color = LocalAdaptiveColorResult.current.color,
+    tint: Color = LocalAdaptiveColor.current.contentColor,
+    background: Color = LocalAdaptiveColor.current.color,
     onLongClickLabel: String? = null,
     onLongClick: Callback = { playbackConnection.mediaController?.playPause() },
     onDoubleClick: Callback = { playbackConnection.mediaController?.playPause() },

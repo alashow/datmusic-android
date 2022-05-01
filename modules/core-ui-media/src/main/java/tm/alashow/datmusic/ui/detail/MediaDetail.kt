@@ -28,9 +28,9 @@ import tm.alashow.domain.models.Incomplete
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.Navigator
 import tm.alashow.ui.LazyColumnScrollbar
-import tm.alashow.ui.LocalAdaptiveColorResult
 import tm.alashow.ui.adaptiveColor
 import tm.alashow.ui.components.FullScreenLoading
+import tm.alashow.ui.theme.LocalAdaptiveColor
 
 @Composable
 fun <DetailType> MediaDetail(
@@ -118,7 +118,7 @@ private fun <DetailType, T : MediaDetailViewState<DetailType>> MediaDetailConten
         val topPadding = if (isHeaderVisible) 0.dp else padding.calculateTopPadding()
         val bottomPadding = (if (isHeaderVisible) padding.calculateTopPadding() else 0.dp) + padding.calculateBottomPadding()
 
-        CompositionLocalProvider(LocalAdaptiveColorResult provides adaptiveColor) {
+        CompositionLocalProvider(LocalAdaptiveColor provides adaptiveColor) {
             LazyColumnScrollbar(listState = listState, enabled = scrollbarsEnabled) {
                 LazyColumn(
                     state = listState,

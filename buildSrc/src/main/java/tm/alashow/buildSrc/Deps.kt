@@ -56,8 +56,8 @@ object Deps {
             const val uiTooling = "androidx.compose.ui:ui-tooling:$version"
             const val foundation = "androidx.compose.foundation:foundation:$version"
             const val material = "androidx.compose.material:material:$version"
-            const val materialIcons = "androidx.compose.material:material-icons-core:$version"
-            const val materialIconsExtended = "androidx.compose.material:material-icons-extended:$version"
+            const val materialIcons = "androidx.compose.material:material-icons-core:1.2.0-alpha08" // TODO: revert to $version after 1.2.0-alpha08
+            const val materialIconsExtended = "androidx.compose.material:material-icons-extended:1.2.0-alpha08"
             const val constraintLayout = "androidx.constraintlayout:constraintlayout-compose:1.0.0"
             const val liveData = "androidx.compose.runtime:runtime-livedata:$version"
             const val activity = "androidx.activity:activity-compose:$activityVersion"
