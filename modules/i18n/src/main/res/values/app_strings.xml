@@ -26,6 +26,7 @@
     <string name="audio.menu.cd">Audio menu</string>
     <string name="audio.menu.play">Play</string>
     <string name="audio.menu.playNext">Play next</string>
+    <string name="audio.menu.playNext.message">Added to queue</string>
     <string name="audio.menu.download">Download</string>
     <string name="audio.menu.downloadById">Download</string>
     <string name="audio.menu.copyLink">Copy link</string>
