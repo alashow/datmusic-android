@@ -87,6 +87,7 @@ import tm.alashow.datmusic.playback.artwork
 import tm.alashow.datmusic.playback.isIdle
 import tm.alashow.datmusic.playback.models.PlaybackQueue
 import tm.alashow.datmusic.playback.models.QueueTitle.Companion.asQueueTitle
+import tm.alashow.datmusic.ui.audios.AUDIO_SWIPE_ACTION_WEIGHT_MEDIUM
 import tm.alashow.datmusic.ui.audios.AudioActionHandler
 import tm.alashow.datmusic.ui.audios.AudioDropdownMenu
 import tm.alashow.datmusic.ui.audios.AudioItemAction
@@ -113,6 +114,7 @@ import tm.alashow.ui.theme.LocalAdaptiveColor
 import tm.alashow.ui.theme.LocalThemeState
 import tm.alashow.ui.theme.Red
 import tm.alashow.ui.theme.plainBackgroundColor
+import tm.alashow.ui.theme.plainSurfaceColor
 
 private val RemoveFromPlaylist = R.string.playback_queue_removeFromQueue
 private val AddQueueToPlaylist = R.string.playback_queue_addQueueToPlaylist
@@ -202,6 +204,7 @@ internal fun PlaybackSheetContent(
                 Scaffold(
                     backgroundColor = Color.Transparent,
                     modifier = Modifier
+                        .background(plainSurfaceColor())
                         .background(adaptiveColor.gradient)
                         .weight(1f),
                     scaffoldState = scaffoldState,
@@ -420,7 +423,7 @@ private fun PlaybackAudioInfo(audio: Audio, modifier: Modifier = Modifier) {
                 .padding(bottom = AppTheme.specs.padding)
         ) {
             Surface(
-                color = MaterialTheme.colors.plainBackgroundColor().copy(alpha = 0.1f),
+                color = plainBackgroundColor().copy(alpha = 0.1f),
                 shape = CircleShape,
             ) {
                 Text(
@@ -466,6 +469,7 @@ private fun LazyListScope.playbackQueue(
                 scrollToTop()
             },
             extraActionLabels = listOf(RemoveFromPlaylist),
+            hasAddToPlaylistSwipeAction = false,
             onExtraAction = { playbackConnection.removeByPosition(realPosition) },
             extraEndSwipeActions = listOf(
                 removeAudioFromQueueSwipeAction(
@@ -485,6 +489,7 @@ fun removeAudioFromQueueSwipeAction(
     backgroundColor: Color = Red,
 ) = SwipeAction(
     background = backgroundColor,
+    weight = AUDIO_SWIPE_ACTION_WEIGHT_MEDIUM,
     icon = {
         Icon(
             modifier = Modifier.padding(AppTheme.specs.padding),

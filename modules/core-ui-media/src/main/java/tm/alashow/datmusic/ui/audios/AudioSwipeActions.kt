@@ -31,6 +31,7 @@ const val AUDIO_SWIPE_ACTION_WEIGHT_MEDIUM = 1.4
 fun AudioBoxWithSwipeActions(
     audio: Audio,
     onAddToPlaylist: () -> Unit,
+    modifier: Modifier = Modifier,
     hasAddToPlaylistSwipeAction: Boolean = true,
     hasDownloadSwipeAction: Boolean = true,
     extraEndActions: List<SwipeAction> = emptyList(),
@@ -44,6 +45,7 @@ fun AudioBoxWithSwipeActions(
             if (hasDownloadSwipeAction) add(audioDownloadPlaylistSwipeAction(audio))
             addAll(extraEndActions)
         },
+        modifier = modifier,
         content = { content() },
     )
 }

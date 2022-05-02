@@ -7,7 +7,6 @@ package tm.alashow.datmusic.ui.playback.components
 import android.net.Uri
 import android.support.v4.media.MediaMetadataCompat
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,7 +34,7 @@ internal fun PlaybackArtwork(
     CoverImage(
         data = artwork,
         shape = RectangleShape,
-        backgroundColor = MaterialTheme.colors.plainSurfaceColor(),
+        backgroundColor = plainSurfaceColor(),
         contentColor = contentColor,
         bitmapPlaceholder = nowPlaying.artwork,
         modifier = Modifier

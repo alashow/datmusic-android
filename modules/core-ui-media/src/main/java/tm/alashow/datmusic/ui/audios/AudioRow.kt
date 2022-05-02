@@ -73,7 +73,7 @@ fun AudioRow(
     isSwipeable: Boolean = true,
 ) {
     val (addToPlaylistVisible, setAddToPlaylistVisible) = remember { mutableStateOf(false) }
-    val content = @Composable {
+    val content = @Composable { modifier: Modifier ->
         AudioRowWithMenu(
             audio = audio,
             addToPlaylistVisible = addToPlaylistVisible,
@@ -94,13 +94,14 @@ fun AudioRow(
     if (isSwipeable && !isPlaceholder) {
         AudioBoxWithSwipeActions(
             audio = audio,
-            content = { content() },
+            content = { content(Modifier) },
             hasDownloadSwipeAction = hasDownloadSwipeAction,
             hasAddToPlaylistSwipeAction = hasAddToPlaylistSwipeAction,
             extraEndActions = extraEndSwipeActions,
-            onAddToPlaylist = { setAddToPlaylistVisible(true) }
+            onAddToPlaylist = { setAddToPlaylistVisible(true) },
+            modifier = modifier,
         )
-    } else content()
+    } else content(modifier)
 }
 
 @Composable
