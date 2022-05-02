@@ -22,17 +22,17 @@ import tm.alashow.base.ui.ThemeState
 import tm.alashow.ui.AdaptiveColorResult
 import tm.alashow.ui.toAdaptiveColor
 
-val LocalThemeState = compositionLocalOf<ThemeState> {
+val LocalThemeState = staticCompositionLocalOf<ThemeState> {
     error("No LocalThemeState provided")
 }
-private val LocalAppColors = compositionLocalOf<AppColors> {
+private val LocalAppColors = staticCompositionLocalOf<AppColors> {
     error("No LocalAppColors provided")
-}
-val LocalAdaptiveColor = compositionLocalOf<AdaptiveColorResult> {
-    error("No LocalAdaptiveColorResult provided")
 }
 private val LocalSpecs = staticCompositionLocalOf<Specs> {
     error("No LocalSpecs provided")
+}
+val LocalAdaptiveColor = compositionLocalOf<AdaptiveColorResult> {
+    error("No LocalAdaptiveColorResult provided")
 }
 
 object AppTheme {
