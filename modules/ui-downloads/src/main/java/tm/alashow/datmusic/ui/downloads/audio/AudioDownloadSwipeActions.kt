@@ -23,6 +23,8 @@ import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.downloader.isComplete
 import tm.alashow.datmusic.downloader.isIncomplete
 import tm.alashow.datmusic.downloader.isQueued
+import tm.alashow.datmusic.ui.audios.AUDIO_SWIPE_ACTION_WEIGHT_MEDIUM
+import tm.alashow.datmusic.ui.audios.AUDIO_SWIPE_ACTION_WEIGHT_NORMAL
 import tm.alashow.datmusic.ui.audios.addAudioToPlaylistSwipeAction
 import tm.alashow.datmusic.ui.audios.addAudioToQueueSwipeAction
 import tm.alashow.ui.DEFAULT_SWIPE_ACTION_THRESHOLD
@@ -43,7 +45,7 @@ fun AudioDownloadBoxWithSwipeActions(
         content = { content() },
         startActions = listOf(addAudioToQueueSwipeAction(audioDownloadItem.audio)),
         endActions = buildList {
-            add(addAudioToPlaylistSwipeAction(onAddToPlaylist))
+            add(addAudioToPlaylistSwipeAction(onAddToPlaylist, weight = AUDIO_SWIPE_ACTION_WEIGHT_MEDIUM))
             with(audioDownloadItem.downloadInfo) {
                 if (isQueued()) {
                     add(pauseAudioDownloadSwipeAction(audioDownloadItem))
@@ -66,6 +68,7 @@ fun openAudioDownloadSwipeAction(
     actionHandler: AudioDownloadItemActionHandler = LocalAudioDownloadItemActionHandler.current,
 ) = SwipeAction(
     background = backgroundColor,
+    weight = AUDIO_SWIPE_ACTION_WEIGHT_NORMAL,
     icon = {
         Icon(
             modifier = Modifier.padding(AppTheme.specs.padding),
@@ -129,6 +132,7 @@ fun removeAudioDownloadSwipeAction(
     actionHandler: AudioDownloadItemActionHandler = LocalAudioDownloadItemActionHandler.current,
 ) = SwipeAction(
     background = backgroundColor,
+    weight = AUDIO_SWIPE_ACTION_WEIGHT_MEDIUM,
     icon = {
         Icon(
             modifier = Modifier.padding(AppTheme.specs.padding),

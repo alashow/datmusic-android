@@ -5,6 +5,7 @@
 package me.saket.swipe
 
 import kotlin.math.abs
+import timber.log.Timber
 
 internal data class SwipeActionMeta(
     val value: SwipeAction,
@@ -50,6 +51,8 @@ internal data class ActionFinder(
         }
 
         // Precision error in the above loop maybe?
-        error("Couldn't find any swipe action. Width=$totalWidth, offset=$offset, actions=$this")
+        Timber.e("Swipe", "Couldn't find any swipe action. Width=$totalWidth, offset=$offset, actions=$this")
+
+        return last()
     }
 }

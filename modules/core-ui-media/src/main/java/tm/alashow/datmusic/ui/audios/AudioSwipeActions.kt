@@ -24,17 +24,26 @@ import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.Blue
 import tm.alashow.ui.theme.LocalAdaptiveColor
 
+const val AUDIO_SWIPE_ACTION_WEIGHT_NORMAL = 1.0
+const val AUDIO_SWIPE_ACTION_WEIGHT_MEDIUM = 1.4
+
 @Composable
 fun AudioBoxWithSwipeActions(
     audio: Audio,
     onAddToPlaylist: () -> Unit,
+    hasAddToPlaylistSwipeAction: Boolean = true,
+    hasDownloadSwipeAction: Boolean = true,
     extraEndActions: List<SwipeAction> = emptyList(),
     content: @Composable BoxScope.() -> Unit,
 ) {
     SwipeableActionsBox(
-        startActions = listOf(addAudioToQueueSwipeAction(audio)),
-        endActions = listOf(addAudioToPlaylistSwipeAction(onAddToPlaylist)) + extraEndActions,
         swipeThreshold = DEFAULT_SWIPE_ACTION_THRESHOLD,
+        startActions = listOf(addAudioToQueueSwipeAction(audio)),
+        endActions = buildList {
+            if (hasAddToPlaylistSwipeAction) add(addAudioToPlaylistSwipeAction(onAddToPlaylist))
+            if (hasDownloadSwipeAction) add(audioDownloadPlaylistSwipeAction(audio))
+            addAll(extraEndActions)
+        },
         content = { content() },
     )
 }
@@ -62,10 +71,12 @@ fun addAudioToQueueSwipeAction(
 @Composable
 fun addAudioToPlaylistSwipeAction(
     onAddToPlaylist: () -> Unit,
+    weight: Double = AUDIO_SWIPE_ACTION_WEIGHT_NORMAL,
     backgroundColor: Color = LocalAdaptiveColor.current.color,
     iconColor: Color = LocalAdaptiveColor.current.contentColor,
 ) = SwipeAction(
     background = backgroundColor,
+    weight = weight,
     icon = {
         Icon(
             modifier = Modifier.padding(AppTheme.specs.padding),
@@ -94,6 +105,6 @@ fun audioDownloadPlaylistSwipeAction(
         )
     },
     onSwipe = { actionHandler(AudioItemAction.Download(audio)) },
-    weight = 1.5,
+    weight = AUDIO_SWIPE_ACTION_WEIGHT_MEDIUM,
     isUndo = false,
 )

@@ -101,8 +101,11 @@ fun SwipeableActionsBox(
 
     if (enableHapticFeedback) {
         LaunchedEffect(thresholdCrossed) {
-            if (thresholdCrossed && visibleAction != null) {
-                hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+            if (visibleAction != null) {
+                hapticFeedback.performHapticFeedback(
+                    if (thresholdCrossed) HapticFeedbackType.LongPress
+                    else HapticFeedbackType.TextHandleMove
+                )
             }
         }
     }

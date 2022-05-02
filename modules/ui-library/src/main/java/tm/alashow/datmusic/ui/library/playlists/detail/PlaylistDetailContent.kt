@@ -16,7 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import me.saket.swipe.SwipeAction
-import tm.alashow.datmusic.domain.entities.*
+import tm.alashow.datmusic.domain.entities.PlaylistAudio
+import tm.alashow.datmusic.domain.entities.PlaylistItem
+import tm.alashow.datmusic.domain.entities.PlaylistItems
+import tm.alashow.datmusic.ui.audios.AUDIO_SWIPE_ACTION_WEIGHT_MEDIUM
 import tm.alashow.datmusic.ui.audios.AudioRow
 import tm.alashow.datmusic.ui.detail.MediaDetailContent
 import tm.alashow.datmusic.ui.library.R
@@ -54,6 +57,7 @@ class PlaylistDetailContent(
                     },
                     extraActionLabels = listOf(RemoveFromPlaylist),
                     onExtraAction = { onRemoveFromPlaylist(item) },
+                    hasAddToPlaylistSwipeAction = false,
                     extraEndSwipeActions = listOf(
                         removeAudioFromPlaylistSwipeAction(
                             onRemoveFromPlaylist = {
@@ -75,6 +79,7 @@ fun removeAudioFromPlaylistSwipeAction(
     backgroundColor: Color = Red,
 ) = SwipeAction(
     background = backgroundColor,
+    weight = AUDIO_SWIPE_ACTION_WEIGHT_MEDIUM,
     icon = {
         Icon(
             modifier = Modifier.padding(AppTheme.specs.padding),

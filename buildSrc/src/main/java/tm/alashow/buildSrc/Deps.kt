@@ -31,12 +31,12 @@ object Deps {
         const val activityVersion = "1.4.0"
         const val activityKtx = "androidx.activity:activity-ktx:$activityVersion"
 
-        private const val navigationVersion = "2.4.2"
+        private const val navigationVersion = "2.5.0-beta01"
         const val navigationFragment = "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
         const val navigationUi = "androidx.navigation:navigation-ui-ktx:$navigationVersion"
         const val navigationSafeArgs = "androidx.navigation:navigation-safe-args-gradle-plugin:2.4.0-rc01"
         const val navigationCompose = "androidx.navigation:navigation-compose:$navigationVersion"
-        const val navigationHiltCompose = "androidx.hilt:hilt-navigation-compose:1.0.0-rc01"
+        const val navigationHiltCompose = "androidx.hilt:hilt-navigation-compose:1.0.0"
 
         const val dataStore = "androidx.datastore:datastore-preferences:1.0.0"
 

@@ -22,7 +22,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.Audios
@@ -30,6 +29,7 @@ import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.ui.coreLibrary.R
 import tm.alashow.datmusic.ui.library.playlist.addTo.NewPlaylistItem.isNewPlaylistItem
 import tm.alashow.datmusic.ui.library.playlist.addTo.NewPlaylistItem.withNewPlaylistItem
+import tm.alashow.navigation.activityHiltViewModel
 import tm.alashow.ui.theme.AppTheme
 
 @Composable
@@ -51,7 +51,7 @@ fun AddToPlaylistMenu(
     visible: Boolean,
     onVisibleChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: AddToPlaylistViewModel = hiltViewModel()
+    viewModel: AddToPlaylistViewModel = activityHiltViewModel()
 ) {
     val playlists by rememberFlowWithLifecycle(viewModel.playlists)
 

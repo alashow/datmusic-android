@@ -9,11 +9,8 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
 import androidx.core.net.toUri
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
 import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
@@ -201,11 +198,3 @@ fun NavGraphBuilder.composableScreen(screen: LeafScreen, content: @Composable An
 @OptIn(ExperimentalMaterialNavigationApi::class)
 fun NavGraphBuilder.bottomSheetScreen(screen: LeafScreen, content: @Composable ColumnScope.(NavBackStackEntry) -> Unit) =
     bottomSheet(screen.createRoute(), screen.arguments, screen.deepLinks, content)
-
-// https://stackoverflow.com/a/64961032/2897341
-@Composable
-inline fun <reified VM : ViewModel> NavBackStackEntry.scopedViewModel(navController: NavController): VM {
-    val parentId = destination.parent!!.id
-    val parentBackStackEntry = navController.getBackStackEntry(parentId)
-    return hiltViewModel(parentBackStackEntry)
-}

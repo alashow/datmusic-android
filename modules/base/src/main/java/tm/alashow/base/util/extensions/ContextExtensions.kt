@@ -5,8 +5,10 @@
 package tm.alashow.base.util.extensions
 
 import android.content.Context
+import android.content.ContextWrapper
 import android.net.Uri
 import android.provider.Settings
+import androidx.activity.ComponentActivity
 
 fun Context.androidId() = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
 
@@ -31,4 +33,13 @@ fun Context.writeToFile(data: ByteArray, output: Uri) {
 fun Context.readFromFile(input: Uri): String {
     val inputStream = contentResolver.openInputStream(input) ?: error("Failed to open input file stream")
     return inputStream.bufferedReader().readText()
+}
+
+fun Context.findComponentActivity(): ComponentActivity {
+    var context = this
+    while (context is ContextWrapper) {
+        if (context is ComponentActivity) return context
+        context = context.baseContext
+    }
+    error("Failed to find ComponentActivity")
 }

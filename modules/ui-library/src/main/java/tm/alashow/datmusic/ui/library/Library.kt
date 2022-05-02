@@ -4,6 +4,7 @@
  */
 package tm.alashow.datmusic.ui.library
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,6 +26,7 @@ import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.LibraryItems
 import tm.alashow.datmusic.domain.entities.Playlist
+import tm.alashow.datmusic.domain.entities.PlaylistId
 import tm.alashow.datmusic.ui.library.items.LibraryItemRow
 import tm.alashow.datmusic.ui.library.playlists.PlaylistRow
 import tm.alashow.domain.models.Success
@@ -67,7 +69,11 @@ private fun Library(
                     contentPadding = padding,
                     state = listState
                 ) {
-                    libraryList(items())
+                    libraryList(
+                        items = items(),
+                        onDelete = viewModel::deletePlaylist,
+                        onDownload = viewModel::downloadPlaylist,
+                    )
                 }
             }
             else -> FullScreenLoading()
@@ -93,8 +99,11 @@ private fun LibraryTopBar(onCreatePlaylist: Callback = {}) {
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 fun LazyListScope.libraryList(
     items: LibraryItems = listOf(),
+    onDelete: (PlaylistId) -> Unit,
+    onDownload: (PlaylistId) -> Unit,
 ) {
     val downloadsEmpty = items.isEmpty()
     if (downloadsEmpty) {
@@ -108,10 +117,16 @@ fun LazyListScope.libraryList(
     }
 
     items(items, key = { it.getIdentifier() }) {
+        val modifier = Modifier.animateItemPlacement()
         when (it) {
-            is Playlist -> PlaylistRow(playlist = it)
-            is Album -> LibraryItemRow(libraryItem = it, typeRes = R.string.albums_detail_title)
-            else -> LibraryItemRow(libraryItem = it, typeRes = R.string.unknown)
+            is Playlist -> PlaylistRow(
+                playlist = it,
+                onDelete = { onDelete(it.id) },
+                onDownload = { onDownload(it.id) },
+                modifier = modifier
+            )
+            is Album -> LibraryItemRow(libraryItem = it, typeRes = R.string.albums_detail_title, modifier)
+            else -> LibraryItemRow(libraryItem = it, typeRes = R.string.unknown, modifier)
         }
     }
 }
