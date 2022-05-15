@@ -9,6 +9,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import tm.alashow.data.db.PaginatedEntryDao
 import tm.alashow.datmusic.data.DatmusicSearchParams
 import tm.alashow.datmusic.data.db.SQLITE_MAX_VARIABLES
@@ -22,17 +23,16 @@ abstract class AudiosDao : PaginatedEntryDao<DatmusicSearchParams, Audio>() {
     abstract suspend fun audiosById(ids: List<String>): List<Audio>
 
     @Transaction
-    @Query("DELETE FROM audios WHERE id NOT IN (:ids)")
-    abstract suspend fun deleteExcept(ids: List<String>): Int
+    @Query("DELETE FROM audios WHERE id IN (:ids)")
+    abstract suspend fun bulkDelete(ids: List<String>): Int
 
-    @Transaction
-    @Query("DELETE FROM audios WHERE id NOT IN (:ids)")
-    suspend fun deleteExceptChunked(ids: List<String>): Int {
-        var deleted = 0
-        for (chunk in ids.chunked(SQLITE_MAX_VARIABLES)) {
-            deleted += deleteExcept(chunk)
-        }
-        return deleted
+    suspend fun deleteExcept(ids: List<String>): Int {
+        val idsSet = ids.toSet()
+        return entries().first()
+            .map { it.id } // get all existing ids
+            .filterNot { idsSet.contains(it) } // exclude given ids
+            .chunked(SQLITE_MAX_VARIABLES)
+            .sumOf { bulkDelete(it) } // delete the rest & sum deletions
     }
 
     @Transaction

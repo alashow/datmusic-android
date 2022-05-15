@@ -50,24 +50,25 @@ class AudiosDaoTest : BaseTest() {
     }
 
     @Test
+    fun bulkDelete() = runTest {
+        dao.insertAll(testItems)
+
+        val idsToRemove = testItems.shuffled().map { it.id }.take(2)
+        val idsToKeep = testItems.map { it.id }.filterNot { it in idsToRemove }
+        dao.bulkDelete(idsToRemove)
+
+        dao.entries().test {
+            assertThat(awaitItem().map { it.id })
+                .containsExactlyElementsIn(idsToKeep)
+        }
+    }
+
+    @Test
     fun deleteExcept() = runTest {
         dao.insertAll(testItems)
 
         val idWhitelist = testItems.shuffled().map { it.id }.take(2)
         dao.deleteExcept(idWhitelist)
-
-        dao.entries().test {
-            assertThat(awaitItem().map { it.id })
-                .containsExactlyElementsIn(idWhitelist)
-        }
-    }
-
-    @Test
-    fun deleteExceptChunked() = runTest {
-        dao.insertAll(testItems)
-
-        val idWhitelist = testItems.shuffled().map { it.id }.take(2)
-        dao.deleteExceptChunked(idWhitelist)
 
         dao.entries().test {
             assertThat(awaitItem().map { it.id })
