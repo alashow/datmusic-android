@@ -130,7 +130,7 @@ private fun Modifier.drawScrollbar(
     val estimatedItemSize = if (items.isEmpty()) 0f else itemsSize.toFloat() / items.size
     val totalSize = estimatedItemSize * layoutInfo.totalItemsCount
     val canvasSize = if (orientation == Orientation.Horizontal) size.width else size.height
-    val thumbSize = (viewportSize / totalSize * canvasSize) / 2
+    val thumbSize = ((viewportSize / totalSize * canvasSize) / 2).coerceAtLeast(viewportSize * 0.1f)
     val startOffset = if (items.isEmpty()) 0f else items
         .first()
         .run {
