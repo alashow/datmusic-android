@@ -69,7 +69,6 @@ import tm.alashow.domain.models.Loading
 import tm.alashow.domain.models.Success
 import tm.alashow.domain.models.Uninitialized
 import tm.alashow.ui.Delayed
-import tm.alashow.ui.LazyColumnScrollbar
 import tm.alashow.ui.LifecycleRespectingBackHandler
 import tm.alashow.ui.components.AppBarNavigationIcon
 import tm.alashow.ui.components.AppTopBar
@@ -78,6 +77,7 @@ import tm.alashow.ui.components.FullScreenLoading
 import tm.alashow.ui.components.IconButton
 import tm.alashow.ui.components.SearchTextField
 import tm.alashow.ui.components.SelectableDropdownMenu
+import tm.alashow.ui.drawVerticalScrollbar
 import tm.alashow.ui.theme.AppTheme
 
 @Composable
@@ -97,13 +97,12 @@ private fun Downloads(viewModel: DownloadsViewModel) {
         when (val asyncDownloads = viewState.downloads) {
             is Uninitialized, is Loading -> FullScreenLoading()
             is Fail -> DownloadsError(asyncDownloads)
-            is Success -> LazyColumnScrollbar(listState) {
-                LazyColumn(
-                    state = listState,
-                    contentPadding = padding,
-                ) {
-                    downloadsList(asyncDownloads(), viewModel::playAudioDownload)
-                }
+            is Success -> LazyColumn(
+                state = listState,
+                contentPadding = padding,
+                modifier = Modifier.drawVerticalScrollbar(listState),
+            ) {
+                downloadsList(asyncDownloads(), viewModel::playAudioDownload)
             }
         }
     }
