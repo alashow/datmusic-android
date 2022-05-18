@@ -15,13 +15,17 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
+import tm.alashow.base.util.CoroutineDispatchers
 
-fun <T> delayFlow(timeout: Long, value: T): Flow<T> = flow {
+fun delayFlow(timeout: Long, dispatchers: CoroutineDispatchers): Flow<Unit> = delayFlow(timeout, Unit, dispatchers)
+
+fun <T> delayFlow(timeout: Long, value: T, dispatchers: CoroutineDispatchers): Flow<T> = flow {
     delay(timeout)
     emit(value)
-}
+}.flowOn(dispatchers.computation)
 
 fun flowInterval(interval: Long, timeUnit: TimeUnit = TimeUnit.MILLISECONDS): Flow<Int> {
     val delayMillis = timeUnit.toMillis(interval)

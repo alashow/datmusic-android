@@ -4,6 +4,7 @@
  */
 package tm.alashow.base.ui
 
+import androidx.annotation.VisibleForTesting
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.channels.BufferOverflow
@@ -27,15 +28,20 @@ open class SnackbarMessage<T>(val message: UiMessage<*>, val action: SnackbarAct
 class SnackbarManager @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
 ) {
-    private var maxDuration = Duration.ofSeconds(6).toMillis()
-    private val maxQueue = 3
 
-    private val pendingErrors = Channel<Throwable>(maxQueue, BufferOverflow.DROP_OLDEST)
+    companion object {
+        private val maxErrorDuration = Duration.ofSeconds(6).toMillis()
+
+        @VisibleForTesting
+        const val maxErrorQueue = 3
+    }
+
+    private val pendingErrors = Channel<Throwable>(maxErrorQueue, BufferOverflow.DROP_OLDEST)
     private val removeErrorSignal = Channel<Unit>(Channel.RENDEZVOUS)
 
     /**
      * A flow of [Throwable]s to display in the UI, usually as snackbars. The flow will immediately
-     * emit `null`, and will then emit errors sent via [addError]. Once [maxDuration] has elapsed,
+     * emit `null`, and will then emit errors sent via [addError]. Once [maxErrorDuration] has elapsed,
      * or [removeCurrentError] is called (if before that) `null` will be emitted to remove
      * the current error.
      */
@@ -47,7 +53,7 @@ class SnackbarManager @Inject constructor(
 
             // Wait for either a maxDuration timeout, or a remove signal (whichever comes first)
             merge(
-                delayFlow(maxDuration, Unit),
+                delayFlow(maxErrorDuration, dispatchers),
                 removeErrorSignal.receiveAsFlow(),
             ).firstOrNull()
 
@@ -58,9 +64,11 @@ class SnackbarManager @Inject constructor(
 
     /**
      * Add [error] to the queue of errors to display.
+     * @return how long given error will be active before cleared manually, in millis
      */
-    suspend fun addError(error: Throwable) {
-        pendingErrors.send(error)
+    fun addError(error: Throwable): Long {
+        pendingErrors.trySend(error)
+        return maxErrorDuration
     }
 
     /**
@@ -74,14 +82,23 @@ class SnackbarManager @Inject constructor(
     private val performedActionsMessageChannel = Channel<SnackbarMessage<*>>(Channel.CONFLATED)
 
     val messages = messagesChannel.receiveAsFlow()
+    private val shownMessages = mutableSetOf<UiMessage<*>>()
 
     fun addMessage(message: UiMessage<*>) = addMessage(SnackbarMessage<Unit>(message))
 
     fun addMessage(message: SnackbarMessage<*>) {
-        messagesChannel.trySend(message)
+        if (message.message !in shownMessages) {
+            messagesChannel.trySend(message)
+            shownMessages.add(message.message)
+        }
+    }
+
+    fun onMessageDismissed(message: SnackbarMessage<*>) {
+        shownMessages.remove(message.message)
     }
 
     fun onMessageActionPerformed(message: SnackbarMessage<*>) {
+        shownMessages.remove(message.message)
         performedActionsMessageChannel.trySend(message)
     }
 
@@ -90,8 +107,10 @@ class SnackbarManager @Inject constructor(
      * Returns given action if it's performed on time, null otherwise.
      */
     suspend fun <T : SnackbarMessage<*>> observeMessageAction(action: T): T? {
-        val result = merge(performedActionsMessageChannel.receiveAsFlow().filter { it == action }, delayFlow(4000L, Unit))
-            .firstOrNull()
+        val result = merge(
+            performedActionsMessageChannel.receiveAsFlow().filter { it == action },
+            delayFlow(4000L, dispatchers) // TODO: make duration depend on snackbar duration
+        ).firstOrNull()
         return if (result == action) action else null
     }
 }

@@ -67,4 +67,7 @@ dependencies {
 	api Deps.Firebase.crashlytics
 
 	api project(":modules:i18n")
+
+	testImplementation project(":modules:common-testing")
+	kaptTest Deps.Dagger.hiltCompiler
 }

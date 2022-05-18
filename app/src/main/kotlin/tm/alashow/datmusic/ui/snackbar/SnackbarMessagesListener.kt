@@ -11,7 +11,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import tm.alashow.base.util.asString
 import tm.alashow.common.compose.LocalScaffoldState
 import tm.alashow.common.compose.collectEvent
@@ -25,10 +24,11 @@ internal fun SnackbarMessagesListener(
     val context = LocalContext.current
     collectEvent(viewModel.messages) {
         coroutine.launch {
-            val snackbarResult = snackbarHostState.showSnackbar(it.message.asString(context), it.action?.label?.asString(context))
-            when (snackbarResult) {
+            val message = it.message.asString(context)
+            val actionLabel = it.action?.label?.asString(context)
+            when (snackbarHostState.showSnackbar(message, actionLabel)) {
                 SnackbarResult.ActionPerformed -> viewModel.onSnackbarActionPerformed(it)
-                SnackbarResult.Dismissed -> Timber.d("Snackbar dismissed")
+                SnackbarResult.Dismissed -> viewModel.onSnackbarDismissed(it)
             }
         }
     }
