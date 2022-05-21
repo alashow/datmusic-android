@@ -130,7 +130,7 @@ fun resumeAudioDownloadSwipeAction(
         )
     },
     onSwipe = {
-        actionHandler(AudioDownloadItemAction.Pause(audioDownloadItem))
+        actionHandler(AudioDownloadItemAction.Resume(audioDownloadItem))
     },
     isUndo = false,
 )
