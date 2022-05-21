@@ -22,9 +22,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ScaffoldState
-import androidx.compose.material.SnackbarDuration
-import androidx.compose.material.SnackbarResult
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -48,7 +45,6 @@ import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import tm.alashow.base.util.localizedMessage
 import tm.alashow.base.util.localizedTitle
-import tm.alashow.common.compose.LocalScaffoldState
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.data.DatmusicSearchParams.BackendType
 import tm.alashow.datmusic.domain.entities.Album
@@ -129,7 +125,14 @@ internal fun SearchList(
         return
     }
 
-    SearchListErrors(viewModel, viewState, refreshPagers, refreshErrorState, pagersAreEmpty, hasMultiplePagers)
+    SearchListErrors(
+        viewState = viewState,
+        retryPagers = retryPagers,
+        refreshErrorState = refreshErrorState,
+        pagersAreEmpty = pagersAreEmpty,
+        hasMultiplePagers = hasMultiplePagers,
+        onSearchAction = viewModel::submitAction,
+    )
 
     SwipeRefresh(
         state = rememberSwipeRefreshState(
@@ -165,13 +168,12 @@ internal fun SearchList(
 
 @Composable
 private fun SearchListErrors(
-    viewModel: SearchViewModel,
     viewState: SearchViewState,
-    refreshPagers: () -> Unit,
+    retryPagers: () -> Unit,
     refreshErrorState: LoadState?,
     pagersAreEmpty: Boolean,
     hasMultiplePagers: Boolean,
-    scaffoldState: ScaffoldState = LocalScaffoldState.current,
+    onSearchAction: (SearchAction) -> Unit,
 ) {
     val captchaError = viewState.captchaError
     var captchaErrorShown by remember(captchaError) { mutableStateOf(true) }
@@ -179,22 +181,9 @@ private fun SearchListErrors(
         CaptchaErrorDialog(
             captchaErrorShown, { captchaErrorShown = it }, captchaError,
             onCaptchaSubmit = { solution ->
-                viewModel.submitAction(SearchAction.SubmitCaptcha(captchaError, solution))
+                onSearchAction(SearchAction.SubmitCaptcha(captchaError, solution))
             }
         )
-    }
-
-    val message = stringResource(viewState.error.localizedMessage())
-    val retryLabel = stringResource(R.string.error_retry)
-
-    // show snackbar if there's an error to show
-    LaunchedEffect(viewState.error) {
-        viewState.error?.let {
-            when (scaffoldState.snackbarHostState.showSnackbar(message, retryLabel, SnackbarDuration.Long)) {
-                SnackbarResult.ActionPerformed -> refreshPagers()
-                SnackbarResult.Dismissed -> viewModel.submitAction(SearchAction.ClearError)
-            }
-        }
     }
 
     // add snackbar error if there's an error state in any of the active pagers (except empty result errors)
@@ -205,7 +194,7 @@ private fun SearchListErrors(
             val emptyResultsButHasMultiplePagers = refreshErrorState.error is EmptyResultException && hasMultiplePagers
             if (emptyResultsButHasMultiplePagers)
                 return@LaunchedEffect
-            viewModel.submitAction(SearchAction.AddError(refreshErrorState.error))
+            onSearchAction(SearchAction.AddError(refreshErrorState.error, retryPagers))
         }
     }
 }

@@ -68,10 +68,8 @@ internal class SearchViewModel @Inject constructor(
     private val onSearchEventChannel = Channel<SearchEvent>(Channel.CONFLATED)
     val onSearchEvent = onSearchEventChannel.receiveAsFlow()
 
-    val state = combine(searchFilterState, snackbarManager.errors, captchaError, ::SearchViewState)
+    val state = combine(searchFilterState, captchaError, ::SearchViewState)
         .stateInDefault(viewModelScope, SearchViewState.Empty)
-
-    val searchQuery = searchQueryState.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -88,8 +86,7 @@ internal class SearchViewModel @Inject constructor(
                     is SearchAction.Search -> searchTriggerState.value = SearchTrigger(searchQueryState.value)
                     is SearchAction.SelectBackendType -> selectBackendType(action)
                     is SearchAction.SubmitCaptcha -> submitCaptcha(action)
-                    is SearchAction.AddError -> snackbarManager.addError(action.error)
-                    is SearchAction.ClearError -> snackbarManager.removeCurrentError()
+                    is SearchAction.AddError -> onSearchError(action.error, action.onRetry)
                     is SearchAction.PlayAudio -> playAudio(action.audio)
                 }
             }
@@ -109,7 +106,7 @@ internal class SearchViewModel @Inject constructor(
         }
     }
 
-    fun search(searchEvent: SearchEvent) {
+    private fun search(searchEvent: SearchEvent) {
         val (trigger, filter) = searchEvent
         val query = trigger.query
         val searchParams = DatmusicSearchParams(query, trigger.captchaSolution)
@@ -140,6 +137,10 @@ internal class SearchViewModel @Inject constructor(
         viewModelScope.launch {
             pendingActions.emit(action)
         }
+    }
+
+    private fun onSearchError(error: Throwable, onRetry: () -> Unit) = viewModelScope.launch {
+        snackbarManager.addError(error = error, onRetry = onRetry)
     }
 
     /**

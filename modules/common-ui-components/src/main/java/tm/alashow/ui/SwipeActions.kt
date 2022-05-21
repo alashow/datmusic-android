@@ -6,4 +6,4 @@ package tm.alashow.ui
 
 import androidx.compose.ui.unit.dp
 
-val DEFAULT_SWIPE_ACTION_THRESHOLD = 80.dp
+val DEFAULT_SWIPE_ACTION_THRESHOLD = 120.dp

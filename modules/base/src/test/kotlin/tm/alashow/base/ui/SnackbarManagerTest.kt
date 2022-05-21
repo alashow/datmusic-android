@@ -7,6 +7,8 @@ package tm.alashow.base.ui
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.mockk.coVerify
+import io.mockk.spyk
 import javax.inject.Inject
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
@@ -18,51 +20,14 @@ class SnackbarManagerTest : BaseTest() {
 
     @Inject lateinit var snackbarManager: SnackbarManager
 
-    private val testError = Throwable("Test")
-
     private val testMessage = testMessage()
-    private fun testMessage(text: String = "Test") = SnackbarMessage<Unit>(
+    private fun testMessage(
+        text: String = "Test",
+        action: SnackbarAction<Unit> = SnackbarAction(UiMessage.Plain("Test"), Unit)
+    ) = SnackbarMessage<Unit>(
         message = UiMessage.Plain(text),
-        action = null
+        action = action
     )
-
-    @Test
-    fun `addError emits error and removes when removeCurrentError is called`() = runTest {
-        snackbarManager.errors.test {
-            snackbarManager.addError(testError)
-
-            assertThat(awaitItem())
-                .isNull() // it always starts with no errors
-
-            assertThat(awaitItem())
-                .isEqualTo(testError)
-
-            // emulate user dismissing the error
-            snackbarManager.removeCurrentError()
-
-            assertThat(awaitItem())
-                .isNull() // test error should be dismissed by now
-        }
-    }
-
-//    TODO: fix this test, advanceTimeBy doesn't work (even when passing test dispatchers to delay in delayFlow)
-//    @Test
-//    fun `addError emits error and removes when return error duration is elapsed`() = runTest(dispatchTimeoutMs = 100000) {
-//        snackbarManager.errors.test(100000) {
-//            val errorDuration = snackbarManager.addError(testError)
-//
-//            assertThat(awaitItem())
-//                .isNull() // it always starts with no errors
-//
-//            assertThat(awaitItem())
-//                .isEqualTo(testError)
-//
-//            advanceTimeBy(errorDuration)
-//
-//            assertThat(awaitItem())
-//                .isNull() // test error should be dismissed by now
-//        }
-//    }
 
     @Test
     fun `addMessage adds a message to messages`() = runTest {
@@ -74,11 +39,11 @@ class SnackbarManagerTest : BaseTest() {
     }
 
     @Test
-    fun `addMessage doesn't add a message to messages if same message added before it's duration expired`() = runTest {
+    fun `addMessage doesn't add a message to messages if same message added before existing one is dismissed`() = runTest {
         val secondMessage = testMessage("Test2")
         snackbarManager.messages.test {
             snackbarManager.addMessage(testMessage)
-            snackbarManager.addMessage(testMessage)
+            snackbarManager.addMessage(testMessage) // this is ignored because of the same message and not dismissed yet
             snackbarManager.addMessage(secondMessage)
 
             assertThat(awaitItem())
@@ -91,7 +56,7 @@ class SnackbarManagerTest : BaseTest() {
 
             snackbarManager.addMessage(testMessage)
             snackbarManager.onMessageDismissed(testMessage)
-            snackbarManager.addMessage(testMessage)
+            snackbarManager.addMessage(testMessage) // this won't be ignored because same message was dismissed ^
             snackbarManager.addMessage(secondMessage)
 
             assertThat(awaitItem())
@@ -101,5 +66,45 @@ class SnackbarManagerTest : BaseTest() {
             assertThat(awaitItem())
                 .isEqualTo(secondMessage)
         }
+    }
+
+    @Test
+    fun `observeMessageAction returns null when message is dismissed`() = runTest {
+        snackbarManager.addMessage(testMessage)
+        snackbarManager.onMessageDismissed(testMessage)
+
+        val result = snackbarManager.observeMessageAction(testMessage)
+        assertThat(result)
+            .isNull()
+    }
+
+    @Test
+    fun `observeMessageAction returns message when message is performed`() = runTest {
+        snackbarManager.addMessage(testMessage)
+        snackbarManager.onMessageActionPerformed(testMessage)
+
+        val result = snackbarManager.observeMessageAction(testMessage)
+        assertThat(result)
+            .isEqualTo(testMessage)
+    }
+
+    @Test
+    fun `observeMessageAction does not call onRetry message when message is dismissed`() = runTest {
+        snackbarManager.addMessage(testMessage)
+        snackbarManager.onMessageDismissed(testMessage)
+
+        val onRetry: () -> Unit = spyk()
+        snackbarManager.observeMessageAction(testMessage, onRetry)
+        coVerify(exactly = 0) { onRetry() }
+    }
+
+    @Test
+    fun `observeMessageAction calls onRetry message when message is performed`() = runTest {
+        snackbarManager.addMessage(testMessage)
+        snackbarManager.onMessageActionPerformed(testMessage)
+
+        val onRetry: () -> Unit = spyk()
+        snackbarManager.observeMessageAction(testMessage, onRetry)
+        coVerify { onRetry() }
     }
 }

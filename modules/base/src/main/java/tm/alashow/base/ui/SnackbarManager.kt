@@ -4,21 +4,16 @@
  */
 package tm.alashow.base.ui
 
-import androidx.annotation.VisibleForTesting
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.receiveAsFlow
-import org.threeten.bp.Duration
+import tm.alashow.base.R
 import tm.alashow.base.util.CoroutineDispatchers
-import tm.alashow.base.util.extensions.delayFlow
 import tm.alashow.i18n.UiMessage
 
 data class SnackbarAction<T>(val label: UiMessage<*>, val argument: T)
@@ -29,60 +24,24 @@ class SnackbarManager @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
 ) {
 
-    companion object {
-        private val maxErrorDuration = Duration.ofSeconds(6).toMillis()
-
-        @VisibleForTesting
-        const val maxErrorQueue = 3
-    }
-
-    private val pendingErrors = Channel<Throwable>(maxErrorQueue, BufferOverflow.DROP_OLDEST)
-    private val removeErrorSignal = Channel<Unit>(Channel.RENDEZVOUS)
-
-    /**
-     * A flow of [Throwable]s to display in the UI, usually as snackbars. The flow will immediately
-     * emit `null`, and will then emit errors sent via [addError]. Once [maxErrorDuration] has elapsed,
-     * or [removeCurrentError] is called (if before that) `null` will be emitted to remove
-     * the current error.
-     */
-    val errors: Flow<Throwable?> = channelFlow {
-        send(null)
-
-        pendingErrors.receiveAsFlow().collectLatest {
-            send(it)
-
-            // Wait for either a maxDuration timeout, or a remove signal (whichever comes first)
-            merge(
-                delayFlow(maxErrorDuration, dispatchers),
-                removeErrorSignal.receiveAsFlow(),
-            ).firstOrNull()
-
-            // Remove the error
-            send(null)
-        }
-    }
-
-    /**
-     * Add [error] to the queue of errors to display.
-     * @return how long given error will be active before cleared manually, in millis
-     */
-    fun addError(error: Throwable): Long {
-        pendingErrors.trySend(error)
-        return maxErrorDuration
-    }
-
-    /**
-     * Remove the current error from being displayed.
-     */
-    suspend fun removeCurrentError() {
-        removeErrorSignal.send(Unit)
-    }
-
     private val messagesChannel = Channel<SnackbarMessage<*>>(Channel.CONFLATED)
-    private val performedActionsMessageChannel = Channel<SnackbarMessage<*>>(Channel.CONFLATED)
+    private val actionDismissedMessageChannel = Channel<SnackbarMessage<*>>(Channel.CONFLATED)
+    private val actionPerformedMessageChannel = Channel<SnackbarMessage<*>>(Channel.CONFLATED)
 
     val messages = messagesChannel.receiveAsFlow()
     private val shownMessages = mutableSetOf<UiMessage<*>>()
+
+    suspend fun addError(
+        error: Throwable,
+        retryLabel: UiMessage<*> = UiMessage.Resource(R.string.error_retry),
+        onRetry: () -> Unit
+    ) {
+        val action = SnackbarAction(retryLabel, onRetry)
+        val message = SnackbarMessage(UiMessage.Error(error), action)
+        addMessage(SnackbarMessage(UiMessage.Error(error), action))
+
+        observeMessageAction(message, onRetry)
+    }
 
     fun addMessage(message: UiMessage<*>) = addMessage(SnackbarMessage<Unit>(message))
 
@@ -95,22 +54,29 @@ class SnackbarManager @Inject constructor(
 
     fun onMessageDismissed(message: SnackbarMessage<*>) {
         shownMessages.remove(message.message)
+        actionDismissedMessageChannel.trySend(message)
     }
 
     fun onMessageActionPerformed(message: SnackbarMessage<*>) {
         shownMessages.remove(message.message)
-        performedActionsMessageChannel.trySend(message)
+        actionPerformedMessageChannel.trySend(message)
     }
 
     /**
-     * Listen for [performedActionsMessageChannel] for given [action] for limited time.
+     * Listen for [actionPerformedMessageChannel] for given [message] for limited time.
      * Returns given action if it's performed on time, null otherwise.
      */
-    suspend fun <T : SnackbarMessage<*>> observeMessageAction(action: T): T? {
+    suspend fun <T : SnackbarMessage<*>> observeMessageAction(message: T): T? {
         val result = merge(
-            performedActionsMessageChannel.receiveAsFlow().filter { it == action },
-            delayFlow(4000L, dispatchers) // TODO: make duration depend on snackbar duration
+            actionDismissedMessageChannel.receiveAsFlow().filter { it == message }.map { null }, // map to null because it's dismissed
+            actionPerformedMessageChannel.receiveAsFlow().filter { it == message },
         ).firstOrNull()
-        return if (result == action) action else null
+        return if (result == message) message else null
+    }
+
+    suspend fun <T : SnackbarMessage<*>> observeMessageAction(message: T, onAction: () -> Unit) {
+        if (observeMessageAction(message) != null) {
+            onAction()
+        }
     }
 }
