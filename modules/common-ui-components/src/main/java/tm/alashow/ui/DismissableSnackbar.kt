@@ -14,13 +14,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-fun DismissableSnackbarHost(hostState: SnackbarHostState, modifier: Modifier = Modifier, onDismiss: () -> Unit = {}) {
+fun DismissableSnackbarHost(hostState: SnackbarHostState, modifier: Modifier = Modifier) {
     SnackbarHost(
         hostState = hostState,
         snackbar = {
             SwipeDismissSnackbar(
                 data = it,
-                onDismiss = onDismiss
+                onDismiss = { it.dismiss() }
             )
         },
         modifier = modifier
