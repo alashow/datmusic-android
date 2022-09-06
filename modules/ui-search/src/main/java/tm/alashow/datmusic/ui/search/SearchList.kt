@@ -5,7 +5,6 @@
 package tm.alashow.datmusic.ui.search
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
@@ -45,6 +44,7 @@ import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import tm.alashow.base.util.localizedMessage
 import tm.alashow.base.util.localizedTitle
+import tm.alashow.common.compose.LogCompositions
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.data.DatmusicSearchParams.BackendType
 import tm.alashow.datmusic.domain.entities.Album
@@ -120,7 +120,6 @@ internal fun SearchList(
     val hasMultiplePagers = pagers.size > 1
 
     if (pagersAreEmpty && !pagersAreLoading && refreshErrorState == null) {
-        // TODO: show different state when Albums or Artists selected and query is empty
         FullScreenLoading(delayMillis = 100)
         return
     }
@@ -135,33 +134,24 @@ internal fun SearchList(
     )
 
     SwipeRefresh(
-        state = rememberSwipeRefreshState(
-            isRefreshing = false
-        ),
-        onRefresh = { refreshPagers() },
+        state = rememberSwipeRefreshState(isRefreshing = false),
+        onRefresh = refreshPagers,
         indicatorPadding = LocalScaffoldPadding.current,
-        indicator = { state, trigger ->
-            SwipeRefreshIndicator(
-                state = state,
-                refreshTriggerDistance = trigger,
-                scale = true
-            )
-        },
+        indicator = { state, trigger -> SwipeRefreshIndicator(state, trigger, scale = true) },
     ) {
         SearchListContent(
-            audiosLazyPagingItems,
-            minervaLazyPagingItems,
-            flacsLazyPagingItems,
-            artistsLazyPagingItems,
-            albumsLazyPagingItems,
-            listState,
-            searchFilter,
-            pagersAreEmpty,
-            retryPagers,
-            refreshErrorState,
-            onPlayAudio = {
-                viewModel.submitAction(SearchAction.PlayAudio(it))
-            }
+            audiosLazyPagingItems = audiosLazyPagingItems,
+            minervaAudiosLazyPagingItems = minervaLazyPagingItems,
+            flacsAudiosLazyPagingItems = flacsLazyPagingItems,
+            artistsLazyPagingItems = artistsLazyPagingItems,
+            albumsLazyPagingItems = albumsLazyPagingItems,
+            listState = listState,
+            searchFilter = searchFilter,
+            pagersAreEmpty = pagersAreEmpty,
+            hasActiveSearchQuery = viewState.hasActiveSearchQuery,
+            retryPagers = retryPagers,
+            refreshErrorState = refreshErrorState,
+            onPlayAudio = { viewModel.submitAction(SearchAction.PlayAudio(it)) }
         )
     }
 }
@@ -208,6 +198,7 @@ private fun SearchListContent(
     albumsLazyPagingItems: LazyPagingItems<Album>,
     listState: LazyListState,
     searchFilter: SearchFilter,
+    hasActiveSearchQuery: Boolean,
     pagersAreEmpty: Boolean,
     retryPagers: () -> Unit,
     refreshErrorState: LoadState?,
@@ -236,12 +227,12 @@ private fun SearchListContent(
             Spacer(Modifier.height(1.dp))
         }
 
-        if (searchFilter.hasArtists)
+        if (hasActiveSearchQuery && searchFilter.hasArtists)
             item("artists") {
                 ArtistList(artistsLazyPagingItems)
             }
 
-        if (searchFilter.hasAlbums)
+        if (hasActiveSearchQuery && searchFilter.hasAlbums)
             item("albums") {
                 AlbumList(albumsLazyPagingItems)
             }
@@ -265,8 +256,9 @@ internal fun ArtistList(
 ) {
     val isLoading = pagingItems.isLoading()
     val hasItems = pagingItems.itemCount > 0
-    if (hasItems || isLoading)
+    if (hasItems || isLoading) {
         SearchListLabel(stringResource(R.string.search_artists), hasItems, pagingItems.loadState)
+    }
 
     if (!hasItems && isLoading) {
         LazyRow(Modifier.fillMaxWidth()) {
@@ -276,6 +268,7 @@ internal fun ArtistList(
             }
         }
     }
+
     LazyRow(Modifier.fillMaxWidth()) {
         items(pagingItems, key = { _, item -> item.id }) {
             val artist = it ?: return@items
@@ -294,10 +287,13 @@ internal fun AlbumList(
     itemSize: Dp = AlbumsDefaults.imageSize,
     navigator: Navigator = LocalNavigator.current
 ) {
+    LogCompositions("AlbumList")
     val isLoading = pagingItems.isLoading()
     val hasItems = pagingItems.itemCount > 0
-    if (hasItems || isLoading)
+
+    if (hasItems || isLoading) {
         SearchListLabel(stringResource(R.string.search_albums), hasItems, pagingItems.loadState)
+    }
 
     if (!hasItems && isLoading) {
         LazyRow(Modifier.fillMaxWidth()) {
@@ -307,6 +303,7 @@ internal fun AlbumList(
             }
         }
     }
+
     LazyRow(Modifier.fillMaxWidth()) {
         items(pagingItems, key = { _, item -> item.id }) {
             val album = it ?: Album()
@@ -326,14 +323,12 @@ internal fun AlbumList(
 internal fun LazyListScope.audioList(pagingItems: LazyPagingItems<Audio>, onPlayAudio: (Audio) -> Unit) {
     val isLoading = pagingItems.isLoading()
     val hasItems = pagingItems.itemCount > 0
-    if (hasItems || isLoading)
+
+    if (hasItems || isLoading) {
         item {
-            SearchListLabel(
-                label = stringResource(R.string.search_audios),
-                hasItems = hasItems,
-                loadState = pagingItems.loadState
-            )
+            SearchListLabel(stringResource(R.string.search_audios), hasItems, pagingItems.loadState)
         }
+    }
 
     if (!hasItems && isLoading) {
         val placeholders = (1..20).map { Audio() }
@@ -375,7 +370,6 @@ private fun <T : Any> LazyListScope.loadingMore(pagingItems: LazyPagingItems<T>,
         }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun SearchListLabel(label: String, hasItems: Boolean, loadState: CombinedLoadStates) {
     Row(

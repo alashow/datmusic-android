@@ -68,8 +68,12 @@ internal class SearchViewModel @Inject constructor(
     private val onSearchEventChannel = Channel<SearchEvent>(Channel.CONFLATED)
     val onSearchEvent = onSearchEventChannel.receiveAsFlow()
 
-    val state = combine(searchFilterState, captchaError, ::SearchViewState)
-        .stateInDefault(viewModelScope, SearchViewState.Empty)
+    val state = combine(
+        searchTriggerState.map { it.query },
+        searchFilterState,
+        captchaError,
+        transform = ::SearchViewState
+    ).stateInDefault(viewModelScope, SearchViewState.Empty)
 
     init {
         viewModelScope.launch {

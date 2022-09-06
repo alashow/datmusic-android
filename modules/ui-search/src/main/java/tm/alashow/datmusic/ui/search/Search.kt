@@ -141,7 +141,7 @@ private fun Search(
 }
 
 @Composable
-@OptIn(ExperimentalAnimationApi::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class)
 private fun SearchAppBar(
     state: SearchViewState,
     onQueryChange: (String) -> Unit,

@@ -34,9 +34,13 @@ internal data class SearchFilter(
 }
 
 internal data class SearchViewState(
+    val currentQuery: String = "",
     val filter: SearchFilter = SearchFilter(),
     val captchaError: ApiCaptchaError? = null,
 ) {
+
+    val hasActiveSearchQuery get() = currentQuery.isNotBlank()
+
     companion object {
         val Empty = SearchViewState()
     }
