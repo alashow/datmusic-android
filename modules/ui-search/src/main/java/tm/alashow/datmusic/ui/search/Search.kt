@@ -11,7 +11,6 @@ import androidx.compose.animation.expandIn
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkOut
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,8 +19,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,7 +47,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.WindowInsets
 import com.google.accompanist.insets.statusBarsPadding
-import com.google.accompanist.insets.ui.Scaffold
+import com.google.accompanist.insets.ui.LocalScaffoldPadding
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -75,7 +77,6 @@ internal fun Search(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
 @Composable
 internal fun Search(
     viewModel: SearchViewModel,
@@ -92,6 +93,7 @@ internal fun Search(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Search(
     viewState: SearchViewState,
@@ -131,12 +133,14 @@ private fun Search(
                 onSearch = { actioner(SearchAction.Search) },
                 onBackendTypeSelect = { actioner(it) }
             )
-        }
+        },
     ) {
-        SearchList(
-            viewModel = viewModel,
-            listState = listState,
-        )
+        CompositionLocalProvider(LocalScaffoldPadding provides it) {
+            SearchList(
+                viewModel = viewModel,
+                listState = listState,
+            )
+        }
     }
 }
 

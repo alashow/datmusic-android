@@ -20,16 +20,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.derivedStateOf
@@ -224,7 +224,7 @@ private fun DownloadRequestProgress(
             } else if (downloadInfo.progressVisible()) {
                 CircularProgressIndicator(
                     progress = progressAnimated,
-                    color = MaterialTheme.colors.secondary,
+                    color = MaterialTheme.colorScheme.secondary,
                     strokeWidth = strokeWidth,
                     modifier = Modifier
                         .size(size)
@@ -232,11 +232,11 @@ private fun DownloadRequestProgress(
                 )
                 IconButton(
                     onClick = onClick,
-                    rippleColor = MaterialTheme.colors.secondary,
+                    rippleColor = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier
                         .clip(CircleShape)
                         .size(size)
-                        .background(MaterialTheme.colors.secondary.copy(alpha = 0.1f))
+                        .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f))
                 ) {
                     val icon = when {
                         retriable -> Icons.Filled.Refresh

@@ -11,10 +11,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material.ButtonColors
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Text
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,8 +35,8 @@ import tm.alashow.ui.theme.outlinedButtonColors
 @Composable
 internal fun SettingsSectionLabel(text: String, modifier: Modifier = Modifier) {
     Text(
-        text, style = MaterialTheme.typography.h6,
-        color = MaterialTheme.colors.secondary,
+        text, style = MaterialTheme.typography.headlineSmall,
+        color = MaterialTheme.colorScheme.secondary,
         modifier = modifier.padding(AppTheme.specs.inputPaddings)
     )
 }
@@ -62,7 +62,7 @@ internal fun SettingsLinkItem(
         ClickableText(
             text = buildAnnotatedString { append(text) },
             style = TextStyle.Default.copy(
-                color = MaterialTheme.colors.onBackground,
+                color = MaterialTheme.colorScheme.onBackground,
                 textAlign = TextAlign.End
             ),
             onClick = {
@@ -92,7 +92,7 @@ internal fun SettingsItem(
     ) {
         Text(
             label,
-            style = MaterialTheme.typography.subtitle1,
+            style = MaterialTheme.typography.titleMedium,
             modifier = labelModifier
                 .padding(end = AppTheme.specs.paddingTiny)
                 .weight(labelWeight)

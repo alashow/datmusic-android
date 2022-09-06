@@ -12,11 +12,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.contentColorFor
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,6 +32,7 @@ import tm.alashow.ui.theme.Blue
 import tm.alashow.ui.theme.Green
 import tm.alashow.ui.theme.Orange
 import tm.alashow.ui.theme.Primary
+import tm.alashow.ui.theme.shapes
 
 @Composable
 fun AppButton(
@@ -39,13 +40,13 @@ fun AppButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     shape: Shape = RoundedCornerShape(percent = 50),
-    backgroundColor: Color = MaterialTheme.colors.secondary,
+    backgroundColor: Color = MaterialTheme.colorScheme.secondary,
     contentColor: Color = contentColorFor(backgroundColor),
     content: @Composable RowScope.() -> Unit,
 ) {
     Button(
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = backgroundColor,
+            containerColor = backgroundColor,
             contentColor = contentColor
         ),
         onClick = onClick,
@@ -61,7 +62,7 @@ fun TextRoundedButton(
     onClick: () -> Unit,
     text: String,
     modifier: Modifier = Modifier,
-    textStyle: TextStyle = MaterialTheme.typography.button,
+    textStyle: TextStyle = MaterialTheme.typography.labelMedium,
     enabled: Boolean = true,
 ) {
     AppButton(onClick = onClick, modifier = modifier, enabled = enabled) {

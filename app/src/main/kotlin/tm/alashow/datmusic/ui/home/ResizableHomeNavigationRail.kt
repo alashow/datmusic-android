@@ -8,8 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.Divider
-import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
@@ -22,7 +21,6 @@ import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.navigation.screens.RootScreen
 import tm.alashow.ui.ResizableLayout
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 internal fun RowScope.ResizableHomeNavigationRail(
     maxWidth: Dp,

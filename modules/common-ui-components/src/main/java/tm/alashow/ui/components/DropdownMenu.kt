@@ -14,20 +14,20 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -101,29 +101,31 @@ fun <T> SelectableDropdownMenu(
                         expanded = !expanded
                         onItemSelect(item)
                     },
-                ) {
-                    Column {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            val contentColor = if (item in selectedItems) MaterialTheme.colors.secondary else MaterialTheme.colors.onBackground
-                            CompositionLocalProvider(LocalContentColor provides contentColor) {
-                                Text(itemLabelMapper(item))
-                                if (itemSuffixMapper != null)
-                                    itemSuffixMapper(item)
+                    text = {
+                        Column {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                val contentColor =
+                                    if (item in selectedItems) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onBackground
+                                CompositionLocalProvider(LocalContentColor provides contentColor) {
+                                    Text(itemLabelMapper(item))
+                                    if (itemSuffixMapper != null)
+                                        itemSuffixMapper(item)
+                                }
+                            }
+
+                            if (subtitles != null) {
+                                val subtitle = subtitles[index]
+                                if (subtitle != null)
+                                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                                        Text(text = subtitle, style = MaterialTheme.typography.bodySmall)
+                                    }
                             }
                         }
-
-                        if (subtitles != null) {
-                            val subtitle = subtitles[index]
-                            if (subtitle != null)
-                                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                                    Text(text = subtitle, style = MaterialTheme.typography.caption)
-                                }
-                        }
                     }
-                }
+                )
             }
         }
     }

@@ -5,8 +5,8 @@
 package tm.alashow.datmusic.ui.library.playlists.detail
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -90,7 +90,7 @@ private fun PlaylistHeaderSubtitle(viewState: PlaylistDetailViewState) {
         val resources = LocalContext.current.resources
         val countDuration = viewState.audiosCountDuration
         if (countDuration != null)
-            Text(countDuration.localize(resources), style = MaterialTheme.typography.subtitle2)
+            Text(countDuration.localize(resources), style = MaterialTheme.typography.titleSmall)
         else Spacer(Modifier)
     } else Spacer(Modifier)
 }

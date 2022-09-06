@@ -10,10 +10,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -89,7 +89,7 @@ private fun AddToPlaylistDropdownMenu(
         ) {
             Text(
                 if (multiple) stringResource(R.string.playlist_addTo_multiple) else stringResource(R.string.playlist_addTo),
-                style = MaterialTheme.typography.caption.copy(color = MaterialTheme.colors.secondary),
+                style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.secondary),
                 modifier = Modifier.padding(AppTheme.specs.inputPaddings)
             )
             playlists.forEach { item ->
@@ -98,15 +98,16 @@ private fun AddToPlaylistDropdownMenu(
                     onClick = {
                         onExpandedChange(false)
                         onPlaylistSelect(item)
+                    },
+                    text = {
+                        Text(
+                            text = label,
+                            overflow = TextOverflow.Ellipsis,
+                            fontWeight = if (item.isNewPlaylistItem()) FontWeight.Bold else null,
+                            maxLines = 1,
+                        )
                     }
-                ) {
-                    Text(
-                        text = label,
-                        overflow = TextOverflow.Ellipsis,
-                        fontWeight = if (item.isNewPlaylistItem()) FontWeight.Bold else null,
-                        maxLines = 1,
-                    )
-                }
+                )
             }
         }
     }

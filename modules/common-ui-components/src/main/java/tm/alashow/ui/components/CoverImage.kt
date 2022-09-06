@@ -13,11 +13,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -50,7 +50,7 @@ fun CoverImage(
     imageModifier: Modifier = Modifier,
     size: Dp = Dp.Unspecified,
     backgroundColor: Color = PlaceholderDefaults.color(),
-    contentColor: Color = MaterialTheme.colors.secondary,
+    contentColor: Color = MaterialTheme.colorScheme.secondary,
     contentScale: ContentScale = ContentScale.Crop,
     shape: Shape = MaterialTheme.shapes.small,
     icon: VectorPainter = rememberVectorPainter(Icons.Default.MusicNote),
@@ -61,7 +61,7 @@ fun CoverImage(
 ) {
     val sizeMod = if (size.isSpecified) Modifier.size(size) else Modifier
     Surface(
-        elevation = elevation,
+        tonalElevation = elevation,
         shape = shape,
         color = backgroundColor,
         modifier = modifier

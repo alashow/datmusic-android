@@ -9,9 +9,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -26,7 +25,6 @@ import tm.alashow.ui.KeyboardSpacer
 import tm.alashow.ui.components.TextRoundedButton
 import tm.alashow.ui.theme.AppTheme
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CreatePlaylist(
     viewModel: CreatePlaylistViewModel = hiltViewModel()
@@ -39,12 +37,12 @@ fun CreatePlaylist(
         verticalArrangement = Arrangement.spacedBy(AppTheme.specs.padding, Alignment.CenterVertically),
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colors.background)
+            .background(MaterialTheme.colorScheme.background)
             .padding(AppTheme.specs.padding)
     ) {
         Text(
             text = stringResource(R.string.playlist_create_label),
-            style = MaterialTheme.typography.h6,
+            style = MaterialTheme.typography.headlineSmall,
             textAlign = TextAlign.Center
         )
 

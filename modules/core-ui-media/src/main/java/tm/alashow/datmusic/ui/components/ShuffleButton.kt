@@ -12,10 +12,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Shuffle
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,8 +35,8 @@ fun ShuffleButton(
     visible: Boolean,
     playbackConnection: PlaybackConnection,
     modifier: Modifier = Modifier,
-    background: Color = MaterialTheme.colors.primary,
-    tint: Color = MaterialTheme.colors.secondary,
+    background: Color = MaterialTheme.colorScheme.primary,
+    tint: Color = MaterialTheme.colorScheme.secondary,
     onLongClickLabel: String? = null,
     onLongClick: Callback = { playbackConnection.mediaController?.playPause() },
     onDoubleClick: Callback = { playbackConnection.mediaController?.playPause() },

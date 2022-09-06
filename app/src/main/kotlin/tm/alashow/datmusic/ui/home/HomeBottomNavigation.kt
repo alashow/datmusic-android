@@ -10,10 +10,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.contentColorFor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -38,9 +38,9 @@ internal fun HomeBottomNavigation(
     val surfaceMod = if (playerActive) Modifier.background(homeBottomNavigationGradient()) else Modifier
 
     Surface(
-        elevation = surfaceElevation,
+        tonalElevation = surfaceElevation,
         color = surfaceColor,
-        contentColor = contentColorFor(MaterialTheme.colors.surface),
+        contentColor = contentColorFor(MaterialTheme.colorScheme.surface),
         modifier = modifier.then(surfaceMod),
     ) {
         Row(
@@ -61,8 +61,8 @@ internal fun HomeBottomNavigation(
                     label = { Text(text = stringResource(item.labelRes)) },
                     selected = selectedTab == item.screen,
                     onClick = { onNavigationSelected(item.screen) },
-                    selectedContentColor = MaterialTheme.colors.secondary,
-                    unselectedContentColor = MaterialTheme.colors.onSurface
+                    selectedContentColor = MaterialTheme.colorScheme.secondary,
+                    unselectedContentColor = MaterialTheme.colorScheme.onSurface
                 )
             }
         }
@@ -70,7 +70,7 @@ internal fun HomeBottomNavigation(
 }
 
 @Composable
-internal fun homeBottomNavigationGradient(color: Color = MaterialTheme.colors.surface) = Brush.verticalGradient(
+internal fun homeBottomNavigationGradient(color: Color = MaterialTheme.colorScheme.surface) = Brush.verticalGradient(
     listOf(
         color.copy(0.8f),
         color.copy(0.9f),

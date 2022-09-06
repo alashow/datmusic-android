@@ -6,12 +6,12 @@ package tm.alashow.datmusic.ui.library.playlists.detail
 
 import android.content.Context
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Sort
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -119,10 +119,10 @@ class PlaylistDetailTopBar(
                 items = sortOptions,
                 selectedItem = sortOption,
                 onItemSelect = onSortOptionSelect,
-                border = ButtonDefaults.outlinedBorder,
+                border = ButtonDefaults.outlinedButtonBorder,
                 iconOnly = true,
                 leadingIcon = Icons.Default.Sort,
-                leadingIconColor = if (hasSortingOption) MaterialTheme.colors.secondary else LocalContentColor.current,
+                leadingIconColor = if (hasSortingOption) MaterialTheme.colorScheme.secondary else LocalContentColor.current,
                 itemLabelMapper = { it.asString(context) },
                 itemSuffixMapper = {
                     if (it == sortOption) {

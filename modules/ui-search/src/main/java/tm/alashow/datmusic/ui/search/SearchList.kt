@@ -20,8 +20,8 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -379,7 +379,7 @@ private fun SearchListLabel(label: String, hasItems: Boolean, loadState: Combine
             .padding(horizontal = AppTheme.specs.padding, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(label, style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold))
+        Text(label, style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold))
 
         AnimatedVisibility(
             visible = (hasItems && loadState.mediator?.refresh == LoadState.Loading),

@@ -6,7 +6,7 @@ package tm.alashow.datmusic.ui.playback.components
 
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,7 +27,7 @@ fun PlaybackArtworkPagerWithNowPlayingAndControls(
     nowPlaying: MediaMetadataCompat,
     playbackState: PlaybackStateCompat,
     modifier: Modifier = Modifier,
-    contentColor: Color = MaterialTheme.colors.onBackground,
+    contentColor: Color = MaterialTheme.colorScheme.onBackground,
     titleTextStyle: TextStyle = PlaybackNowPlayingDefaults.titleTextStyle,
     artistTextStyle: TextStyle = PlaybackNowPlayingDefaults.artistTextStyle,
     pagerState: PagerState = rememberPagerState(),

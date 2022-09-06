@@ -15,10 +15,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -39,8 +39,8 @@ internal fun HomeNavigationItemRow(
     onClick: () -> Unit = {},
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    selectedContentColor: Color = MaterialTheme.colors.secondary,
-    unselectedContentColor: Color = MaterialTheme.colors.onSurface
+    selectedContentColor: Color = MaterialTheme.colorScheme.secondary,
+    unselectedContentColor: Color = MaterialTheme.colorScheme.onSurface
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.padding, Alignment.Start),
@@ -73,7 +73,7 @@ internal fun HomeNavigationItemRow(
                 stringResource(item.labelRes),
                 maxLines = 1,
                 overflow = TextOverflow.Visible,
-                style = MaterialTheme.typography.subtitle2
+                style = MaterialTheme.typography.titleSmall
             )
         }
     }

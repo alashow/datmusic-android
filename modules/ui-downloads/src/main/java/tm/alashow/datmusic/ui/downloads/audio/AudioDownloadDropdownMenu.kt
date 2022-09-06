@@ -7,9 +7,9 @@ package tm.alashow.datmusic.ui.downloads.audio
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Text
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -80,10 +80,9 @@ internal fun AudioDownloadDropdownMenu(
                         onClick = {
                             onExpandedChange(false)
                             onDropdownSelect(item)
-                        }
-                    ) {
-                        Text(text = label)
-                    }
+                        },
+                        text = { Text(text = label) }
+                    )
                 }
             }
         }

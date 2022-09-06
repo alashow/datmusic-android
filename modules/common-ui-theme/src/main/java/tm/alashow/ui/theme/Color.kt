@@ -5,15 +5,12 @@
 package tm.alashow.ui.theme
 
 import android.graphics.Color as AndroidColor
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
-import androidx.compose.material.Colors
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.contentColorFor
-import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.contentColorFor
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -55,8 +52,6 @@ internal val LightAppColors = appLightColors(Primary, Secondary, PrimaryVariant,
 fun appDarkColors(
     primary: Color,
     secondary: Color,
-    primaryVariant: Color = primary,
-    secondaryVariant: Color = secondary,
     background: Color = primary,
     surface: Color = primary,
     onPrimary: Color = Color.White,
@@ -64,25 +59,26 @@ fun appDarkColors(
     onSurface: Color = Color.White,
     onSurfaceInputBackground: Color = Color(0x45706d86),
 ) = AppColors(
+    isLight = false,
     _onSurfaceInputBackground = onSurfaceInputBackground,
-    _materialColors = darkColors(
+    _materialColors = darkColorScheme(
         primary = primary,
         onPrimary = onPrimary,
-        primaryVariant = primaryVariant,
         secondary = secondary,
         onSecondary = onSecondary,
-        secondaryVariant = secondaryVariant,
+        tertiary = secondary, // TODO: create a separate color
+        onTertiary = onSecondary, // TODO: create a separate color
         background = background,
         surface = surface,
         onSurface = onSurface,
+        surfaceVariant = surface, // TODO: create a separate color
+        onSurfaceVariant = onSurface, // TODO: create a separate color
     )
 )
 
 fun appLightColors(
     primary: Color,
     secondary: Color,
-    primaryVariant: Color = primary,
-    secondaryVariant: Color = secondary,
     background: Color = Color.White,
     surface: Color = Color.White,
     onPrimary: Color = Color.White,
@@ -90,28 +86,31 @@ fun appLightColors(
     onSurface: Color = Color.Black,
     onSurfaceInputBackground: Color = Color(0x45c1bbc0),
 ) = AppColors(
+    isLight = true,
     _onSurfaceInputBackground = onSurfaceInputBackground,
-    _materialColors = lightColors(
+    _materialColors = lightColorScheme(
         primary = primary,
         onPrimary = onPrimary,
-        primaryVariant = primaryVariant,
         secondary = secondary,
         onSecondary = onSecondary,
-        secondaryVariant = secondaryVariant,
         background = background,
+        tertiary = secondary, // TODO: create a separate color
+        onTertiary = onSecondary, // TODO: create a separate color
         surface = surface,
         onSurface = onSurface,
+        surfaceVariant = surface, // TODO: create a separate color
+        onSurfaceVariant = onSurface, // TODO: create a separate color
     )
 )
 
 @Composable
-fun plainSurfaceColor() = if (MaterialTheme.colors.isLight) Color.White else Color.Black
+fun plainSurfaceColor() = if (AppTheme.colors.isLight) Color.White else Color.Black
 
 @Composable
-fun plainBackgroundColor() = if (!MaterialTheme.colors.isLight) Color.White else Color.Black
+fun plainBackgroundColor() = if (!AppTheme.colors.isLight) Color.White else Color.Black
 
 @Composable
-fun plainGrayBackground() = if (MaterialTheme.colors.isLight) Color.LightGray else Color.DarkGray
+fun plainGrayBackground() = if (AppTheme.colors.isLight) Color.LightGray else Color.DarkGray
 
 @Composable
 fun Color.disabledAlpha(condition: Boolean): Color = copy(alpha = if (condition) alpha else ContentAlpha.disabled)
@@ -119,32 +118,30 @@ fun Color.disabledAlpha(condition: Boolean): Color = copy(alpha = if (condition)
 @Composable
 fun Color.contrastComposite(alpha: Float = 0.1f) = contentColorFor(this).copy(alpha = alpha).compositeOver(this)
 
-@Composable
-internal fun animate(colors: Colors): Colors {
-    val animationSpec = remember { spring<Color>() }
-
-    @Composable
-    fun animateColor(color: Color): Color = animateColorAsState(targetValue = color, animationSpec = animationSpec).value
-
-    return Colors(
-        primary = animateColor(colors.primary),
-        primaryVariant = animateColor(colors.primaryVariant),
-        secondary = animateColor(colors.secondary),
-        secondaryVariant = animateColor(colors.secondaryVariant),
-        background = animateColor(colors.background),
-        surface = animateColor(colors.surface),
-        error = animateColor(colors.error),
-        onPrimary = animateColor(colors.onPrimary),
-        onSecondary = animateColor(colors.onSecondary),
-        onBackground = animateColor(colors.onBackground),
-        onSurface = animateColor(colors.onSurface),
-        onError = animateColor(colors.onError),
-        isLight = colors.isLight,
-    )
-}
+// @Composable
+// internal fun animate(colors: ColorScheme): ColorScheme {
+//    val animationSpec = remember { spring<Color>() }
+//
+//    @Composable
+//    fun animateColor(color: Color): Color = animateColorAsState(targetValue = color, animationSpec = animationSpec).value
+//
+//    return ColorScheme(
+//        primary = animateColor(colors.primary),
+//        secondary = animateColor(colors.secondary),
+//        background = animateColor(colors.background),
+//        surface = animateColor(colors.surface),
+//        error = animateColor(colors.error),
+//        onPrimary = animateColor(colors.onPrimary),
+//        onSecondary = animateColor(colors.onSecondary),
+//        onBackground = animateColor(colors.onBackground),
+//        onSurface = animateColor(colors.onSurface),
+//        onError = animateColor(colors.onError),
+//        // TODO: animate rest
+//    )
+// }
 
 @Composable
-fun translucentSurfaceColor() = MaterialTheme.colors.surface.copy(alpha = AppBarAlphas.translucentBarAlpha())
+fun translucentSurfaceColor() = MaterialTheme.colorScheme.surface.copy(alpha = AppBarAlphas.translucentBarAlpha())
 
 fun Modifier.translucentSurface() = composed { background(translucentSurfaceColor()) }
 

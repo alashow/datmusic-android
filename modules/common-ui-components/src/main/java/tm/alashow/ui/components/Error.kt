@@ -10,8 +10,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -71,7 +71,7 @@ fun ErrorBox(
                 wavesComposition,
                 speed = 0.5f,
                 iterations = LottieConstants.IterateForever,
-                dynamicProperties = colorFilterDynamicProperty(MaterialTheme.colors.secondary.copy(alpha = 0.1f)),
+                dynamicProperties = colorFilterDynamicProperty(MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)),
                 modifier = Modifier.offset(y = -loadingYOffset)
             )
         }
@@ -83,7 +83,7 @@ fun ErrorBox(
                 .align(Alignment.Center)
                 .padding(top = AppTheme.specs.paddingLarge)
         ) {
-            Text(title, style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold))
+            Text(title, style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold))
             Text(message)
             if (retryVisible)
                 TextRoundedButton(

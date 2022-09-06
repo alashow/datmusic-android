@@ -19,9 +19,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.NavigationRailDefaults
-import androidx.compose.material.Surface
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -56,14 +55,14 @@ internal fun HomeNavigationRail(
     navigator: Navigator = LocalNavigator.current,
 ) {
     Surface(
-        color = MaterialTheme.colors.surface,
-        contentColor = MaterialTheme.colors.onSurface,
-        elevation = NavigationRailDefaults.Elevation,
+        color = MaterialTheme.colorScheme.surface,
+        contentColor = MaterialTheme.colorScheme.onSurface,
+        tonalElevation = 8.dp,
         modifier = modifier,
     ) {
         BoxWithConstraints(
             modifier = Modifier
-                .background(MaterialTheme.colors.surface)
+                .background(MaterialTheme.colorScheme.surface)
                 .padding(
                     rememberInsetsPaddingValues(
                         LocalWindowInsets.current.systemBars,
@@ -107,8 +106,8 @@ internal fun HomeNavigationRail(
                             nowPlaying = nowPlaying,
                             playbackState = playbackState,
                             onArtworkClick = { navigator.navigate(LeafScreen.PlaybackSheet().createRoute()) },
-                            titleTextStyle = PlaybackNowPlayingDefaults.titleTextStyle.copy(fontSize = MaterialTheme.typography.body1.fontSize),
-                            artistTextStyle = PlaybackNowPlayingDefaults.artistTextStyle.copy(fontSize = MaterialTheme.typography.subtitle2.fontSize),
+                            titleTextStyle = PlaybackNowPlayingDefaults.titleTextStyle.copy(fontSize = MaterialTheme.typography.bodyLarge.fontSize),
+                            artistTextStyle = PlaybackNowPlayingDefaults.artistTextStyle.copy(fontSize = MaterialTheme.typography.titleSmall.fontSize),
                         )
                     }
                 } else PlaybackMiniControls(

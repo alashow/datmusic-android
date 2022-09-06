@@ -27,19 +27,19 @@ import androidx.compose.foundation.lazy.LazyListItemInfo
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material.ButtonDefaults.textButtonColors
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.RemoveCircleOutline
 import androidx.compose.material.icons.filled.Shuffle
+import androidx.compose.material3.ButtonDefaults.textButtonColors
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -84,6 +84,7 @@ import tm.alashow.ui.simpleClickable
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.Orange
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditPlaylist(
     viewModel: EditPlaylistViewModel = hiltViewModel(),
@@ -99,19 +100,20 @@ fun EditPlaylist(
                 modifier = Modifier.navigationBarsWithImePadding()
             )
         }
-    ) {
+    ) { paddings ->
         EditPlaylist(
             viewModel = viewModel,
             playlistItems = playlistItems,
+            modifier = Modifier.padding(paddings),
         )
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun EditPlaylist(
+internal fun EditPlaylist(
     viewModel: EditPlaylistViewModel,
     playlistItems: PlaylistItems,
+    modifier: Modifier = Modifier,
 ) {
     val playlist by rememberFlowWithLifecycle(viewModel.playlist)
     val name by rememberFlowWithLifecycle(viewModel.name)
@@ -123,12 +125,12 @@ fun EditPlaylist(
         canDragOver = { it.key is DraggableItemKey },
     )
 
-    Box {
+    Box(modifier) {
         LazyColumn(
             state = reorderableState.listState,
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colors.background)
+                .background(MaterialTheme.colorScheme.background)
                 .reorderable(reorderableState),
         ) {
             editPlaylistHeader(
@@ -203,7 +205,7 @@ private fun LazyListScope.editPlaylistHeader(
         ) {
             Text(
                 text = stringResource(R.string.playlist_edit_label),
-                style = MaterialTheme.typography.h6,
+                style = MaterialTheme.typography.headlineSmall,
                 textAlign = TextAlign.Center,
             )
 
@@ -292,7 +294,7 @@ private fun LazyListScope.editPlaylistExtraActions(
             }
             TextButton(
                 onClick = onDelete,
-                colors = textButtonColors(contentColor = MaterialTheme.colors.error),
+                colors = textButtonColors(contentColor = MaterialTheme.colorScheme.error),
             ) {
                 Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.textIconModifier())
                 Text(stringResource(R.string.playlist_edit_delete))

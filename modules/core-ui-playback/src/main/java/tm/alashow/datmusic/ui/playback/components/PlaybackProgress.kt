@@ -18,10 +18,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -107,7 +107,7 @@ internal fun PlaybackProgressSlider(
             LinearProgressIndicator(
                 progress = bufferedProgress,
                 color = bufferedProgressColor,
-                backgroundColor = Color.Transparent,
+                trackColor = Color.Transparent,
                 modifier = linearProgressMod
             )
 
@@ -168,8 +168,8 @@ internal fun BoxScope.PlaybackProgressDuration(
                 true -> (progressState.total.toFloat() * (draggingProgress)).toLong().millisToDuration()
                 else -> progressState.currentDuration
             }
-            Text(currentDuration, style = MaterialTheme.typography.caption)
-            Text(progressState.totalDuration, style = MaterialTheme.typography.caption)
+            Text(currentDuration, style = MaterialTheme.typography.bodySmall)
+            Text(progressState.totalDuration, style = MaterialTheme.typography.bodySmall)
         }
     }
 }

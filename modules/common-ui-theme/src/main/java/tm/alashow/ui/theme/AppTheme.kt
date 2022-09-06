@@ -6,8 +6,8 @@ package tm.alashow.ui.theme
 
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
-import androidx.compose.material.Colors
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Stable
@@ -25,7 +25,7 @@ import tm.alashow.ui.toAdaptiveColor
 val LocalThemeState = staticCompositionLocalOf<ThemeState> {
     error("No LocalThemeState provided")
 }
-private val LocalAppColors = staticCompositionLocalOf<AppColors> {
+private val LocalAppColors = compositionLocalOf<AppColors> {
     error("No LocalAppColors provided")
 }
 private val LocalSpecs = staticCompositionLocalOf<Specs> {
@@ -61,7 +61,7 @@ fun ProvideAppTheme(
     CompositionLocalProvider(
         LocalThemeState provides theme,
         LocalAppColors provides appColors,
-        LocalAdaptiveColor provides appColors.materialColors.secondary.toAdaptiveColor(isDarkColors = !appColors.materialColors.isLight),
+        LocalAdaptiveColor provides appColors.colorScheme.secondary.toAdaptiveColor(isDarkColors = !appColors.isLight),
         LocalSpecs provides specs,
         content = content
     )
@@ -69,17 +69,18 @@ fun ProvideAppTheme(
 
 @Stable
 data class AppColors(
+    val isLight: Boolean,
     private val _onSurfaceInputBackground: Color,
-    private val _materialColors: Colors,
+    private val _materialColors: ColorScheme,
 ) {
     var onSurfaceInputBackground by mutableStateOf(_onSurfaceInputBackground)
         private set
-    var materialColors by mutableStateOf(_materialColors)
+    var colorScheme by mutableStateOf(_materialColors)
         private set
 
     fun update(other: AppColors) {
         onSurfaceInputBackground = other.onSurfaceInputBackground
-        materialColors = other.materialColors
+        colorScheme = other.colorScheme
     }
 }
 
@@ -87,8 +88,8 @@ data class AppColors(
 fun MaterialThemePatches(content: @Composable () -> Unit) {
     // change selection color from primary to secondary
     val textSelectionColors = TextSelectionColors(
-        handleColor = MaterialTheme.colors.secondary,
-        backgroundColor = MaterialTheme.colors.secondary.copy(alpha = 0.4f)
+        handleColor = MaterialTheme.colorScheme.secondary,
+        backgroundColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f)
     )
     CompositionLocalProvider(
         LocalTextSelectionColors provides textSelectionColors,

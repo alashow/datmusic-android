@@ -11,16 +11,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.insets.ui.Scaffold
 import tm.alashow.base.util.extensions.Callback
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.Album
@@ -44,7 +44,7 @@ fun Library() {
     Library(viewModel = hiltViewModel())
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Library(
     viewModel: LibraryViewModel,
@@ -62,11 +62,11 @@ private fun Library(
             )
         },
         modifier = Modifier.fillMaxSize()
-    ) { padding ->
+    ) { paddings ->
         when (val items = asyncLibraryItems) {
             is Success -> {
                 LazyColumn(
-                    contentPadding = padding,
+                    contentPadding = paddings,
                     state = listState
                 ) {
                     libraryList(

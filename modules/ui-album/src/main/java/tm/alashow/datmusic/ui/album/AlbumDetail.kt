@@ -9,10 +9,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Album
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -86,9 +86,9 @@ private fun AlbumHeaderSubtitle(viewState: AlbumDetailViewState, onArtistClick: 
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall)) {
         CoverImage(artist?.photo(), shape = CircleShape, size = 20.dp)
         Text(
-            artistName, style = MaterialTheme.typography.subtitle2,
+            artistName, style = MaterialTheme.typography.titleSmall,
             modifier = Modifier.simpleClickable(onClick = onArtistClick)
         )
     }
-    Text(albumSubtitle, style = MaterialTheme.typography.caption)
+    Text(albumSubtitle, style = MaterialTheme.typography.bodySmall)
 }

@@ -4,7 +4,7 @@
  */
 package tm.alashow.ui.theme
 
-import androidx.compose.material.Typography
+import androidx.compose.material3.Typography
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
@@ -35,4 +35,4 @@ private val APP_FONT = FontFamily(
     )
 )
 
-val Typography = Typography(defaultFontFamily = APP_FONT)
+val Typography = Typography()

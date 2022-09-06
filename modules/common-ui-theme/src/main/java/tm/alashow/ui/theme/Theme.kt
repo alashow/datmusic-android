@@ -5,7 +5,7 @@
 package tm.alashow.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
@@ -47,16 +47,16 @@ fun AppTheme(
         SideEffect {
             systemUiController.setSystemBarsColor(
                 color = Color.Transparent,
-                darkIcons = colors.materialColors.isLight
+                darkIcons = colors.isLight
             )
         }
     }
 
     ProvideAppTheme(theme, colors) {
         MaterialTheme(
-            colors = animate(colors.materialColors),
+            // TODO: Animate
+            colorScheme = colors.colorScheme,
             typography = Typography,
-            shapes = Shapes,
             content = { MaterialThemePatches(content) }
         )
     }

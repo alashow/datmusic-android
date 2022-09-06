@@ -13,12 +13,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Explicit
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -203,7 +203,7 @@ fun AudioRowItem(
         else -> false
     }
 
-    val titleTextColor = if (isCurrentAudio) MaterialTheme.colors.secondary else MaterialTheme.colors.onBackground
+    val titleTextColor = if (isCurrentAudio) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onBackground
 
     val loadingModifier = Modifier.placeholder(
         visible = isPlaceholder,
@@ -227,7 +227,7 @@ fun AudioRowItem(
         Column(verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingTiny)) {
             Text(
                 audio.title,
-                style = MaterialTheme.typography.body2.copy(fontSize = 15.sp),
+                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 15.sp),
                 maxLines = maxLines,
                 overflow = TextOverflow.Ellipsis,
                 color = titleTextColor,
@@ -245,12 +245,12 @@ fun AudioRowItem(
                             modifier = Modifier
                                 .size(18.dp)
                                 .alignByBaseline(),
-                            tint = MaterialTheme.colors.onBackground.copy(alpha = ContentAlpha.medium),
+                            tint = MaterialTheme.colorScheme.onBackground.copy(alpha = ContentAlpha.medium),
                         )
                     val artistAndDuration = listOf(audio.artist, audio.durationMillis().millisToDuration()).interpunctize()
                     Text(
                         artistAndDuration,
-                        style = MaterialTheme.typography.subtitle2.copy(fontSize = 14.sp),
+                        style = MaterialTheme.typography.titleSmall.copy(fontSize = 14.sp),
                         maxLines = maxLines,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier
