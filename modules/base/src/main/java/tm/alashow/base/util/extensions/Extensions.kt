@@ -4,6 +4,7 @@
  */
 package tm.alashow.base.util.extensions
 
+import android.content.Intent
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
@@ -64,3 +65,13 @@ fun Bundle.readable() = buildList {
         add("key=$it, value=${get(it)}")
     }
 }.joinToString()
+
+inline fun <reified T> Intent.parcelable(key: String): T? = when {
+    SDK_INT >= 33 -> getParcelableExtra(key, T::class.java)
+    else -> @Suppress("DEPRECATION") getParcelableExtra(key) as? T
+}
+
+inline fun <reified T> Bundle.parcelable(key: String): T? = when {
+    SDK_INT >= 33 -> getParcelable(key, T::class.java)
+    else -> @Suppress("DEPRECATION") getParcelable(key) as? T
+}

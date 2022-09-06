@@ -7,7 +7,7 @@ package tm.alashow.domain.models
 import kotlinx.coroutines.flow.*
 import tm.alashow.base.util.extensions.delayItem
 
-fun <T> Flow<T>.asAsyncFlow() =
+fun <T> Flow<T>.asAsyncFlow(): Flow<Async<T>> =
     map { Success(it) as Async<T> }
         .onStart { emit(Loading()) }
         .catch { emit(Fail(it)) }

@@ -52,9 +52,6 @@ android {
 		targetCompatibility 1.8
 	}
 
-	lintOptions {
-		abortOnError false
-	}
 
 	buildFeatures {
 		compose = true
@@ -107,8 +104,11 @@ android {
 	}
 	kotlinOptions {
 		jvmTarget = "1.8"
-		useIR = true
 	}
+	lint {
+		abortOnError false
+	}
+	namespace 'tm.alashow.datmusic'
 }
 
 repositories {
