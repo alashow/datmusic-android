@@ -294,15 +294,23 @@ class DownloaderTest : BaseTest() {
     }
 
     @Test
-    fun `enqueueAudio successfully enqueues given audio id`() = runTest {
-        val testItem = testItems.first().audio
+    fun `enqueueAudio successfully enqueues given audio id and newDownloadId emits download id`() = runTest {
+        val testDownloadItem = testItems.first()
+        val testItem = testDownloadItem.audio
         repo.setDownloadsLocation(createTestDownloadsLocation().second)
 
         // should fail because audio id isn't in database yet
-        assertThat(repo.enqueueAudio(audioId = testItem.id)).isFalse()
+        assertThat(repo.enqueueAudio(audioId = testItem.id))
+            .isFalse()
 
         audiosRepo.insert(testItem)
-        assertThat(repo.enqueueAudio(audioId = testItem.id)).isTrue()
+        assertThat(repo.enqueueAudio(audioId = testItem.id))
+            .isTrue()
+
+        repo.newDownloadId.test {
+            assertThat(awaitItem())
+                .isEqualTo(testDownloadItem.id)
+        }
         snackbarManager.awaitMessages(AudioDownloadQueued)
     }
 

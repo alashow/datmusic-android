@@ -4,29 +4,32 @@
  */
 package tm.alashow.base.testing
 
+import android.app.Application
+import android.content.Context
+import androidx.activity.ComponentActivity
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.runner.AndroidJUnitRunner
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltTestApplication
 import org.junit.Before
 import org.junit.Rule
 import org.junit.runner.RunWith
-import org.mockito.junit.MockitoJUnit
-import org.mockito.junit.MockitoRule
-import org.robolectric.annotation.Config
 
-@Config(application = HiltTestApplication::class, manifest = Config.NONE)
+class AndroidTestRunner : AndroidJUnitRunner() {
+    override fun newApplication(cl: ClassLoader?, name: String?, context: Context?): Application {
+        return super.newApplication(cl, HiltTestApplication::class.java.name, context)
+    }
+}
+
 @RunWith(AndroidJUnit4::class)
 abstract class BaseTest {
     @get:Rule(order = 0)
     val hiltRule: HiltAndroidRule by lazy { HiltAndroidRule(this) }
 
     @get:Rule(order = 1)
-    val mockitoRule: MockitoRule by lazy { MockitoJUnit.rule() }
-
-    @get:Rule(order = 2)
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     @Before
@@ -35,9 +38,10 @@ abstract class BaseTest {
     }
 }
 
-abstract class BaseComposeTest : BaseTest() {
-    @get:Rule(order = 3)
-    val composeTestRule = createComposeRule()
+abstract class BaseComposeInstrumentedTest : BaseTest() {
+
+    @get:Rule(order = 2)
+    val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
 

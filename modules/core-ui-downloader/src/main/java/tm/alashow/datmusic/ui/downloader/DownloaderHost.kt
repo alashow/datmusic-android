@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.LocalAbsoluteElevation
-import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -23,7 +22,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
@@ -31,8 +29,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import tm.alashow.base.util.WriteableOpenDocumentTree
-import tm.alashow.base.util.asString
-import tm.alashow.common.compose.LocalScaffoldState
 import tm.alashow.common.compose.collectEvent
 import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.downloader.DownloaderEvent
@@ -46,21 +42,13 @@ val LocalDownloader = staticCompositionLocalOf<Downloader> {
 @Composable
 fun DownloaderHost(
     viewModel: DownloaderViewModel = hiltViewModel(),
-    snackbarHostState: SnackbarHostState = LocalScaffoldState.current.snackbarHostState,
     content: @Composable () -> Unit
 ) {
-    val context = LocalContext.current
-    val coroutine = rememberCoroutineScope()
-
     var downloadsLocationDialogShown by remember { mutableStateOf(false) }
     collectEvent(viewModel.downloader.downloaderEvents) { event ->
         when (event) {
             DownloaderEvent.ChooseDownloadsLocation -> {
                 downloadsLocationDialogShown = true
-            }
-            is DownloaderEvent.DownloaderMessage -> {
-                val message = event.message.asString(context)
-                coroutine.launch { snackbarHostState.showSnackbar(message) }
             }
             else -> Unit
         }

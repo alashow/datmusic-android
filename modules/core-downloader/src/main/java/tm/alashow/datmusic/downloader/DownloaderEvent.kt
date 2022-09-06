@@ -19,12 +19,10 @@ sealed class DownloaderEvent : UiMessageConvertable {
         val message = UiMessage.Resource(R.string.downloader_enqueue_downloadsLocationNotSelected)
     }
 
-    data class DownloaderMessage(val message: UiMessage<*>) : DownloaderEvent()
     data class DownloaderFetchError(val error: Throwable) : DownloaderEvent()
 
     override fun toUiMessage() = when (this) {
         is ChooseDownloadsLocation -> message
-        is DownloaderMessage -> message
         is DownloaderFetchError -> UiMessage.Error(this.error)
     }
 }

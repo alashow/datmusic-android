@@ -2,6 +2,8 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
+@file:Suppress("FunctionName")
+
 package tm.alashow.datmusic.downloader
 
 import com.tonyodev.fetch2.Status
@@ -16,4 +18,4 @@ val AudioDownloadQueued = UiMessage.Resource(R.string.downloader_enqueue_audio_q
 val AudioDownloadResumedExisting = UiMessage.Resource(R.string.downloader_enqueue_audio_existing_resuming)
 val AudioDownloadAlreadyQueued = UiMessage.Resource(R.string.downloader_enqueue_audio_existing_alreadyQueued)
 val AudioDownloadAlreadyCompleted = UiMessage.Resource(R.string.downloader_enqueue_audio_existing_completed)
-fun audioDownloadExistingUnknownStatus(status: Status) = UiMessage.Resource(R.string.downloader_enqueue_audio_existing_unknown, listOf(status))
+fun AudioDownloadExistingUnknownStatus(status: Status) = UiMessage.Resource(R.string.downloader_enqueue_audio_existing_unknown, listOf(status))

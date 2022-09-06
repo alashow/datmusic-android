@@ -30,7 +30,7 @@ class CoilAppInitializer
                 .okHttpClient(okHttpClient)
                 .dispatcher(dispatchers.io)
                 .fetcherDispatcher(dispatchers.network)
-                .diskCache(DiskCache.Builder(context).directory(File(context.cacheDir, "images_cache")).build())
+                .diskCache(DiskCache.Builder().directory(File(context.cacheDir, "images_cache")).build())
                 .build()
         }
     }

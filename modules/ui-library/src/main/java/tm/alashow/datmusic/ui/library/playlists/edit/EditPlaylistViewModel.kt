@@ -21,10 +21,10 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import org.burnoutcrew.reorderable.move
 import tm.alashow.base.util.event
 import tm.alashow.base.util.extensions.orBlank
 import tm.alashow.base.util.extensions.stateInDefault
+import tm.alashow.base.util.extensions.swap
 import tm.alashow.datmusic.data.interactors.playlist.ClearPlaylistArtwork
 import tm.alashow.datmusic.data.interactors.playlist.DeletePlaylist
 import tm.alashow.datmusic.data.interactors.playlist.RemovePlaylistItems
@@ -146,7 +146,7 @@ class EditPlaylistViewModel @Inject constructor(
     }
 
     fun movePlaylistItem(from: Int, to: Int) {
-        val updated = playlistItems.value.toMutableList().also { it.move(from, to) }
+        val updated = playlistItems.value.toMutableList().swap(from, to)
         playlistItems.value = updated
     }
 

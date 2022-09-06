@@ -32,9 +32,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.isSpecified
-import coil.compose.AsyncImage
-import coil.compose.AsyncImageContent
 import coil.compose.AsyncImagePainter.*
+import coil.compose.SubcomposeAsyncImage
+import coil.compose.SubcomposeAsyncImageContent
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.google.accompanist.placeholder.PlaceholderDefaults
@@ -68,13 +68,14 @@ fun CoverImage(
             .then(sizeMod)
             .aspectRatio(1f)
     ) {
-        AsyncImage(
+        SubcomposeAsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(data)
                 .build(),
             contentDescription = contentDescription,
             contentScale = contentScale,
-        ) { state ->
+        ) {
+            val state = painter.state
             when (state) {
                 is State.Error, State.Empty, is State.Loading -> {
                     Icon(
@@ -97,7 +98,7 @@ fun CoverImage(
                             )
                     )
                 }
-                else -> AsyncImageContent(imageModifier.fillMaxSize())
+                else -> SubcomposeAsyncImageContent(imageModifier.fillMaxSize())
             }
 
             if (bitmapPlaceholder != null && state is State.Loading) {

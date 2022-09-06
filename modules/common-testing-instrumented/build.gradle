@@ -6,7 +6,6 @@
 import tm.alashow.buildSrc.App
 import tm.alashow.buildSrc.Deps
 
-
 plugins {
 	id "com.android.library"
 	id "kotlin-android"
@@ -37,11 +36,7 @@ repositories {
 }
 
 dependencies {
-	implementation Deps.Utils.coil
 
-	kapt Deps.Dagger.hiltCompiler
-
-	api Deps.Utils.threeTen
 	api Deps.Android.archCoreTesting
 	api Deps.Android.Test.core
 	api Deps.Android.Test.rules
@@ -57,7 +52,6 @@ dependencies {
 	api Deps.Testing.mockk
 	api Deps.Testing.truth
 	api Deps.Testing.turbine
-	api Deps.Testing.robolectric
 
 	api Deps.Android.Compose.uiTestJunit
 	debugApi Deps.Android.Compose.uiTestManifeset

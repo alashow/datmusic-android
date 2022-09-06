@@ -47,13 +47,11 @@ dependencies {
 	api Deps.Android.navigationFragment
 	api Deps.Android.navigationUi
 
+	implementation Deps.Android.Lifecycle.extensions
 	api Deps.Android.Lifecycle.runtime
 	api Deps.Android.Lifecycle.runtimeKtx
-	api Deps.Android.Lifecycle.extensions
-	api Deps.Android.Lifecycle.vmKotlin
+	api(Deps.Android.Lifecycle.vmKotlin) {}
 	api Deps.Android.Lifecycle.vmSavedState
-
-	api Deps.Android.Paging.runtime
 
 	api Deps.Android.palette
 	api Deps.Android.media

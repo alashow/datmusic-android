@@ -73,6 +73,9 @@ class Downloader @Inject constructor(
         val DOWNLOADS_SONGS_GROUPING = stringPreferencesKey("downloads_songs_grouping")
     }
 
+    private val newDownloadIdState = Channel<String>(Channel.CONFLATED)
+    val newDownloadId = newDownloadIdState.receiveAsFlow()
+
     private val downloaderEventsChannel = Channel<DownloaderEvent>(Channel.CONFLATED)
     val downloaderEvents = downloaderEventsChannel.receiveAsFlow()
 
@@ -132,6 +135,7 @@ class Downloader @Inject constructor(
         return when (val enqueueResult = enqueueDownloadRequest(downloadRequest, fetchRequest)) {
             is DownloadEnqueueSuccessful -> {
                 downloaderMessage(AudioDownloadQueued)
+                newDownloadIdState.send(downloadRequest.id)
                 true
             }
             is DownloadEnqueueFailed -> {
@@ -187,7 +191,7 @@ class Downloader @Inject constructor(
                     }
                     else -> {
                         Timber.d("Existing download was requested with unhandled status, doing nothing: Status: ${downloadInfo.status}")
-                        downloaderMessage(audioDownloadExistingUnknownStatus(downloadInfo.status))
+                        downloaderMessage(AudioDownloadExistingUnknownStatus(downloadInfo.status))
                         return false
                     }
                 }

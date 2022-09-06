@@ -45,10 +45,8 @@ dependencies {
 	api Deps.Android.Room.paging
 	kapt Deps.Android.Room.compiler
 
-	api Deps.Android.Paging.runtime
-
 	api Deps.Android.dataStore
 
-	api project(":modules:base")
-	api project(":modules:common-domain")
+	api(project(":modules:base"))
+	api(project(":modules:common-domain"))
 }

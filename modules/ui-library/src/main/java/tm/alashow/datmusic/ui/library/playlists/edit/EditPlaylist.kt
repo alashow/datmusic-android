@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListItemInfo
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -56,9 +57,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.navigationBarsHeight
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.google.accompanist.insets.statusBarsPadding
+import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.ReorderableState
 import org.burnoutcrew.reorderable.detectReorder
-import org.burnoutcrew.reorderable.rememberReorderState
+import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 import org.burnoutcrew.reorderable.reorderable
 import tm.alashow.base.util.extensions.Callback
 import tm.alashow.common.compose.rememberFlowWithLifecycle
@@ -75,7 +77,6 @@ import tm.alashow.ui.adaptiveColor
 import tm.alashow.ui.coloredRippleClickable
 import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.components.DraggableItemKey
-import tm.alashow.ui.components.DraggableItemSurface
 import tm.alashow.ui.components.IconButton
 import tm.alashow.ui.components.TextRoundedButton
 import tm.alashow.ui.components.textIconModifier
@@ -116,8 +117,11 @@ fun EditPlaylist(
     val name by rememberFlowWithLifecycle(viewModel.name)
     val nameError by rememberFlowWithLifecycle(viewModel.nameError)
 
-    val reorderableState = rememberReorderState()
     val itemsBeforeContent = 2
+    val reorderableState = rememberReorderableLazyListState(
+        onMove = { from, to -> viewModel.movePlaylistItem(from.index - itemsBeforeContent, to.index - itemsBeforeContent) },
+        canDragOver = { it.key is DraggableItemKey },
+    )
 
     Box {
         LazyColumn(
@@ -125,11 +129,7 @@ fun EditPlaylist(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colors.background)
-                .reorderable(
-                    state = reorderableState,
-                    onMove = { from, to -> viewModel.movePlaylistItem(from.index - itemsBeforeContent, to.index - itemsBeforeContent) },
-                    canDragOver = { it.key is DraggableItemKey }
-                ),
+                .reorderable(reorderableState),
         ) {
             editPlaylistHeader(
                 playlist = playlist,
@@ -303,18 +303,17 @@ private fun LazyListScope.editPlaylistExtraActions(
 
 @OptIn(ExperimentalFoundationApi::class)
 private fun LazyListScope.editablePlaylistAudioList(
-    reorderableState: ReorderableState,
+    reorderableState: ReorderableState<LazyListItemInfo>,
     onRemove: (PlaylistAudioId) -> Unit,
     audios: PlaylistItems,
 ) {
     items(audios, key = { DraggableItemKey(it.playlistAudio.id) }) { playlistItem ->
         val haptic = LocalHapticFeedback.current
         val itemKey = DraggableItemKey(playlistItem.playlistAudio.id)
-        val isDragging = reorderableState.draggedKey == itemKey
-        DraggableItemSurface(
-            reorderableState.offsetByKey(itemKey),
-            // animate item placement unless item is being dragged
-            modifier = if (isDragging) Modifier else Modifier.animateItemPlacement()
+        val isDragging = reorderableState.draggingItemKey == itemKey
+        ReorderableItem(
+            reorderableState, key = itemKey,
+            if (isDragging) Modifier else Modifier.animateItemPlacement()
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,

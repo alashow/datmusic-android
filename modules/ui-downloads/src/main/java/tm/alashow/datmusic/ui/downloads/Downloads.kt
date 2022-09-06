@@ -57,6 +57,7 @@ import com.google.accompanist.insets.ui.LocalScaffoldPadding
 import com.google.accompanist.insets.ui.Scaffold
 import tm.alashow.base.util.asString
 import tm.alashow.base.util.toUiMessage
+import tm.alashow.common.compose.collectEvent
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.downloader.DownloadItems
@@ -89,6 +90,10 @@ fun Downloads() {
 private fun Downloads(viewModel: DownloadsViewModel) {
     val listState = rememberLazyListState()
     val viewState by rememberFlowWithLifecycle(viewModel.state)
+
+    collectEvent(viewModel.newDownloadPositionEvent) {
+        listState.animateScrollToItem(it)
+    }
 
     Scaffold(
         topBar = { DownloadsAppBar(viewModel) },

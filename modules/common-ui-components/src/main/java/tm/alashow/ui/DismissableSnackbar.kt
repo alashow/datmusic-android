@@ -4,7 +4,6 @@
  */
 package tm.alashow.ui
 
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Snackbar
 import androidx.compose.material.SnackbarData
 import androidx.compose.material.SnackbarHost
@@ -30,7 +29,6 @@ fun DismissableSnackbarHost(hostState: SnackbarHostState, modifier: Modifier = M
 /**
  * Wrapper around [Snackbar] to make it swipe-dismissable, using [SwipeToDismiss].
  */
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SwipeDismissSnackbar(
     data: SnackbarData,

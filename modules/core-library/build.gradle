@@ -36,6 +36,8 @@ dependencies {
 	api project(":modules:base-android")
 	implementation project(":modules:core-downloader")
 
+	implementation Deps.Android.Lifecycle.extensions
+
 	implementation Deps.Dagger.hilt
 	kapt Deps.Dagger.compiler
 	kapt Deps.Dagger.hiltCompiler
