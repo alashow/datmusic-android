@@ -46,17 +46,29 @@ val BlueGrey = Color(0xFF263238)
 val Green600 = Color(0xFF1DB954)
 val Green900 = Color(0xFF468847)
 
-internal val DarkAppColors = appDarkColors(Primary, Secondary, PrimaryVariant, SecondaryVariant)
-internal val LightAppColors = appLightColors(Primary, Secondary, PrimaryVariant, SecondaryVariant)
+internal val DarkAppColors = appDarkColors(
+    primary = Primary,
+    secondary = Secondary,
+    surfaceVariant = PrimaryVariant,
+)
+internal val LightAppColors = appLightColors(
+    primary = Primary,
+    secondary = Secondary,
+    surfaceVariant = PrimaryVariant,
+)
 
 fun appDarkColors(
     primary: Color,
     secondary: Color,
+    tertiary: Color = secondary,
     background: Color = primary,
     surface: Color = primary,
+    surfaceVariant: Color = surface,
     onPrimary: Color = Color.White,
     onSecondary: Color = Color.White,
+    onTertiary: Color = onSecondary,
     onSurface: Color = Color.White,
+    onSurfaceVariant: Color = onSurface,
     onSurfaceInputBackground: Color = Color(0x45706d86),
 ) = AppColors(
     isLight = false,
@@ -66,24 +78,28 @@ fun appDarkColors(
         onPrimary = onPrimary,
         secondary = secondary,
         onSecondary = onSecondary,
-        tertiary = secondary, // TODO: create a separate color
-        onTertiary = onSecondary, // TODO: create a separate color
+        tertiary = tertiary,
+        onTertiary = onTertiary,
         background = background,
         surface = surface,
         onSurface = onSurface,
-        surfaceVariant = surface, // TODO: create a separate color
-        onSurfaceVariant = onSurface, // TODO: create a separate color
+        surfaceVariant = surfaceVariant,
+        onSurfaceVariant = onSurfaceVariant,
     )
 )
 
 fun appLightColors(
     primary: Color,
     secondary: Color,
+    tertiary: Color = secondary,
     background: Color = Color.White,
     surface: Color = Color.White,
+    surfaceVariant: Color = surface,
     onPrimary: Color = Color.White,
     onSecondary: Color = Color.White,
+    onTertiary: Color = onSecondary,
     onSurface: Color = Color.Black,
+    onSurfaceVariant: Color = onSurface,
     onSurfaceInputBackground: Color = Color(0x45c1bbc0),
 ) = AppColors(
     isLight = true,
@@ -94,12 +110,12 @@ fun appLightColors(
         secondary = secondary,
         onSecondary = onSecondary,
         background = background,
-        tertiary = secondary, // TODO: create a separate color
-        onTertiary = onSecondary, // TODO: create a separate color
+        tertiary = tertiary,
+        onTertiary = onTertiary,
         surface = surface,
         onSurface = onSurface,
-        surfaceVariant = surface, // TODO: create a separate color
-        onSurfaceVariant = onSurface, // TODO: create a separate color
+        surfaceVariant = surfaceVariant,
+        onSurfaceVariant = onSurfaceVariant,
     )
 )
 

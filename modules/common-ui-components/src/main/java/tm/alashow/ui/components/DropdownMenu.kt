@@ -5,7 +5,6 @@
 package tm.alashow.ui.components
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -43,7 +42,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import tm.alashow.ui.theme.AppTheme
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun <T> SelectableDropdownMenu(
     items: List<T>,
@@ -107,8 +105,7 @@ fun <T> SelectableDropdownMenu(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                val contentColor =
-                                    if (item in selectedItems) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onBackground
+                                val contentColor = if (item in selectedItems) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface
                                 CompositionLocalProvider(LocalContentColor provides contentColor) {
                                     Text(itemLabelMapper(item))
                                     if (itemSuffixMapper != null)

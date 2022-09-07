@@ -55,7 +55,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.insets.ui.LocalScaffoldPadding
 import tm.alashow.base.util.asString
 import tm.alashow.base.util.toUiMessage
 import tm.alashow.common.compose.collectEvent
@@ -102,14 +101,17 @@ private fun Downloads(viewModel: DownloadsViewModel) {
         modifier = Modifier.fillMaxSize()
     ) { padding ->
         when (val asyncDownloads = viewState.downloads) {
-            is Uninitialized, is Loading -> FullScreenLoading()
-            is Fail -> DownloadsError(asyncDownloads)
+            is Uninitialized, is Loading -> FullScreenLoading(Modifier.padding(padding))
+            is Fail -> DownloadsError(asyncDownloads, Modifier.padding(padding))
             is Success -> LazyColumn(
                 state = listState,
-                contentPadding = padding,
                 modifier = Modifier.drawVerticalScrollbar(listState),
+                contentPadding = padding,
             ) {
-                downloadsList(asyncDownloads(), viewModel::playAudioDownload)
+                downloadsList(
+                    downloads = asyncDownloads(),
+                    onAudioPlay = viewModel::playAudioDownload
+                )
             }
         }
     }
@@ -133,9 +135,7 @@ private fun DownloadsAppBar(
         filterContent = {
             DownloadsFilters(
                 searchQuery = viewState.params.query,
-                onQueryChange = {
-                    viewModel.onSearchQueryChange(it)
-                },
+                onQueryChange = viewModel::onSearchQueryChange,
                 hasSortingOption = viewState.params.hasSortingOption,
                 audiosSortOptions = viewState.params.audiosSortOptions,
                 audiosSortOption = viewState.params.audiosSortOption,
@@ -244,8 +244,8 @@ private fun DownloadsFilters(
 }
 
 @Composable
-private fun DownloadsError(asyncDownloads: Fail<DownloadItems>) {
-    Box(Modifier.padding(LocalScaffoldPadding.current)) {
+private fun DownloadsError(asyncDownloads: Fail<DownloadItems>, modifier: Modifier = Modifier) {
+    Box(modifier) {
         val error = asyncDownloads.error
         val errorMessage = asyncDownloads.error.toUiMessage().asString(LocalContext.current)
         when (error) {

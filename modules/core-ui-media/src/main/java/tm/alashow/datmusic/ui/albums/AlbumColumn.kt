@@ -28,12 +28,12 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.placeholder.material.placeholder
 import com.google.firebase.analytics.FirebaseAnalytics
 import tm.alashow.base.util.click
 import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.ui.components.CoverImage
+import tm.alashow.ui.components.placeholder
 import tm.alashow.ui.components.shimmer
 import tm.alashow.ui.theme.AppTheme
 

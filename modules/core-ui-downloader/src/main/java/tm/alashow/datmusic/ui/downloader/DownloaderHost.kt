@@ -5,8 +5,8 @@
 package tm.alashow.datmusic.ui.downloader
 
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.compose.material.LocalAbsoluteElevation
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.LocalAbsoluteTonalElevation
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -74,7 +74,7 @@ private fun DownloadsLocationDialog(
 
     if (dialogShown) {
         // [ColorPalettePreference.Black] theme needs at least 1.dp dialog surfaces
-        CompositionLocalProvider(LocalAbsoluteElevation provides 1.dp) {
+        CompositionLocalProvider(LocalAbsoluteTonalElevation provides 1.dp) {
             AlertDialog(
                 properties = DialogProperties(usePlatformDefaultWidth = true),
                 onDismissRequest = { onDismiss() },

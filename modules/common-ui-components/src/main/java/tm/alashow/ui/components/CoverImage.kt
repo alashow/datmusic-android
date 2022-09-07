@@ -19,8 +19,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -32,7 +30,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.isSpecified
-import coil.compose.AsyncImagePainter.*
+import coil.compose.AsyncImagePainter.State
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 import coil.compose.rememberAsyncImagePainter
@@ -49,7 +47,8 @@ fun CoverImage(
     modifier: Modifier = Modifier,
     imageModifier: Modifier = Modifier,
     size: Dp = Dp.Unspecified,
-    backgroundColor: Color = PlaceholderDefaults.color(),
+    // TODO: remove when placeholder uses M3
+    backgroundColor: Color = PlaceholderDefaults.color(backgroundColor = MaterialTheme.colorScheme.surface),
     contentColor: Color = MaterialTheme.colorScheme.secondary,
     contentScale: ContentScale = ContentScale.Crop,
     shape: Shape = MaterialTheme.shapes.small,

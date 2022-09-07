@@ -157,39 +157,6 @@ internal fun SearchList(
 }
 
 @Composable
-private fun SearchListErrors(
-    viewState: SearchViewState,
-    retryPagers: () -> Unit,
-    refreshErrorState: LoadState?,
-    pagersAreEmpty: Boolean,
-    hasMultiplePagers: Boolean,
-    onSearchAction: (SearchAction) -> Unit,
-) {
-    val captchaError = viewState.captchaError
-    var captchaErrorShown by remember(captchaError) { mutableStateOf(true) }
-    if (captchaError != null) {
-        CaptchaErrorDialog(
-            captchaErrorShown, { captchaErrorShown = it }, captchaError,
-            onCaptchaSubmit = { solution ->
-                onSearchAction(SearchAction.SubmitCaptcha(captchaError, solution))
-            }
-        )
-    }
-
-    // add snackbar error if there's an error state in any of the active pagers (except empty result errors)
-    // and some of the pagers is not empty (in which case full screen error will be shown)
-    LaunchedEffect(refreshErrorState, pagersAreEmpty) {
-        if (refreshErrorState is LoadState.Error && !pagersAreEmpty) {
-            // we don't wanna show empty results error snackbar when there's multiple pagers and one of the pagers gets empty result error (but we have some results if we are here)
-            val emptyResultsButHasMultiplePagers = refreshErrorState.error is EmptyResultException && hasMultiplePagers
-            if (emptyResultsButHasMultiplePagers)
-                return@LaunchedEffect
-            onSearchAction(SearchAction.AddError(refreshErrorState.error, retryPagers))
-        }
-    }
-}
-
-@Composable
 private fun SearchListContent(
     audiosLazyPagingItems: LazyPagingItems<Audio>,
     minervaAudiosLazyPagingItems: LazyPagingItems<Audio>,
@@ -387,6 +354,39 @@ private fun SearchListLabel(label: String, hasItems: Boolean, loadState: Combine
             exit = fadeOut()
         ) {
             ProgressIndicatorSmall()
+        }
+    }
+}
+
+@Composable
+private fun SearchListErrors(
+    viewState: SearchViewState,
+    retryPagers: () -> Unit,
+    refreshErrorState: LoadState?,
+    pagersAreEmpty: Boolean,
+    hasMultiplePagers: Boolean,
+    onSearchAction: (SearchAction) -> Unit,
+) {
+    val captchaError = viewState.captchaError
+    var captchaErrorShown by remember(captchaError) { mutableStateOf(true) }
+    if (captchaError != null) {
+        CaptchaErrorDialog(
+            captchaErrorShown, { captchaErrorShown = it }, captchaError,
+            onCaptchaSubmit = { solution ->
+                onSearchAction(SearchAction.SubmitCaptcha(captchaError, solution))
+            }
+        )
+    }
+
+    // add snackbar error if there's an error state in any of the active pagers (except empty result errors)
+    // and some of the pagers is not empty (in which case full screen error will be shown)
+    LaunchedEffect(refreshErrorState, pagersAreEmpty) {
+        if (refreshErrorState is LoadState.Error && !pagersAreEmpty) {
+            // we don't wanna show empty results error snackbar when there's multiple pagers and one of the pagers gets empty result error (but we have some results if we are here)
+            val emptyResultsButHasMultiplePagers = refreshErrorState.error is EmptyResultException && hasMultiplePagers
+            if (emptyResultsButHasMultiplePagers)
+                return@LaunchedEffect
+            onSearchAction(SearchAction.AddError(refreshErrorState.error, retryPagers))
         }
     }
 }
