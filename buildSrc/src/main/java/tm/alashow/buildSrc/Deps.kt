@@ -63,7 +63,7 @@ object Deps {
             const val liveData = "androidx.compose.runtime:runtime-livedata:$version"
             const val activity = "androidx.activity:activity-compose:$activityVersion"
             const val viewModels = "androidx.lifecycle:lifecycle-viewmodel-compose:2.6.0-alpha01"
-            const val paging = "androidx.paging:paging-compose:1.0.0-alpha16"
+            const val paging = "androidx.paging:paging-compose:1.0.0-alpha14"
 
             const val uiTestJunit = "androidx.compose.ui:ui-test-junit4:$version"
             const val uiTestManifeset = "androidx.compose.ui:ui-test-manifest:$version"
