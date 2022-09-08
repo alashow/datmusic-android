@@ -50,9 +50,9 @@ internal class SearchViewModel @Inject constructor(
     private val playbackConnection: PlaybackConnection,
 ) : ViewModel() {
 
-    private val initialQuery = handle.get(QUERY_KEY) ?: ""
+    private val initialQuery = handle[QUERY_KEY] ?: ""
     private val searchQueryState = handle.getStateFlow(initialQuery, viewModelScope, initialQuery)
-    private val searchFilterState = handle.getStateFlow("search_filter", viewModelScope, SearchFilter.from(handle.get(SEARCH_BACKENDS_KEY)))
+    private val searchFilterState = handle.getStateFlow("search_filter", viewModelScope, SearchFilter.from(handle[SEARCH_BACKENDS_KEY]))
     private val searchTriggerState = handle.getStateFlow("search_trigger", viewModelScope, SearchTrigger(initialQuery))
 
     private val captchaError = MutableStateFlow<ApiCaptchaError?>(null)
@@ -69,9 +69,7 @@ internal class SearchViewModel @Inject constructor(
     val onSearchEvent = onSearchEventChannel.receiveAsFlow()
 
     val state = combine(
-        searchTriggerState.map { it.query },
-        searchFilterState,
-        captchaError,
+        searchTriggerState.map { it.query }, searchFilterState, captchaError,
         transform = ::SearchViewState
     ).stateInDefault(viewModelScope, SearchViewState.Empty)
 
@@ -137,12 +135,6 @@ internal class SearchViewModel @Inject constructor(
         }
     }
 
-    fun submitAction(action: SearchAction) {
-        viewModelScope.launch {
-            pendingActions.emit(action)
-        }
-    }
-
     private fun onSearchError(error: Throwable, onRetry: () -> Unit) = viewModelScope.launch {
         snackbarManager.addError(error = error, onRetry = onRetry)
     }
@@ -194,6 +186,10 @@ internal class SearchViewModel @Inject constructor(
         when (error) {
             is ApiCaptchaError -> captchaError.value = error
         }
+    }
+
+    fun onSearchAction(action: SearchAction) = viewModelScope.launch {
+        pendingActions.emit(action)
     }
 
     companion object {

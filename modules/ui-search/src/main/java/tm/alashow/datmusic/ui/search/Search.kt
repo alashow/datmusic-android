@@ -5,7 +5,6 @@
 package tm.alashow.datmusic.ui.search
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.expandIn
 import androidx.compose.animation.fadeIn
@@ -23,7 +22,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,10 +42,11 @@ import androidx.compose.ui.platform.WindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.WindowInsets
 import com.google.accompanist.insets.statusBarsPadding
-import com.google.accompanist.insets.ui.LocalScaffoldPadding
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -56,7 +55,11 @@ import tm.alashow.common.compose.collectEvent
 import tm.alashow.common.compose.getNavArgument
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.data.DatmusicSearchParams.BackendType
+import tm.alashow.datmusic.domain.entities.Album
+import tm.alashow.datmusic.domain.entities.Artist
+import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.navigation.screens.QUERY_KEY
+import tm.alashow.ui.ProvideScaffoldPadding
 import tm.alashow.ui.components.ChipsRow
 import tm.alashow.ui.components.SearchTextField
 import tm.alashow.ui.theme.AppTheme
@@ -64,32 +67,29 @@ import tm.alashow.ui.theme.topAppBarTitleStyle
 import tm.alashow.ui.theme.translucentSurface
 
 @Composable
-fun Search() {
-    Search(viewModel = hiltViewModel())
-}
+fun SearchRoute() = Search()
 
 @Composable
-internal fun Search(
-    viewModel: SearchViewModel = hiltViewModel(),
-) {
-    Search(viewModel) { action ->
-        viewModel.submitAction(action)
-    }
-}
-
-@Composable
-internal fun Search(
-    viewModel: SearchViewModel,
-    actioner: (SearchAction) -> Unit
-) {
+internal fun Search(viewModel: SearchViewModel = hiltViewModel()) {
     val viewState by rememberFlowWithLifecycle(viewModel.state)
     val listState = rememberLazyListState()
+
+    val audiosLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedAudioList).collectAsLazyPagingItems()
+    val minervaLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedMinervaList).collectAsLazyPagingItems()
+    val flacsLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedFlacsList).collectAsLazyPagingItems()
+    val artistsLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedArtistsList).collectAsLazyPagingItems()
+    val albumsLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedAlbumsList).collectAsLazyPagingItems()
 
     Search(
         viewState = viewState,
         viewModel = viewModel,
         listState = listState,
-        actioner = actioner
+        onSearchAction = viewModel::onSearchAction,
+        audiosLazyPagingItems = audiosLazyPagingItems,
+        minervaLazyPagingItems = minervaLazyPagingItems,
+        flacsLazyPagingItems = flacsLazyPagingItems,
+        artistsLazyPagingItems = artistsLazyPagingItems,
+        albumsLazyPagingItems = albumsLazyPagingItems,
     )
 }
 
@@ -99,7 +99,12 @@ private fun Search(
     viewState: SearchViewState,
     viewModel: SearchViewModel,
     listState: LazyListState,
-    actioner: (SearchAction) -> Unit,
+    onSearchAction: (SearchAction) -> Unit,
+    audiosLazyPagingItems: LazyPagingItems<Audio>,
+    minervaLazyPagingItems: LazyPagingItems<Audio>,
+    flacsLazyPagingItems: LazyPagingItems<Audio>,
+    artistsLazyPagingItems: LazyPagingItems<Artist>,
+    albumsLazyPagingItems: LazyPagingItems<Album>,
 ) {
     val searchBarHideThreshold = 3
     val searchBarHeight = 200.dp
@@ -129,16 +134,22 @@ private fun Search(
                         translationY = searchBarHeight.value * (-searchBarVisibility.value)
                     },
                 state = viewState,
-                onQueryChange = { actioner(SearchAction.QueryChange(it)) },
-                onSearch = { actioner(SearchAction.Search) },
-                onBackendTypeSelect = { actioner(it) }
+                onQueryChange = { onSearchAction(SearchAction.QueryChange(it)) },
+                onSearch = { onSearchAction(SearchAction.Search) },
+                onBackendTypeSelect = { onSearchAction(it) }
             )
         },
-    ) {
-        CompositionLocalProvider(LocalScaffoldPadding provides it) {
+    ) { padding ->
+        ProvideScaffoldPadding(padding) {
             SearchList(
-                viewModel = viewModel,
+                viewState = viewState,
+                onSearchAction = onSearchAction,
                 listState = listState,
+                audiosLazyPagingItems = audiosLazyPagingItems,
+                minervaLazyPagingItems = minervaLazyPagingItems,
+                flacsLazyPagingItems = flacsLazyPagingItems,
+                artistsLazyPagingItems = artistsLazyPagingItems,
+                albumsLazyPagingItems = albumsLazyPagingItems,
             )
         }
     }
@@ -217,7 +228,6 @@ private fun SearchAppBar(
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun ColumnScope.SearchFilterPanel(
     visible: Boolean,

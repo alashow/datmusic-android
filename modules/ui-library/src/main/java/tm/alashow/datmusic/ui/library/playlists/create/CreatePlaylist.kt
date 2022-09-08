@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -21,45 +23,43 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.ui.library.R
 import tm.alashow.datmusic.ui.library.playlists.PlaylistNameInput
-import tm.alashow.ui.KeyboardSpacer
 import tm.alashow.ui.components.TextRoundedButton
 import tm.alashow.ui.theme.AppTheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreatePlaylist(
-    viewModel: CreatePlaylistViewModel = hiltViewModel()
-) {
+fun CreatePlaylist(viewModel: CreatePlaylistViewModel = hiltViewModel()) {
     val name by rememberFlowWithLifecycle(viewModel.name)
     val nameError by rememberFlowWithLifecycle(viewModel.nameError)
+    Scaffold {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(AppTheme.specs.padding, Alignment.CenterVertically),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it)
+                .background(MaterialTheme.colorScheme.background)
+                .padding(AppTheme.specs.padding)
+        ) {
+            Text(
+                text = stringResource(R.string.playlist_create_label),
+                style = MaterialTheme.typography.headlineSmall,
+                textAlign = TextAlign.Center
+            )
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(AppTheme.specs.padding, Alignment.CenterVertically),
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(AppTheme.specs.padding)
-    ) {
-        Text(
-            text = stringResource(R.string.playlist_create_label),
-            style = MaterialTheme.typography.headlineSmall,
-            textAlign = TextAlign.Center
-        )
+            PlaylistNameInput(
+                name = name,
+                onSetName = viewModel::setPlaylistName,
+                onDone = viewModel::createPlaylist,
+                nameError = nameError,
+            )
 
-        PlaylistNameInput(
-            name = name,
-            onSetName = viewModel::setPlaylistName,
-            onDone = viewModel::createPlaylist,
-            nameError = nameError,
-        )
-
-        val nameIsBlank = name.text.isBlank()
-        val createText = if (nameIsBlank) R.string.playlist_create_skipName else R.string.playlist_create
-        TextRoundedButton(
-            text = stringResource(createText),
-            onClick = viewModel::createPlaylist,
-        )
-
-        KeyboardSpacer()
+            val nameIsBlank = name.text.isBlank()
+            val createText = if (nameIsBlank) R.string.playlist_create_skipName else R.string.playlist_create
+            TextRoundedButton(
+                text = stringResource(createText),
+                onClick = viewModel::createPlaylist,
+            )
+        }
     }
 }

@@ -39,7 +39,7 @@ import tm.alashow.datmusic.ui.library.playlists.create.CreatePlaylist
 import tm.alashow.datmusic.ui.library.playlists.detail.PlaylistDetail
 import tm.alashow.datmusic.ui.library.playlists.edit.EditPlaylist
 import tm.alashow.datmusic.ui.playback.PlaybackSheet
-import tm.alashow.datmusic.ui.search.Search
+import tm.alashow.datmusic.ui.search.SearchRoute
 import tm.alashow.datmusic.ui.settings.Settings
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.NavigationEvent
@@ -149,7 +149,7 @@ private fun NavGraphBuilder.addSettingsRoot() {
 
 private fun NavGraphBuilder.addSearch() {
     composableScreen(LeafScreen.Search()) {
-        Search()
+        SearchRoute()
     }
 }
 

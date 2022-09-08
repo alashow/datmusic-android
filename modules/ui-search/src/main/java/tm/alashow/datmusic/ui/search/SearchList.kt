@@ -37,15 +37,12 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.CombinedLoadStates
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
-import androidx.paging.compose.collectAsLazyPagingItems
-import com.google.accompanist.insets.ui.LocalScaffoldPadding
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import tm.alashow.base.util.localizedMessage
 import tm.alashow.base.util.localizedTitle
 import tm.alashow.common.compose.LogCompositions
-import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.data.DatmusicSearchParams.BackendType
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
@@ -65,38 +62,24 @@ import tm.alashow.ui.components.FullScreenLoading
 import tm.alashow.ui.components.ProgressIndicator
 import tm.alashow.ui.components.ProgressIndicatorSmall
 import tm.alashow.ui.items
+import tm.alashow.ui.scaffoldPadding
 import tm.alashow.ui.theme.AppTheme
 
 fun <T : Any> LazyPagingItems<T>.isLoading() = loadState.refresh == LoadState.Loading
 
 @Composable
-internal fun SearchList(viewModel: SearchViewModel, listState: LazyListState) {
-    SearchList(
-        viewModel = viewModel,
-        audiosLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedAudioList).collectAsLazyPagingItems(),
-        minervaLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedMinervaList).collectAsLazyPagingItems(),
-        flacsLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedFlacsList).collectAsLazyPagingItems(),
-        artistsLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedArtistsList).collectAsLazyPagingItems(),
-        albumsLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedAlbumsList).collectAsLazyPagingItems(),
-        listState = listState,
-    )
-}
-
-@Composable
 internal fun SearchList(
-    viewModel: SearchViewModel,
+    viewState: SearchViewState,
+    listState: LazyListState,
+    onSearchAction: (SearchAction) -> Unit,
     audiosLazyPagingItems: LazyPagingItems<Audio>,
     minervaLazyPagingItems: LazyPagingItems<Audio>,
     flacsLazyPagingItems: LazyPagingItems<Audio>,
     artistsLazyPagingItems: LazyPagingItems<Artist>,
     albumsLazyPagingItems: LazyPagingItems<Album>,
-    listState: LazyListState,
+    modifier: Modifier = Modifier,
 ) {
-    // TODO: figure out better way of hoisting this state out without recomposing [SearchList] two levels above (in [Search] screen where viewState is originally hosted
-    // which causes pagers to restart/request unnecessarily)
-    val viewState by rememberFlowWithLifecycle(viewModel.state)
     val searchFilter = viewState.filter
-
     val pagers = when (searchFilter.backends.size) {
         1 -> searchFilter.backends.map {
             when (it) {
@@ -130,14 +113,15 @@ internal fun SearchList(
         refreshErrorState = refreshErrorState,
         pagersAreEmpty = pagersAreEmpty,
         hasMultiplePagers = hasMultiplePagers,
-        onSearchAction = viewModel::submitAction,
+        onSearchAction = onSearchAction,
     )
 
     SwipeRefresh(
         state = rememberSwipeRefreshState(isRefreshing = false),
-        onRefresh = refreshPagers,
-        indicatorPadding = LocalScaffoldPadding.current,
         indicator = { state, trigger -> SwipeRefreshIndicator(state, trigger, scale = true) },
+        indicatorPadding = scaffoldPadding(),
+        onRefresh = refreshPagers,
+        modifier = modifier,
     ) {
         SearchListContent(
             audiosLazyPagingItems = audiosLazyPagingItems,
@@ -151,7 +135,7 @@ internal fun SearchList(
             hasActiveSearchQuery = viewState.hasActiveSearchQuery,
             retryPagers = retryPagers,
             refreshErrorState = refreshErrorState,
-            onPlayAudio = { viewModel.submitAction(SearchAction.PlayAudio(it)) }
+            onPlayAudio = { onSearchAction(SearchAction.PlayAudio(it)) },
         )
     }
 }
@@ -169,12 +153,13 @@ private fun SearchListContent(
     pagersAreEmpty: Boolean,
     retryPagers: () -> Unit,
     refreshErrorState: LoadState?,
-    onPlayAudio: (Audio) -> Unit
+    onPlayAudio: (Audio) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     LazyColumn(
         state = listState,
-        contentPadding = LocalScaffoldPadding.current,
-        modifier = Modifier.fillMaxSize()
+        contentPadding = scaffoldPadding(),
+        modifier = modifier.fillMaxSize()
     ) {
         if (refreshErrorState is LoadState.Error && pagersAreEmpty) {
             item {
