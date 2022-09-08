@@ -9,8 +9,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -42,8 +42,6 @@ import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import tm.alashow.base.util.localizedMessage
 import tm.alashow.base.util.localizedTitle
-import tm.alashow.common.compose.LogCompositions
-import tm.alashow.datmusic.data.DatmusicSearchParams.BackendType
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.domain.entities.Audio
@@ -72,27 +70,11 @@ internal fun SearchList(
     viewState: SearchViewState,
     listState: LazyListState,
     onSearchAction: (SearchAction) -> Unit,
-    audiosLazyPagingItems: LazyPagingItems<Audio>,
-    minervaLazyPagingItems: LazyPagingItems<Audio>,
-    flacsLazyPagingItems: LazyPagingItems<Audio>,
-    artistsLazyPagingItems: LazyPagingItems<Artist>,
-    albumsLazyPagingItems: LazyPagingItems<Album>,
+    searchLazyPagers: SearchLazyPagers,
     modifier: Modifier = Modifier,
 ) {
     val searchFilter = viewState.filter
-    val pagers = when (searchFilter.backends.size) {
-        1 -> searchFilter.backends.map {
-            when (it) {
-                BackendType.AUDIOS -> audiosLazyPagingItems
-                BackendType.ARTISTS -> artistsLazyPagingItems
-                BackendType.ALBUMS -> albumsLazyPagingItems
-                BackendType.MINERVA -> minervaLazyPagingItems
-                BackendType.FLACS -> flacsLazyPagingItems
-            }
-        }.toSet()
-        else -> setOf(audiosLazyPagingItems, artistsLazyPagingItems, albumsLazyPagingItems)
-    }
-
+    val pagers = searchFilter.backends.map { searchLazyPagers[it] }.toSet()
     val pagerRefreshStates = pagers.map { it.loadState.refresh }.toTypedArray()
     val pagersAreEmpty = pagers.all { it.itemCount == 0 }
     val pagersAreLoading = pagers.all { it.isLoading() }
@@ -124,11 +106,7 @@ internal fun SearchList(
         modifier = modifier,
     ) {
         SearchListContent(
-            audiosLazyPagingItems = audiosLazyPagingItems,
-            minervaAudiosLazyPagingItems = minervaLazyPagingItems,
-            flacsAudiosLazyPagingItems = flacsLazyPagingItems,
-            artistsLazyPagingItems = artistsLazyPagingItems,
-            albumsLazyPagingItems = albumsLazyPagingItems,
+            searchLazyPagers = searchLazyPagers,
             listState = listState,
             searchFilter = searchFilter,
             pagersAreEmpty = pagersAreEmpty,
@@ -142,13 +120,9 @@ internal fun SearchList(
 
 @Composable
 private fun SearchListContent(
-    audiosLazyPagingItems: LazyPagingItems<Audio>,
-    minervaAudiosLazyPagingItems: LazyPagingItems<Audio>,
-    flacsAudiosLazyPagingItems: LazyPagingItems<Audio>,
-    artistsLazyPagingItems: LazyPagingItems<Artist>,
-    albumsLazyPagingItems: LazyPagingItems<Album>,
     listState: LazyListState,
     searchFilter: SearchFilter,
+    searchLazyPagers: SearchLazyPagers,
     hasActiveSearchQuery: Boolean,
     pagersAreEmpty: Boolean,
     retryPagers: () -> Unit,
@@ -174,101 +148,106 @@ private fun SearchListContent(
             }
         }
 
-        // TODO: examine why swiperefresh only works when first list item has some height
-        item {
-            Spacer(Modifier.height(1.dp))
+        if (hasActiveSearchQuery && searchFilter.hasArtists) {
+            item("artists") {
+                ArtistList(searchLazyPagers.artists)
+            }
         }
 
-        if (hasActiveSearchQuery && searchFilter.hasArtists)
-            item("artists") {
-                ArtistList(artistsLazyPagingItems)
-            }
-
-        if (hasActiveSearchQuery && searchFilter.hasAlbums)
+        if (hasActiveSearchQuery && searchFilter.hasAlbums) {
             item("albums") {
-                AlbumList(albumsLazyPagingItems)
+                AlbumList(searchLazyPagers.albums)
             }
+        }
 
-        if (searchFilter.hasAudios)
-            audioList(audiosLazyPagingItems, onPlayAudio)
+        if (searchFilter.hasAudios) {
+            audioList(searchLazyPagers.audios, onPlayAudio)
+        }
 
-        if (searchFilter.hasMinerva)
-            audioList(minervaAudiosLazyPagingItems, onPlayAudio)
+        if (searchFilter.hasMinerva) {
+            audioList(searchLazyPagers.minerva, onPlayAudio)
+        }
 
-        if (searchFilter.hasFlacs)
-            audioList(flacsAudiosLazyPagingItems, onPlayAudio)
+        if (searchFilter.hasFlacs) {
+            audioList(searchLazyPagers.flacs, onPlayAudio)
+        }
     }
 }
 
 @Composable
 internal fun ArtistList(
     pagingItems: LazyPagingItems<Artist>,
+    modifier: Modifier = Modifier,
     imageSize: Dp = ArtistsDefaults.imageSize,
     navigator: Navigator = LocalNavigator.current
 ) {
-    val isLoading = pagingItems.isLoading()
-    val hasItems = pagingItems.itemCount > 0
-    if (hasItems || isLoading) {
-        SearchListLabel(stringResource(R.string.search_artists), hasItems, pagingItems.loadState)
-    }
+    Column(modifier) {
+        val isLoading = pagingItems.isLoading()
+        val hasItems = pagingItems.itemCount > 0
+        if (hasItems || isLoading) {
+            SearchListLabel(stringResource(R.string.search_artists), hasItems, pagingItems.loadState)
+        }
 
-    if (!hasItems && isLoading) {
+        if (!hasItems && isLoading) {
+            LazyRow(Modifier.fillMaxWidth()) {
+                val placeholders = (1..5).map { Artist() }
+                items(placeholders) { placeholder ->
+                    ArtistColumn(placeholder, imageSize, isPlaceholder = true)
+                }
+            }
+        }
+
         LazyRow(Modifier.fillMaxWidth()) {
-            val placeholders = (1..5).map { Artist() }
-            items(placeholders) { placeholder ->
-                ArtistColumn(placeholder, imageSize, isPlaceholder = true)
-            }
-        }
-    }
+            items(pagingItems, key = { _, item -> item.id }) {
+                val artist = it ?: return@items
 
-    LazyRow(Modifier.fillMaxWidth()) {
-        items(pagingItems, key = { _, item -> item.id }) {
-            val artist = it ?: return@items
-
-            ArtistColumn(artist, imageSize) {
-                navigator.navigate(LeafScreen.ArtistDetails.buildRoute(artist.id))
+                ArtistColumn(artist, imageSize) {
+                    navigator.navigate(LeafScreen.ArtistDetails.buildRoute(artist.id))
+                }
             }
+            loadingMoreRow(pagingItems, height = imageSize)
         }
-        loadingMoreRow(pagingItems, height = imageSize)
     }
 }
 
 @Composable
 internal fun AlbumList(
     pagingItems: LazyPagingItems<Album>,
+    modifier: Modifier = Modifier,
     itemSize: Dp = AlbumsDefaults.imageSize,
     navigator: Navigator = LocalNavigator.current
 ) {
-    LogCompositions("AlbumList")
-    val isLoading = pagingItems.isLoading()
-    val hasItems = pagingItems.itemCount > 0
+    Column(modifier) {
+        val isLoading = pagingItems.isLoading()
+        val hasItems = pagingItems.itemCount > 0
 
-    if (hasItems || isLoading) {
-        SearchListLabel(stringResource(R.string.search_albums), hasItems, pagingItems.loadState)
-    }
+        if (hasItems || isLoading) {
+            SearchListLabel(stringResource(R.string.search_albums), hasItems, pagingItems.loadState)
+        }
 
-    if (!hasItems && isLoading) {
+        if (!hasItems && isLoading) {
+            LazyRow(Modifier.fillMaxWidth()) {
+                val placeholders = (1..5).map { Album() }
+                items(placeholders) { placeholder ->
+                    AlbumColumn(placeholder, imageSize = itemSize, isPlaceholder = true)
+                }
+            }
+        }
+
         LazyRow(Modifier.fillMaxWidth()) {
-            val placeholders = (1..5).map { Album() }
-            items(placeholders) { placeholder ->
-                AlbumColumn(placeholder, imageSize = itemSize, isPlaceholder = true)
+            items(pagingItems, key = { _, item -> item.id }) {
+                val album = it ?: Album()
+                AlbumColumn(
+                    album = album,
+                    isPlaceholder = it == null,
+                    imageSize = itemSize,
+                ) {
+                    navigator.navigate(LeafScreen.AlbumDetails.buildRoute(album))
+                }
             }
+            // additional height is to account for the vertical padding [loadingMore] adds
+            loadingMoreRow(pagingItems, height = itemSize + 32.dp)
         }
-    }
-
-    LazyRow(Modifier.fillMaxWidth()) {
-        items(pagingItems, key = { _, item -> item.id }) {
-            val album = it ?: Album()
-            AlbumColumn(
-                album = album,
-                isPlaceholder = it == null,
-                imageSize = itemSize,
-            ) {
-                navigator.navigate(LeafScreen.AlbumDetails.buildRoute(album))
-            }
-        }
-        // additional height is to account for the vertical padding [loadingMore] adds
-        loadingMoreRow(pagingItems, height = itemSize + 32.dp)
     }
 }
 

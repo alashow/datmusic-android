@@ -42,7 +42,6 @@ import androidx.compose.ui.platform.WindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.WindowInsets
@@ -55,9 +54,6 @@ import tm.alashow.common.compose.collectEvent
 import tm.alashow.common.compose.getNavArgument
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.data.DatmusicSearchParams.BackendType
-import tm.alashow.datmusic.domain.entities.Album
-import tm.alashow.datmusic.domain.entities.Artist
-import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.navigation.screens.QUERY_KEY
 import tm.alashow.ui.ProvideScaffoldPadding
 import tm.alashow.ui.components.ChipsRow
@@ -71,40 +67,29 @@ fun SearchRoute() = Search()
 
 @Composable
 internal fun Search(viewModel: SearchViewModel = hiltViewModel()) {
-    val viewState by rememberFlowWithLifecycle(viewModel.state)
-    val listState = rememberLazyListState()
-
-    val audiosLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedAudioList).collectAsLazyPagingItems()
-    val minervaLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedMinervaList).collectAsLazyPagingItems()
-    val flacsLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedFlacsList).collectAsLazyPagingItems()
-    val artistsLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedArtistsList).collectAsLazyPagingItems()
-    val albumsLazyPagingItems = rememberFlowWithLifecycle(viewModel.pagedAlbumsList).collectAsLazyPagingItems()
-
     Search(
-        viewState = viewState,
         viewModel = viewModel,
-        listState = listState,
+        viewState = rememberFlowWithLifecycle(viewModel.state).value,
+        listState = rememberLazyListState(),
         onSearchAction = viewModel::onSearchAction,
-        audiosLazyPagingItems = audiosLazyPagingItems,
-        minervaLazyPagingItems = minervaLazyPagingItems,
-        flacsLazyPagingItems = flacsLazyPagingItems,
-        artistsLazyPagingItems = artistsLazyPagingItems,
-        albumsLazyPagingItems = albumsLazyPagingItems,
+        searchLazyPagers = SearchLazyPagers(
+            audios = rememberFlowWithLifecycle(viewModel.pagedAudioList).collectAsLazyPagingItems(),
+            minerva = rememberFlowWithLifecycle(viewModel.pagedMinervaList).collectAsLazyPagingItems(),
+            flacs = rememberFlowWithLifecycle(viewModel.pagedFlacsList).collectAsLazyPagingItems(),
+            artists = rememberFlowWithLifecycle(viewModel.pagedArtistsList).collectAsLazyPagingItems(),
+            albums = rememberFlowWithLifecycle(viewModel.pagedAlbumsList).collectAsLazyPagingItems(),
+        ),
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Search(
-    viewState: SearchViewState,
     viewModel: SearchViewModel,
+    viewState: SearchViewState,
     listState: LazyListState,
     onSearchAction: (SearchAction) -> Unit,
-    audiosLazyPagingItems: LazyPagingItems<Audio>,
-    minervaLazyPagingItems: LazyPagingItems<Audio>,
-    flacsLazyPagingItems: LazyPagingItems<Audio>,
-    artistsLazyPagingItems: LazyPagingItems<Artist>,
-    albumsLazyPagingItems: LazyPagingItems<Album>,
+    searchLazyPagers: SearchLazyPagers,
 ) {
     val searchBarHideThreshold = 3
     val searchBarHeight = 200.dp
@@ -143,13 +128,9 @@ private fun Search(
         ProvideScaffoldPadding(padding) {
             SearchList(
                 viewState = viewState,
-                onSearchAction = onSearchAction,
                 listState = listState,
-                audiosLazyPagingItems = audiosLazyPagingItems,
-                minervaLazyPagingItems = minervaLazyPagingItems,
-                flacsLazyPagingItems = flacsLazyPagingItems,
-                artistsLazyPagingItems = artistsLazyPagingItems,
-                albumsLazyPagingItems = albumsLazyPagingItems,
+                onSearchAction = onSearchAction,
+                searchLazyPagers = searchLazyPagers,
             )
         }
     }
