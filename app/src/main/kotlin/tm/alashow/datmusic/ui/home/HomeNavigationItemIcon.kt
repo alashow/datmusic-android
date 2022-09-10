@@ -4,7 +4,6 @@
  */
 package tm.alashow.datmusic.ui.home
 
-import androidx.compose.animation.Crossfade
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -19,22 +18,10 @@ internal fun HomeNavigationItemIcon(item: HomeNavigationItem, selected: Boolean)
     }
     val selectedPainter = when (item) {
         is HomeNavigationItem.ResourceIcon -> item.selectedIconRes?.let { painterResource(it) }
-        is HomeNavigationItem.ImageVectorIcon -> item.selectedImageVector?.let {
-            rememberVectorPainter(it)
-        }
+        is HomeNavigationItem.ImageVectorIcon -> item.selectedImageVector?.let { rememberVectorPainter(it) }
     }
-
-    if (selectedPainter != null) {
-        Crossfade(targetState = selected) {
-            Icon(
-                painter = if (it) selectedPainter else painter,
-                contentDescription = stringResource(item.contentDescriptionRes),
-            )
-        }
-    } else {
-        Icon(
-            painter = painter,
-            contentDescription = stringResource(item.contentDescriptionRes),
-        )
-    }
+    Icon(
+        painter = if (selected) (selectedPainter ?: painter) else painter,
+        contentDescription = stringResource(item.contentDescriptionRes),
+    )
 }

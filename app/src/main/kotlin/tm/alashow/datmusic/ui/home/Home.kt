@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
@@ -17,12 +18,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import com.google.accompanist.insets.navigationBarsPadding
 import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.common.compose.LocalSnackbarHostState
 import tm.alashow.common.compose.rememberFlowWithLifecycle
@@ -38,8 +37,6 @@ import tm.alashow.ui.ProvideScaffoldPadding
 import tm.alashow.ui.isWideLayout
 import tm.alashow.ui.theme.AppTheme
 
-val HomeBottomNavigationHeight = 56.dp
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun Home(
@@ -52,7 +49,6 @@ internal fun Home(
     val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying)
 
     val isPlayerActive = (playbackState to nowPlaying).isActive
-    val bottomBarHeight = HomeBottomNavigationHeight * (if (isPlayerActive) 1.15f else 1f)
     BoxWithConstraints {
         val isWideLayout = isWideLayout()
         val maxWidth = maxWidth
@@ -74,12 +70,11 @@ internal fun Home(
                                     .graphicsLayer(translationY = AppTheme.specs.padding.value)
                                     .zIndex(2f)
                             )
-                            HomeBottomNavigation(
+                            HomeNavigationBar(
                                 selectedTab = selectedTab,
                                 onNavigationSelected = { selected -> navController.selectRootScreen(selected) },
                                 playerActive = isPlayerActive,
                                 modifier = Modifier.fillMaxWidth(),
-                                height = bottomBarHeight
                             )
                         }
                     else Spacer(Modifier.navigationBarsPadding())
