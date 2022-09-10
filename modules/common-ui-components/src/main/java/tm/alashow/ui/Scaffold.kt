@@ -7,8 +7,7 @@ package tm.alashow.ui
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.ProvidableCompositionLocal
-import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.unit.dp
 import tm.alashow.common.compose.copy
 import tm.alashow.common.compose.plus
@@ -16,7 +15,7 @@ import tm.alashow.common.compose.plus
 /**
  * Sum of all previous Scaffold [PaddingValues] in the hierarchy.
  */
-val LocalScaffoldPadding: ProvidableCompositionLocal<PaddingValues> = staticCompositionLocalOf { PaddingValues(0.dp) }
+internal val LocalScaffoldPadding = compositionLocalOf { PaddingValues(0.dp) }
 
 @Composable
 fun ProvideScaffoldPadding(padding: PaddingValues, content: @Composable () -> Unit) {
