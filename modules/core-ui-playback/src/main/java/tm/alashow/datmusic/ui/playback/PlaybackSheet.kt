@@ -112,6 +112,7 @@ import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.LocalAdaptiveColor
 import tm.alashow.ui.theme.LocalThemeState
 import tm.alashow.ui.theme.Red
+import tm.alashow.ui.theme.Theme
 import tm.alashow.ui.theme.plainBackgroundColor
 import tm.alashow.ui.theme.plainSurfaceColor
 
@@ -195,6 +196,7 @@ internal fun PlaybackSheetContent(
 
                 Scaffold(
                     containerColor = Color.Transparent,
+                    contentColor = Theme.colorScheme.onSurface,
                     topBar = {
                         PlaybackSheetTopBar(
                             playbackQueue = playbackQueue,

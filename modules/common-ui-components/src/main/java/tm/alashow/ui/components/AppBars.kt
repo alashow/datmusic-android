@@ -4,7 +4,6 @@
  */
 package tm.alashow.ui.components
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -42,13 +41,11 @@ import tm.alashow.ui.theme.topAppBarTitleStyle
 import tm.alashow.ui.theme.topAppBarTitleStyleSmall
 import tm.alashow.ui.theme.translucentSurfaceColor
 
-val AppBarHeight = 56.dp
 private val AppBarHorizontalPadding = 4.dp
 
 private val TitleInsetWithoutIcon = Modifier.width(16.dp - AppBarHorizontalPadding)
 private val TitleIconModifier = Modifier.width(72.dp - AppBarHorizontalPadding)
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AppTopBar(
     title: String,
