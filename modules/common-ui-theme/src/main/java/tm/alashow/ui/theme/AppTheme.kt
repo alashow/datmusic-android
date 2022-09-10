@@ -18,8 +18,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import tm.alashow.base.ui.ThemeState
 import tm.alashow.ui.AdaptiveColorResult
+import tm.alashow.ui.blendWith
 import tm.alashow.ui.toAdaptiveColor
 
 val LocalThemeState = staticCompositionLocalOf<ThemeState> {
@@ -35,6 +38,8 @@ val LocalAdaptiveColor = compositionLocalOf<AdaptiveColorResult> {
     error("No LocalAdaptiveColorResult provided")
 }
 
+typealias Theme = AppTheme
+
 object AppTheme {
     val state: ThemeState
         @Composable
@@ -47,6 +52,12 @@ object AppTheme {
     val specs: Specs
         @Composable
         get() = LocalSpecs.current
+
+    val colorScheme
+        @Composable
+        get() = MaterialTheme.colorScheme
+
+    val isLight @Composable get() = colors.isLight
 }
 
 @Composable
@@ -69,7 +80,7 @@ fun ProvideAppTheme(
 
 @Stable
 data class AppColors(
-    val isLight: Boolean,
+    val _isLight: Boolean,
     private val _onSurfaceInputBackground: Color,
     private val _materialColors: ColorScheme,
 ) {
@@ -77,15 +88,20 @@ data class AppColors(
         private set
     var colorScheme by mutableStateOf(_materialColors)
         private set
+    var isLight by mutableStateOf(_isLight)
+        private set
+
+    val elevatedSurface: Color @Composable get() = elevatedSurface()
 
     fun update(other: AppColors) {
+        isLight = other.isLight
         onSurfaceInputBackground = other.onSurfaceInputBackground
         colorScheme = other.colorScheme
     }
 }
 
 @Composable
-fun MaterialThemePatches(content: @Composable () -> Unit) {
+internal fun MaterialThemePatches(content: @Composable () -> Unit) {
     // change selection color from primary to secondary
     val textSelectionColors = TextSelectionColors(
         handleColor = MaterialTheme.colorScheme.secondary,
@@ -96,3 +112,13 @@ fun MaterialThemePatches(content: @Composable () -> Unit) {
         content = content
     )
 }
+
+internal fun AppColors.elevatedSurface(
+    surfaceColor: Color = colorScheme.surface,
+    tint: Color = if (surfaceColor == Color.Black) Color.White else Color.Black,
+    tintBlendPercentage: Float = if (isLight) 0.5f else 0.75f,
+    elevation: Dp = if (isLight) 2.dp else 4.dp,
+) = colorScheme.surface.colorAtElevation(
+    colorScheme.surface.blendWith(tint, tintBlendPercentage),
+    elevation
+)

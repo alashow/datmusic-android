@@ -6,7 +6,6 @@ package tm.alashow.datmusic.ui.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.lazy.LazyColumn
@@ -37,9 +36,11 @@ import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.ui.downloader.LocalDownloader
 import tm.alashow.datmusic.ui.settings.backup.BackupRestoreButton
 import tm.alashow.datmusic.ui.settings.premium.PremiumButton
+import tm.alashow.ui.ProvideScaffoldPadding
 import tm.alashow.ui.ThemeViewModel
 import tm.alashow.ui.components.AppTopBar
 import tm.alashow.ui.components.SelectableDropdownMenu
+import tm.alashow.ui.scaffoldPadding
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.DefaultTheme
 import tm.alashow.ui.theme.DefaultThemeDark
@@ -69,12 +70,13 @@ private fun Settings(
             AppTopBar(title = stringResource(R.string.settings_title))
         },
     ) { paddings ->
-        SettingsList(
-            themeState = themeState,
-            setThemeState = setThemeState,
-            settingsLinks = settingsLinks,
-            paddings = paddings
-        )
+        ProvideScaffoldPadding(paddings) {
+            SettingsList(
+                themeState = themeState,
+                setThemeState = setThemeState,
+                settingsLinks = settingsLinks,
+            )
+        }
     }
 }
 
@@ -83,13 +85,12 @@ fun SettingsList(
     themeState: ThemeState,
     setThemeState: (ThemeState) -> Unit,
     settingsLinks: SettingsLinks,
-    paddings: PaddingValues,
     downloader: Downloader = LocalDownloader.current
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
         modifier = Modifier.fillMaxWidth(),
-        contentPadding = paddings
+        contentPadding = scaffoldPadding(),
     ) {
         settingsGeneralSection()
         settingsThemeSection(themeState, setThemeState)

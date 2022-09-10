@@ -40,6 +40,7 @@ import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.color
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.shimmer
+import tm.alashow.ui.theme.Theme
 
 @Composable
 fun CoverImage(
@@ -48,7 +49,7 @@ fun CoverImage(
     imageModifier: Modifier = Modifier,
     size: Dp = Dp.Unspecified,
     // TODO: remove when placeholder uses M3
-    backgroundColor: Color = PlaceholderDefaults.color(backgroundColor = MaterialTheme.colorScheme.surface),
+    backgroundColor: Color = PlaceholderDefaults.color(backgroundColor = Theme.colors.elevatedSurface),
     contentColor: Color = MaterialTheme.colorScheme.secondary,
     contentScale: ContentScale = ContentScale.Crop,
     shape: Shape = MaterialTheme.shapes.small,

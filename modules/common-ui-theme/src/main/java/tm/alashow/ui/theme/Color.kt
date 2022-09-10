@@ -18,6 +18,9 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.isUnspecified
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import kotlin.math.ln
 import kotlin.random.Random
 
 fun parseColor(hexColor: String) = Color(AndroidColor.parseColor(hexColor))
@@ -63,6 +66,7 @@ fun appDarkColors(
     tertiary: Color = secondary,
     background: Color = primary,
     surface: Color = primary,
+    surfaceTint: Color = secondary,
     surfaceVariant: Color = surface,
     onPrimary: Color = Color.White,
     onSecondary: Color = Color.White,
@@ -71,7 +75,7 @@ fun appDarkColors(
     onSurfaceVariant: Color = onSurface,
     onSurfaceInputBackground: Color = Color(0x45706d86),
 ) = AppColors(
-    isLight = false,
+    _isLight = false,
     _onSurfaceInputBackground = onSurfaceInputBackground,
     _materialColors = darkColorScheme(
         primary = primary,
@@ -85,6 +89,7 @@ fun appDarkColors(
         onSurface = onSurface,
         surfaceVariant = surfaceVariant,
         onSurfaceVariant = onSurfaceVariant,
+        surfaceTint = surfaceTint,
     )
 )
 
@@ -94,6 +99,7 @@ fun appLightColors(
     tertiary: Color = secondary,
     background: Color = Color.White,
     surface: Color = Color.White,
+    surfaceTint: Color = secondary,
     surfaceVariant: Color = surface,
     onPrimary: Color = Color.White,
     onSecondary: Color = Color.White,
@@ -102,7 +108,7 @@ fun appLightColors(
     onSurfaceVariant: Color = onSurface,
     onSurfaceInputBackground: Color = Color(0x45c1bbc0),
 ) = AppColors(
-    isLight = true,
+    _isLight = true,
     _onSurfaceInputBackground = onSurfaceInputBackground,
     _materialColors = lightColorScheme(
         primary = primary,
@@ -112,6 +118,7 @@ fun appLightColors(
         background = background,
         tertiary = tertiary,
         onTertiary = onTertiary,
+        surfaceTint = surfaceTint,
         surface = surface,
         onSurface = onSurface,
         surfaceVariant = surfaceVariant,
@@ -133,6 +140,12 @@ fun Color.disabledAlpha(condition: Boolean): Color = copy(alpha = if (condition)
 
 @Composable
 fun Color.contrastComposite(alpha: Float = 0.1f) = contentColorFor(this).copy(alpha = alpha).compositeOver(this)
+
+fun Color.colorAtElevation(tint: Color, elevation: Dp,): Color {
+    if (elevation == 0.dp) return this
+    val alpha = ((4.5f * ln(elevation.value + 1)) + 2f) / 100f
+    return tint.copy(alpha = alpha).compositeOver(this)
+}
 
 // @Composable
 // internal fun animate(colors: ColorScheme): ColorScheme {

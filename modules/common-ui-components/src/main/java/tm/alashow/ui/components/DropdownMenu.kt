@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.LocalContentAlpha
@@ -72,7 +73,7 @@ fun <T> SelectableDropdownMenu(
                 Icon(
                     painter = rememberVectorPainter(leadingIcon),
                     contentDescription = null,
-                    modifier = Modifier.width(AppTheme.specs.iconSizeTiny),
+                    modifier = Modifier.width(AppTheme.specs.iconSizeTiny).padding(start = AppTheme.specs.paddingTiny),
                     tint = leadingIconColor,
                 )
                 if (!iconOnly) Spacer(Modifier.width(AppTheme.specs.paddingSmall))

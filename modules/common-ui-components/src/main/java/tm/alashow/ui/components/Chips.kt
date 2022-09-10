@@ -68,8 +68,8 @@ fun Chip(
     modifier: Modifier = Modifier,
     selectedBackground: Color = MaterialTheme.colorScheme.secondary,
     selectedContentColor: Color = contentColorFor(selectedBackground),
-    unselectedBackground: Color = if (AppTheme.colors.isLight) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.background,
-    unselectedContentColor: Color = MaterialTheme.colorScheme.onPrimary,
+    unselectedBackground: Color = if (AppTheme.colors.isLight) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.surface,
+    unselectedContentColor: Color = if (AppTheme.colors.isLight) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.onSurface,
 ) {
     Surface(
         color = when {

@@ -14,7 +14,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -24,7 +23,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.google.accompanist.insets.navigationBarsPadding
-import com.google.accompanist.insets.ui.LocalScaffoldPadding
 import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.common.compose.LocalSnackbarHostState
 import tm.alashow.common.compose.rememberFlowWithLifecycle
@@ -36,6 +34,7 @@ import tm.alashow.datmusic.ui.hostNavGraph
 import tm.alashow.datmusic.ui.playback.PlaybackMiniControls
 import tm.alashow.navigation.screens.RootScreen
 import tm.alashow.ui.DismissableSnackbarHost
+import tm.alashow.ui.ProvideScaffoldPadding
 import tm.alashow.ui.isWideLayout
 import tm.alashow.ui.theme.AppTheme
 
@@ -86,7 +85,7 @@ internal fun Home(
                     else Spacer(Modifier.navigationBarsPadding())
                 }
             ) { paddings ->
-                CompositionLocalProvider(LocalScaffoldPadding provides paddings) {
+                ProvideScaffoldPadding(paddings) {
                     AppNavigation(navController = navController)
                 }
             }

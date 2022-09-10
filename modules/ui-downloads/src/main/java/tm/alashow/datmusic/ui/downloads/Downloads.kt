@@ -5,9 +5,6 @@
 package tm.alashow.datmusic.ui.downloads
 
 import android.content.Context
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -71,6 +68,7 @@ import tm.alashow.domain.models.Success
 import tm.alashow.domain.models.Uninitialized
 import tm.alashow.ui.Delayed
 import tm.alashow.ui.LifecycleRespectingBackHandler
+import tm.alashow.ui.ProvideScaffoldPadding
 import tm.alashow.ui.components.AppBarNavigationIcon
 import tm.alashow.ui.components.AppTopBar
 import tm.alashow.ui.components.EmptyErrorBox
@@ -79,6 +77,7 @@ import tm.alashow.ui.components.IconButton
 import tm.alashow.ui.components.SearchTextField
 import tm.alashow.ui.components.SelectableDropdownMenu
 import tm.alashow.ui.drawVerticalScrollbar
+import tm.alashow.ui.scaffoldPadding
 import tm.alashow.ui.theme.AppTheme
 
 @Composable
@@ -99,19 +98,21 @@ private fun Downloads(viewModel: DownloadsViewModel) {
     Scaffold(
         topBar = { DownloadsAppBar(viewModel) },
         modifier = Modifier.fillMaxSize()
-    ) { padding ->
-        when (val asyncDownloads = viewState.downloads) {
-            is Uninitialized, is Loading -> FullScreenLoading(Modifier.padding(padding))
-            is Fail -> DownloadsError(asyncDownloads, Modifier.padding(padding))
-            is Success -> LazyColumn(
-                state = listState,
-                modifier = Modifier.drawVerticalScrollbar(listState),
-                contentPadding = padding,
-            ) {
-                downloadsList(
-                    downloads = asyncDownloads(),
-                    onAudioPlay = viewModel::playAudioDownload
-                )
+    ) { paddings ->
+        ProvideScaffoldPadding(paddings) {
+            when (val asyncDownloads = viewState.downloads) {
+                is Uninitialized, is Loading -> FullScreenLoading()
+                is Fail -> DownloadsError(asyncDownloads, Modifier.padding(scaffoldPadding()))
+                is Success -> LazyColumn(
+                    state = listState,
+                    modifier = Modifier.drawVerticalScrollbar(listState),
+                    contentPadding = scaffoldPadding(),
+                ) {
+                    downloadsList(
+                        downloads = asyncDownloads(),
+                        onAudioPlay = viewModel::playAudioDownload
+                    )
+                }
             }
         }
     }
@@ -164,7 +165,6 @@ private fun DownloadsAppBar(
                     )
                 }
         },
-        modifier = Modifier.animateContentSize(spring(dampingRatio = Spring.DampingRatioLowBouncy))
     )
 }
 

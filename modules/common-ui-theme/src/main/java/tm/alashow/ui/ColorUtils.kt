@@ -256,3 +256,18 @@ private fun Pair<Color, Color>.mergeColors(): Color {
     r = r.copy(blue = b.blue * b.alpha / r.alpha + a.blue * a.alpha * (1 - b.alpha) / r.alpha)
     return r
 }
+
+fun blendColors(
+    @ColorInt color: Int,
+    @ColorInt otherColor: Int,
+    @FloatRange(from = 0.0, to = 1.0) percentage: Float
+): Int {
+    return ColorUtils.blendARGB(color, otherColor, percentage)
+}
+
+fun Color.blendWith(
+    otherColor: Color,
+    @FloatRange(from = 0.0, to = 1.0) percentage: Float
+): Color {
+    return blendColors(toArgb(), otherColor.toArgb(), percentage).toColor()
+}

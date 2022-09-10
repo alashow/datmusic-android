@@ -33,10 +33,12 @@ import tm.alashow.domain.models.Success
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.Navigator
 import tm.alashow.navigation.screens.LeafScreen
+import tm.alashow.ui.ProvideScaffoldPadding
 import tm.alashow.ui.components.AppTopBar
 import tm.alashow.ui.components.EmptyErrorBox
 import tm.alashow.ui.components.FullScreenLoading
 import tm.alashow.ui.components.IconButton
+import tm.alashow.ui.scaffoldPadding
 import tm.alashow.ui.theme.AppTheme
 
 @Composable
@@ -63,20 +65,22 @@ private fun Library(
         },
         modifier = Modifier.fillMaxSize()
     ) { paddings ->
-        when (val items = asyncLibraryItems) {
-            is Success -> {
-                LazyColumn(
-                    contentPadding = paddings,
-                    state = listState
-                ) {
-                    libraryList(
-                        items = items(),
-                        onDelete = viewModel::deletePlaylist,
-                        onDownload = viewModel::downloadPlaylist,
-                    )
+        ProvideScaffoldPadding(paddings) {
+            when (val items = asyncLibraryItems) {
+                is Success -> {
+                    LazyColumn(
+                        contentPadding = scaffoldPadding(),
+                        state = listState
+                    ) {
+                        libraryList(
+                            items = items(),
+                            onDelete = viewModel::deletePlaylist,
+                            onDownload = viewModel::downloadPlaylist,
+                        )
+                    }
                 }
+                else -> FullScreenLoading()
             }
-            else -> FullScreenLoading()
         }
     }
 }
