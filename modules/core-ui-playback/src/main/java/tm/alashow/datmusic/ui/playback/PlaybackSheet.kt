@@ -13,11 +13,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -77,6 +75,7 @@ import tm.alashow.base.ui.ThemeState
 import tm.alashow.base.util.extensions.Callback
 import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.common.compose.LocalSnackbarHostState
+import tm.alashow.common.compose.copy
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.downloader.audioHeader
@@ -197,14 +196,6 @@ internal fun PlaybackSheetContent(
                 Scaffold(
                     containerColor = Color.Transparent,
                     contentColor = Theme.colorScheme.onSurface,
-                    topBar = {
-                        PlaybackSheetTopBar(
-                            playbackQueue = playbackQueue,
-                            onClose = onClose,
-                            onTitleClick = viewModel::navigateToQueueSource,
-                            onSaveQueueAsPlaylist = viewModel::saveQueueAsPlaylist
-                        )
-                    },
                     snackbarHost = {
                         DismissableSnackbarHost(
                             snackbarHostState,
@@ -218,18 +209,25 @@ internal fun PlaybackSheetContent(
                 ) { paddings ->
                     LazyColumn(
                         state = listState,
-                        contentPadding = paddings,
+                        contentPadding = paddings.copy(top = 0.dp),
                     ) {
                         item {
-                            Spacer(Modifier.height(AppTheme.specs.paddingLarge))
+                            PlaybackSheetTopBar(
+                                playbackQueue = playbackQueue,
+                                onClose = onClose,
+                                onTitleClick = viewModel::navigateToQueueSource,
+                                onSaveQueueAsPlaylist = viewModel::saveQueueAsPlaylist,
+                            )
+                        }
+                        item {
                             PlaybackArtworkPagerWithNowPlayingAndControls(
                                 nowPlaying = nowPlaying,
                                 playbackState = playbackState,
                                 pagerState = pagerState,
                                 contentColor = contentColor,
                                 viewModel = viewModel,
-                                modifier = Modifier.fillParentMaxHeight(fraction = if (isWideLayout) 0.9f else 0.8f),
                                 artworkVerticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillParentMaxHeight(fraction = if (isWideLayout) 0.9f else 0.75f),
                             )
                         }
 
@@ -323,7 +321,7 @@ private fun PlaybackSheetTopBar(
     onSaveQueueAsPlaylist: Callback,
 ) {
     SmallTopAppBar(
-        colors = TopAppBarDefaults.mediumTopAppBarColors(
+        colors = TopAppBarDefaults.smallTopAppBarColors(
             containerColor = Color.Transparent,
             scrolledContainerColor = Color.Transparent,
         ),
@@ -358,7 +356,7 @@ private fun PlaybackSheetTopBarTitle(
         val queueTitle = playbackQueue.title.asQueueTitle()
         Text(
             text = queueTitle.localizeType(context.resources).uppercase(),
-            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Light),
+            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Light),
             maxLines = 1,
         )
         val titleValue = queueTitle.localizeValue()
