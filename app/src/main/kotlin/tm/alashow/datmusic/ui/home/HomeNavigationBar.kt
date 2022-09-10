@@ -5,6 +5,8 @@
 package tm.alashow.datmusic.ui.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -49,6 +51,7 @@ internal fun HomeNavigationBar(
         tonalElevation = elevation,
         contentColor = contentColorFor(MaterialTheme.colorScheme.surface),
         containerColor = color,
+        windowInsets = WindowInsets.navigationBars,
     ) {
         HomeNavigationItems.forEach { item ->
             NavigationBarItem(
