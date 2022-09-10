@@ -103,6 +103,7 @@ internal fun PlaybackNowPlayingWithControls(
         )
     }
 }
+
 @Composable
 internal fun PlaybackNowPlaying(
     nowPlaying: MediaMetadataCompat,
@@ -113,13 +114,12 @@ internal fun PlaybackNowPlaying(
     artistTextStyle: TextStyle = PlaybackNowPlayingDefaults.artistTextStyle,
     horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
 ) {
-    val title = nowPlaying.title
     Column(
         horizontalAlignment = horizontalAlignment,
         modifier = modifier
     ) {
         Text(
-            title.orNA(),
+            text = nowPlaying.title.orNA(),
             style = titleTextStyle,
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,
@@ -127,7 +127,7 @@ internal fun PlaybackNowPlaying(
         )
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
             Text(
-                nowPlaying.artist.orNA(),
+                text = nowPlaying.artist.orNA(),
                 style = artistTextStyle,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
@@ -136,6 +136,7 @@ internal fun PlaybackNowPlaying(
         }
     }
 }
+
 @Composable
 internal fun PlaybackControls(
     playbackState: PlaybackStateCompat,

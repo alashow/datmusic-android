@@ -8,30 +8,37 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideInVertically
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
+import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.rememberInsetsPaddingValues
 import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.isActive
+import tm.alashow.datmusic.ui.home.HomeNavigationRailDefaults.ExpandedPlaybackControlsMinWidth
+import tm.alashow.datmusic.ui.home.HomeNavigationRailDefaults.ExpandedPlaybackModeMinHeight
 import tm.alashow.datmusic.ui.playback.PlaybackMiniControls
 import tm.alashow.datmusic.ui.playback.components.PlaybackArtworkPagerWithNowPlayingAndControls
 import tm.alashow.datmusic.ui.playback.components.PlaybackNowPlayingDefaults
@@ -40,9 +47,28 @@ import tm.alashow.navigation.Navigator
 import tm.alashow.navigation.screens.LeafScreen
 import tm.alashow.navigation.screens.RootScreen
 import tm.alashow.ui.theme.AppTheme
+import tm.alashow.ui.theme.Theme
 
-private val NAVIGATION_RAIL_BIG_MODE_MIN_WIDTH = 200.dp
-private val NAVIGATION_RAIL_BIG_MODE_MIN_HEIGHT = 600.dp
+internal object HomeNavigationRailDefaults {
+
+    val ActiveColor @Composable get() = Theme.colorScheme.secondary
+    val OnActiveColor @Composable get() = Theme.colorScheme.onSecondary
+    val OnInactiveColor @Composable get() = Theme.colorScheme.onSurface
+
+    val colors
+        @Composable
+        get() = NavigationRailItemDefaults.colors(
+            indicatorColor = ActiveColor,
+            selectedTextColor = ActiveColor,
+            selectedIconColor = OnActiveColor,
+            unselectedIconColor = OnInactiveColor,
+            unselectedTextColor = OnInactiveColor,
+        )
+
+    val ExpandedNavigationItemMinWidth = 90.dp
+    val ExpandedPlaybackControlsMinWidth = 200.dp
+    val ExpandedPlaybackModeMinHeight = 600.dp
+}
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -55,52 +81,59 @@ internal fun HomeNavigationRail(
     navigator: Navigator = LocalNavigator.current,
 ) {
     Surface(
-        color = MaterialTheme.colorScheme.surface,
-        contentColor = MaterialTheme.colorScheme.onSurface,
-        tonalElevation = 8.dp,
+        tonalElevation = 0.dp,
+        shadowElevation = 8.dp,
         modifier = modifier,
     ) {
-        BoxWithConstraints(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.surface)
-                .padding(
-                    rememberInsetsPaddingValues(
-                        LocalWindowInsets.current.systemBars,
-                        applyEnd = false
-                    )
-                )
-        ) {
+        BoxWithConstraints {
             extraContent()
             val maxWidth = maxWidth
-            val isBigPlaybackMode = maxWidth > NAVIGATION_RAIL_BIG_MODE_MIN_WIDTH && maxHeight > NAVIGATION_RAIL_BIG_MODE_MIN_HEIGHT
+            val isExpandedPlaybackControls = maxWidth > ExpandedPlaybackControlsMinWidth && maxHeight > ExpandedPlaybackModeMinHeight
+            val isExpandedNavigationItem = maxWidth > HomeNavigationRailDefaults.ExpandedNavigationItemMinWidth
             Column(
                 verticalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxHeight(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .navigationBarsPadding(),
             ) {
-                Column(
+                NavigationRail(
+                    containerColor = Color.Transparent,
                     modifier = Modifier
-                        .align(Alignment.Start)
-                        .selectableGroup()
-                        .verticalScroll(rememberScrollState())
-                        .weight(4f)
+                        .wrapContentHeight()
+                        .verticalScroll(rememberScrollState()),
                 ) {
                     HomeNavigationItems.forEach { item ->
-                        HomeNavigationItemRow(
-                            item = item,
-                            selected = selectedTab == item.screen,
-                            onClick = { onNavigationSelected(item.screen) },
-                        )
+                        val isSelected = selectedTab == item.screen
+                        if (isExpandedNavigationItem) {
+                            HomeNavigationRailItemRow(
+                                item = item,
+                                selected = isSelected,
+                                onClick = { onNavigationSelected(item.screen) },
+                            )
+                        } else {
+                            NavigationRailItem(
+                                selected = isSelected,
+                                onClick = { onNavigationSelected(item.screen) },
+                                icon = { HomeNavigationItemIcon(item = item, selected = isSelected) },
+                                label = { Text(stringResource(item.labelRes), maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                                alwaysShowLabel = false,
+                                colors = HomeNavigationRailDefaults.colors,
+                            )
+                        }
                     }
                 }
-                if (isBigPlaybackMode) {
-                    val bigPlaybackModeWeight = 3f + ((maxWidth - NAVIGATION_RAIL_BIG_MODE_MIN_WIDTH) / NAVIGATION_RAIL_BIG_MODE_MIN_WIDTH * 2.5f)
+
+                if (isExpandedPlaybackControls) {
                     val playbackState by rememberFlowWithLifecycle(playbackConnection.playbackState)
                     val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying)
                     val visible = (playbackState to nowPlaying).isActive
                     AnimatedVisibility(
                         visible = visible,
-                        modifier = Modifier.weight(bigPlaybackModeWeight),
-                        enter = slideInVertically(initialOffsetY = { it / 2 }) + scaleIn()
+                        enter = slideInVertically(initialOffsetY = { it / 2 }) + scaleIn(),
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .padding(top = Theme.specs.padding * 2.5f),
                     ) {
                         PlaybackArtworkPagerWithNowPlayingAndControls(
                             nowPlaying = nowPlaying,
@@ -108,11 +141,12 @@ internal fun HomeNavigationRail(
                             onArtworkClick = { navigator.navigate(LeafScreen.PlaybackSheet().createRoute()) },
                             titleTextStyle = PlaybackNowPlayingDefaults.titleTextStyle.copy(fontSize = MaterialTheme.typography.bodyLarge.fontSize),
                             artistTextStyle = PlaybackNowPlayingDefaults.artistTextStyle.copy(fontSize = MaterialTheme.typography.titleSmall.fontSize),
+                            artworkVerticalAlignment = Alignment.Bottom,
                         )
                     }
                 } else PlaybackMiniControls(
-                    modifier = Modifier.padding(bottom = AppTheme.specs.paddingSmall),
                     contentPadding = PaddingValues(end = AppTheme.specs.padding),
+                    modifier = Modifier.padding(bottom = AppTheme.specs.paddingSmall),
                 )
             }
         }

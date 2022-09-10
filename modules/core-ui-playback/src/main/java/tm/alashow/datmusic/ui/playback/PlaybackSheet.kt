@@ -4,7 +4,6 @@
  */
 package tm.alashow.datmusic.ui.playback
 
-import android.annotation.SuppressLint
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -19,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -65,9 +65,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.navigationBarsPadding
-import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.flow.collectLatest
@@ -150,7 +148,6 @@ fun PlaybackSheet(
     }
 }
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter", "UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class)
 @Composable
 internal fun PlaybackSheetContent(
@@ -176,23 +173,16 @@ internal fun PlaybackSheetContent(
             .collectLatest { if (it.isIdle) onClose() }
     }
 
-    val contentPadding = rememberInsetsPaddingValues(
-        insets = LocalWindowInsets.current.systemBars,
-        applyTop = true,
-        applyBottom = true,
-    )
-
     if (playbackState == NONE_PLAYBACK_STATE) {
         Row(Modifier.fillMaxSize()) { FullScreenLoading(delayMillis = 0) }
         return
     }
 
-    CompositionLocalProvider(
-        LocalAdaptiveColor provides adaptiveColor,
-    ) {
+    CompositionLocalProvider(LocalAdaptiveColor provides adaptiveColor) {
         BoxWithConstraints {
             val isWideLayout = isWideLayout()
             val maxWidth = maxWidth
+
             Row(Modifier.fillMaxSize()) {
                 if (isWideLayout) {
                     ResizablePlaybackQueue(
@@ -213,15 +203,20 @@ internal fun PlaybackSheetContent(
                             onSaveQueueAsPlaylist = viewModel::saveQueueAsPlaylist
                         )
                     },
+                    snackbarHost = {
+                        DismissableSnackbarHost(
+                            snackbarHostState,
+                            modifier = Modifier.navigationBarsPadding()
+                        )
+                    },
                     modifier = Modifier
                         .background(plainSurfaceColor())
                         .background(adaptiveColor.gradient)
                         .weight(1f),
-                    snackbarHost = { DismissableSnackbarHost(snackbarHostState, modifier = Modifier.navigationBarsPadding()) },
-                ) {
+                ) { paddings ->
                     LazyColumn(
                         state = listState,
-                        contentPadding = contentPadding,
+                        contentPadding = paddings,
                     ) {
                         item {
                             Spacer(Modifier.height(AppTheme.specs.paddingLarge))
@@ -231,7 +226,8 @@ internal fun PlaybackSheetContent(
                                 pagerState = pagerState,
                                 contentColor = contentColor,
                                 viewModel = viewModel,
-                                modifier = Modifier.fillParentMaxHeight(0.8f),
+                                modifier = Modifier.fillParentMaxHeight(fraction = if (isWideLayout) 0.9f else 0.8f),
+                                artworkVerticalAlignment = Alignment.CenterVertically,
                             )
                         }
 
@@ -269,7 +265,7 @@ private fun RowScope.ResizablePlaybackQueue(
 ) {
     ResizableLayout(
         availableWidth = maxWidth,
-        baseWeight = 0.6f,
+        initialWeight = 0.6f,
         minWeight = 0.4f,
         maxWeight = 1.25f,
         dragOffset = dragOffset,

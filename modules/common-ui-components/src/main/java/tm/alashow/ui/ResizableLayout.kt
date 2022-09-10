@@ -37,7 +37,7 @@ fun BoxWithConstraintsScope.isWideLayout() = maxWidth >= WIDE_LAYOUT_MIN_WIDTH
 @Composable
 fun RowScope.ResizableLayout(
     availableWidth: Dp,
-    baseWeight: Float,
+    initialWeight: Float,
     minWeight: Float,
     maxWeight: Float,
     dragOffset: State<Float>,
@@ -46,14 +46,14 @@ fun RowScope.ResizableLayout(
     modifier: Modifier = Modifier,
     content: @Composable BoxScope.(Modifier) -> Unit,
 ) {
-    var weight by remember { mutableStateOf(baseWeight) }
+    var weight by remember { mutableStateOf(initialWeight) }
     Box(modifier.weight(weight.coerceIn(minWeight, maxWeight))) {
         val availableWidthValue = availableWidth.value
         val dragRange = (-availableWidthValue / 3f)..(availableWidthValue / 3f)
         val dragSnapAnchors = listOf(0f, dragRange.endInclusive, dragRange.start)
-        val dragOffsetWeight by derivedStateOf { (dragOffset.value / availableWidthValue) * maxWeight }
+        val dragOffsetWeight by remember { derivedStateOf { (dragOffset.value / availableWidthValue) * maxWeight } }
         var dragSnapCurrentAnchor by remember { mutableStateOf(0) }
-        weight = baseWeight + dragOffsetWeight
+        weight = initialWeight + dragOffsetWeight
 
         val resizableModifier = Modifier.resizableArea(
             dragRange = dragRange,

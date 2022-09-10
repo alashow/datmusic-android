@@ -23,24 +23,24 @@ import tm.alashow.ui.ResizableLayout
 
 @Composable
 internal fun RowScope.ResizableHomeNavigationRail(
-    maxWidth: Dp,
+    availableWidth: Dp,
     selectedTab: RootScreen,
     navController: NavHostController,
     baseWeight: Float = 4.5f,
-    minWeight: Float = 0.9f,
+    minWeight: Float = 1f,
     maxWeight: Float = 12f,
     viewModel: ResizableHomeNavigationRailViewModel = hiltViewModel(),
     dragOffset: State<Float> = rememberFlowWithLifecycle(viewModel.dragOffset),
     setDragOffset: (Float) -> Unit = viewModel::setDragOffset,
 ) {
     ResizableLayout(
-        availableWidth = maxWidth,
-        baseWeight = baseWeight,
+        availableWidth = availableWidth,
+        initialWeight = baseWeight,
         minWeight = minWeight,
         maxWeight = maxWeight,
         dragOffset = dragOffset,
         setDragOffset = setDragOffset,
-        analyticsPrefix = "home.navigationRail"
+        analyticsPrefix = "home.navigationRail",
     ) { resizableModifier ->
         HomeNavigationRail(
             selectedTab = selectedTab,

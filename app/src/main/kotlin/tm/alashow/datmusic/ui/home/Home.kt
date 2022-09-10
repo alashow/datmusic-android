@@ -55,7 +55,7 @@ internal fun Home(
         Row(Modifier.fillMaxSize()) {
             if (isWideLayout)
                 ResizableHomeNavigationRail(
-                    maxWidth = maxWidth,
+                    availableWidth = maxWidth,
                     selectedTab = selectedTab,
                     navController = navController
                 )
