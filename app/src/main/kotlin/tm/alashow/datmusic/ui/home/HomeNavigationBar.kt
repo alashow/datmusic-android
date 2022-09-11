@@ -54,18 +54,11 @@ internal fun HomeNavigationBar(
         modifier = modifier.then(backgroundMod),
     ) {
         HomeNavigationItems.forEach { item ->
-            val text = @Composable {
-                Text(
-                    text = stringResource(item.labelRes),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
             NavigationBarItem(
                 selected = selectedTab == item.screen,
                 onClick = { onNavigationSelected(item.screen) },
                 icon = { HomeNavigationItemIcon(item = item, selected = selectedTab == item.screen) },
-                label = if (playerActive) null else text,
+                label = { Text(text = stringResource(item.labelRes), maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 alwaysShowLabel = false,
                 colors = HomeNavigationBarDefaults.colors,
             )
