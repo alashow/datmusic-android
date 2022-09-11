@@ -57,7 +57,8 @@ fun AppTheme(
             // TODO: Animate
             colorScheme = colors.colorScheme,
             typography = Typography,
-            content = { MaterialThemePatches(content) }
+            shapes = Shapes,
+            content = { MaterialThemePatches(content) },
         )
     }
 }

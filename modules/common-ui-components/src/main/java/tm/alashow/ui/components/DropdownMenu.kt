@@ -26,7 +26,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -41,7 +40,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
-import tm.alashow.ui.theme.AppTheme
+import tm.alashow.ui.theme.Theme
 
 @Composable
 fun <T> SelectableDropdownMenu(
@@ -63,20 +62,26 @@ fun <T> SelectableDropdownMenu(
     val dropIcon = if (expanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown
 
     Column(modifier) {
-        OutlinedButton(
+        AppOutlinedButton(
             onClick = { expanded = !expanded },
             colors = ButtonDefaults.textButtonColors(contentColor = LocalContentColor.current),
-            contentPadding = PaddingValues(AppTheme.specs.paddingSmall),
+            contentPadding = PaddingValues(
+                start = Theme.specs.padding,
+                end = if (iconOnly) Theme.specs.padding else Theme.specs.paddingSmall,
+                top = Theme.specs.paddingSmall,
+                bottom = Theme.specs.paddingSmall,
+            ),
             border = border,
         ) {
             if (leadingIcon != null) {
                 Icon(
                     painter = rememberVectorPainter(leadingIcon),
                     contentDescription = null,
-                    modifier = Modifier.width(AppTheme.specs.iconSizeTiny).padding(start = AppTheme.specs.paddingTiny),
+                    modifier = Modifier
+                        .width(Theme.specs.iconSizeTiny),
                     tint = leadingIconColor,
                 )
-                if (!iconOnly) Spacer(Modifier.width(AppTheme.specs.paddingSmall))
+                if (!iconOnly) Spacer(Modifier.width(Theme.specs.paddingSmall))
             }
             if (!iconOnly) {
                 val selectedText = when (selectedItems.size) {
@@ -85,7 +90,7 @@ fun <T> SelectableDropdownMenu(
                     else -> multipleSelectionsLabel(selectedItems)
                 }
                 Text(text = selectedText)
-                Spacer(Modifier.width(AppTheme.specs.paddingSmall))
+                Spacer(Modifier.width(Theme.specs.paddingSmall))
                 Icon(painter = rememberVectorPainter(dropIcon), contentDescription = null)
             }
         }
@@ -106,7 +111,8 @@ fun <T> SelectableDropdownMenu(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                val contentColor = if (item in selectedItems) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface
+                                val contentColor =
+                                    if (item in selectedItems) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface
                                 CompositionLocalProvider(LocalContentColor provides contentColor) {
                                     Text(itemLabelMapper(item))
                                     if (itemSuffixMapper != null)

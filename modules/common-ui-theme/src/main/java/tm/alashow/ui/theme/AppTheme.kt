@@ -53,11 +53,15 @@ object AppTheme {
         @Composable
         get() = LocalSpecs.current
 
+    val isLight @Composable get() = colors.isLight
+
     val colorScheme
         @Composable
         get() = MaterialTheme.colorScheme
 
-    val isLight @Composable get() = colors.isLight
+    val shapes
+        @Composable
+        get() = MaterialTheme.shapes
 }
 
 @Composable

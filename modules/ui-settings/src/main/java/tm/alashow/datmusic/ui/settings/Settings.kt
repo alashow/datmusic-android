@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,13 +37,13 @@ import tm.alashow.datmusic.ui.settings.backup.BackupRestoreButton
 import tm.alashow.datmusic.ui.settings.premium.PremiumButton
 import tm.alashow.ui.ProvideScaffoldPadding
 import tm.alashow.ui.ThemeViewModel
+import tm.alashow.ui.components.AppOutlinedButton
 import tm.alashow.ui.components.AppTopBar
 import tm.alashow.ui.components.SelectableDropdownMenu
 import tm.alashow.ui.scaffoldPadding
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.DefaultTheme
 import tm.alashow.ui.theme.DefaultThemeDark
-import tm.alashow.ui.theme.outlinedButtonColors
 
 val LocalAppVersion = staticCompositionLocalOf { "Unknown" }
 
@@ -120,10 +119,7 @@ fun LazyListScope.settingsDownloadsSection(downloader: Downloader) {
         SettingsSectionLabel(stringResource(R.string.settings_downloads))
         Column(verticalArrangement = Arrangement.spacedBy(AppTheme.specs.padding)) {
             SettingsItem(stringResource(R.string.settings_downloads_location)) {
-                OutlinedButton(
-                    onClick = { downloader.requestNewDownloadsLocation() },
-                    colors = outlinedButtonColors()
-                ) {
+                AppOutlinedButton(onClick = { downloader.requestNewDownloadsLocation() }) {
                     if (downloadsLocationSelected != null) {
                         Text(
                             stringResource(
@@ -210,7 +206,10 @@ fun LazyListScope.settingsLinksSection(settingsLinks: SettingsLinks) {
 internal fun LazyListScope.settingsDatabaseSection() {
     item {
         SettingsSectionLabel(stringResource(R.string.settings_library))
-        SettingsItem(stringResource(R.string.settings_database)) {
+        SettingsItem(
+            label = stringResource(R.string.settings_database),
+            contentWeight = 1.5f
+        ) {
             BackupRestoreButton()
         }
     }

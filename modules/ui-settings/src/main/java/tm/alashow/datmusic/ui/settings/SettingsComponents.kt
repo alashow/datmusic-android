@@ -11,9 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,9 +26,9 @@ import tm.alashow.base.util.IntentUtils
 import tm.alashow.base.util.event
 import tm.alashow.base.util.extensions.Callback
 import tm.alashow.common.compose.LocalAnalytics
+import tm.alashow.ui.components.AppOutlinedButton
 import tm.alashow.ui.components.ProgressIndicatorSmall
 import tm.alashow.ui.theme.AppTheme
-import tm.alashow.ui.theme.outlinedButtonColors
 
 @Composable
 internal fun SettingsSectionLabel(text: String, modifier: Modifier = Modifier) {
@@ -110,13 +108,11 @@ internal fun SettingsLoadingButton(
     text: String,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    colors: ButtonColors = outlinedButtonColors(),
     onClick: Callback,
 ) {
-    OutlinedButton(
+    AppOutlinedButton(
         onClick = onClick,
         enabled = enabled && !isLoading,
-        colors = colors,
         modifier = modifier,
     ) {
         if (isLoading)

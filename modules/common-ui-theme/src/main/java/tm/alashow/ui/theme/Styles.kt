@@ -5,7 +5,6 @@
 package tm.alashow.ui.theme
 
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -40,7 +39,3 @@ fun outlinedTextFieldColors(
     unfocusedBorderColor = unfocusedBorderColor,
     cursorColor = cursorColor,
 )
-
-@Composable
-fun outlinedButtonColors(contentColor: Color = MaterialTheme.colorScheme.onSurface) =
-    ButtonDefaults.outlinedButtonColors(contentColor = contentColor)

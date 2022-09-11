@@ -59,7 +59,7 @@ internal fun HomeNavigationBar(
                 onClick = { onNavigationSelected(item.screen) },
                 icon = { HomeNavigationItemIcon(item = item, selected = selectedTab == item.screen) },
                 label = { Text(text = stringResource(item.labelRes), maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                alwaysShowLabel = false,
+                alwaysShowLabel = true,
                 colors = HomeNavigationBarDefaults.colors,
             )
         }
