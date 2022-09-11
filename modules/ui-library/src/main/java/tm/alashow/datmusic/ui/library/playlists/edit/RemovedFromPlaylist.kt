@@ -38,12 +38,12 @@ data class RemovedFromPlaylist(val playlistItem: PlaylistItem, val removedIndex:
                 override val actionLabel = action?.label?.asString(context)
                 override val duration = SnackbarDuration.Indefinite
                 override val message = messageString
-                override val withDismissAction = true
+                override val withDismissAction = false
             }
         }
     }
 
     companion object {
-        const val SNACKBAR_DURATION_MILLIS = 10 * 1000L
+        const val SNACKBAR_DURATION_MILLIS = 6 * 1000L
     }
 }
