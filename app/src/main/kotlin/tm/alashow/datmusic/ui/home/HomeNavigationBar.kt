@@ -6,7 +6,6 @@ package tm.alashow.datmusic.ui.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -48,14 +47,11 @@ internal fun HomeNavigationBar(
     val backgroundMod = if (playerActive) Modifier.background(homeBottomNavigationGradient()) else Modifier
 
     NavigationBar(
-        modifier = modifier
-            .then(backgroundMod)
-            // NavigationBarItem's default height looks too big, so we reduce it in hacky way
-            .height(if (playerActive) 90.dp else 105.dp),
         tonalElevation = elevation,
         contentColor = contentColorFor(MaterialTheme.colorScheme.surface),
         containerColor = color,
         windowInsets = WindowInsets.navigationBars,
+        modifier = modifier.then(backgroundMod),
     ) {
         HomeNavigationItems.forEach { item ->
             val text = @Composable {
