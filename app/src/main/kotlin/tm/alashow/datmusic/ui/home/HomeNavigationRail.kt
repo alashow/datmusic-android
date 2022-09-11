@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -71,7 +72,7 @@ internal object HomeNavigationRailDefaults {
             unselectedTextColor = OnInactiveColor,
         )
 
-    val ExpandedNavigationItemMinWidth = 90.dp
+    val ExpandedNavigationItemMinWidth = 100.dp
     val ExpandedPlaybackControlsMinWidth = 200.dp
     val ExpandedPlaybackModeMinHeight = 600.dp
 }
@@ -125,6 +126,7 @@ internal fun HomeNavigationRail(
                                 label = { Text(stringResource(item.labelRes), maxLines = 1, overflow = TextOverflow.Ellipsis) },
                                 alwaysShowLabel = false,
                                 colors = HomeNavigationRailDefaults.colors,
+                                modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally),
                             )
                         }
                     }

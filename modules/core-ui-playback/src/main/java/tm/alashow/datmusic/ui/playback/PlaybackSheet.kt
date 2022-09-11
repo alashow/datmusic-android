@@ -227,7 +227,7 @@ internal fun PlaybackSheetContent(
                                 contentColor = contentColor,
                                 viewModel = viewModel,
                                 artworkVerticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillParentMaxHeight(fraction = if (isWideLayout) 0.9f else 0.75f),
+                                modifier = Modifier.fillParentMaxHeight(fraction = if (isWideLayout) 0.85f else 0.75f),
                             )
                         }
 
