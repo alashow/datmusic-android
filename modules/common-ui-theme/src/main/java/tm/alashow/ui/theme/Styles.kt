@@ -15,7 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 
 // TODO: not sure if this is the best way to define styles
 @Composable
-fun topAppBarTitleStyle() = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
+fun topAppBarTitleStyle() = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold)
 
 @Composable
 fun topAppBarTitleStyleSmall() = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
