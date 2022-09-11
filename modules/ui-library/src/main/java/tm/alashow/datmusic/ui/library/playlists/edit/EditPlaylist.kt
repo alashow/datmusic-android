@@ -18,9 +18,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListItemInfo
@@ -54,8 +54,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.insets.navigationBarsHeight
-import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.google.accompanist.insets.statusBarsPadding
 import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.ReorderableState
@@ -72,6 +70,7 @@ import tm.alashow.datmusic.ui.audios.AudioRowItem
 import tm.alashow.datmusic.ui.library.R
 import tm.alashow.datmusic.ui.library.playlists.PlaylistNameInput
 import tm.alashow.i18n.ValidationError
+import tm.alashow.ui.ProvideScaffoldPadding
 import tm.alashow.ui.SwipeDismissSnackbar
 import tm.alashow.ui.adaptiveColor
 import tm.alashow.ui.coloredRippleClickable
@@ -80,6 +79,7 @@ import tm.alashow.ui.components.DraggableItemKey
 import tm.alashow.ui.components.IconButton
 import tm.alashow.ui.components.TextRoundedButton
 import tm.alashow.ui.components.textIconModifier
+import tm.alashow.ui.scaffoldPadding
 import tm.alashow.ui.simpleClickable
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.Orange
@@ -97,15 +97,16 @@ fun EditPlaylist(
                 lastRemovedItem = lastRemovedItem,
                 onDismiss = viewModel::clearLastRemovedPlaylistItem,
                 onUndo = viewModel::undoLastRemovedPlaylistItem,
-                modifier = Modifier.navigationBarsWithImePadding()
+                modifier = Modifier.navigationBarsPadding(),
             )
         }
     ) { paddings ->
-        EditPlaylist(
-            viewModel = viewModel,
-            playlistItems = playlistItems,
-            modifier = Modifier.padding(paddings),
-        )
+        ProvideScaffoldPadding(paddings) {
+            EditPlaylist(
+                viewModel = viewModel,
+                playlistItems = playlistItems,
+            )
+        }
     }
 }
 
@@ -128,6 +129,7 @@ internal fun EditPlaylist(
     Box(modifier) {
         LazyColumn(
             state = reorderableState.listState,
+            contentPadding = scaffoldPadding(),
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
@@ -155,10 +157,6 @@ internal fun EditPlaylist(
                 onRemove = viewModel::removePlaylistItem,
                 audios = playlistItems
             )
-
-            item {
-                Spacer(Modifier.navigationBarsHeight())
-            }
         }
     }
 }
