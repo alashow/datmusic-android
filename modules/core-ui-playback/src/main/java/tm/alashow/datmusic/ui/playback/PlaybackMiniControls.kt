@@ -16,6 +16,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -136,7 +137,9 @@ fun PlaybackMiniControls(
                     enabled = true,
                     onClick = openPlaybackSheet,
                     onLongClick = onPlayPause,
-                    onDoubleClick = onPlayPause
+                    onDoubleClick = onPlayPause,
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() },
                 )
                 // open playback sheet on swipe up
                 .draggable(
