@@ -86,11 +86,11 @@ fun ProvideAppTheme(
 data class AppColors(
     val _isLight: Boolean,
     private val _onSurfaceInputBackground: Color,
-    private val _materialColors: ColorScheme,
+    private val _colorScheme: ColorScheme,
 ) {
     var onSurfaceInputBackground by mutableStateOf(_onSurfaceInputBackground)
         private set
-    var colorScheme by mutableStateOf(_materialColors)
+    var colorScheme by mutableStateOf(_colorScheme)
         private set
     var isLight by mutableStateOf(_isLight)
         private set

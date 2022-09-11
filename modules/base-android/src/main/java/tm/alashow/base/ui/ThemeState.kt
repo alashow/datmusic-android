@@ -12,6 +12,7 @@ import kotlinx.serialization.Serializable
 enum class DarkModePreference { ON, OFF, AUTO }
 enum class ColorPalettePreference {
     Default,
+    Dynamic,
     Asphalt,
     Black, Black_Yellow,
     Gray, Gray_Green, Blue_Grey,

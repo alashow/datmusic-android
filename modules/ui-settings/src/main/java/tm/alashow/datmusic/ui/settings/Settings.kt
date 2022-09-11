@@ -44,6 +44,7 @@ import tm.alashow.ui.scaffoldPadding
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.DefaultTheme
 import tm.alashow.ui.theme.DefaultThemeDark
+import tm.alashow.ui.theme.isDynamicThemeSupported
 
 val LocalAppVersion = staticCompositionLocalOf { "Unknown" }
 
@@ -159,7 +160,9 @@ fun LazyListScope.settingsThemeSection(themeState: ThemeState, setThemeState: (T
         }
         SettingsItem(stringResource(R.string.settings_theme_colorPalette)) {
             SelectableDropdownMenu(
-                items = ColorPalettePreference.values().toList(),
+                items = ColorPalettePreference.values().toList().filter {
+                    it != ColorPalettePreference.Dynamic || isDynamicThemeSupported()
+                },
                 selectedItem = themeState.colorPalettePreference,
                 onItemSelect = { setThemeState(themeState.copy(colorPalettePreference = it)) },
                 modifier = Modifier.offset(x = 12.dp)

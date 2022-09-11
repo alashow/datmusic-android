@@ -77,7 +77,7 @@ fun appDarkColors(
 ) = AppColors(
     _isLight = false,
     _onSurfaceInputBackground = onSurfaceInputBackground,
-    _materialColors = darkColorScheme(
+    _colorScheme = darkColorScheme(
         primary = primary,
         onPrimary = onPrimary,
         secondary = secondary,
@@ -110,7 +110,7 @@ fun appLightColors(
 ) = AppColors(
     _isLight = true,
     _onSurfaceInputBackground = onSurfaceInputBackground,
-    _materialColors = lightColorScheme(
+    _colorScheme = lightColorScheme(
         primary = primary,
         onPrimary = onPrimary,
         secondary = secondary,
