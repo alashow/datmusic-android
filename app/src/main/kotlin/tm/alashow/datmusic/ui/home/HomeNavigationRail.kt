@@ -13,14 +13,17 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.Surface
@@ -29,7 +32,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -50,10 +52,14 @@ import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.Theme
 
 internal object HomeNavigationRailDefaults {
-
     val ActiveColor @Composable get() = Theme.colorScheme.secondary
     val OnActiveColor @Composable get() = Theme.colorScheme.onSecondary
     val OnInactiveColor @Composable get() = Theme.colorScheme.onSurface
+
+    val windowInsets: WindowInsets
+        @Composable
+        get() = WindowInsets.safeDrawing
+            .only(WindowInsetsSides.Vertical + WindowInsetsSides.Start)
 
     val colors
         @Composable
@@ -92,16 +98,16 @@ internal fun HomeNavigationRail(
             val isExpandedNavigationItem = maxWidth > HomeNavigationRailDefaults.ExpandedNavigationItemMinWidth
             Column(
                 verticalArrangement = Arrangement.SpaceBetween,
-                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .fillMaxHeight()
-                    .navigationBarsPadding(),
+                    .windowInsetsPadding(HomeNavigationRailDefaults.windowInsets),
             ) {
-                NavigationRail(
-                    containerColor = Color.Transparent,
+                Column(
                     modifier = Modifier
-                        .wrapContentHeight()
-                        .verticalScroll(rememberScrollState()),
+                        .align(Alignment.Start)
+                        .selectableGroup()
+                        .verticalScroll(rememberScrollState())
+                        .weight(4f)
                 ) {
                     HomeNavigationItems.forEach { item ->
                         val isSelected = selectedTab == item.screen
@@ -123,17 +129,15 @@ internal fun HomeNavigationRail(
                         }
                     }
                 }
-
                 if (isExpandedPlaybackControls) {
+                    val expandedPlaybackControlsWeight = 3f + ((maxWidth - ExpandedPlaybackControlsMinWidth) / ExpandedPlaybackControlsMinWidth * 2.5f)
                     val playbackState by rememberFlowWithLifecycle(playbackConnection.playbackState)
                     val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying)
                     val visible = (playbackState to nowPlaying).isActive
                     AnimatedVisibility(
                         visible = visible,
+                        modifier = Modifier.weight(expandedPlaybackControlsWeight),
                         enter = slideInVertically(initialOffsetY = { it / 2 }) + scaleIn(),
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .padding(top = Theme.specs.padding * 2.5f),
                     ) {
                         PlaybackArtworkPagerWithNowPlayingAndControls(
                             nowPlaying = nowPlaying,
@@ -141,12 +145,11 @@ internal fun HomeNavigationRail(
                             onArtworkClick = { navigator.navigate(LeafScreen.PlaybackSheet().createRoute()) },
                             titleTextStyle = PlaybackNowPlayingDefaults.titleTextStyle.copy(fontSize = MaterialTheme.typography.bodyLarge.fontSize),
                             artistTextStyle = PlaybackNowPlayingDefaults.artistTextStyle.copy(fontSize = MaterialTheme.typography.titleSmall.fontSize),
-                            artworkVerticalAlignment = Alignment.Bottom,
                         )
                     }
                 } else PlaybackMiniControls(
-                    contentPadding = PaddingValues(end = AppTheme.specs.padding),
                     modifier = Modifier.padding(bottom = AppTheme.specs.paddingSmall),
+                    contentPadding = PaddingValues(end = AppTheme.specs.padding),
                 )
             }
         }
