@@ -8,6 +8,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
@@ -20,7 +21,10 @@ import tm.alashow.datmusic.ui.settings.SettingsLoadingButton
 import tm.alashow.ui.theme.AppTheme
 
 @Composable
-fun BackupRestoreButton(viewModel: BackupRestoreViewModel = hiltViewModel()) {
+internal fun BackupRestoreButton(
+    modifier: Modifier = Modifier,
+    viewModel: BackupRestoreViewModel = hiltViewModel(),
+) {
     val viewState by rememberFlowWithLifecycle(viewModel.state)
 
     val backupOutputFilePickerLauncher = rememberLauncherForActivityResult(contract = CreateFileContract(BACKUP_FILE_PARAMS)) {
@@ -33,7 +37,8 @@ fun BackupRestoreButton(viewModel: BackupRestoreViewModel = hiltViewModel()) {
     FlowRow(
         mainAxisAlignment = FlowMainAxisAlignment.End,
         mainAxisSpacing = AppTheme.specs.paddingSmall,
-        mainAxisSize = SizeMode.Expand
+        mainAxisSize = SizeMode.Expand,
+        modifier = modifier,
     ) {
         SettingsLoadingButton(
             isLoading = viewState.isBackingUp,

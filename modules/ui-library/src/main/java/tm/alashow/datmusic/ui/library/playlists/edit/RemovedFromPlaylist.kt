@@ -5,8 +5,9 @@
 package tm.alashow.datmusic.ui.library.playlists.edit
 
 import android.content.Context
-import androidx.compose.material.SnackbarData
-import androidx.compose.material.SnackbarDuration
+import androidx.compose.material3.SnackbarData
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarVisuals
 import tm.alashow.base.ui.SnackbarAction
 import tm.alashow.base.ui.SnackbarMessage
 import tm.alashow.base.util.asString
@@ -27,19 +28,22 @@ data class RemovedFromPlaylist(val playlistItem: PlaylistItem, val removedIndex:
     fun asSnackbar(context: Context, onUndo: Callback): SnackbarData {
         val messageString = message.asString(context)
         return object : SnackbarData {
-            override val actionLabel = action?.label?.asString(context)
-            override val duration = SnackbarDuration.Indefinite
-            override val message = messageString
-
             override fun performAction() {
                 onUndo()
             }
 
             override fun dismiss() {}
+
+            override val visuals = object : SnackbarVisuals {
+                override val actionLabel = action?.label?.asString(context)
+                override val duration = SnackbarDuration.Indefinite
+                override val message = messageString
+                override val withDismissAction = false
+            }
         }
     }
 
     companion object {
-        const val SNACKBAR_DURATION_MILLIS = 10 * 1000L
+        const val SNACKBAR_DURATION_MILLIS = 6 * 1000L
     }
 }

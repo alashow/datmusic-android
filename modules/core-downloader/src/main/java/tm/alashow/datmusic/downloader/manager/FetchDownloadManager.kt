@@ -13,6 +13,7 @@ import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 import tm.alashow.base.util.extensions.simpleName
+import tm.alashow.datmusic.data.db.SQLITE_MAX_VARIABLES
 
 class FetchDownloadManager @Inject constructor(
     private val fetch: Fetch,
@@ -25,7 +26,7 @@ class FetchDownloadManager @Inject constructor(
     private suspend fun Fetch.getDownloadsByIdsChunked(
         ids: List<Int>,
         // some sqlite versions have SQLITE_MAX_VARIABLE_NUMBER set to 999, so chunk size should be less than that
-        chunkSize: Int = 900,
+        chunkSize: Int = SQLITE_MAX_VARIABLES,
     ): List<Download> {
         return ids.chunked(chunkSize).map { idsChunk ->
             getDownloadsByIds(idsChunk)

@@ -32,6 +32,7 @@ android {
 	composeOptions {
 		kotlinCompilerExtensionVersion Deps.Android.Compose.compilerVersion
 	}
+	namespace 'tm.alashow.ui.components'
 }
 
 repositories {

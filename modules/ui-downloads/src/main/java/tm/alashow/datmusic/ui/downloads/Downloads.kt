@@ -5,9 +5,6 @@
 package tm.alashow.datmusic.ui.downloads
 
 import android.content.Context
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,18 +22,20 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Sort
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,10 +52,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.insets.ui.LocalScaffoldPadding
-import com.google.accompanist.insets.ui.Scaffold
 import tm.alashow.base.util.asString
 import tm.alashow.base.util.toUiMessage
+import tm.alashow.common.compose.collectEvent
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.downloader.DownloadItems
@@ -69,8 +67,8 @@ import tm.alashow.domain.models.Loading
 import tm.alashow.domain.models.Success
 import tm.alashow.domain.models.Uninitialized
 import tm.alashow.ui.Delayed
-import tm.alashow.ui.LazyColumnScrollbar
 import tm.alashow.ui.LifecycleRespectingBackHandler
+import tm.alashow.ui.ProvideScaffoldPadding
 import tm.alashow.ui.components.AppBarNavigationIcon
 import tm.alashow.ui.components.AppTopBar
 import tm.alashow.ui.components.EmptyErrorBox
@@ -78,6 +76,8 @@ import tm.alashow.ui.components.FullScreenLoading
 import tm.alashow.ui.components.IconButton
 import tm.alashow.ui.components.SearchTextField
 import tm.alashow.ui.components.SelectableDropdownMenu
+import tm.alashow.ui.drawVerticalScrollbar
+import tm.alashow.ui.scaffoldPadding
 import tm.alashow.ui.theme.AppTheme
 
 @Composable
@@ -85,24 +85,33 @@ fun Downloads() {
     Downloads(viewModel = hiltViewModel())
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Downloads(viewModel: DownloadsViewModel) {
     val listState = rememberLazyListState()
     val viewState by rememberFlowWithLifecycle(viewModel.state)
 
+    collectEvent(viewModel.newDownloadPositionEvent) {
+        listState.animateScrollToItem(it)
+    }
+
     Scaffold(
         topBar = { DownloadsAppBar(viewModel) },
         modifier = Modifier.fillMaxSize()
-    ) { padding ->
-        when (val asyncDownloads = viewState.downloads) {
-            is Uninitialized, is Loading -> FullScreenLoading()
-            is Fail -> DownloadsError(asyncDownloads)
-            is Success -> LazyColumnScrollbar(listState) {
-                LazyColumn(
+    ) { paddings ->
+        ProvideScaffoldPadding(paddings) {
+            when (val asyncDownloads = viewState.downloads) {
+                is Uninitialized, is Loading -> FullScreenLoading()
+                is Fail -> DownloadsError(asyncDownloads, Modifier.padding(scaffoldPadding()))
+                is Success -> LazyColumn(
                     state = listState,
-                    contentPadding = padding,
+                    modifier = Modifier.drawVerticalScrollbar(listState),
+                    contentPadding = scaffoldPadding(),
                 ) {
-                    downloadsList(asyncDownloads(), viewModel::playAudioDownload)
+                    downloadsList(
+                        downloads = asyncDownloads(),
+                        onAudioPlay = viewModel::playAudioDownload
+                    )
                 }
             }
         }
@@ -127,9 +136,7 @@ private fun DownloadsAppBar(
         filterContent = {
             DownloadsFilters(
                 searchQuery = viewState.params.query,
-                onQueryChange = {
-                    viewModel.onSearchQueryChange(it)
-                },
+                onQueryChange = viewModel::onSearchQueryChange,
                 hasSortingOption = viewState.params.hasSortingOption,
                 audiosSortOptions = viewState.params.audiosSortOptions,
                 audiosSortOption = viewState.params.audiosSortOption,
@@ -154,11 +161,10 @@ private fun DownloadsAppBar(
                         Icons.Default.FilterList,
                         contentDescription = null,
                         modifier = Modifier.size(AppTheme.specs.iconSizeSmall),
-                        tint = if (viewState.params.hasNoFilters) LocalContentColor.current else MaterialTheme.colors.secondary
+                        tint = if (viewState.params.hasNoFilters) LocalContentColor.current else MaterialTheme.colorScheme.secondary
                     )
                 }
         },
-        modifier = Modifier.animateContentSize(spring(dampingRatio = Spring.DampingRatioLowBouncy))
     )
 }
 
@@ -203,9 +209,9 @@ private fun DownloadsFilters(
                     items = audiosSortOptions,
                     selectedItem = audiosSortOption,
                     onItemSelect = onAudiosSortOptionSelect,
-                    border = ButtonDefaults.outlinedBorder,
+                    border = ButtonDefaults.outlinedButtonBorder,
                     leadingIcon = Icons.Default.Sort,
-                    leadingIconColor = if (hasSortingOption) MaterialTheme.colors.secondary else LocalContentColor.current,
+                    leadingIconColor = if (hasSortingOption) MaterialTheme.colorScheme.secondary else LocalContentColor.current,
                     itemLabelMapper = { it.asString(context) },
                     itemSuffixMapper = {
                         if (it == audiosSortOption) {
@@ -228,8 +234,8 @@ private fun DownloadsFilters(
                     selectedItem = statusFilters.first(),
                     selectedItems = statusFilters,
                     onItemSelect = onStatusFilterSelect,
-                    leadingIconColor = if (hasStatusFilter) MaterialTheme.colors.secondary else LocalContentColor.current,
-                    border = ButtonDefaults.outlinedBorder,
+                    leadingIconColor = if (hasStatusFilter) MaterialTheme.colorScheme.secondary else LocalContentColor.current,
+                    border = ButtonDefaults.outlinedButtonBorder,
                     leadingIcon = Icons.Default.FilterAlt,
                 )
             }
@@ -238,8 +244,8 @@ private fun DownloadsFilters(
 }
 
 @Composable
-private fun DownloadsError(asyncDownloads: Fail<DownloadItems>) {
-    Box(Modifier.padding(LocalScaffoldPadding.current)) {
+private fun DownloadsError(asyncDownloads: Fail<DownloadItems>, modifier: Modifier = Modifier) {
+    Box(modifier) {
         val error = asyncDownloads.error
         val errorMessage = asyncDownloads.error.toUiMessage().asString(LocalContext.current)
         when (error) {

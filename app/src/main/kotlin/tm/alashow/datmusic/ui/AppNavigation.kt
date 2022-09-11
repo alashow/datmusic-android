@@ -4,7 +4,12 @@
  */
 package tm.alashow.datmusic.ui
 
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Stable
@@ -12,14 +17,17 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.navigation.*
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.navigation
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.firebase.analytics.FirebaseAnalytics
-import kotlinx.coroutines.InternalCoroutinesApi
 import tm.alashow.base.util.event
 import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.common.compose.collectEvent
@@ -31,7 +39,7 @@ import tm.alashow.datmusic.ui.library.playlists.create.CreatePlaylist
 import tm.alashow.datmusic.ui.library.playlists.detail.PlaylistDetail
 import tm.alashow.datmusic.ui.library.playlists.edit.EditPlaylist
 import tm.alashow.datmusic.ui.playback.PlaybackSheet
-import tm.alashow.datmusic.ui.search.Search
+import tm.alashow.datmusic.ui.search.SearchRoute
 import tm.alashow.datmusic.ui.settings.Settings
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.NavigationEvent
@@ -42,7 +50,7 @@ import tm.alashow.navigation.screens.RootScreen
 import tm.alashow.navigation.screens.bottomSheetScreen
 import tm.alashow.navigation.screens.composableScreen
 
-@OptIn(InternalCoroutinesApi::class, ExperimentalMaterialNavigationApi::class, ExperimentalAnimationApi::class)
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 internal fun AppNavigation(
     navController: NavHostController,
@@ -141,7 +149,7 @@ private fun NavGraphBuilder.addSettingsRoot() {
 
 private fun NavGraphBuilder.addSearch() {
     composableScreen(LeafScreen.Search()) {
-        Search()
+        SearchRoute()
     }
 }
 

@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import tm.alashow.base.ui.SnackbarManager
 import tm.alashow.base.util.extensions.flowInterval
 import tm.alashow.base.util.extensions.stateInDefault
 import tm.alashow.datmusic.data.repos.audio.AudiosRepo
@@ -57,6 +58,7 @@ import tm.alashow.datmusic.playback.players.QUEUE_MEDIA_ID_KEY
 import tm.alashow.datmusic.playback.players.QUEUE_TITLE_KEY
 import tm.alashow.datmusic.playback.players.QUEUE_TO_POSITION_KEY
 import tm.alashow.domain.models.orNull
+import tm.alashow.i18n.UiMessage
 
 const val PLAYBACK_PROGRESS_INTERVAL = 1000L
 
@@ -97,6 +99,7 @@ class PlaybackConnectionImpl(
     private val audiosRepo: AudiosRepo,
     private val audioPlayer: AudioPlayer,
     private val downloader: Downloader,
+    private val snackbarManager: SnackbarManager,
     coroutineScope: CoroutineScope = ProcessLifecycleOwner.get().lifecycleScope,
 ) : PlaybackConnection, CoroutineScope by coroutineScope {
 
@@ -210,6 +213,7 @@ class PlaybackConnectionImpl(
     }
 
     override fun playNextAudio(audio: Audio) {
+        snackbarManager.addMessage(UiMessage.Resource(R.string.audio_menu_playNext_message))
         transportControls?.sendCustomAction(
             PLAY_NEXT,
             bundleOf(

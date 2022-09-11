@@ -28,6 +28,8 @@ import tm.alashow.ui.theme.AppTheme
 private val RippleRadius = 24.dp
 private val IconButtonSizeModifier = Modifier.size(48.dp)
 
+val IconRippleRadiusMedium = 32.dp
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun IconButton(

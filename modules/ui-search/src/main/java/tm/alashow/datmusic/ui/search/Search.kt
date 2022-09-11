@@ -5,13 +5,11 @@
 package tm.alashow.datmusic.ui.search
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.expandIn
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkOut
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,7 +18,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -42,10 +42,10 @@ import androidx.compose.ui.platform.WindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.WindowInsets
 import com.google.accompanist.insets.statusBarsPadding
-import com.google.accompanist.insets.ui.Scaffold
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -55,6 +55,7 @@ import tm.alashow.common.compose.getNavArgument
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.data.DatmusicSearchParams.BackendType
 import tm.alashow.navigation.screens.QUERY_KEY
+import tm.alashow.ui.ProvideScaffoldPadding
 import tm.alashow.ui.components.ChipsRow
 import tm.alashow.ui.components.SearchTextField
 import tm.alashow.ui.theme.AppTheme
@@ -62,42 +63,33 @@ import tm.alashow.ui.theme.topAppBarTitleStyle
 import tm.alashow.ui.theme.translucentSurface
 
 @Composable
-fun Search() {
-    Search(viewModel = hiltViewModel())
-}
+fun SearchRoute() = Search()
 
 @Composable
-internal fun Search(
-    viewModel: SearchViewModel = hiltViewModel(),
-) {
-    Search(viewModel) { action ->
-        viewModel.submitAction(action)
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
-@Composable
-internal fun Search(
-    viewModel: SearchViewModel,
-    actioner: (SearchAction) -> Unit
-) {
-    val viewState by rememberFlowWithLifecycle(viewModel.state)
-    val listState = rememberLazyListState()
-
+internal fun Search(viewModel: SearchViewModel = hiltViewModel()) {
     Search(
-        viewState = viewState,
         viewModel = viewModel,
-        listState = listState,
-        actioner = actioner
+        viewState = rememberFlowWithLifecycle(viewModel.state).value,
+        listState = rememberLazyListState(),
+        onSearchAction = viewModel::onSearchAction,
+        searchLazyPagers = SearchLazyPagers(
+            audios = rememberFlowWithLifecycle(viewModel.pagedAudioList).collectAsLazyPagingItems(),
+            minerva = rememberFlowWithLifecycle(viewModel.pagedMinervaList).collectAsLazyPagingItems(),
+            flacs = rememberFlowWithLifecycle(viewModel.pagedFlacsList).collectAsLazyPagingItems(),
+            artists = rememberFlowWithLifecycle(viewModel.pagedArtistsList).collectAsLazyPagingItems(),
+            albums = rememberFlowWithLifecycle(viewModel.pagedAlbumsList).collectAsLazyPagingItems(),
+        ),
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Search(
-    viewState: SearchViewState,
     viewModel: SearchViewModel,
+    viewState: SearchViewState,
     listState: LazyListState,
-    actioner: (SearchAction) -> Unit,
+    onSearchAction: (SearchAction) -> Unit,
+    searchLazyPagers: SearchLazyPagers,
 ) {
     val searchBarHideThreshold = 3
     val searchBarHeight = 200.dp
@@ -127,21 +119,25 @@ private fun Search(
                         translationY = searchBarHeight.value * (-searchBarVisibility.value)
                     },
                 state = viewState,
-                onQueryChange = { actioner(SearchAction.QueryChange(it)) },
-                onSearch = { actioner(SearchAction.Search) },
-                onBackendTypeSelect = { actioner(it) }
+                onQueryChange = { onSearchAction(SearchAction.QueryChange(it)) },
+                onSearch = { onSearchAction(SearchAction.Search) },
+                onBackendTypeSelect = { onSearchAction(it) }
+            )
+        },
+    ) { padding ->
+        ProvideScaffoldPadding(padding) {
+            SearchList(
+                viewState = viewState,
+                listState = listState,
+                onSearchAction = onSearchAction,
+                searchLazyPagers = searchLazyPagers,
             )
         }
-    ) {
-        SearchList(
-            viewModel = viewModel,
-            listState = listState,
-        )
     }
 }
 
 @Composable
-@OptIn(ExperimentalAnimationApi::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class)
 private fun SearchAppBar(
     state: SearchViewState,
     onQueryChange: (String) -> Unit,
@@ -213,7 +209,6 @@ private fun SearchAppBar(
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun ColumnScope.SearchFilterPanel(
     visible: Boolean,

@@ -12,6 +12,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
+import tm.alashow.base.ui.SnackbarManager
 import tm.alashow.datmusic.data.repos.audio.AudiosRepo
 import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.playback.players.AudioPlayerImpl
@@ -28,11 +29,13 @@ class PlaybackModule {
         audiosRepo: AudiosRepo,
         audioPlayer: AudioPlayerImpl,
         downloader: Downloader,
+        snackbarManager: SnackbarManager,
     ): PlaybackConnection = PlaybackConnectionImpl(
         context = context,
         serviceComponent = ComponentName(context, PlayerService::class.java),
         audiosRepo = audiosRepo,
         audioPlayer = audioPlayer,
         downloader = downloader,
+        snackbarManager = snackbarManager,
     )
 }

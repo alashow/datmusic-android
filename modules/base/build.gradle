@@ -20,14 +20,15 @@ android {
 		minSdkVersion App.minSdkVersion
 	}
 
-	lintOptions {
-		disable "GradleCompatible"
-	}
 
 	compileOptions {
 		sourceCompatibility JavaVersion.VERSION_1_8
 		targetCompatibility JavaVersion.VERSION_1_8
 	}
+	lint {
+		disable 'GradleCompatible'
+	}
+	namespace 'tm.alashow.base'
 }
 
 repositories {
@@ -67,4 +68,7 @@ dependencies {
 	api Deps.Firebase.crashlytics
 
 	api project(":modules:i18n")
+
+	testImplementation project(":modules:common-testing")
+	kaptTest Deps.Dagger.hiltCompiler
 }

@@ -13,8 +13,7 @@ internal sealed class SearchAction {
     object Search : SearchAction()
     data class SelectBackendType(val selected: Boolean, val backendType: DatmusicSearchParams.BackendType) : SearchAction()
 
-    data class AddError(val error: Throwable) : SearchAction()
-    object ClearError : SearchAction()
+    data class AddError(val error: Throwable, val onRetry: () -> Unit) : SearchAction()
     data class SubmitCaptcha(val captchaError: ApiCaptchaError, val solution: String) : SearchAction()
 
     data class PlayAudio(val audio: Audio) : SearchAction()

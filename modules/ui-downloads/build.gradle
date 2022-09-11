@@ -20,6 +20,7 @@ android {
 
 	defaultConfig {
 		minSdkVersion App.minSdkVersion
+		testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 	}
 
 	compileOptions {
@@ -34,6 +35,7 @@ android {
 	composeOptions {
 		kotlinCompilerExtensionVersion Deps.Android.Compose.compilerVersion
 	}
+	namespace 'tm.alashow.datmusic.ui.downloads'
 }
 
 repositories {
@@ -41,7 +43,7 @@ repositories {
 }
 
 dependencies {
-	implementation project(':modules:common-compose')
+	implementation project(":modules:common-compose")
 	implementation project(":modules:common-ui-theme")
 	implementation project(":modules:common-ui-components")
 	implementation project(":modules:core-ui-downloader")
@@ -51,4 +53,9 @@ dependencies {
 	implementation Deps.Dagger.hilt
 	kapt Deps.Dagger.compiler
 	kapt Deps.Dagger.hiltCompiler
+
+	testImplementation project(":modules:common-testing")
+	androidTestImplementation project(":modules:common-testing-instrumented")
+	kaptTest Deps.Dagger.hiltCompiler
+	kaptAndroidTest Deps.Dagger.hiltCompiler
 }

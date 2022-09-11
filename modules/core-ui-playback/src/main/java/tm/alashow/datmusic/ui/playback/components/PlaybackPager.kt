@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.util.lerp
@@ -35,6 +36,7 @@ import tm.alashow.datmusic.playback.models.toAudio
 internal fun PlaybackPager(
     nowPlaying: MediaMetadataCompat,
     modifier: Modifier = Modifier,
+    verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
     pagerState: PagerState = rememberPagerState(),
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
     content: @Composable (Audio, Int, Modifier) -> Unit,
@@ -73,6 +75,7 @@ internal fun PlaybackPager(
         modifier = modifier,
         state = pagerState,
         key = { playbackQueue.audios.getOrNull(it) ?: it },
+        verticalAlignment = verticalAlignment,
     ) { page ->
         val currentAudio = playbackQueue.audios.getOrNull(page) ?: Audio()
 

@@ -16,4 +16,5 @@ android {
 	defaultConfig {
 		minSdkVersion App.minSdkVersion
 	}
+	namespace 'tm.alashow.i18n'
 }

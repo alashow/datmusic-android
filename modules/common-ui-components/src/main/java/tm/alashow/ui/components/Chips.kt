@@ -13,10 +13,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.contentColorFor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -66,10 +66,10 @@ fun Chip(
     selected: Boolean,
     label: String,
     modifier: Modifier = Modifier,
-    selectedBackground: Color = MaterialTheme.colors.secondary,
+    selectedBackground: Color = MaterialTheme.colorScheme.secondary,
     selectedContentColor: Color = contentColorFor(selectedBackground),
-    unselectedBackground: Color = if (MaterialTheme.colors.isLight) MaterialTheme.colors.onBackground else MaterialTheme.colors.background,
-    unselectedContentColor: Color = MaterialTheme.colors.onPrimary,
+    unselectedBackground: Color = if (AppTheme.colors.isLight) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.surface,
+    unselectedContentColor: Color = if (AppTheme.colors.isLight) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.onSurface,
 ) {
     Surface(
         color = when {
@@ -88,12 +88,12 @@ fun Chip(
             else -> unselectedContentColor
         },
         shape = CircleShape,
-        elevation = 0.dp
+        tonalElevation = 0.dp
     ) {
         Text(
             text = label,
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.body2,
+            style = MaterialTheme.typography.bodyMedium,
             modifier = modifier.padding(AppTheme.specs.inputPaddings)
         )
     }

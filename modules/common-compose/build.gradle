@@ -21,9 +21,6 @@ android {
 		vectorDrawables.useSupportLibrary = true
 	}
 
-	lintOptions {
-		disable "GradleCompatible"
-	}
 
 	compileOptions {
 		sourceCompatibility JavaVersion.VERSION_1_8
@@ -37,6 +34,10 @@ android {
 	composeOptions {
 		kotlinCompilerExtensionVersion Deps.Android.Compose.compilerVersion
 	}
+	lint {
+		disable 'GradleCompatible'
+	}
+	namespace 'tm.alashow.common.compose'
 }
 
 repositories {
@@ -56,6 +57,7 @@ dependencies {
 	api Deps.Android.Compose.uiTooling
 	api Deps.Android.Compose.foundation
 	api Deps.Android.Compose.material
+	api Deps.Android.Compose.material3
 	api Deps.Android.Compose.materialIcons
 	api Deps.Android.Compose.materialIconsExtended
 	api Deps.Android.Compose.constraintLayout

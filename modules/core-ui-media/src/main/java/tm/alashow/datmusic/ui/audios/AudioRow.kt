@@ -13,12 +13,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Explicit
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -33,7 +33,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.accompanist.placeholder.material.placeholder
+import me.saket.swipe.SwipeAction
 import tm.alashow.base.util.extensions.interpunctize
 import tm.alashow.base.util.millisToDuration
 import tm.alashow.common.compose.LocalPlaybackConnection
@@ -43,6 +43,7 @@ import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.models.PlaybackQueue.NowPlayingAudio.Companion.isCurrentAudio
 import tm.alashow.datmusic.ui.library.playlist.addTo.AddToPlaylistMenu
 import tm.alashow.ui.components.CoverImage
+import tm.alashow.ui.components.placeholder
 import tm.alashow.ui.components.shimmer
 import tm.alashow.ui.simpleClickable
 import tm.alashow.ui.theme.AppTheme
@@ -55,6 +56,59 @@ object AudiosDefaults {
 @Composable
 fun AudioRow(
     audio: Audio,
+    modifier: Modifier = Modifier,
+    imageSize: Dp = AudiosDefaults.imageSize,
+    isPlaceholder: Boolean = false,
+    onClick: ((Audio) -> Unit)? = null,
+    onPlayAudio: ((Audio) -> Unit)? = null,
+    playOnClick: Boolean = true,
+    includeCover: Boolean = true,
+    audioIndex: Int? = null,
+    observeNowPlayingAudio: Boolean = true,
+    extraActionLabels: List<Int> = emptyList(),
+    extraEndSwipeActions: List<SwipeAction> = emptyList(),
+    hasAddToPlaylistSwipeAction: Boolean = true,
+    hasDownloadSwipeAction: Boolean = true,
+    onExtraAction: (AudioItemAction.ExtraAction) -> Unit = {},
+    isSwipeable: Boolean = true,
+) {
+    val (addToPlaylistVisible, setAddToPlaylistVisible) = remember { mutableStateOf(false) }
+    val content = @Composable { modifier: Modifier ->
+        AudioRowWithMenu(
+            audio = audio,
+            addToPlaylistVisible = addToPlaylistVisible,
+            setAddToPlaylistVisible = setAddToPlaylistVisible,
+            modifier = modifier,
+            imageSize = imageSize,
+            isPlaceholder = isPlaceholder,
+            onClick = onClick,
+            onPlayAudio = onPlayAudio,
+            playOnClick = playOnClick,
+            includeCover = includeCover,
+            audioIndex = audioIndex,
+            observeNowPlayingAudio = observeNowPlayingAudio,
+            extraActionLabels = extraActionLabels,
+            onExtraAction = onExtraAction,
+        )
+    }
+    if (isSwipeable && !isPlaceholder) {
+        AudioBoxWithSwipeActions(
+            audio = audio,
+            content = { content(Modifier) },
+            hasDownloadSwipeAction = hasDownloadSwipeAction,
+            hasAddToPlaylistSwipeAction = hasAddToPlaylistSwipeAction,
+            extraEndActions = extraEndSwipeActions,
+            onAddToPlaylist = { setAddToPlaylistVisible(true) },
+            modifier = modifier,
+        )
+    } else content(modifier)
+}
+
+@Composable
+private fun AudioRowWithMenu(
+    audio: Audio,
+    addToPlaylistVisible: Boolean,
+    setAddToPlaylistVisible: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     imageSize: Dp = AudiosDefaults.imageSize,
     isPlaceholder: Boolean = false,
@@ -107,7 +161,6 @@ fun AudioRow(
         )
 
         if (!isPlaceholder) {
-            val (addToPlaylistVisible, setAddToPlaylistVisible) = remember { mutableStateOf(false) }
             AddToPlaylistMenu(audio, addToPlaylistVisible, setAddToPlaylistVisible)
             AudioDropdownMenu(
                 expanded = menuVisible,
@@ -150,7 +203,7 @@ fun AudioRowItem(
         else -> false
     }
 
-    val titleTextColor = if (isCurrentAudio) MaterialTheme.colors.secondary else MaterialTheme.colors.onBackground
+    val titleTextColor = if (isCurrentAudio) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onBackground
 
     val loadingModifier = Modifier.placeholder(
         visible = isPlaceholder,
@@ -174,7 +227,7 @@ fun AudioRowItem(
         Column(verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingTiny)) {
             Text(
                 audio.title,
-                style = MaterialTheme.typography.body2.copy(fontSize = 15.sp),
+                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 15.sp),
                 maxLines = maxLines,
                 overflow = TextOverflow.Ellipsis,
                 color = titleTextColor,
@@ -192,12 +245,12 @@ fun AudioRowItem(
                             modifier = Modifier
                                 .size(18.dp)
                                 .alignByBaseline(),
-                            tint = MaterialTheme.colors.onBackground.copy(alpha = ContentAlpha.medium),
+                            tint = MaterialTheme.colorScheme.onBackground.copy(alpha = ContentAlpha.medium),
                         )
                     val artistAndDuration = listOf(audio.artist, audio.durationMillis().millisToDuration()).interpunctize()
                     Text(
                         artistAndDuration,
-                        style = MaterialTheme.typography.subtitle2.copy(fontSize = 14.sp),
+                        style = MaterialTheme.typography.titleSmall.copy(fontSize = 14.sp),
                         maxLines = maxLines,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier

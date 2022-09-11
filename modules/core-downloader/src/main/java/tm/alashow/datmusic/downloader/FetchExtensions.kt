@@ -9,6 +9,7 @@ import com.tonyodev.fetch2.Status
 
 fun Download.isRetriable() = status in listOf(Status.FAILED, Status.CANCELLED)
 fun Download.isResumable() = status in listOf(Status.PAUSED)
+fun Download.isQueued() = status in listOf(Status.QUEUED)
 fun Download.isPausable() = status in listOf(Status.DOWNLOADING, Status.QUEUED)
 fun Download.isCancelable() = status in listOf(Status.DOWNLOADING, Status.QUEUED, Status.PAUSED)
 fun Download.isComplete() = status in listOf(Status.COMPLETED)

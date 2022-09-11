@@ -13,14 +13,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
@@ -42,7 +43,7 @@ import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.borderlessTextFieldColors
 
-@OptIn(ExperimentalAnimationApi::class)
+@OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SearchTextField(
     value: String,
@@ -51,7 +52,7 @@ fun SearchTextField(
     onSearch: () -> Unit = {},
     withIcon: Boolean = false,
     autoFocus: Boolean = false,
-    textStyle: TextStyle = MaterialTheme.typography.subtitle2.copy(
+    textStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(
         fontSize = 13.sp,
         fontWeight = FontWeight.Bold
     ),
@@ -92,7 +93,7 @@ fun SearchTextField(
                     },
                 ) {
                     Icon(
-                        tint = MaterialTheme.colors.secondary,
+                        tint = MaterialTheme.colorScheme.secondary,
                         imageVector = Icons.Default.Clear,
                         contentDescription = stringResource(R.string.generic_clear)
                     )
@@ -116,7 +117,7 @@ fun SearchTextField(
 @Composable
 fun SearchTextFieldIcon() {
     Icon(
-        tint = MaterialTheme.colors.onBackground,
+        tint = MaterialTheme.colorScheme.onBackground,
         imageVector = Icons.Default.Search,
         contentDescription = null
     )

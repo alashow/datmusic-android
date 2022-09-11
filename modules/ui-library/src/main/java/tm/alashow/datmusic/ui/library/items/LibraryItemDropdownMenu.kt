@@ -7,9 +7,9 @@ package tm.alashow.datmusic.ui.library.items
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Text
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,7 +18,6 @@ import tm.alashow.datmusic.domain.entities.LibraryItem
 import tm.alashow.datmusic.ui.library.R
 import tm.alashow.ui.components.MoreVerticalIcon
 
-@OptIn(ExperimentalStdlibApi::class)
 @Composable
 internal fun LibraryItemDropdownMenu(
     libraryItem: LibraryItem,
@@ -53,10 +52,9 @@ internal fun LibraryItemDropdownMenu(
                         onClick = {
                             onExpandedChange(false)
                             onDropdownSelect(item)
-                        }
-                    ) {
-                        Text(text = label)
-                    }
+                        },
+                        text = { Text(text = label) }
+                    )
                 }
             }
         }

@@ -4,7 +4,6 @@
  */
 package tm.alashow.ui.components
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,15 +14,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.ProvideTextStyle
-import androidx.compose.material.Text
-import androidx.compose.material.contentColorFor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.ProvideTextStyle
+import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
@@ -42,13 +41,11 @@ import tm.alashow.ui.theme.topAppBarTitleStyle
 import tm.alashow.ui.theme.topAppBarTitleStyleSmall
 import tm.alashow.ui.theme.translucentSurfaceColor
 
-val AppBarHeight = 56.dp
 private val AppBarHorizontalPadding = 4.dp
 
 private val TitleInsetWithoutIcon = Modifier.width(16.dp - AppBarHorizontalPadding)
 private val TitleIconModifier = Modifier.width(72.dp - AppBarHorizontalPadding)
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AppTopBar(
     title: String,

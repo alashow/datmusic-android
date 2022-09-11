@@ -20,8 +20,6 @@ android {
 	defaultConfig {
 		minSdkVersion App.minSdkVersion
 
-		testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
 		javaCompileOptions {
 			annotationProcessorOptions {
 				arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
@@ -33,6 +31,7 @@ android {
 		sourceCompatibility JavaVersion.VERSION_1_8
 		targetCompatibility JavaVersion.VERSION_1_8
 	}
+	namespace 'tm.alashow.datmusic.coreData'
 }
 
 repositories {

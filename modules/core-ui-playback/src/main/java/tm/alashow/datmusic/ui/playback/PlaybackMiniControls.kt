@@ -7,7 +7,6 @@ package tm.alashow.datmusic.ui.playback
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -17,6 +16,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,20 +27,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ProgressIndicatorDefaults
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.HourglassBottom
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -71,6 +69,7 @@ import tm.alashow.datmusic.playback.isPlaying
 import tm.alashow.datmusic.playback.playPause
 import tm.alashow.datmusic.ui.playback.components.PlaybackPager
 import tm.alashow.datmusic.ui.playback.components.animatePlaybackProgress
+import tm.alashow.datmusic.ui.playback.components.nowPlayingArtworkAdaptiveColor
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.Navigator
 import tm.alashow.navigation.screens.LeafScreen
@@ -84,7 +83,6 @@ object PlaybackMiniControlsDefaults {
     val height = 56.dp
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun PlaybackMiniControls(
     modifier: Modifier = Modifier,
@@ -110,7 +108,7 @@ fun PlaybackMiniControls(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PlaybackMiniControls(
     playbackState: PlaybackStateCompat,
@@ -123,7 +121,7 @@ fun PlaybackMiniControls(
     navigator: Navigator = LocalNavigator.current,
 ) {
     val openPlaybackSheet = { navigator.navigate(LeafScreen.PlaybackSheet().createRoute()) }
-    val adaptiveColor by adaptiveColor(nowPlaying.artwork, initial = MaterialTheme.colors.background)
+    val adaptiveColor by nowPlayingArtworkAdaptiveColor()
     val backgroundColor = adaptiveColor.color
     val contentColor = adaptiveColor.contentColor
 
@@ -139,7 +137,9 @@ fun PlaybackMiniControls(
                     enabled = true,
                     onClick = openPlaybackSheet,
                     onLongClick = onPlayPause,
-                    onDoubleClick = onPlayPause
+                    onDoubleClick = onPlayPause,
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() },
                 )
                 // open playback sheet on swipe up
                 .draggable(
@@ -179,7 +179,7 @@ fun PlaybackMiniControls(
                 }
                 PlaybackProgress(
                     playbackState = playbackState,
-                    color = MaterialTheme.colors.onBackground
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
         }
@@ -224,14 +224,14 @@ private fun PlaybackNowPlaying(audio: Audio, modifier: Modifier = Modifier) {
             audio.title.orNA(),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            style = MaterialTheme.typography.body2.copy(fontWeight = FontWeight.Bold)
+            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
         )
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
             Text(
                 audio.artist.orNA(),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.body2
+                style = MaterialTheme.typography.bodyMedium
             )
         }
     }
@@ -283,7 +283,7 @@ private fun PlaybackProgress(
             LinearProgressIndicator(
                 progress = progress,
                 color = color,
-                backgroundColor = color.copy(ProgressIndicatorDefaults.IndicatorBackgroundOpacity),
+                trackColor = color.copy(alpha = 0.24f),
                 modifier = sizeModifier
             )
         }

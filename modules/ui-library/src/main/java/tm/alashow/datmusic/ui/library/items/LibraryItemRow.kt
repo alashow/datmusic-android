@@ -14,8 +14,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -105,7 +105,7 @@ private fun LibraryItemRow(
         Column(verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingTiny)) {
             Text(
                 libraryItem.getLabel(),
-                style = MaterialTheme.typography.body2.copy(fontSize = 15.sp),
+                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 15.sp),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -116,7 +116,7 @@ private fun LibraryItemRow(
                 ) {
                     Text(
                         stringResource(typeRes),
-                        style = MaterialTheme.typography.subtitle2,
+                        style = MaterialTheme.typography.titleSmall,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.alignByBaseline()

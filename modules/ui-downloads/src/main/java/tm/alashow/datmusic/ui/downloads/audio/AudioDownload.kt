@@ -20,16 +20,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.derivedStateOf
@@ -49,6 +49,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.tonyodev.fetch2.Download
 import com.tonyodev.fetch2.Status
 import tm.alashow.base.util.extensions.interpunctize
+import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.downloader.isComplete
@@ -77,74 +78,104 @@ internal fun AudioDownload(
     val audio = audioDownloadItem.audio
     val downloadInfo = audioDownloadItem.downloadInfo
     var menuVisible by remember { mutableStateOf(false) }
+    var addToPlaylistVisible by remember { mutableStateOf(false) }
 
-    Column(
-        verticalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
-        modifier = modifier
-            .clickable {
-                if (downloadInfo.isComplete()) onAudioPlay(audioDownloadItem)
-                else menuVisible = true
-            }
-            .fillMaxWidth()
-            .padding(AppTheme.specs.inputPaddings)
+    AudioDownloadBoxWithSwipeActions(
+        audioDownloadItem = audioDownloadItem,
+        onAddToPlaylist = { addToPlaylistVisible = true }
     ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+        Column(
+            verticalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
+            modifier = modifier
+                .clickable {
+                    if (downloadInfo.isComplete()) onAudioPlay(audioDownloadItem)
+                    else menuVisible = true
+                }
+                .fillMaxWidth()
+                .padding(AppTheme.specs.inputPaddings)
         ) {
-            AudioRowItem(
-                audio = audioDownloadItem.audio,
-                modifier = Modifier.weight(16f),
-                onCoverClick = { onAudioPlay(audioDownloadItem) }
-            )
-            DownloadRequestProgress(
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                AudioRowItem(
+                    audio = audioDownloadItem.audio,
+                    modifier = Modifier.weight(16f),
+                    onCoverClick = { onAudioPlay(audioDownloadItem) }
+                )
+                DownloadRequestProgress(
+                    downloadInfo = downloadInfo,
+                    onClick = {
+                        when {
+                            downloadInfo.isRetriable() -> AudioDownloadItemAction.Retry(audioDownloadItem)
+                            downloadInfo.isResumable() -> AudioDownloadItemAction.Resume(audioDownloadItem)
+                            downloadInfo.isPausable() -> AudioDownloadItemAction.Pause(audioDownloadItem)
+                            else -> null
+                        }?.run(actionHandler)
+                    },
+                    progress = downloadInfo.progress / 100f,
+                    modifier = Modifier.weight(4f)
+                )
+            }
+
+            AudioDownloadFooter(
+                audio = audio,
                 downloadInfo = downloadInfo,
-                onClick = {
-                    when {
-                        downloadInfo.isRetriable() -> AudioDownloadItemAction.Retry(audioDownloadItem)
-                        downloadInfo.isResumable() -> AudioDownloadItemAction.Resume(audioDownloadItem)
-                        downloadInfo.isPausable() -> AudioDownloadItemAction.Pause(audioDownloadItem)
-                        else -> null
-                    }?.run(actionHandler)
-                },
-                progress = downloadInfo.progress / 100f,
-                modifier = Modifier.weight(4f)
+                audioDownloadItem = audioDownloadItem,
+                menuVisible = menuVisible,
+                onMenuVisibleChange = { menuVisible = it },
+                addToPlaylistVisible = addToPlaylistVisible,
+                setAddToPlaylistVisible = { addToPlaylistVisible = it },
+                onAudioPlay = onAudioPlay,
+                actionHandler = actionHandler
             )
         }
+    }
+}
 
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                val fileSize = downloadInfo.fileSizeStatus()
-                val status = downloadInfo.statusLabel().let {
-                    when (fileSize.isNotBlank()) {
-                        true -> it.lowercase()
-                        else -> it
-                    }
+@Composable
+private fun AudioDownloadFooter(
+    audio: Audio,
+    downloadInfo: Download,
+    menuVisible: Boolean,
+    onMenuVisibleChange: (Boolean) -> Unit,
+    addToPlaylistVisible: Boolean,
+    setAddToPlaylistVisible: (Boolean) -> Unit,
+    audioDownloadItem: AudioDownloadItem,
+    onAudioPlay: (AudioDownloadItem) -> Unit,
+    actionHandler: AudioDownloadItemActionHandler
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+            val fileSize = downloadInfo.fileSizeStatus()
+            val status = downloadInfo.statusLabel().let {
+                when (fileSize.isNotBlank()) {
+                    true -> it.lowercase()
+                    else -> it
                 }
-
-                val footer = listOf(fileSize, status).filter { it.isNotBlank() }.interpunctize()
-                Text(text = footer, modifier = Modifier.weight(19f))
             }
 
-            val (addToPlaylistVisible, setAddToPlaylistVisible) = remember { mutableStateOf(false) }
-            AddToPlaylistMenu(audio, addToPlaylistVisible, setAddToPlaylistVisible)
-            AudioDownloadDropdownMenu(
-                audioDownload = audioDownloadItem.copy(downloadInfo = downloadInfo),
-                expanded = menuVisible,
-                onExpandedChange = { menuVisible = it },
-                modifier = Modifier
-                    .weight(1f)
-                    .height(20.dp)
-            ) { actionLabel ->
-                when (val action = AudioDownloadItemAction.from(actionLabel, audioDownloadItem)) {
-                    is AudioDownloadItemAction.Play -> onAudioPlay(action.audio)
-                    is AudioDownloadItemAction.AddToPlaylist -> setAddToPlaylistVisible(true)
-                    else -> actionHandler(action)
-                }
+            val footer = listOf(fileSize, status).filter { it.isNotBlank() }.interpunctize()
+            Text(text = footer, modifier = Modifier.weight(19f))
+        }
+
+        AddToPlaylistMenu(audio, addToPlaylistVisible, setAddToPlaylistVisible)
+        AudioDownloadDropdownMenu(
+            audioDownload = audioDownloadItem.copy(downloadInfo = downloadInfo),
+            expanded = menuVisible,
+            onExpandedChange = onMenuVisibleChange,
+            modifier = Modifier
+                .weight(1f)
+                .height(20.dp)
+        ) { actionLabel ->
+            when (val action = AudioDownloadItemAction.from(actionLabel, audioDownloadItem)) {
+                is AudioDownloadItemAction.Play -> onAudioPlay(action.audio)
+                is AudioDownloadItemAction.AddToPlaylist -> setAddToPlaylistVisible(true)
+                else -> actionHandler(action)
             }
         }
     }
@@ -193,7 +224,7 @@ private fun DownloadRequestProgress(
             } else if (downloadInfo.progressVisible()) {
                 CircularProgressIndicator(
                     progress = progressAnimated,
-                    color = MaterialTheme.colors.secondary,
+                    color = MaterialTheme.colorScheme.secondary,
                     strokeWidth = strokeWidth,
                     modifier = Modifier
                         .size(size)
@@ -201,11 +232,11 @@ private fun DownloadRequestProgress(
                 )
                 IconButton(
                     onClick = onClick,
-                    rippleColor = MaterialTheme.colors.secondary,
+                    rippleColor = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier
                         .clip(CircleShape)
                         .size(size)
-                        .background(MaterialTheme.colors.secondary.copy(alpha = 0.1f))
+                        .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f))
                 ) {
                     val icon = when {
                         retriable -> Icons.Filled.Refresh

@@ -6,9 +6,7 @@ package tm.alashow.datmusic.ui.library.playlists
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import tm.alashow.datmusic.domain.entities.Playlist
-import tm.alashow.datmusic.ui.library.LibraryViewModel
 import tm.alashow.datmusic.ui.library.R
 import tm.alashow.datmusic.ui.library.items.LibraryItemAction
 import tm.alashow.datmusic.ui.library.items.LibraryItemRow
@@ -21,7 +19,8 @@ import tm.alashow.navigation.screens.LeafScreen
 fun PlaylistRow(
     playlist: Playlist,
     modifier: Modifier = Modifier,
-    viewModel: LibraryViewModel = hiltViewModel(),
+    onDelete: () -> Unit,
+    onDownload: () -> Unit,
     navigator: Navigator = LocalNavigator.current
 ) {
     LibraryItemRow(
@@ -35,8 +34,8 @@ fun PlaylistRow(
     ) {
         when (it) {
             is LibraryItemAction.Edit -> navigator.navigate(EditPlaylistScreen.buildRoute(playlist.id))
-            is LibraryItemAction.Delete -> viewModel.deletePlaylist(playlist.id)
-            is LibraryItemAction.Download -> viewModel.downloadPlaylist(playlist.id)
+            is LibraryItemAction.Delete -> onDelete()
+            is LibraryItemAction.Download -> onDownload()
         }
     }
 }

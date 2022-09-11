@@ -23,14 +23,15 @@ android {
 		vectorDrawables.useSupportLibrary = true
 	}
 
-	lintOptions {
-		disable "GradleCompatible"
-	}
 
 	compileOptions {
 		sourceCompatibility JavaVersion.VERSION_1_8
 		targetCompatibility JavaVersion.VERSION_1_8
 	}
+	lint {
+		disable 'GradleCompatible'
+	}
+	namespace 'tm.alashow.baseAndroid'
 }
 
 repositories {
@@ -47,13 +48,11 @@ dependencies {
 	api Deps.Android.navigationFragment
 	api Deps.Android.navigationUi
 
+	implementation Deps.Android.Lifecycle.extensions
 	api Deps.Android.Lifecycle.runtime
 	api Deps.Android.Lifecycle.runtimeKtx
-	api Deps.Android.Lifecycle.extensions
-	api Deps.Android.Lifecycle.vmKotlin
+	api(Deps.Android.Lifecycle.vmKotlin) {}
 	api Deps.Android.Lifecycle.vmSavedState
-
-	api Deps.Android.Paging.runtime
 
 	api Deps.Android.palette
 	api Deps.Android.media

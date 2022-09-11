@@ -6,8 +6,9 @@ package tm.alashow.datmusic.ui.playback.components
 
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -27,7 +28,8 @@ fun PlaybackArtworkPagerWithNowPlayingAndControls(
     nowPlaying: MediaMetadataCompat,
     playbackState: PlaybackStateCompat,
     modifier: Modifier = Modifier,
-    contentColor: Color = MaterialTheme.colors.onBackground,
+    contentColor: Color = MaterialTheme.colorScheme.onSurface,
+    artworkVerticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
     titleTextStyle: TextStyle = PlaybackNowPlayingDefaults.titleTextStyle,
     artistTextStyle: TextStyle = PlaybackNowPlayingDefaults.artistTextStyle,
     pagerState: PagerState = rememberPagerState(),
@@ -44,7 +46,8 @@ fun PlaybackArtworkPagerWithNowPlayingAndControls(
                 top.linkTo(parent.top)
                 bottom.linkTo(nowPlayingControls.top)
                 height = Dimension.fillToConstraints
-            }
+            },
+            verticalAlignment = artworkVerticalAlignment,
         ) { audio, _, pagerMod ->
             val currentArtwork = audio.coverUri(CoverImageSize.LARGE)
             PlaybackArtwork(

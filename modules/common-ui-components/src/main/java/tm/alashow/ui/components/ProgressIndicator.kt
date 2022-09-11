@@ -6,10 +6,11 @@ package tm.alashow.ui.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import tm.alashow.ui.Delayed
+import tm.alashow.ui.scaffoldPadding
 
 object ProgressIndicatorDefaults {
     val sizeMedium = 32.dp to 2.dp
@@ -37,7 +39,7 @@ fun ProgressIndicator(
     modifier: Modifier = Modifier,
     size: Dp = ProgressIndicatorDefaults.size.first,
     strokeWidth: Dp = ProgressIndicatorDefaults.size.second,
-    color: Color = MaterialTheme.colors.secondary,
+    color: Color = MaterialTheme.colorScheme.secondary,
 ) {
     CircularProgressIndicator(modifier.size(size), color, strokeWidth)
 }
@@ -50,7 +52,7 @@ fun FullScreenLoading(modifier: Modifier = Modifier, delayMillis: Long = FULL_SC
         Box(
             contentAlignment = Alignment.Center,
             modifier = when (modifier == Modifier) {
-                true -> Modifier.fillMaxSize()
+                true -> Modifier.fillMaxSize().padding(scaffoldPadding())
                 false -> modifier
             }
         ) {

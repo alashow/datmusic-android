@@ -5,7 +5,9 @@
 package tm.alashow.base.testing
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltTestApplication
 import org.junit.Before
@@ -31,4 +33,14 @@ abstract class BaseTest {
     open fun setUp() {
         hiltRule.inject()
     }
+}
+
+abstract class BaseComposeTest : BaseTest() {
+    @get:Rule(order = 3)
+    val composeTestRule = createComposeRule()
+
+    private val context = InstrumentationRegistry.getInstrumentation().targetContext
+
+    fun stringRes(resId: Int) = context.getString(resId)
+    fun stringRes(resId: Int, vararg formatArgs: Any) = context.getString(resId, *formatArgs)
 }

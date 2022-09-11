@@ -16,14 +16,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,7 +57,7 @@ import tm.alashow.ui.theme.outlinedTextFieldColors
 
 const val MAX_KEY_LENGTH = 20
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 internal fun CaptchaErrorDialog(
     captchaErrorShown: Boolean,
@@ -77,7 +78,7 @@ internal fun CaptchaErrorDialog(
 
             Surface(
                 shape = MaterialTheme.shapes.medium,
-                elevation = 2.dp,
+                tonalElevation = 2.dp,
             ) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
@@ -88,7 +89,7 @@ internal fun CaptchaErrorDialog(
                 ) {
                     Text(
                         text = stringResource(R.string.captcha_title),
-                        style = MaterialTheme.typography.h6,
+                        style = MaterialTheme.typography.headlineSmall,
                         modifier = Modifier.align(Alignment.Start)
                     )
 
@@ -99,8 +100,8 @@ internal fun CaptchaErrorDialog(
                         onValueChange = { if (it.text.length <= MAX_KEY_LENGTH) setCaptchaKey(it) },
                         singleLine = true,
                         maxLines = 1,
-                        placeholder = { Text(stringResource(R.string.captcha_hint), style = MaterialTheme.typography.body1.copy(fontSize = 14.sp)) },
-                        textStyle = MaterialTheme.typography.body1.copy(fontSize = 14.sp),
+                        placeholder = { Text(stringResource(R.string.captcha_hint), style = MaterialTheme.typography.bodyLarge.copy(fontSize = 14.sp)) },
+                        textStyle = MaterialTheme.typography.bodyLarge.copy(fontSize = 14.sp),
                         colors = outlinedTextFieldColors(),
                         modifier = Modifier.height(50.dp)
                     )
@@ -153,7 +154,7 @@ private fun CaptchaErrorImage(
                 .align(Alignment.CenterEnd)
         ) {
             Icon(
-                tint = MaterialTheme.colors.secondary,
+                tint = MaterialTheme.colorScheme.secondary,
                 imageVector = Icons.Default.Refresh,
                 contentDescription = stringResource(R.string.captcha_reload)
             )

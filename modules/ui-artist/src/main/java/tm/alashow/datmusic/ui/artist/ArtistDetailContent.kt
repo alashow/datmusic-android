@@ -10,8 +10,8 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -46,7 +46,7 @@ class ArtistDetailContent : MediaDetailContent<Artist>() {
             list.item {
                 Text(
                     stringResource(R.string.search_albums),
-                    style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold),
+                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(AppTheme.specs.inputPaddings)
@@ -72,7 +72,7 @@ class ArtistDetailContent : MediaDetailContent<Artist>() {
             list.item {
                 Text(
                     stringResource(R.string.search_audios),
-                    style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold),
+                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(AppTheme.specs.inputPaddings)

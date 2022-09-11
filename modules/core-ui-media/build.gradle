@@ -32,6 +32,7 @@ android {
 	composeOptions {
 		kotlinCompilerExtensionVersion Deps.Android.Compose.compilerVersion
 	}
+	namespace 'tm.alashow.datmusic.ui.media'
 }
 
 repositories {
@@ -39,9 +40,12 @@ repositories {
 }
 
 dependencies {
-	api project(':modules:common-compose')
+	api project(":modules:common-compose")
 	api project(":modules:common-ui-theme")
 	api project(":modules:common-ui-components")
 	api project(":modules:core-ui-library")
 	api project(":modules:navigation")
+
+	// TODO: uncomment when merged: https://github.com/saket/swipe/pull/5, https://github.com/saket/swipe/pull/6
+	//implementation Deps.Android.Compose.swipe
 }

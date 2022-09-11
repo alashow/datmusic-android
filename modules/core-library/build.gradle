@@ -26,6 +26,7 @@ android {
 		sourceCompatibility JavaVersion.VERSION_1_8
 		targetCompatibility JavaVersion.VERSION_1_8
 	}
+	namespace 'tm.alashow.datmusic.coreLibrary'
 }
 
 repositories {
@@ -35,6 +36,8 @@ repositories {
 dependencies {
 	api project(":modules:base-android")
 	implementation project(":modules:core-downloader")
+
+	implementation Deps.Android.Lifecycle.extensions
 
 	implementation Deps.Dagger.hilt
 	kapt Deps.Dagger.compiler

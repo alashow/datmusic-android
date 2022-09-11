@@ -13,13 +13,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Album
 import androidx.compose.material.icons.filled.Explicit
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
@@ -28,12 +28,12 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.placeholder.material.placeholder
 import com.google.firebase.analytics.FirebaseAnalytics
 import tm.alashow.base.util.click
 import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.ui.components.CoverImage
+import tm.alashow.ui.components.placeholder
 import tm.alashow.ui.components.shimmer
 import tm.alashow.ui.theme.AppTheme
 
@@ -74,7 +74,7 @@ fun AlbumColumn(
             verticalArrangement = Arrangement.spacedBy(2.dp),
             modifier = Modifier.width(imageSize)
         ) {
-            Text(album.title, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = loadingModifier, style = MaterialTheme.typography.body1)
+            Text(album.title, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = loadingModifier, style = MaterialTheme.typography.bodyLarge)
             CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingTiny),
@@ -87,7 +87,7 @@ fun AlbumColumn(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = loadingModifier,
-                        style = MaterialTheme.typography.body2
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 }
 
@@ -98,7 +98,7 @@ fun AlbumColumn(
                     ) {
                         if (album.explicit)
                             ExplicitIcon()
-                        Text(album.year.toString(), modifier = loadingModifier, style = MaterialTheme.typography.body2)
+                        Text(album.year.toString(), modifier = loadingModifier, style = MaterialTheme.typography.bodyMedium)
                     }
             }
         }
@@ -111,6 +111,6 @@ private fun ExplicitIcon() {
         painter = rememberVectorPainter(Icons.Filled.Explicit),
         contentDescription = null,
         modifier = Modifier.size(16.dp),
-        tint = MaterialTheme.colors.onBackground.copy(alpha = ContentAlpha.medium),
+        tint = MaterialTheme.colorScheme.onBackground.copy(alpha = ContentAlpha.medium),
     )
 }

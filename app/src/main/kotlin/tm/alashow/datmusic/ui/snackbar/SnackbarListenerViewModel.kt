@@ -18,7 +18,6 @@ class SnackbarListenerViewModel @Inject constructor(
 ) : ViewModel() {
     val messages = snackbarManager.messages
 
-    fun onSnackbarActionPerformed(message: SnackbarMessage<*>) {
-        snackbarManager.onMessageActionPerformed(message)
-    }
+    fun onSnackbarActionPerformed(message: SnackbarMessage<*>) = snackbarManager.onMessageActionPerformed(message)
+    fun onSnackbarDismissed(message: SnackbarMessage<*>) = snackbarManager.onMessageDismissed(message)
 }

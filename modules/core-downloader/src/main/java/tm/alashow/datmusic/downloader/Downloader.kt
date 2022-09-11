@@ -17,6 +17,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
 import java.io.FileNotFoundException
 import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import okhttp3.internal.toImmutableList
 import timber.log.Timber
+import tm.alashow.base.ui.SnackbarManager
 import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.base.util.event
 import tm.alashow.data.PreferencesStore
@@ -53,6 +55,7 @@ data class DownloadItems(val audios: AudioDownloadItems = emptyList())
 
 const val INTENT_READ_WRITE_FLAG = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
 
+@Singleton
 class Downloader @Inject constructor(
     @ApplicationContext private val appContext: Context,
     dispatchers: CoroutineDispatchers,
@@ -61,6 +64,7 @@ class Downloader @Inject constructor(
     private val dao: DownloadRequestsDao,
     private val audiosRepo: AudiosRepo,
     private val analytics: FirebaseAnalytics,
+    private val snackbarManager: SnackbarManager,
 ) : RoomRepo<String, DownloadRequest>(dao, dispatchers) {
 
     companion object {
@@ -68,6 +72,9 @@ class Downloader @Inject constructor(
         val DOWNLOADS_LOCATION = stringPreferencesKey("downloads_location")
         val DOWNLOADS_SONGS_GROUPING = stringPreferencesKey("downloads_songs_grouping")
     }
+
+    private val newDownloadIdState = Channel<String>(Channel.CONFLATED)
+    val newDownloadId = newDownloadIdState.receiveAsFlow()
 
     private val downloaderEventsChannel = Channel<DownloaderEvent>(Channel.CONFLATED)
     val downloaderEvents = downloaderEventsChannel.receiveAsFlow()
@@ -81,7 +88,7 @@ class Downloader @Inject constructor(
         downloaderEventsHistory.add(event)
     }
 
-    private fun downloaderMessage(message: UiMessage<*>) = downloaderEvent(DownloaderEvent.DownloaderMessage(message))
+    private fun downloaderMessage(message: UiMessage<*>) = snackbarManager.addMessage(message)
 
     /**
      * Audio item pending for download. Used when waiting for download location.
@@ -128,6 +135,7 @@ class Downloader @Inject constructor(
         return when (val enqueueResult = enqueueDownloadRequest(downloadRequest, fetchRequest)) {
             is DownloadEnqueueSuccessful -> {
                 downloaderMessage(AudioDownloadQueued)
+                newDownloadIdState.send(downloadRequest.id)
                 true
             }
             is DownloadEnqueueFailed -> {
@@ -183,7 +191,7 @@ class Downloader @Inject constructor(
                     }
                     else -> {
                         Timber.d("Existing download was requested with unhandled status, doing nothing: Status: ${downloadInfo.status}")
-                        downloaderMessage(audioDownloadExistingUnknownStatus(downloadInfo.status))
+                        downloaderMessage(AudioDownloadExistingUnknownStatus(downloadInfo.status))
                         return false
                     }
                 }

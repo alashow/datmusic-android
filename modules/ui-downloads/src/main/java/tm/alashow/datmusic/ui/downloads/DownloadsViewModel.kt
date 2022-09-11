@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -20,6 +21,7 @@ import tm.alashow.base.util.extensions.stateInDefault
 import tm.alashow.base.util.searchQueryAnalytics
 import tm.alashow.data.PreferencesStore
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
+import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.downloader.observers.DownloadAudioItemSortOption
 import tm.alashow.datmusic.downloader.observers.DownloadStatusFilter
 import tm.alashow.datmusic.downloader.observers.ObserveDownloads
@@ -31,10 +33,11 @@ import tm.alashow.domain.models.filterSuccess
 @HiltViewModel
 class DownloadsViewModel @Inject constructor(
     handle: SavedStateHandle,
+    preferencesStore: PreferencesStore,
     private val observeDownloads: ObserveDownloads,
     private val playbackConnection: PlaybackConnection,
-    private val preferencesStore: PreferencesStore,
     private val analytics: FirebaseAnalytics,
+    private val downloader: Downloader,
 ) : ViewModel() {
 
     private val defaultParams = ObserveDownloads.Params()
@@ -44,12 +47,17 @@ class DownloadsViewModel @Inject constructor(
     private val statusFiltersState = preferencesStore.getStateFlow("status_filters", viewModelScope, defaultParams.statusFilters)
 
     private val downloads = observeDownloads.asyncFlow
+
+    private val newDownloadPositionEventChannel = Channel<Int>(Channel.CONFLATED)
+    val newDownloadPositionEvent = newDownloadPositionEventChannel.receiveAsFlow()
+
     val state = combine(downloads.delayLoading(), downloadsParamsState) { downloads, params ->
         DownloadsViewState(downloads.failWithNoResultsIfEmpty(params), params)
     }.stateInDefault(viewModelScope, DownloadsViewState.Empty)
 
     init {
         buildDownloadsParamsState()
+        buildNewDownloadPositionEvent()
         viewModelScope.launch {
             downloadsParamsState
                 .debounce(60)
@@ -78,6 +86,18 @@ class DownloadsViewModel @Inject constructor(
                     audiosSortOption = sortOption,
                     audiosSortOptions = current.audiosSortOptions.map { if (it.isSameOption(sortOption)) sortOption else it }
                 )
+            }
+        }
+    }
+
+    private fun buildNewDownloadPositionEvent() = viewModelScope.launch {
+        launch {
+            downloader.newDownloadId.collectLatest { dlId ->
+                val downloads = observeDownloads.execute(downloadsParamsState.value)
+                val newDownloadPosition = downloads.audios.indexOfFirst { it.downloadRequest.id == dlId }
+                if (newDownloadPosition != -1) {
+                    newDownloadPositionEventChannel.send(newDownloadPosition)
+                }
             }
         }
     }

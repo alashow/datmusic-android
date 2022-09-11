@@ -15,10 +15,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -33,14 +33,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import tm.alashow.ui.theme.AppTheme
 
 @Composable
-internal fun HomeNavigationItemRow(
+internal fun HomeNavigationRailItemRow(
     item: HomeNavigationItem,
     selected: Boolean,
-    onClick: () -> Unit = {},
+    onClick: () -> Unit,
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    selectedContentColor: Color = MaterialTheme.colors.secondary,
-    unselectedContentColor: Color = MaterialTheme.colors.onSurface
+    activeColor: Color = HomeNavigationRailDefaults.ActiveColor,
+    onInactiveColor: Color = HomeNavigationRailDefaults.OnInactiveColor,
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.padding, Alignment.Start),
@@ -55,14 +55,14 @@ internal fun HomeNavigationItemRow(
                 interactionSource = interactionSource,
                 indication = rememberRipple(
                     bounded = true,
-                    color = selectedContentColor
+                    color = activeColor
                 )
             )
             .padding(AppTheme.specs.padding)
     ) {
         HomeNavigationItemTransition(
-            activeColor = selectedContentColor,
-            inactiveColor = unselectedContentColor,
+            activeColor = activeColor,
+            inactiveColor = onInactiveColor,
             selected = selected
         ) {
             HomeNavigationItemIcon(
@@ -72,12 +72,13 @@ internal fun HomeNavigationItemRow(
             Text(
                 stringResource(item.labelRes),
                 maxLines = 1,
-                overflow = TextOverflow.Visible,
-                style = MaterialTheme.typography.subtitle2
+                style = MaterialTheme.typography.titleSmall,
+                overflow = TextOverflow.Ellipsis,
             )
         }
     }
 }
+
 @Composable
 internal fun HomeNavigationItemTransition(
     activeColor: Color,

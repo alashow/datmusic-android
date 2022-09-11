@@ -20,14 +20,15 @@ android {
 		minSdkVersion App.minSdkVersion
 	}
 
-	lintOptions {
-		disable "GradleCompatible"
-	}
 
 	compileOptions {
 		sourceCompatibility JavaVersion.VERSION_1_8
 		targetCompatibility JavaVersion.VERSION_1_8
 	}
+	lint {
+		disable 'GradleCompatible'
+	}
+	namespace 'tm.alashow.commonTesting'
 }
 
 repositories {
@@ -58,4 +59,7 @@ dependencies {
 	api Deps.Testing.truth
 	api Deps.Testing.turbine
 	api Deps.Testing.robolectric
+
+	api Deps.Android.Compose.uiTestJunit
+	debugApi Deps.Android.Compose.uiTestManifeset
 }

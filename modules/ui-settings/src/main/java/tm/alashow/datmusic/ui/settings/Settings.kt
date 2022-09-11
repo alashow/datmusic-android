@@ -6,13 +6,13 @@ package tm.alashow.datmusic.ui.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -23,7 +23,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.insets.ui.Scaffold
 import kotlinx.coroutines.launch
 import tm.alashow.Config
 import tm.alashow.base.ui.ColorPalettePreference
@@ -36,13 +35,16 @@ import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.ui.downloader.LocalDownloader
 import tm.alashow.datmusic.ui.settings.backup.BackupRestoreButton
 import tm.alashow.datmusic.ui.settings.premium.PremiumButton
+import tm.alashow.ui.ProvideScaffoldPadding
 import tm.alashow.ui.ThemeViewModel
+import tm.alashow.ui.components.AppOutlinedButton
 import tm.alashow.ui.components.AppTopBar
 import tm.alashow.ui.components.SelectableDropdownMenu
+import tm.alashow.ui.scaffoldPadding
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.DefaultTheme
 import tm.alashow.ui.theme.DefaultThemeDark
-import tm.alashow.ui.theme.outlinedButtonColors
+import tm.alashow.ui.theme.isDynamicThemeSupported
 
 val LocalAppVersion = staticCompositionLocalOf { "Unknown" }
 
@@ -56,6 +58,7 @@ fun Settings(
     Settings(themeState, themeViewModel::applyThemeState, settingsLinks)
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Settings(
     themeState: ThemeState,
@@ -65,9 +68,15 @@ private fun Settings(
     Scaffold(
         topBar = {
             AppTopBar(title = stringResource(R.string.settings_title))
+        },
+    ) { paddings ->
+        ProvideScaffoldPadding(paddings) {
+            SettingsList(
+                themeState = themeState,
+                setThemeState = setThemeState,
+                settingsLinks = settingsLinks,
+            )
         }
-    ) { padding ->
-        SettingsList(themeState, setThemeState, settingsLinks, padding)
     }
 }
 
@@ -76,13 +85,12 @@ fun SettingsList(
     themeState: ThemeState,
     setThemeState: (ThemeState) -> Unit,
     settingsLinks: SettingsLinks,
-    paddings: PaddingValues,
     downloader: Downloader = LocalDownloader.current
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(AppTheme.specs.padding),
         modifier = Modifier.fillMaxWidth(),
-        contentPadding = paddings
+        contentPadding = scaffoldPadding(),
     ) {
         settingsGeneralSection()
         settingsThemeSection(themeState, setThemeState)
@@ -112,10 +120,7 @@ fun LazyListScope.settingsDownloadsSection(downloader: Downloader) {
         SettingsSectionLabel(stringResource(R.string.settings_downloads))
         Column(verticalArrangement = Arrangement.spacedBy(AppTheme.specs.padding)) {
             SettingsItem(stringResource(R.string.settings_downloads_location)) {
-                OutlinedButton(
-                    onClick = { downloader.requestNewDownloadsLocation() },
-                    colors = outlinedButtonColors()
-                ) {
+                AppOutlinedButton(onClick = { downloader.requestNewDownloadsLocation() }) {
                     if (downloadsLocationSelected != null) {
                         Text(
                             stringResource(
@@ -155,7 +160,9 @@ fun LazyListScope.settingsThemeSection(themeState: ThemeState, setThemeState: (T
         }
         SettingsItem(stringResource(R.string.settings_theme_colorPalette)) {
             SelectableDropdownMenu(
-                items = ColorPalettePreference.values().toList(),
+                items = ColorPalettePreference.values().toList().filter {
+                    it != ColorPalettePreference.Dynamic || isDynamicThemeSupported()
+                },
                 selectedItem = themeState.colorPalettePreference,
                 onItemSelect = { setThemeState(themeState.copy(colorPalettePreference = it)) },
                 modifier = Modifier.offset(x = 12.dp)
@@ -202,7 +209,10 @@ fun LazyListScope.settingsLinksSection(settingsLinks: SettingsLinks) {
 internal fun LazyListScope.settingsDatabaseSection() {
     item {
         SettingsSectionLabel(stringResource(R.string.settings_library))
-        SettingsItem(stringResource(R.string.settings_database)) {
+        SettingsItem(
+            label = stringResource(R.string.settings_database),
+            contentWeight = 1.5f
+        ) {
             BackupRestoreButton()
         }
     }

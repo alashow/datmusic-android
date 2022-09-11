@@ -18,6 +18,8 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Test
 import tm.alashow.base.testing.BaseTest
+import tm.alashow.base.ui.SnackbarManager
+import tm.alashow.base.ui.SnackbarMessage
 import tm.alashow.data.PreferencesStore
 import tm.alashow.datmusic.data.*
 import tm.alashow.datmusic.data.db.AppDatabase
@@ -42,6 +44,7 @@ class DownloaderTest : BaseTest() {
     @Inject lateinit var fetcher: Fetch
     @Inject lateinit var fetch: FetchDownloadManager
     @Inject lateinit var preferencesStore: PreferencesStore
+    @Inject lateinit var snackbarManager: SnackbarManager
 
     private val testItems = (1..5).map { SampleData.downloadRequest() }
     private val entriesComparator = compareByDescending(DownloadRequest::createdAt).thenBy(DownloadRequest::id)
@@ -59,10 +62,11 @@ class DownloaderTest : BaseTest() {
         }
     }
 
-    private suspend fun Downloader.awaitMessages(vararg events: UiMessage<*>) = downloaderEvents.test {
-        events.forEach { event ->
-            assertThat(awaitItem().toUiMessage())
-                .isEqualTo(event)
+    private suspend fun SnackbarManager.awaitMessages(vararg messages: UiMessage<*>) = this.messages.test {
+        messages.forEach { message ->
+            assertThat(awaitItem().message)
+                .isEqualTo(message)
+            onMessageDismissed(SnackbarMessage<Unit>(message))
         }
     }
 
@@ -124,7 +128,7 @@ class DownloaderTest : BaseTest() {
 
         repo.awaitEvents(DownloaderEvent.ChooseDownloadsLocation)
         repo.setDownloadsLocation(createTestDownloadsLocation().second)
-        repo.awaitMessages(AudioDownloadQueued)
+        snackbarManager.awaitMessages(AudioDownloadQueued)
     }
 
     @Test
@@ -138,8 +142,7 @@ class DownloaderTest : BaseTest() {
         repo.downloaderEvents.test {
             assertThat(repo.enqueueAudio(audio = testItem))
                 .isFalse()
-            assertThat(awaitItem().toUiMessage())
-                .isEqualTo(DownloadsFolderNotFound)
+            snackbarManager.awaitMessages(DownloadsFolderNotFound)
             assertThat(awaitItem())
                 .isEqualTo(DownloaderEvent.ChooseDownloadsLocation)
         }
@@ -152,7 +155,7 @@ class DownloaderTest : BaseTest() {
 
         assertThat(repo.enqueueAudio(audio = testItem)).isFalse()
 
-        repo.awaitMessages(AudioDownloadErrorInvalidUrl)
+        snackbarManager.awaitMessages(AudioDownloadErrorInvalidUrl)
     }
 
     @Test
@@ -163,7 +166,7 @@ class DownloaderTest : BaseTest() {
         // enqueue twice and expect second enqueue to fail
         assertThat(repo.enqueueAudio(audio = testItem)).isTrue()
         assertThat(repo.enqueueAudio(audio = testItem)).isFalse()
-        repo.awaitMessages(AudioDownloadAlreadyQueued)
+        snackbarManager.awaitMessages(AudioDownloadAlreadyQueued)
     }
 
     @Test
@@ -176,9 +179,10 @@ class DownloaderTest : BaseTest() {
         listOf(Status.FAILED, Status.CANCELLED).forEachIndexed { index, status ->
             coEvery { fetch.getDownload(any()) }
                 .answerGetDownloadWithStatus(status)
-            assertThat(repo.enqueueAudio(audio = testItem)).isTrue()
+            assertThat(repo.enqueueAudio(audio = testItem))
+                .isTrue()
             coVerify { fetch.delete(any<Int>()) }
-            repo.awaitMessages(AudioDownloadQueued)
+            snackbarManager.awaitMessages(AudioDownloadQueued)
         }
     }
 
@@ -192,9 +196,10 @@ class DownloaderTest : BaseTest() {
         listOf(Status.PAUSED).forEachIndexed { index, status ->
             coEvery { fetch.getDownload(any()) }
                 .answerGetDownloadWithStatus(status)
-            assertThat(repo.enqueueAudio(audio = testItem)).isFalse()
+            assertThat(repo.enqueueAudio(audio = testItem))
+                .isFalse()
             coVerify { fetch.resume(any<Int>()) }
-            repo.awaitMessages(AudioDownloadResumedExisting)
+            snackbarManager.awaitMessages(AudioDownloadResumedExisting)
         }
     }
 
@@ -208,8 +213,9 @@ class DownloaderTest : BaseTest() {
         listOf(Status.NONE, Status.QUEUED, Status.DOWNLOADING).forEach { status ->
             coEvery { fetch.getDownload(any()) }
                 .answerGetDownloadWithStatus(status)
-            assertThat(repo.enqueueAudio(audio = testItem)).isFalse()
-            repo.awaitMessages(AudioDownloadAlreadyQueued)
+            assertThat(repo.enqueueAudio(audio = testItem))
+                .isFalse()
+            snackbarManager.awaitMessages(AudioDownloadAlreadyQueued)
         }
     }
 
@@ -230,7 +236,7 @@ class DownloaderTest : BaseTest() {
 
         assertThat(repo.enqueueAudio(audio = testItem)).isFalse()
 
-        repo.awaitMessages(AudioDownloadAlreadyCompleted)
+        snackbarManager.awaitMessages(AudioDownloadAlreadyCompleted)
     }
 
     @Test
@@ -245,7 +251,7 @@ class DownloaderTest : BaseTest() {
         // assuming default mock download file doesn't exist
         assertThat(repo.enqueueAudio(audio = testItem)).isTrue()
         coVerify { fetch.delete(any<Int>()) }
-        repo.awaitMessages(AudioDownloadQueued)
+        snackbarManager.awaitMessages(AudioDownloadQueued)
     }
 
     @Test
@@ -259,7 +265,7 @@ class DownloaderTest : BaseTest() {
             .answerGetDownload { null }
         // assuming default mock download file doesn't exist
         assertThat(repo.enqueueAudio(audio = testItem)).isTrue()
-        repo.awaitMessages(AudioDownloadQueued)
+        snackbarManager.awaitMessages(AudioDownloadQueued)
     }
 
     @Test
@@ -284,20 +290,28 @@ class DownloaderTest : BaseTest() {
         assertThat(audiosRepo.exists(testItem.id)).isFalse()
         assertThat(repo.enqueueAudio(audio = testItem)).isTrue()
         assertThat(audiosRepo.exists(testItem.id)).isTrue()
-        repo.awaitMessages(AudioDownloadQueued)
+        snackbarManager.awaitMessages(AudioDownloadQueued)
     }
 
     @Test
-    fun `enqueueAudio successfully enqueues given audio id`() = runTest {
-        val testItem = testItems.first().audio
+    fun `enqueueAudio successfully enqueues given audio id and newDownloadId emits download id`() = runTest {
+        val testDownloadItem = testItems.first()
+        val testItem = testDownloadItem.audio
         repo.setDownloadsLocation(createTestDownloadsLocation().second)
 
         // should fail because audio id isn't in database yet
-        assertThat(repo.enqueueAudio(audioId = testItem.id)).isFalse()
+        assertThat(repo.enqueueAudio(audioId = testItem.id))
+            .isFalse()
 
         audiosRepo.insert(testItem)
-        assertThat(repo.enqueueAudio(audioId = testItem.id)).isTrue()
-        repo.awaitMessages(AudioDownloadQueued)
+        assertThat(repo.enqueueAudio(audioId = testItem.id))
+            .isTrue()
+
+        repo.newDownloadId.test {
+            assertThat(awaitItem())
+                .isEqualTo(testDownloadItem.id)
+        }
+        snackbarManager.awaitMessages(AudioDownloadQueued)
     }
 
     @Test

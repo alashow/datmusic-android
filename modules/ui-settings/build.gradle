@@ -33,6 +33,7 @@ android {
 	composeOptions {
 		kotlinCompilerExtensionVersion Deps.Android.Compose.compilerVersion
 	}
+	namespace 'tm.alashow.datmusic.ui.settings'
 }
 
 repositories {

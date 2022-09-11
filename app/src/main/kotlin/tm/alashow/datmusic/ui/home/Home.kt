@@ -10,20 +10,20 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.ScaffoldState
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import com.google.accompanist.insets.navigationBarsPadding
-import com.google.accompanist.insets.ui.Scaffold
 import tm.alashow.common.compose.LocalPlaybackConnection
-import tm.alashow.common.compose.LocalScaffoldState
+import tm.alashow.common.compose.LocalSnackbarHostState
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.isActive
@@ -33,15 +33,15 @@ import tm.alashow.datmusic.ui.hostNavGraph
 import tm.alashow.datmusic.ui.playback.PlaybackMiniControls
 import tm.alashow.navigation.screens.RootScreen
 import tm.alashow.ui.DismissableSnackbarHost
+import tm.alashow.ui.ProvideScaffoldPadding
 import tm.alashow.ui.isWideLayout
 import tm.alashow.ui.theme.AppTheme
 
-val HomeBottomNavigationHeight = 56.dp
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun Home(
     navController: NavHostController,
-    scaffoldState: ScaffoldState = LocalScaffoldState.current,
+    snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
 ) {
     val selectedTab by navController.currentScreenAsState()
@@ -49,21 +49,19 @@ internal fun Home(
     val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying)
 
     val isPlayerActive = (playbackState to nowPlaying).isActive
-    val bottomBarHeight = HomeBottomNavigationHeight * (if (isPlayerActive) 1.15f else 1f)
     BoxWithConstraints {
         val isWideLayout = isWideLayout()
         val maxWidth = maxWidth
         Row(Modifier.fillMaxSize()) {
             if (isWideLayout)
                 ResizableHomeNavigationRail(
-                    maxWidth = maxWidth,
+                    availableWidth = maxWidth,
                     selectedTab = selectedTab,
                     navController = navController
                 )
             Scaffold(
                 modifier = Modifier.weight(12f),
-                scaffoldState = scaffoldState,
-                snackbarHost = { DismissableSnackbarHost(it) },
+                snackbarHost = { DismissableSnackbarHost(snackbarHostState) },
                 bottomBar = {
                     if (!isWideLayout)
                         Column {
@@ -72,18 +70,19 @@ internal fun Home(
                                     .graphicsLayer(translationY = AppTheme.specs.padding.value)
                                     .zIndex(2f)
                             )
-                            HomeBottomNavigation(
+                            HomeNavigationBar(
                                 selectedTab = selectedTab,
                                 onNavigationSelected = { selected -> navController.selectRootScreen(selected) },
                                 playerActive = isPlayerActive,
                                 modifier = Modifier.fillMaxWidth(),
-                                height = bottomBarHeight
                             )
                         }
                     else Spacer(Modifier.navigationBarsPadding())
                 }
-            ) {
-                AppNavigation(navController = navController)
+            ) { paddings ->
+                ProvideScaffoldPadding(paddings) {
+                    AppNavigation(navController = navController)
+                }
             }
         }
     }

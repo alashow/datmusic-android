@@ -1,0 +1,59 @@
+/*
+* Copyright (C) 2019, Alashov Berkeli
+* All rights reserved.
+*/
+
+import tm.alashow.buildSrc.App
+import tm.alashow.buildSrc.Deps
+
+plugins {
+	id "com.android.library"
+	id "kotlin-android"
+	id "kotlin-kapt"
+}
+
+android {
+	compileSdkVersion App.compileSdkVersion
+
+	defaultConfig {
+		minSdkVersion App.minSdkVersion
+	}
+
+
+	compileOptions {
+		sourceCompatibility JavaVersion.VERSION_1_8
+		targetCompatibility JavaVersion.VERSION_1_8
+	}
+	lint {
+		disable 'GradleCompatible'
+	}
+	namespace 'tm.alashow.commonTesting'
+}
+
+repositories {
+	mavenCentral()
+	jcenter()
+	maven { url "https://jitpack.io" }
+}
+
+dependencies {
+
+	api Deps.Android.archCoreTesting
+	api Deps.Android.Test.core
+	api Deps.Android.Test.rules
+	api Deps.Android.Test.runner
+	api Deps.Android.Test.junit
+	api Deps.Android.Room.testing
+	api Deps.Kotlin.coroutineTesting
+	api Deps.Dagger.hiltTesting
+
+	api Deps.Testing.junit
+	api Deps.Testing.mockito
+	api Deps.Testing.mockitoKotlin
+	api Deps.Testing.mockk
+	api Deps.Testing.truth
+	api Deps.Testing.turbine
+
+	api Deps.Android.Compose.uiTestJunit
+	debugApi Deps.Android.Compose.uiTestManifeset
+}

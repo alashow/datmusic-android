@@ -7,7 +7,6 @@ package tm.alashow.navigation
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.SwipeableDefaults
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -21,7 +20,7 @@ import kotlinx.coroutines.flow.collectLatest
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterialNavigationApi::class, InternalCoroutinesApi::class)
 @Composable
 fun rememberBottomSheetNavigator(
-    animationSpec: AnimationSpec<Float> = SwipeableDefaults.AnimationSpec,
+    animationSpec: AnimationSpec<Float> = androidx.compose.material.SwipeableDefaults.AnimationSpec,
     skipHalfExpanded: Boolean = true,
 ): BottomSheetNavigator {
     val sheetState = rememberModalBottomSheetState(
