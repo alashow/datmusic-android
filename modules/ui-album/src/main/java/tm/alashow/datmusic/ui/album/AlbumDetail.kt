@@ -67,7 +67,7 @@ private fun AlbumDetail(
                 }
                 ShuffleAdaptiveButton(
                     visible = !viewState.isLoading && !viewState.isEmpty,
-                    playbackConnection, Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
                 ) {
                     if (albumId != null)
                         playbackConnection.playAlbum(albumId, MEDIA_ID_INDEX_SHUFFLED)

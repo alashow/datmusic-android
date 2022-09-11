@@ -68,6 +68,7 @@ import tm.alashow.datmusic.playback.isPlaying
 import tm.alashow.datmusic.playback.playPause
 import tm.alashow.datmusic.ui.playback.components.PlaybackPager
 import tm.alashow.datmusic.ui.playback.components.animatePlaybackProgress
+import tm.alashow.datmusic.ui.playback.components.nowPlayingArtworkAdaptiveColor
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.Navigator
 import tm.alashow.navigation.screens.LeafScreen
@@ -119,7 +120,7 @@ fun PlaybackMiniControls(
     navigator: Navigator = LocalNavigator.current,
 ) {
     val openPlaybackSheet = { navigator.navigate(LeafScreen.PlaybackSheet().createRoute()) }
-    val adaptiveColor by adaptiveColor(nowPlaying.artwork, initial = MaterialTheme.colorScheme.background)
+    val adaptiveColor by nowPlayingArtworkAdaptiveColor()
     val backgroundColor = adaptiveColor.color
     val contentColor = adaptiveColor.contentColor
 

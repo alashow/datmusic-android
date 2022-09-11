@@ -45,10 +45,7 @@ private fun ArtistDetail(
                 horizontalArrangement = Arrangement.End,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                ShuffleAdaptiveButton(
-                    visible = !viewState.isLoading && !viewState.isEmpty,
-                    playbackConnection
-                ) {
+                ShuffleAdaptiveButton(visible = !viewState.isLoading && !viewState.isEmpty) {
                     if (artistId != null)
                         playbackConnection.playArtist(artistId, MEDIA_ID_INDEX_SHUFFLED)
                 }

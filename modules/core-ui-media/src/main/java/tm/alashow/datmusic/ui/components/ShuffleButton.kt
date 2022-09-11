@@ -7,7 +7,6 @@ package tm.alashow.datmusic.ui.components
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -23,13 +22,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import tm.alashow.base.util.extensions.Callback
+import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.playPause
 import tm.alashow.ui.components.IconButton
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.LocalAdaptiveColor
 
-@OptIn(ExperimentalFoundationApi::class, androidx.compose.animation.ExperimentalAnimationApi::class)
+@OptIn(androidx.compose.animation.ExperimentalAnimationApi::class)
 @Composable
 fun ShuffleButton(
     visible: Boolean,
@@ -72,11 +72,11 @@ fun ShuffleButton(
 @Composable
 fun ShuffleAdaptiveButton(
     visible: Boolean,
-    playbackConnection: PlaybackConnection,
     modifier: Modifier = Modifier,
     tint: Color = LocalAdaptiveColor.current.contentColor,
     background: Color = LocalAdaptiveColor.current.color,
     onLongClickLabel: String? = null,
+    playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
     onLongClick: Callback = { playbackConnection.mediaController?.playPause() },
     onDoubleClick: Callback = { playbackConnection.mediaController?.playPause() },
     onClick: Callback = {},
