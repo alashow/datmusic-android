@@ -55,7 +55,7 @@ fun AppTheme(
         SideEffect {
             systemUiController.setSystemBarsColor(
                 color = Color.Transparent,
-                darkIcons = colors.isLight
+                darkIcons = colors.isLightTheme
             )
         }
     }

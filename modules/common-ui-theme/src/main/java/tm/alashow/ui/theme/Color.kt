@@ -73,10 +73,8 @@ fun appDarkColors(
     onTertiary: Color = onSecondary,
     onSurface: Color = Color.White,
     onSurfaceVariant: Color = onSurface,
-    onSurfaceInputBackground: Color = Color(0x45706d86),
 ) = AppColors(
-    _isLight = false,
-    _onSurfaceInputBackground = onSurfaceInputBackground,
+    _isLightTheme = false,
     _colorScheme = darkColorScheme(
         primary = primary,
         onPrimary = onPrimary,
@@ -106,10 +104,8 @@ fun appLightColors(
     onTertiary: Color = onSecondary,
     onSurface: Color = Color.Black,
     onSurfaceVariant: Color = onSurface,
-    onSurfaceInputBackground: Color = Color(0x45c1bbc0),
 ) = AppColors(
-    _isLight = true,
-    _onSurfaceInputBackground = onSurfaceInputBackground,
+    _isLightTheme = true,
     _colorScheme = lightColorScheme(
         primary = primary,
         onPrimary = onPrimary,
@@ -127,13 +123,13 @@ fun appLightColors(
 )
 
 @Composable
-fun plainSurfaceColor() = if (AppTheme.colors.isLight) Color.White else Color.Black
+fun plainSurfaceColor() = if (AppTheme.colors.isLightTheme) Color.White else Color.Black
 
 @Composable
-fun plainBackgroundColor() = if (!AppTheme.colors.isLight) Color.White else Color.Black
+fun plainBackgroundColor() = if (!AppTheme.colors.isLightTheme) Color.White else Color.Black
 
 @Composable
-fun plainGrayBackground() = if (AppTheme.colors.isLight) Color.LightGray else Color.DarkGray
+fun plainGrayBackground() = if (AppTheme.colors.isLightTheme) Color.LightGray else Color.DarkGray
 
 @Composable
 fun Color.disabledAlpha(condition: Boolean): Color = copy(alpha = if (condition) alpha else ContentAlpha.disabled)

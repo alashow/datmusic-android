@@ -64,7 +64,7 @@ fun adaptiveColor(
     fallback: Color = MaterialTheme.colorScheme.secondary.contrastComposite(),
     initial: Color = fallback,
     animationSpec: AnimationSpec<Color> = ADAPTIVE_COLOR_ANIMATION,
-    gradientEndColor: Color = if (AppTheme.colors.isLight) Color.White else Color.Black,
+    gradientEndColor: Color = if (AppTheme.colors.isLightTheme) Color.White else Color.Black,
 ): State<AdaptiveColorResult> {
     val context = LocalContext.current
 
@@ -96,8 +96,8 @@ fun adaptiveColor(
     fallback: Color = MaterialTheme.colorScheme.secondary.contrastComposite(),
     initial: Color = fallback,
     animationSpec: AnimationSpec<Color> = ADAPTIVE_COLOR_ANIMATION,
-    gradientEndColor: Color = if (AppTheme.colors.isLight) Color.White else Color.Black,
-    isDarkColors: Boolean = !AppTheme.colors.isLight
+    gradientEndColor: Color = if (AppTheme.colors.isLightTheme) Color.White else Color.Black,
+    isDarkColors: Boolean = !AppTheme.colors.isLightTheme
 ): State<AdaptiveColorResult> {
     val imageHash = imageSource.hashCode().toString()
     val initialAccent = adaptiveColorCache.getOrElse(imageHash) { initial }

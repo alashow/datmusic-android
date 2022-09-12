@@ -114,7 +114,7 @@ private fun <DetailType, T : MediaDetailViewState<DetailType>> MediaDetailConten
 
         // apply adaptive background to whole list only on light theme
         // because full list gradient doesn't look great on dark
-        val isLight = AppTheme.colors.isLight
+        val isLight = AppTheme.colors.isLightTheme
         val listBackgroundMod = if (isLight) adaptiveBackground else Modifier
         val headerBackgroundMod = if (isLight) Modifier else adaptiveBackground
 
