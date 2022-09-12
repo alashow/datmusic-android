@@ -16,7 +16,10 @@ enum class ColorPalettePreference {
     Dynamic_Variant,
     Asphalt,
     Black, Black_Yellow,
-    Gray, Gray_Green, Blue_Grey,
+    Gray, Gray_Green, Blue_Grey;
+
+    val isDynamic: Boolean
+        get() = this == Dynamic || this == Dynamic_Variant
 }
 
 /**

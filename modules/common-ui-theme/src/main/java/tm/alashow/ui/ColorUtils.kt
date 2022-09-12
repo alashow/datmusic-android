@@ -38,7 +38,6 @@ import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
-import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -90,7 +89,6 @@ fun adaptiveColor(
     )
 }
 
-@OptIn(ExperimentalTime::class)
 @Composable
 fun adaptiveColor(
     image: Bitmap? = null,
