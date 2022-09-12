@@ -161,7 +161,8 @@ fun LazyListScope.settingsThemeSection(themeState: ThemeState, setThemeState: (T
         SettingsItem(stringResource(R.string.settings_theme_colorPalette)) {
             SelectableDropdownMenu(
                 items = ColorPalettePreference.values().toList().filter {
-                    it != ColorPalettePreference.Dynamic || isDynamicThemeSupported()
+                    // filter out dynamic theme if not supported
+                    !it.isDynamic || isDynamicThemeSupported()
                 },
                 selectedItem = themeState.colorPalettePreference,
                 onItemSelect = { setThemeState(themeState.copy(colorPalettePreference = it)) },

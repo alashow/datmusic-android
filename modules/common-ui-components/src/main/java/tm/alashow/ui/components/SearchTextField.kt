@@ -35,12 +35,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.analytics.FirebaseAnalytics
 import tm.alashow.base.util.click
 import tm.alashow.common.compose.LocalAnalytics
-import tm.alashow.ui.theme.AppTheme
+import tm.alashow.ui.theme.Theme
 import tm.alashow.ui.theme.borderlessTextFieldColors
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
@@ -108,8 +107,8 @@ fun SearchTextField(
         colors = borderlessTextFieldColors(),
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = 16.dp)
-            .background(AppTheme.colors.onSurfaceInputBackground, MaterialTheme.shapes.small)
+            .heightIn(min = Theme.specs.padding)
+            .background(Theme.colors.elevatedSurface, MaterialTheme.shapes.small)
             .focusRequester(focusRequester)
     )
 }

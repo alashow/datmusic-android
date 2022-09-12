@@ -20,9 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.sp
 import com.google.firebase.analytics.FirebaseAnalytics
 import tm.alashow.base.util.IntentUtils
 import tm.alashow.base.util.event
@@ -31,15 +29,13 @@ import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.ui.components.AppOutlinedButton
 import tm.alashow.ui.components.ProgressIndicatorSmall
 import tm.alashow.ui.theme.AppTheme
+import tm.alashow.ui.theme.Theme
 
 @Composable
 internal fun SettingsSectionLabel(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text,
-        style = MaterialTheme.typography.headlineSmall.copy(
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Medium,
-        ),
+        style = Theme.typography.h6,
         color = MaterialTheme.colorScheme.secondary,
         modifier = modifier.padding(AppTheme.specs.inputPaddings)
     )

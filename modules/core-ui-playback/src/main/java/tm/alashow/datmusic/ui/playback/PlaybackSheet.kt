@@ -63,7 +63,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.flow.collectLatest
@@ -119,10 +118,18 @@ private val RemoveFromPlaylist = R.string.playback_queue_removeFromQueue
 private val AddQueueToPlaylist = R.string.playback_queue_addQueueToPlaylist
 private val SaveQueueAsPlaylist = R.string.playback_queue_saveAsPlaylist
 
+private val PlaybackSheetThemeState
+    @Composable
+    get() = LocalThemeState.current.let {
+        when {
+            it.colorPalettePreference.isDynamic -> it
+            else -> it.copy(colorPalettePreference = ColorPalettePreference.Black)
+        }
+    }
+
 @Composable
 fun PlaybackSheet(
-    // override local theme color palette because we want simple colors for menus n' stuff
-    sheetTheme: ThemeState = LocalThemeState.current.copy(colorPalettePreference = ColorPalettePreference.Black),
+    sheetTheme: ThemeState = PlaybackSheetThemeState,
     navigator: Navigator = LocalNavigator.current,
 ) {
     val listState = rememberLazyListState()
@@ -164,7 +171,11 @@ internal fun PlaybackSheetContent(
     val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying)
     val pagerState = rememberPagerState(playbackQueue.currentIndex)
 
-    val adaptiveColor by adaptiveColor(nowPlaying.artwork, initial = MaterialTheme.colorScheme.onBackground)
+    val adaptiveColor by adaptiveColor(
+        nowPlaying.artwork,
+        initial = MaterialTheme.colorScheme.onBackground,
+        gradientEndColor = MaterialTheme.colorScheme.background,
+    )
     val contentColor by animateColorAsState(adaptiveColor.color, ADAPTIVE_COLOR_ANIMATION)
 
     LaunchedEffect(playbackConnection) {
@@ -274,41 +285,41 @@ private fun RowScope.ResizablePlaybackQueue(
         modifier = modifier,
     ) { resizableModifier ->
         val labelMod = Modifier.padding(top = AppTheme.specs.padding)
-        LazyColumn(
-            state = queueListState,
-            contentPadding = contentPadding,
-            modifier = Modifier
-                .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.background)
-        ) {
-            playbackQueueLabel(resizableModifier.then(labelMod))
+        Surface {
+            LazyColumn(
+                state = queueListState,
+                contentPadding = contentPadding,
+                modifier = Modifier.fillMaxHeight()
+            ) {
+                playbackQueueLabel(resizableModifier.then(labelMod))
 
-            if (playbackQueue.isLastAudio) {
-                item {
-                    Text(
-                        text = stringResource(R.string.playback_queue_empty),
-                        style = MaterialTheme.typography.bodyLarge,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = AppTheme.specs.padding)
-                    )
+                if (playbackQueue.isLastAudio) {
+                    item {
+                        Text(
+                            text = stringResource(R.string.playback_queue_empty),
+                            style = MaterialTheme.typography.bodyLarge,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = AppTheme.specs.padding)
+                        )
+                    }
                 }
-            }
 
-            playbackQueue(
-                playbackQueue = playbackQueue,
-                scrollToTop = scrollToTop,
-                playbackConnection = playbackConnection,
+                playbackQueue(
+                    playbackQueue = playbackQueue,
+                    scrollToTop = scrollToTop,
+                    playbackConnection = playbackConnection,
+                )
+            }
+            Divider(
+                modifier = Modifier
+                    .width(1.dp)
+                    .fillMaxHeight()
+                    .align(Alignment.CenterEnd)
+                    .then(resizableModifier)
             )
         }
-        Divider(
-            modifier = Modifier
-                .width(1.dp)
-                .fillMaxHeight()
-                .align(Alignment.CenterEnd)
-                .then(resizableModifier)
-        )
     }
 }
 
@@ -470,8 +481,8 @@ private fun LazyListScope.playbackQueue(
                 scrollToTop()
             },
             extraActionLabels = listOf(RemoveFromPlaylist),
-            hasAddToPlaylistSwipeAction = false,
             onExtraAction = { playbackConnection.removeByPosition(realPosition) },
+            hasAddToPlaylistSwipeAction = false,
             extraEndSwipeActions = listOf(
                 removeAudioFromQueueSwipeAction(
                     onRemoveFromPlaylist = {

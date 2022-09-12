@@ -38,6 +38,10 @@ val LocalAdaptiveColor = compositionLocalOf<AdaptiveColorResult> {
     error("No LocalAdaptiveColorResult provided")
 }
 
+val LocalTypography = staticCompositionLocalOf<Typography> {
+    error("No LocalTypography provided")
+}
+
 typealias Theme = AppTheme
 
 object AppTheme {
@@ -53,7 +57,11 @@ object AppTheme {
         @Composable
         get() = LocalSpecs.current
 
-    val isLight @Composable get() = colors.isLight
+    val typography: Typography
+        @Composable
+        get() = LocalTypography.current
+
+    val isLight @Composable get() = colors.isLightTheme
 
     val colorScheme
         @Composable
@@ -69,6 +77,7 @@ fun ProvideAppTheme(
     theme: ThemeState,
     colors: AppColors,
     specs: Specs = DefaultSpecs,
+    typography: Typography = DefaultTypography,
     content: @Composable () -> Unit
 ) {
     val appColors = remember { colors.copy() }.apply { update(colors) }
@@ -76,30 +85,27 @@ fun ProvideAppTheme(
     CompositionLocalProvider(
         LocalThemeState provides theme,
         LocalAppColors provides appColors,
-        LocalAdaptiveColor provides appColors.colorScheme.secondary.toAdaptiveColor(isDarkColors = !appColors.isLight),
+        LocalAdaptiveColor provides appColors.colorScheme.secondary.toAdaptiveColor(isDarkColors = !appColors.isLightTheme),
         LocalSpecs provides specs,
+        LocalTypography provides typography,
         content = content
     )
 }
 
 @Stable
 data class AppColors(
-    val _isLight: Boolean,
-    private val _onSurfaceInputBackground: Color,
+    val _isLightTheme: Boolean,
     private val _colorScheme: ColorScheme,
 ) {
-    var onSurfaceInputBackground by mutableStateOf(_onSurfaceInputBackground)
-        private set
     var colorScheme by mutableStateOf(_colorScheme)
         private set
-    var isLight by mutableStateOf(_isLight)
+    var isLightTheme by mutableStateOf(_isLightTheme)
         private set
 
     val elevatedSurface: Color @Composable get() = elevatedSurface()
 
     fun update(other: AppColors) {
-        isLight = other.isLight
-        onSurfaceInputBackground = other.onSurfaceInputBackground
+        isLightTheme = other.isLightTheme
         colorScheme = other.colorScheme
     }
 }
@@ -118,10 +124,9 @@ internal fun MaterialThemePatches(content: @Composable () -> Unit) {
 }
 
 internal fun AppColors.elevatedSurface(
-    surfaceColor: Color = colorScheme.surface,
-    tint: Color = if (surfaceColor == Color.Black) Color.White else Color.Black,
-    tintBlendPercentage: Float = if (isLight) 0.5f else 0.75f,
-    elevation: Dp = if (isLight) 2.dp else 4.dp,
+    tint: Color = if (isLightTheme) Color.Black else Color.White,
+    tintBlendPercentage: Float = if (isLightTheme) 0.5f else 0.75f,
+    elevation: Dp = if (isLightTheme) 4.dp else 8.dp,
 ) = colorScheme.surface.colorAtElevation(
     colorScheme.surface.blendWith(tint, tintBlendPercentage),
     elevation

@@ -39,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import tm.alashow.ui.theme.Theme
 
@@ -111,10 +112,18 @@ fun <T> SelectableDropdownMenu(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                val contentColor =
-                                    if (item in selectedItems) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface
+                                val isSelected = item in selectedItems
+                                val contentColor = when {
+                                    isSelected -> MaterialTheme.colorScheme.secondary
+                                    else -> MaterialTheme.colorScheme.onSurface
+                                }
                                 CompositionLocalProvider(LocalContentColor provides contentColor) {
-                                    Text(itemLabelMapper(item))
+                                    Text(
+                                        text = itemLabelMapper(item),
+                                        style = MaterialTheme.typography.bodyMedium.run {
+                                            if (isSelected) copy(fontWeight = FontWeight.Bold) else this
+                                        },
+                                    )
                                     if (itemSuffixMapper != null)
                                         itemSuffixMapper(item)
                                 }

@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 object AppBarAlphas {
     @Composable
     fun translucentBarAlpha(): Float = when {
-        AppTheme.colors.isLight -> 0.97f
+        AppTheme.colors.isLightTheme -> 0.97f
         else -> 0.95f
     }
 }
