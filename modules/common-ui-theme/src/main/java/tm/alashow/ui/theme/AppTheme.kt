@@ -38,6 +38,10 @@ val LocalAdaptiveColor = compositionLocalOf<AdaptiveColorResult> {
     error("No LocalAdaptiveColorResult provided")
 }
 
+val LocalTypography = staticCompositionLocalOf<Typography> {
+    error("No LocalTypography provided")
+}
+
 typealias Theme = AppTheme
 
 object AppTheme {
@@ -52,6 +56,10 @@ object AppTheme {
     val specs: Specs
         @Composable
         get() = LocalSpecs.current
+
+    val typography: Typography
+        @Composable
+        get() = LocalTypography.current
 
     val isLight @Composable get() = colors.isLight
 
@@ -69,6 +77,7 @@ fun ProvideAppTheme(
     theme: ThemeState,
     colors: AppColors,
     specs: Specs = DefaultSpecs,
+    typography: Typography = DefaultTypography,
     content: @Composable () -> Unit
 ) {
     val appColors = remember { colors.copy() }.apply { update(colors) }
@@ -78,6 +87,7 @@ fun ProvideAppTheme(
         LocalAppColors provides appColors,
         LocalAdaptiveColor provides appColors.colorScheme.secondary.toAdaptiveColor(isDarkColors = !appColors.isLight),
         LocalSpecs provides specs,
+        LocalTypography provides typography,
         content = content
     )
 }

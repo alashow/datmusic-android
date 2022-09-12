@@ -20,7 +20,6 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,7 +30,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.paging.CombinedLoadStates
@@ -62,6 +60,7 @@ import tm.alashow.ui.components.ProgressIndicatorSmall
 import tm.alashow.ui.items
 import tm.alashow.ui.scaffoldPadding
 import tm.alashow.ui.theme.AppTheme
+import tm.alashow.ui.theme.Theme
 
 fun <T : Any> LazyPagingItems<T>.isLoading() = loadState.refresh == LoadState.Loading
 
@@ -302,15 +301,20 @@ private fun <T : Any> LazyListScope.loadingMore(pagingItems: LazyPagingItems<T>,
 }
 
 @Composable
-private fun SearchListLabel(label: String, hasItems: Boolean, loadState: CombinedLoadStates) {
+private fun SearchListLabel(
+    label: String,
+    hasItems: Boolean,
+    loadState: CombinedLoadStates,
+    modifier: Modifier = Modifier,
+) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = AppTheme.specs.padding, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(horizontal = Theme.specs.padding, vertical = Theme.specs.paddingSmall),
     ) {
-        Text(label, style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold))
+        Text(text = label, style = Theme.typography.h6)
 
         AnimatedVisibility(
             visible = (hasItems && loadState.mediator?.refresh == LoadState.Loading),

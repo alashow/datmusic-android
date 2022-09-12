@@ -22,7 +22,6 @@ import tm.alashow.base.ui.ThemeState
 
 val DefaultTheme = ThemeState()
 val DefaultThemeDark = ThemeState(DarkModePreference.ON)
-val DefaultSpecs = Specs()
 
 @Composable
 fun AppTheme(
@@ -63,7 +62,7 @@ fun AppTheme(
         MaterialTheme(
             // TODO: Animate
             colorScheme = colors.colorScheme,
-            typography = Typography,
+            typography = M3Typography,
             shapes = Shapes,
             content = { MaterialThemePatches(content) },
         )
