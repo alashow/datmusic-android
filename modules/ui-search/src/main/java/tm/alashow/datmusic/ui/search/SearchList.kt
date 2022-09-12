@@ -68,6 +68,8 @@ fun <T : Any> LazyPagingItems<T>.isLoading() = loadState.refresh == LoadState.Lo
 internal fun SearchList(
     viewState: SearchViewState,
     listState: LazyListState,
+    artistsListState: LazyListState,
+    albumsListState: LazyListState,
     onSearchAction: (SearchAction) -> Unit,
     searchLazyPagers: SearchLazyPagers,
     modifier: Modifier = Modifier,
@@ -105,9 +107,11 @@ internal fun SearchList(
         modifier = modifier,
     ) {
         SearchListContent(
-            searchLazyPagers = searchLazyPagers,
             listState = listState,
+            artistsListState = albumsListState,
+            albumsListState = albumsListState,
             searchFilter = searchFilter,
+            searchLazyPagers = searchLazyPagers,
             pagersAreEmpty = pagersAreEmpty,
             hasActiveSearchQuery = viewState.hasActiveSearchQuery,
             retryPagers = retryPagers,
@@ -120,6 +124,8 @@ internal fun SearchList(
 @Composable
 private fun SearchListContent(
     listState: LazyListState,
+    artistsListState: LazyListState,
+    albumsListState: LazyListState,
     searchFilter: SearchFilter,
     searchLazyPagers: SearchLazyPagers,
     hasActiveSearchQuery: Boolean,
@@ -149,13 +155,13 @@ private fun SearchListContent(
 
         if (hasActiveSearchQuery && searchFilter.hasArtists) {
             item("artists") {
-                ArtistList(searchLazyPagers.artists)
+                ArtistList(searchLazyPagers.artists, artistsListState)
             }
         }
 
         if (hasActiveSearchQuery && searchFilter.hasAlbums) {
             item("albums") {
-                AlbumList(searchLazyPagers.albums)
+                AlbumList(searchLazyPagers.albums, albumsListState)
             }
         }
 
@@ -174,8 +180,9 @@ private fun SearchListContent(
 }
 
 @Composable
-internal fun ArtistList(
+private fun ArtistList(
     pagingItems: LazyPagingItems<Artist>,
+    listState: LazyListState,
     modifier: Modifier = Modifier,
     imageSize: Dp = ArtistsDefaults.imageSize,
     navigator: Navigator = LocalNavigator.current
@@ -196,7 +203,10 @@ internal fun ArtistList(
             }
         }
 
-        LazyRow(Modifier.fillMaxWidth()) {
+        LazyRow(
+            state = listState,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
             items(pagingItems, key = { _, item -> item.id }) {
                 val artist = it ?: return@items
 
@@ -210,8 +220,9 @@ internal fun ArtistList(
 }
 
 @Composable
-internal fun AlbumList(
+private fun AlbumList(
     pagingItems: LazyPagingItems<Album>,
+    listState: LazyListState,
     modifier: Modifier = Modifier,
     itemSize: Dp = AlbumsDefaults.imageSize,
     navigator: Navigator = LocalNavigator.current
@@ -233,7 +244,10 @@ internal fun AlbumList(
             }
         }
 
-        LazyRow(Modifier.fillMaxWidth()) {
+        LazyRow(
+            state = listState,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
             items(pagingItems, key = { _, item -> item.id }) {
                 val album = it ?: Album()
                 AlbumColumn(
@@ -250,7 +264,7 @@ internal fun AlbumList(
     }
 }
 
-internal fun LazyListScope.audioList(pagingItems: LazyPagingItems<Audio>, onPlayAudio: (Audio) -> Unit) {
+private fun LazyListScope.audioList(pagingItems: LazyPagingItems<Audio>, onPlayAudio: (Audio) -> Unit) {
     val isLoading = pagingItems.isLoading()
     val hasItems = pagingItems.itemCount > 0
 

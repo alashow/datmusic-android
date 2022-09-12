@@ -71,6 +71,8 @@ internal fun Search(viewModel: SearchViewModel = hiltViewModel()) {
         viewModel = viewModel,
         viewState = rememberFlowWithLifecycle(viewModel.state).value,
         listState = rememberLazyListState(),
+        artistsListState = rememberLazyListState(),
+        albumsListState = rememberLazyListState(),
         onSearchAction = viewModel::onSearchAction,
         searchLazyPagers = SearchLazyPagers(
             audios = rememberFlowWithLifecycle(viewModel.pagedAudioList).collectAsLazyPagingItems(),
@@ -88,6 +90,8 @@ private fun Search(
     viewModel: SearchViewModel,
     viewState: SearchViewState,
     listState: LazyListState,
+    artistsListState: LazyListState,
+    albumsListState: LazyListState,
     onSearchAction: (SearchAction) -> Unit,
     searchLazyPagers: SearchLazyPagers,
 ) {
@@ -129,6 +133,8 @@ private fun Search(
             SearchList(
                 viewState = viewState,
                 listState = listState,
+                artistsListState = albumsListState,
+                albumsListState = albumsListState,
                 onSearchAction = onSearchAction,
                 searchLazyPagers = searchLazyPagers,
             )
