@@ -23,7 +23,6 @@ import tm.alashow.datmusic.downloader.isRetriable
 import tm.alashow.datmusic.ui.downloads.R
 import tm.alashow.ui.components.MoreVerticalIcon
 
-@OptIn(ExperimentalStdlibApi::class)
 @Composable
 internal fun AudioDownloadDropdownMenu(
     audioDownload: AudioDownloadItem,

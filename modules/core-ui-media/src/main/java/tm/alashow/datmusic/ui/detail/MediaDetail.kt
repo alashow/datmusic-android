@@ -23,7 +23,6 @@ import androidx.compose.ui.graphics.vector.VectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import tm.alashow.base.util.extensions.Callback
 import tm.alashow.base.util.extensions.orNA
 import tm.alashow.domain.models.Incomplete
 import tm.alashow.navigation.LocalNavigator
@@ -39,9 +38,9 @@ import tm.alashow.ui.theme.LocalAdaptiveColor
 fun <DetailType> MediaDetail(
     viewState: MediaDetailViewState<DetailType>,
     @StringRes titleRes: Int,
-    onTitleClick: Callback = {},
-    onFailRetry: Callback,
-    onEmptyRetry: Callback,
+    onTitleClick: () -> Unit = {},
+    onFailRetry: () -> Unit,
+    onEmptyRetry: () -> Unit,
     mediaDetailContent: MediaDetailContent<DetailType>,
     mediaDetailTopBar: MediaDetailTopBar = MediaDetailTopBar(),
     mediaDetailHeader: MediaDetailHeader = MediaDetailHeader(),
@@ -50,7 +49,7 @@ fun <DetailType> MediaDetail(
     headerCoverIcon: VectorPainter? = null,
     scrollbarsEnabled: Boolean = false,
     isHeaderVisible: Boolean = true,
-    extraHeaderContent: @Composable ColumnScope.() -> Unit = {},
+    extraHeaderContent: (@Composable ColumnScope.() -> Unit)? = null,
     navigator: Navigator = LocalNavigator.current,
 ) {
     val listState = rememberLazyListState()
@@ -69,8 +68,6 @@ fun <DetailType> MediaDetail(
             onFailRetry = onFailRetry,
             onEmptyRetry = onEmptyRetry,
             onTitleClick = onTitleClick,
-            paddings = paddings,
-            scrollbarsEnabled = scrollbarsEnabled,
             listState = listState,
             mediaDetailHeader = mediaDetailHeader,
             mediaDetailContent = mediaDetailContent,
@@ -78,7 +75,9 @@ fun <DetailType> MediaDetail(
             mediaDetailEmpty = mediaDetailEmpty,
             headerCoverIcon = headerCoverIcon,
             isHeaderVisible = isHeaderVisible,
+            scrollbarsEnabled = scrollbarsEnabled,
             extraHeaderContent = extraHeaderContent,
+            paddings = paddings,
         )
     }
 }
@@ -86,18 +85,18 @@ fun <DetailType> MediaDetail(
 @Composable
 private fun <DetailType, T : MediaDetailViewState<DetailType>> MediaDetailContent(
     viewState: T,
-    onFailRetry: Callback,
-    onEmptyRetry: Callback,
-    onTitleClick: Callback,
+    onFailRetry: () -> Unit,
+    onEmptyRetry: () -> Unit,
+    onTitleClick: () -> Unit,
     listState: LazyListState,
-    scrollbarsEnabled: Boolean,
-    mediaDetailContent: MediaDetailContent<DetailType>,
     mediaDetailHeader: MediaDetailHeader,
+    mediaDetailContent: MediaDetailContent<DetailType>,
     mediaDetailFail: MediaDetailFail<DetailType>,
     mediaDetailEmpty: MediaDetailEmpty<DetailType>,
     headerCoverIcon: VectorPainter? = null,
     isHeaderVisible: Boolean = true,
-    extraHeaderContent: @Composable ColumnScope.() -> Unit,
+    scrollbarsEnabled: Boolean,
+    extraHeaderContent: (@Composable ColumnScope.() -> Unit)? = null,
     paddings: PaddingValues = PaddingValues(),
 ) {
     val context = LocalContext.current

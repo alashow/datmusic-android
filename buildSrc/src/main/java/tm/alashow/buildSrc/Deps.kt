@@ -28,7 +28,7 @@ object Deps {
 
         const val multiDex = "androidx.multidex:multidex:2.0.1"
 
-        const val activityVersion = "1.6.0-rc01"
+        const val activityVersion = "1.6.0-rc02"
         const val activityKtx = "androidx.activity:activity-ktx:$activityVersion"
 
         private const val navigationVersion = "2.5.1"
@@ -48,7 +48,7 @@ object Deps {
         const val archCoreTesting = "androidx.arch.core:core-testing:2.1.0"
 
         object Compose {
-            const val version = "1.3.0-beta01"
+            const val version = "1.3.0-beta02"
             const val compilerVersion = "1.3.0"
 
             const val ui = "androidx.compose.ui:ui:$version"
@@ -56,13 +56,12 @@ object Deps {
             const val uiTooling = "androidx.compose.ui:ui-tooling:$version"
             const val foundation = "androidx.compose.foundation:foundation:$version"
             const val material = "androidx.compose.material:material:$version"
-            const val material3 = "androidx.compose.material3:material3:1.0.0-beta01"
+            const val material3 = "androidx.compose.material3:material3:1.0.0-beta02"
             const val materialIcons = "androidx.compose.material:material-icons-core:$version"
             const val materialIconsExtended = "androidx.compose.material:material-icons-extended:$version"
             const val constraintLayout = "androidx.constraintlayout:constraintlayout-compose:1.1.0-alpha03"
             const val liveData = "androidx.compose.runtime:runtime-livedata:$version"
             const val activity = "androidx.activity:activity-compose:$activityVersion"
-            const val viewModels = "androidx.lifecycle:lifecycle-viewmodel-compose:2.6.0-alpha01"
             const val paging = "androidx.paging:paging-compose:1.0.0-alpha16"
 
             const val uiTestJunit = "androidx.compose.ui:ui-test-junit4:$version"
@@ -77,10 +76,8 @@ object Deps {
         }
 
         object Accompanist {
-            private const val version = "0.26.2-beta"
+            private const val version = "0.26.3-beta"
 
-            const val insets = "com.google.accompanist:accompanist-insets:$version"
-            const val insetsUi = "com.google.accompanist:accompanist-insets-ui:$version"
             const val pager = "com.google.accompanist:accompanist-pager:$version"
             const val permissions = "com.google.accompanist:accompanist-permissions:$version"
             const val placeholder = "com.google.accompanist:accompanist-placeholder-material:$version"
@@ -92,7 +89,7 @@ object Deps {
         }
 
         object Lifecycle {
-            private const val version = "2.6.0-alpha01"
+            private const val version = "2.6.0-alpha02"
 
             const val runtime = "androidx.lifecycle:lifecycle-runtime:$version"
             const val runtimeKtx = "androidx.lifecycle:lifecycle-runtime-ktx:$version"
@@ -100,6 +97,7 @@ object Deps {
             const val vmKotlin = "androidx.lifecycle:lifecycle-viewmodel-ktx:$version"
             const val vmSavedState = "androidx.lifecycle:lifecycle-viewmodel-savedstate:$version"
             const val extensions = "androidx.lifecycle:lifecycle-extensions:2.2.0"
+            const val composeViewModels = "androidx.lifecycle:lifecycle-viewmodel-compose:$version"
         }
 
         object Room {
@@ -134,7 +132,7 @@ object Deps {
 
         const val threeTen = "org.threeten:threetenbp:1.6.1"
 
-        const val coilVersion = "2.2.0"
+        const val coilVersion = "2.2.1"
         const val coil = "io.coil-kt:coil:$coilVersion"
         const val store = "com.dropbox.mobile.store:store4:4.0.5"
 
@@ -147,7 +145,7 @@ object Deps {
         const val exoPlayerOkhttp = "com.google.android.exoplayer:extension-okhttp:2.15.0"
         const val exoPlayerFlac = "com.github.alashow.ExoPlayer-Extensions:extension-flac:v2.15.1"
 
-        const val qonversion = "io.qonversion.android.sdk:sdk:3.3.0"
+        const val qonversion = "io.qonversion.android.sdk:sdk:3.3.1"
     }
 
     object OkHttp {
@@ -187,7 +185,7 @@ object Deps {
 
     object Firebase {
 
-        const val bom = "com.google.firebase:firebase-bom:30.4.0"
+        const val bom = "com.google.firebase:firebase-bom:30.5.0"
         const val messaging = "com.google.firebase:firebase-messaging-ktx"
         const val remoteConfig = "com.google.firebase:firebase-config-ktx"
         const val analytics = "com.google.firebase:firebase-analytics-ktx"
@@ -201,7 +199,7 @@ object Deps {
         const val robolectric = "org.robolectric:robolectric:4.8.2"
         const val mockito = "org.mockito:mockito-core:4.7.0"
         const val mockitoKotlin = "org.mockito.kotlin:mockito-kotlin:4.0.0"
-        const val mockk = "io.mockk:mockk:1.12.4"
+        const val mockk = "io.mockk:mockk:1.12.8"
         const val turbine = "app.cash.turbine:turbine:0.8.0"
     }
 }

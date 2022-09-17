@@ -18,8 +18,8 @@ import tm.alashow.datmusic.data.observers.artist.ObserveArtistDetails
 import tm.alashow.navigation.screens.ARTIST_ID_KEY
 
 @HiltViewModel
-class ArtistDetailViewModel @Inject constructor(
-    private val handle: SavedStateHandle,
+internal class ArtistDetailViewModel @Inject constructor(
+    handle: SavedStateHandle,
     private val artist: ObserveArtist,
     private val artistDetails: ObserveArtistDetails
 ) : ViewModel() {

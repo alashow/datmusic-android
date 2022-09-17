@@ -123,7 +123,33 @@ class AudiosRepoTest : BaseTest() {
         repo.insert(item)
 
         repo.entry(item.id).test {
-            assertThat(awaitItem()).isEqualTo(item)
+            assertThat(awaitItem())
+                .isEqualTo(item)
+        }
+    }
+
+    @Test
+    fun `entry returns null if item doesn't exist`() = runTest {
+        val item = testItems.first()
+
+        repo.entry(item.id).test {
+            assertThat(awaitItem())
+                .isNull()
+            repo.insert(item)
+            assertThat(awaitItem())
+                .isEqualTo(item)
+        }
+    }
+
+    @Test
+    fun `entryNotNull doesn't return anything it's available`() = runTest {
+        val item = testItems.first()
+
+        repo.entryNotNull(item.id).test {
+            // awaiting here would get stuck since it won't return null items
+            repo.insert(item)
+            assertThat(awaitItem())
+                .isEqualTo(item)
         }
     }
 
@@ -212,6 +238,16 @@ class AudiosRepoTest : BaseTest() {
         repo.insert(item)
 
         repo.delete(item.id)
+
+        assertThat(repo.exists(item.id)).isFalse()
+    }
+
+    @Test
+    fun deleteEntity() = runTest {
+        val item = testItems.first()
+        repo.insert(item)
+
+        repo.delete(item)
 
         assertThat(repo.exists(item.id)).isFalse()
     }

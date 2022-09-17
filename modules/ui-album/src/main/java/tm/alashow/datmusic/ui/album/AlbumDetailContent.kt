@@ -6,17 +6,17 @@ package tm.alashow.datmusic.ui.album
 
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
-import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.datmusic.domain.entities.Album
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.Audios
 import tm.alashow.datmusic.ui.audios.AudioRow
 import tm.alashow.datmusic.ui.detail.MediaDetailContent
+import tm.alashow.datmusic.ui.playback.LocalPlaybackConnection
 import tm.alashow.domain.models.Async
 import tm.alashow.domain.models.Loading
 import tm.alashow.domain.models.Success
 
-class AlbumDetailContent(val album: Album) : MediaDetailContent<Audios>() {
+internal class AlbumDetailContent(val album: Album) : MediaDetailContent<Audios>() {
 
     override fun invoke(list: LazyListScope, details: Async<Audios>, detailsLoading: Boolean): Boolean {
         val albumAudios = when (details) {

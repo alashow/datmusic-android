@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.ContentAlpha
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material3.Icon
@@ -40,6 +39,9 @@ import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.color
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.shimmer
+import tm.alashow.common.compose.previews.CombinedPreview
+import tm.alashow.ui.material.ContentAlpha
+import tm.alashow.ui.theme.PreviewAppTheme
 import tm.alashow.ui.theme.Theme
 
 @Composable
@@ -113,4 +115,12 @@ fun CoverImage(
             }
         }
     }
+}
+
+@CombinedPreview
+@Composable
+fun CoverImagePreview() = PreviewAppTheme {
+    CoverImage(
+        data = "https://api.lorem.space/image/album?w=1000&h=1000"
+    )
 }

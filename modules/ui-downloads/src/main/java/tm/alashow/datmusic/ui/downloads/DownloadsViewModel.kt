@@ -7,15 +7,19 @@ package tm.alashow.datmusic.ui.downloads
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import tm.alashow.base.util.event
-import tm.alashow.base.util.extensions.getStateFlow
+import tm.alashow.base.util.Analytics
+import tm.alashow.base.util.extensions.getMutableStateFlow
 import tm.alashow.base.util.extensions.simpleName
 import tm.alashow.base.util.extensions.stateInDefault
 import tm.alashow.base.util.searchQueryAnalytics
@@ -31,18 +35,18 @@ import tm.alashow.domain.models.delayLoading
 import tm.alashow.domain.models.filterSuccess
 
 @HiltViewModel
-class DownloadsViewModel @Inject constructor(
+internal class DownloadsViewModel @Inject constructor(
     handle: SavedStateHandle,
     preferencesStore: PreferencesStore,
     private val observeDownloads: ObserveDownloads,
     private val playbackConnection: PlaybackConnection,
-    private val analytics: FirebaseAnalytics,
+    private val analytics: Analytics,
     private val downloader: Downloader,
 ) : ViewModel() {
 
     private val defaultParams = ObserveDownloads.Params()
     private val downloadsParamsState = MutableStateFlow(defaultParams)
-    private val searchQueryState = handle.getStateFlow("search_query", viewModelScope, defaultParams.query)
+    private val searchQueryState = handle.getMutableStateFlow("search_query", viewModelScope, defaultParams.query)
     private val audiosSortOptionState = preferencesStore.getStateFlow("sort_option", viewModelScope, defaultParams.audiosSortOption)
     private val statusFiltersState = preferencesStore.getStateFlow("status_filters", viewModelScope, defaultParams.statusFilters)
 

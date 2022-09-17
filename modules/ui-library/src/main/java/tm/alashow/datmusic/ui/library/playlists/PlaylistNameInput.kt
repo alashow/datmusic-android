@@ -20,7 +20,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import tm.alashow.base.util.asString
 import tm.alashow.i18n.ValidationError
@@ -31,8 +30,8 @@ import tm.alashow.ui.theme.outlinedTextFieldColors
 @Composable
 internal fun PlaylistNameInput(
     modifier: Modifier = Modifier,
-    name: TextFieldValue = TextFieldValue(),
-    onSetName: (TextFieldValue) -> Unit = {},
+    name: String = "",
+    onSetName: (String) -> Unit = {},
     onDone: () -> Unit = {},
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(
         imeAction = ImeAction.Done,

@@ -15,7 +15,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -29,17 +28,21 @@ import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.downloader.DownloaderEvent
 import tm.alashow.ui.components.TextRoundedButton
 
-val LocalDownloader = staticCompositionLocalOf<Downloader> {
-    error("LocalDownloader not provided")
+@Composable
+fun DownloaderHost(content: @Composable () -> Unit) {
+    DownloaderHost(
+        downloader = hiltViewModel<DownloaderViewModel>().downloader,
+        content = content,
+    )
 }
 
 @Composable
-fun DownloaderHost(
-    viewModel: DownloaderViewModel = hiltViewModel(),
+private fun DownloaderHost(
+    downloader: Downloader,
     content: @Composable () -> Unit
 ) {
     var downloadsLocationDialogShown by remember { mutableStateOf(false) }
-    collectEvent(viewModel.downloader.downloaderEvents) { event ->
+    collectEvent(downloader.downloaderEvents) { event ->
         when (event) {
             DownloaderEvent.ChooseDownloadsLocation -> {
                 downloadsLocationDialogShown = true
@@ -48,8 +51,11 @@ fun DownloaderHost(
         }
     }
 
-    CompositionLocalProvider(LocalDownloader provides viewModel.downloader) {
-        DownloadsLocationDialog(dialogShown = downloadsLocationDialogShown, onDismiss = { downloadsLocationDialogShown = false })
+    CompositionLocalProvider(LocalDownloader provides downloader) {
+        DownloadsLocationDialog(
+            dialogShown = downloadsLocationDialogShown,
+            onDismiss = { downloadsLocationDialogShown = false }
+        )
         content()
     }
 }

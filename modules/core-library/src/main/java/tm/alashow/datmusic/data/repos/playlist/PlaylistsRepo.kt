@@ -7,8 +7,10 @@ package tm.alashow.datmusic.data.repos.playlist
 import android.content.Context
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -40,20 +42,20 @@ import tm.alashow.i18n.ValidationErrorBlank
 import tm.alashow.i18n.ValidationErrorTooLong
 
 class PlaylistsRepo @Inject constructor(
-    private val context: Context,
+    @ApplicationContext private val context: Context,
     private val dispatchers: CoroutineDispatchers,
     private val dao: PlaylistsDao,
     private val playlistAudiosDao: PlaylistsWithAudiosDao,
     private val audiosRepo: AudiosRepo,
 ) : RoomRepo<PlaylistId, Playlist>(dao, dispatchers), CoroutineScope by ProcessLifecycleOwner.get().lifecycleScope {
 
-    suspend fun getByName(name: String) = dao.getByName(name)
-    fun playlist(id: PlaylistId) = entry(id)
+    suspend fun getByName(name: String): Playlist? = dao.getByName(name)
+    fun playlist(id: PlaylistId): Flow<Playlist> = entryNotNull(id)
 
     fun playlistItems(id: PlaylistId) = playlistAudiosDao.playlistItems(id)
     fun playlistWithItems(id: PlaylistId) = combine(playlist(id), playlistItems(id), ::PlaylistWithItems)
 
-    fun playlists() = dao.entries()
+    fun playlists(): Flow<List<Playlist>> = dao.entries()
 
     suspend fun validatePlaylistId(playlistId: PlaylistId) {
         if (!exists(playlistId)) {

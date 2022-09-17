@@ -43,11 +43,11 @@ repositories {
 }
 
 dependencies {
-	api project(":modules:core-playback")
-	api project(':modules:common-compose')
-	api project(":modules:common-ui-theme")
-	api project(":modules:common-ui-components")
-	api project(":modules:core-ui-media")
+	api(project(":modules:core-playback"))
+	api(project(":modules:common-compose"))
+	api(project(":modules:common-ui-theme"))
+	api(project(":modules:common-ui-components"))
+	api(project(":modules:core-ui-media"))
 	implementation project(":modules:navigation")
 
 	implementation Deps.Dagger.hilt

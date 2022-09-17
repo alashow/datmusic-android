@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -54,14 +55,18 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import tm.alashow.base.util.asString
 import tm.alashow.base.util.toUiMessage
+import tm.alashow.common.compose.LocalIsPreviewMode
 import tm.alashow.common.compose.collectEvent
+import tm.alashow.common.compose.previews.CombinedPreview
 import tm.alashow.common.compose.rememberFlowWithLifecycle
+import tm.alashow.datmusic.data.SampleData
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.downloader.DownloadItems
 import tm.alashow.datmusic.downloader.observers.DownloadAudioItemSortOption
 import tm.alashow.datmusic.downloader.observers.DownloadStatusFilter
 import tm.alashow.datmusic.downloader.observers.NoResultsForDownloadsFilter
 import tm.alashow.datmusic.ui.downloads.audio.AudioDownload
+import tm.alashow.datmusic.ui.previews.PreviewDatmusicCore
 import tm.alashow.domain.models.Fail
 import tm.alashow.domain.models.Loading
 import tm.alashow.domain.models.Success
@@ -81,13 +86,15 @@ import tm.alashow.ui.scaffoldPadding
 import tm.alashow.ui.theme.AppTheme
 
 @Composable
-fun Downloads() {
-    Downloads(viewModel = hiltViewModel())
+fun DownloadsRoute(isPreviewMode: Boolean = LocalIsPreviewMode.current) {
+    when {
+        isPreviewMode -> DownloadsPreview()
+        else -> Downloads()
+    }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun Downloads(viewModel: DownloadsViewModel) {
+private fun Downloads(viewModel: DownloadsViewModel = hiltViewModel()) {
     val listState = rememberLazyListState()
     val viewState by rememberFlowWithLifecycle(viewModel.state)
 
@@ -95,8 +102,38 @@ private fun Downloads(viewModel: DownloadsViewModel) {
         listState.animateScrollToItem(it)
     }
 
+    Downloads(
+        viewState = viewState,
+        listState = listState,
+        onClearFilter = viewModel::onClearFilter,
+        onAudiosSortOptionSelect = viewModel::onAudiosSortOptionSelect,
+        onSearchQueryChange = viewModel::onSearchQueryChange,
+        onStatusFilterSelect = viewModel::onStatusFilterSelect,
+        onAudioPlay = viewModel::playAudioDownload,
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun Downloads(
+    viewState: DownloadsViewState,
+    onClearFilter: () -> Unit,
+    onSearchQueryChange: (String) -> Unit,
+    onAudiosSortOptionSelect: (DownloadAudioItemSortOption) -> Unit,
+    onStatusFilterSelect: (DownloadStatusFilter) -> Unit,
+    onAudioPlay: (AudioDownloadItem) -> Unit,
+    listState: LazyListState = rememberLazyListState(),
+) {
     Scaffold(
-        topBar = { DownloadsAppBar(viewModel) },
+        topBar = {
+            DownloadsAppBar(
+                viewState = viewState,
+                onClearFilter = onClearFilter,
+                onSearchQueryChange = onSearchQueryChange,
+                onAudiosSortOptionSelect = onAudiosSortOptionSelect,
+                onStatusFilterSelect = onStatusFilterSelect,
+            )
+        },
         modifier = Modifier.fillMaxSize()
     ) { paddings ->
         ProvideScaffoldPadding(paddings) {
@@ -110,7 +147,7 @@ private fun Downloads(viewModel: DownloadsViewModel) {
                 ) {
                     downloadsList(
                         downloads = asyncDownloads(),
-                        onAudioPlay = viewModel::playAudioDownload
+                        onAudioPlay = onAudioPlay,
                     )
                 }
             }
@@ -120,15 +157,14 @@ private fun Downloads(viewModel: DownloadsViewModel) {
 
 @Composable
 private fun DownloadsAppBar(
-    viewModel: DownloadsViewModel,
+    viewState: DownloadsViewState,
+    onClearFilter: () -> Unit,
+    onSearchQueryChange: (String) -> Unit,
+    onAudiosSortOptionSelect: (DownloadAudioItemSortOption) -> Unit,
+    onStatusFilterSelect: (DownloadStatusFilter) -> Unit,
 ) {
-    val viewState by rememberFlowWithLifecycle(viewModel.state)
     val downloadsIsEmpty = viewState.downloads is Success && viewState.downloads()!!.audios.isEmpty()
     var filterVisible by remember { mutableStateOf(false) }
-    val onClearFilter = {
-        filterVisible = false
-        viewModel.onClearFilter()
-    }
 
     AppTopBar(
         title = stringResource(R.string.downloads_title),
@@ -136,25 +172,22 @@ private fun DownloadsAppBar(
         filterContent = {
             DownloadsFilters(
                 searchQuery = viewState.params.query,
-                onQueryChange = viewModel::onSearchQueryChange,
+                onQueryChange = onSearchQueryChange,
                 hasSortingOption = viewState.params.hasSortingOption,
                 audiosSortOptions = viewState.params.audiosSortOptions,
                 audiosSortOption = viewState.params.audiosSortOption,
-                onAudiosSortOptionSelect = viewModel::onAudiosSortOptionSelect,
+                onAudiosSortOptionSelect = onAudiosSortOptionSelect,
                 hasStatusFilter = viewState.params.hasStatusFilter,
                 statusFilters = viewState.params.statusFilters,
-                onStatusFilterSelect = viewModel::onStatusFilterSelect,
-                onClose = {
-                    filterVisible = false
-                    viewModel.onSearchQueryChange("")
-                },
+                onStatusFilterSelect = onStatusFilterSelect,
+                onClose = { filterVisible = false; onSearchQueryChange("") },
             )
         },
         actions = {
             if (!downloadsIsEmpty)
                 IconButton(
                     onClick = { filterVisible = true },
-                    onLongClick = onClearFilter,
+                    onLongClick = { filterVisible = false; onClearFilter() },
                     onLongClickLabel = stringResource(R.string.downloads_filter_clear),
                 ) {
                     Icon(
@@ -291,4 +324,49 @@ private fun LazyListScope.downloadsList(
             )
         }
     }
+}
+
+@CombinedPreview
+@Composable
+fun DownloadsPreview() = PreviewDatmusicCore {
+    val sampleDownloads = remember(Unit) { DownloadItems(SampleData.list { audioDownloadItem() }) }
+    var viewState by remember { mutableStateOf(DownloadsViewState(downloads = Success(value = sampleDownloads))) }
+    Downloads(
+        viewState = viewState,
+        onClearFilter = {
+            viewState = DownloadsViewState(downloads = Success(value = sampleDownloads))
+        },
+        onSearchQueryChange = { query ->
+            viewState = viewState.copy(
+                params = viewState.params.copy(query = query),
+                downloads = Success(
+                    value = sampleDownloads.copy(sampleDownloads.audios.filter { query in it.toString() })
+                )
+            )
+        },
+        onAudiosSortOptionSelect = {
+            viewState = viewState.copy(
+                params = viewState.params.copy(audiosSortOption = it),
+                downloads = Success(
+                    value = sampleDownloads.copy(sampleDownloads.audios.sortedWith(it.comparator))
+                )
+            )
+        },
+        onStatusFilterSelect = { filter ->
+            val newFilter = (viewState.params.statusFilters + filter).toHashSet()
+            val newFilterStatuses = newFilter.flatMap { it.statuses }
+            viewState = viewState.copy(
+                params = viewState.params.copy(statusFilters = newFilter),
+                downloads = Success(
+                    value = sampleDownloads.copy(
+                        sampleDownloads.audios.let { audios ->
+                            if (filter.isDefault) audios
+                            else audios.filter { it.downloadInfo.status in newFilterStatuses }
+                        }
+                    )
+                )
+            )
+        },
+        onAudioPlay = {}
+    )
 }

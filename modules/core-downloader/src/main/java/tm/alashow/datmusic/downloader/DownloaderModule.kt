@@ -8,7 +8,7 @@ import android.content.Context
 import com.tonyodev.fetch2.Fetch
 import com.tonyodev.fetch2.FetchConfiguration
 import com.tonyodev.fetch2.FetchNotificationManager
-import com.tonyodev.fetch2core.Downloader
+import com.tonyodev.fetch2core.Downloader as FetchDownloader
 import com.tonyodev.fetch2okhttp.OkHttpDownloader
 import dagger.Module
 import dagger.Provides
@@ -24,25 +24,30 @@ import okhttp3.OkHttpClient
 class DownloaderModule {
 
     @Provides
+    internal fun provideDownloader(downloader: DownloaderImpl): Downloader = downloader
+
+    @Provides
     @Singleton
-    fun fetchNotificationManager(@ApplicationContext context: Context): FetchNotificationManager = DownloaderNotificationManager(context)
+    fun fetchNotificationManager(
+        @ApplicationContext context: Context
+    ): FetchNotificationManager = DownloaderNotificationManager(context)
 
     // TODO: when are we going to close the fetch created in here? on App.onDestroy?
     @Provides
     @Singleton
     fun provideFetch(
-        @ApplicationContext appContext: Context,
+        @ApplicationContext context: Context,
         @Named("downloader") okHttpClient: OkHttpClient,
         notificationManager: FetchNotificationManager
     ): Fetch {
-        val fetcherConfig = FetchConfiguration.Builder(appContext)
+        val fetcherConfig = FetchConfiguration.Builder(context)
             .setNamespace("downloads")
             .setDownloadConcurrentLimit(1)
             .setAutoRetryMaxAttempts(4)
             .enableRetryOnNetworkGain(true)
             .enableAutoStart(true)
             .setNotificationManager(notificationManager)
-            .setHttpDownloader(OkHttpDownloader(okHttpClient, Downloader.FileDownloaderType.SEQUENTIAL))
+            .setHttpDownloader(OkHttpDownloader(okHttpClient, FetchDownloader.FileDownloaderType.SEQUENTIAL))
             .build()
         Fetch.Impl.setDefaultInstanceConfiguration(fetcherConfig)
         return Fetch.Impl.getInstance(fetcherConfig)

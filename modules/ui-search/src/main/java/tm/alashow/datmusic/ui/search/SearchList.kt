@@ -63,6 +63,7 @@ import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.Theme
 
 fun <T : Any> LazyPagingItems<T>.isLoading() = loadState.refresh == LoadState.Loading
+fun <T : Any> LazyPagingItems<T>.isRefreshing() = loadState.mediator?.refresh == LoadState.Loading
 
 @Composable
 internal fun SearchList(
@@ -78,7 +79,7 @@ internal fun SearchList(
     val pagers = searchFilter.backends.map { searchLazyPagers[it] }.toSet()
     val pagerRefreshStates = pagers.map { it.loadState.refresh }.toTypedArray()
     val pagersAreEmpty = pagers.all { it.itemCount == 0 }
-    val pagersAreLoading = pagers.all { it.isLoading() }
+    val pagersAreLoading = pagers.all { it.isRefreshing() }
     val refreshPagers = { pagers.forEach { it.refresh() } }
     val retryPagers = { pagers.forEach { it.retry() } }
     val refreshErrorState = pagerRefreshStates.firstOrNull { it is LoadState.Error }
@@ -108,7 +109,7 @@ internal fun SearchList(
     ) {
         SearchListContent(
             listState = listState,
-            artistsListState = albumsListState,
+            artistsListState = artistsListState,
             albumsListState = albumsListState,
             searchFilter = searchFilter,
             searchLazyPagers = searchLazyPagers,

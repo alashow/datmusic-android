@@ -27,8 +27,8 @@ import tm.alashow.navigation.screens.ALBUM_OWNER_ID_KEY
 import tm.alashow.navigation.screens.LeafScreen
 
 @HiltViewModel
-class AlbumDetailViewModel @Inject constructor(
-    private val handle: SavedStateHandle,
+internal class AlbumDetailViewModel @Inject constructor(
+    handle: SavedStateHandle,
     private val albumObserver: ObserveAlbum,
     private val albumDetails: ObserveAlbumDetails,
     private val observeArtist: ObserveArtist,

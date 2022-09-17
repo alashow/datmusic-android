@@ -5,8 +5,12 @@
 package tm.alashow.ui.theme
 
 import android.graphics.Color as AndroidColor
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
-import androidx.compose.material.ContentAlpha
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.darkColorScheme
@@ -20,8 +24,10 @@ import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.isUnspecified
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import java.security.SecureRandom
 import kotlin.math.ln
 import kotlin.random.Random
+import tm.alashow.ui.material.ContentAlpha
 
 fun parseColor(hexColor: String) = Color(AndroidColor.parseColor(hexColor))
 fun Int.toColor() = Color(this)
@@ -137,33 +143,11 @@ fun Color.disabledAlpha(condition: Boolean): Color = copy(alpha = if (condition)
 @Composable
 fun Color.contrastComposite(alpha: Float = 0.1f) = contentColorFor(this).copy(alpha = alpha).compositeOver(this)
 
-fun Color.colorAtElevation(tint: Color, elevation: Dp,): Color {
+fun Color.colorAtElevation(tint: Color, elevation: Dp): Color {
     if (elevation == 0.dp) return this
     val alpha = ((4.5f * ln(elevation.value + 1)) + 2f) / 100f
     return tint.copy(alpha = alpha).compositeOver(this)
 }
-
-// @Composable
-// internal fun animate(colors: ColorScheme): ColorScheme {
-//    val animationSpec = remember { spring<Color>() }
-//
-//    @Composable
-//    fun animateColor(color: Color): Color = animateColorAsState(targetValue = color, animationSpec = animationSpec).value
-//
-//    return ColorScheme(
-//        primary = animateColor(colors.primary),
-//        secondary = animateColor(colors.secondary),
-//        background = animateColor(colors.background),
-//        surface = animateColor(colors.surface),
-//        error = animateColor(colors.error),
-//        onPrimary = animateColor(colors.onPrimary),
-//        onSecondary = animateColor(colors.onSecondary),
-//        onBackground = animateColor(colors.onBackground),
-//        onSurface = animateColor(colors.onSurface),
-//        onError = animateColor(colors.onError),
-//        // TODO: animate rest
-//    )
-// }
 
 @Composable
 fun translucentSurfaceColor() = MaterialTheme.colorScheme.surface.copy(alpha = AppBarAlphas.translucentBarAlpha())
@@ -173,6 +157,57 @@ fun Modifier.translucentSurface() = composed { background(translucentSurfaceColo
 @Composable
 fun Modifier.randomBackground(memoize: Boolean = true) = background(if (memoize) remember { randomColor() } else randomColor())
 
-fun randomColor() = Color(Random.nextInt(255), Random.nextInt(255), Random.nextInt(255), Random.nextInt(255))
+private val Randomness = Random(SecureRandom().nextLong())
+fun randomColor() = Color(Randomness.nextInt(255), Randomness.nextInt(255), Randomness.nextInt(255), Randomness.nextInt(255))
 
 fun Color.fallbackTo(color: Color): Color = if (isUnspecified) color else this
+
+/**
+ * Animates [colorScheme] colors when it changes.
+ *
+ * @see [Theme.un]
+ */
+@Composable
+internal fun animate(
+    colorScheme: ColorScheme,
+    animationSpec: AnimationSpec<Color> = spring(
+        dampingRatio = Spring.DampingRatioNoBouncy,
+        stiffness = Spring.StiffnessMediumLow,
+    )
+): ColorScheme {
+
+    @Composable
+    fun animateColor(color: Color): Color = animateColorAsState(targetValue = color, animationSpec = animationSpec).value
+
+    return ColorScheme(
+        primary = animateColor(colorScheme.primary),
+        onPrimary = animateColor(colorScheme.onPrimary),
+        primaryContainer = animateColor(colorScheme.primaryContainer),
+        onPrimaryContainer = animateColor(colorScheme.onPrimaryContainer),
+        inversePrimary = animateColor(colorScheme.inversePrimary),
+        secondary = animateColor(colorScheme.secondary),
+        onSecondary = animateColor(colorScheme.onSecondary),
+        secondaryContainer = animateColor(colorScheme.secondaryContainer),
+        onSecondaryContainer = animateColor(colorScheme.onSecondaryContainer),
+        tertiary = animateColor(colorScheme.tertiary),
+        onTertiary = animateColor(colorScheme.onTertiary),
+        tertiaryContainer = animateColor(colorScheme.tertiaryContainer),
+        onTertiaryContainer = animateColor(colorScheme.onTertiaryContainer),
+        background = animateColor(colorScheme.background),
+        onBackground = animateColor(colorScheme.onBackground),
+        surface = animateColor(colorScheme.surface),
+        onSurface = animateColor(colorScheme.onSurface),
+        surfaceVariant = animateColor(colorScheme.surfaceVariant),
+        onSurfaceVariant = animateColor(colorScheme.onSurfaceVariant),
+        surfaceTint = animateColor(colorScheme.surfaceTint),
+        inverseSurface = animateColor(colorScheme.inverseSurface),
+        inverseOnSurface = animateColor(colorScheme.inverseOnSurface),
+        error = animateColor(colorScheme.error),
+        onError = animateColor(colorScheme.onError),
+        errorContainer = animateColor(colorScheme.errorContainer),
+        onErrorContainer = animateColor(colorScheme.onErrorContainer),
+        outline = animateColor(colorScheme.outline),
+        outlineVariant = animateColor(colorScheme.outlineVariant),
+        scrim = animateColor(colorScheme.scrim),
+    )
+}

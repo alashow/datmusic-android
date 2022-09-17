@@ -22,8 +22,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import tm.alashow.common.compose.previews.CombinedPreview
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.DefaultThemeDark
 
@@ -99,7 +99,7 @@ fun Chip(
     }
 }
 
-@Preview
+@CombinedPreview
 @Composable
 fun ChipsPreview() {
     val items = listOf("Songs", "Artists", "Albums")

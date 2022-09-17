@@ -16,7 +16,7 @@ import tm.alashow.navigation.screens.EditPlaylistScreen
 import tm.alashow.navigation.screens.LeafScreen
 
 @Composable
-fun PlaylistRow(
+internal fun PlaylistRow(
     playlist: Playlist,
     modifier: Modifier = Modifier,
     onDelete: () -> Unit,

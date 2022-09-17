@@ -27,20 +27,19 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.navigation
-import com.google.firebase.analytics.FirebaseAnalytics
-import tm.alashow.base.util.event
+import tm.alashow.base.util.Analytics
 import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.common.compose.collectEvent
-import tm.alashow.datmusic.ui.album.AlbumDetail
-import tm.alashow.datmusic.ui.artist.ArtistDetail
-import tm.alashow.datmusic.ui.downloads.Downloads
-import tm.alashow.datmusic.ui.library.Library
-import tm.alashow.datmusic.ui.library.playlists.create.CreatePlaylist
-import tm.alashow.datmusic.ui.library.playlists.detail.PlaylistDetail
-import tm.alashow.datmusic.ui.library.playlists.edit.EditPlaylist
-import tm.alashow.datmusic.ui.playback.PlaybackSheet
+import tm.alashow.datmusic.ui.album.AlbumDetailRoute
+import tm.alashow.datmusic.ui.artist.ArtistDetailRoute
+import tm.alashow.datmusic.ui.downloads.DownloadsRoute
+import tm.alashow.datmusic.ui.library.LibraryRoute
+import tm.alashow.datmusic.ui.library.playlists.create.CreatePlaylistRoute
+import tm.alashow.datmusic.ui.library.playlists.detail.PlaylistDetailRoute
+import tm.alashow.datmusic.ui.library.playlists.edit.EditPlaylistRoute
+import tm.alashow.datmusic.ui.playback.PlaybackSheetRoute
 import tm.alashow.datmusic.ui.search.SearchRoute
-import tm.alashow.datmusic.ui.settings.Settings
+import tm.alashow.datmusic.ui.settings.SettingsRoute
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.NavigationEvent
 import tm.alashow.navigation.Navigator
@@ -56,7 +55,7 @@ internal fun AppNavigation(
     navController: NavHostController,
     modifier: Modifier = Modifier,
     navigator: Navigator = LocalNavigator.current,
-    analytics: FirebaseAnalytics = LocalAnalytics.current,
+    analytics: Analytics = LocalAnalytics.current,
 ) {
     collectEvent(navigator.queue) { event ->
         analytics.event("navigator.navigate", mapOf("route" to event.route))
@@ -155,55 +154,55 @@ private fun NavGraphBuilder.addSearch() {
 
 private fun NavGraphBuilder.addSettings() {
     composableScreen(LeafScreen.Settings()) {
-        Settings()
+        SettingsRoute()
     }
 }
 
 private fun NavGraphBuilder.addDownloads() {
     composableScreen(LeafScreen.Downloads()) {
-        Downloads()
+        DownloadsRoute()
     }
 }
 
 private fun NavGraphBuilder.addLibrary() {
     composableScreen(LeafScreen.Library()) {
-        Library()
+        LibraryRoute()
     }
 }
 
 private fun NavGraphBuilder.addCreatePlaylist() {
     bottomSheetScreen(LeafScreen.CreatePlaylist()) {
-        CreatePlaylist()
+        CreatePlaylistRoute()
     }
 }
 
 private fun NavGraphBuilder.addEditPlaylist() {
     bottomSheetScreen(EditPlaylistScreen()) {
-        EditPlaylist()
+        EditPlaylistRoute()
     }
 }
 
 private fun NavGraphBuilder.addPlaylistDetails(root: RootScreen) {
     composableScreen(LeafScreen.PlaylistDetail(rootRoute = root.route)) {
-        PlaylistDetail()
+        PlaylistDetailRoute()
     }
 }
 
 private fun NavGraphBuilder.addArtistDetails(root: RootScreen) {
     composableScreen(LeafScreen.ArtistDetails(rootRoute = root.route)) {
-        ArtistDetail()
+        ArtistDetailRoute()
     }
 }
 
 private fun NavGraphBuilder.addAlbumDetails(root: RootScreen) {
     composableScreen(LeafScreen.AlbumDetails(rootRoute = root.route)) {
-        AlbumDetail()
+        AlbumDetailRoute()
     }
 }
 
 private fun NavGraphBuilder.addPlaybackSheet() {
     bottomSheetScreen(LeafScreen.PlaybackSheet()) {
-        PlaybackSheet()
+        PlaybackSheetRoute()
     }
 }
 

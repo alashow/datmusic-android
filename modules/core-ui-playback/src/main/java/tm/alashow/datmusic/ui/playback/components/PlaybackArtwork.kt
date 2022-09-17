@@ -16,11 +16,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.Dp
 import tm.alashow.base.util.extensions.Callback
-import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.artwork
 import tm.alashow.datmusic.playback.playPause
+import tm.alashow.datmusic.ui.playback.LocalPlaybackConnection
 import tm.alashow.ui.AdaptiveColorResult
 import tm.alashow.ui.adaptiveColor
 import tm.alashow.ui.coloredRippleClickable

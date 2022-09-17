@@ -16,9 +16,14 @@ import tm.alashow.common.compose.LocalSnackbarHostState
 import tm.alashow.common.compose.collectEvent
 
 @Composable
-internal fun SnackbarMessagesListener(
+fun SnackbarMessagesHost() {
+    SnackbarMessagesHost(viewModel = hiltViewModel())
+}
+
+@Composable
+internal fun SnackbarMessagesHost(
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
-    viewModel: SnackbarListenerViewModel = hiltViewModel()
+    viewModel: SnackbarMessagesHostViewModel
 ) {
     val coroutine = rememberCoroutineScope()
     val context = LocalContext.current

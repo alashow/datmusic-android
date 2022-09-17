@@ -23,7 +23,7 @@ import tm.alashow.domain.models.Fail
 import tm.alashow.ui.components.ErrorBox
 import tm.alashow.ui.theme.AppTheme
 
-class PlaylistDetailFail : MediaDetailFail<PlaylistItems>() {
+internal class PlaylistDetailFail : MediaDetailFail<PlaylistItems>() {
 
     override operator fun invoke(
         list: LazyListScope,

@@ -32,7 +32,7 @@ import tm.alashow.ui.theme.Red
 
 private val RemoveFromPlaylist = R.string.playlist_audio_removeFromPlaylist
 
-class PlaylistDetailContent(
+internal class PlaylistDetailContent(
     private val onPlayAudio: (PlaylistItem) -> Unit,
     private val onRemoveFromPlaylist: (PlaylistItem) -> Unit,
 ) : MediaDetailContent<PlaylistItems>() {
@@ -74,7 +74,7 @@ class PlaylistDetailContent(
 }
 
 @Composable
-fun removeAudioFromPlaylistSwipeAction(
+private fun removeAudioFromPlaylistSwipeAction(
     onRemoveFromPlaylist: () -> Unit,
     backgroundColor: Color = Red,
 ) = SwipeAction(

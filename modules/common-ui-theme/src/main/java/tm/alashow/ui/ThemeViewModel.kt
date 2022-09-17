@@ -4,15 +4,15 @@
  */
 package tm.alashow.ui
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import tm.alashow.base.ui.ThemeState
-import tm.alashow.base.util.event
+import tm.alashow.base.util.Analytics
 import tm.alashow.base.util.extensions.stateInDefault
 import tm.alashow.data.PreferencesStore
 import tm.alashow.ui.theme.DefaultTheme
@@ -23,13 +23,17 @@ object PreferenceKeys {
 
 @HiltViewModel
 class ThemeViewModel @Inject constructor(
-    private val handle: SavedStateHandle,
     private val preferences: PreferencesStore,
-    private val analytics: FirebaseAnalytics
+    private val analytics: Analytics,
 ) : ViewModel() {
 
+    // Read saved theme state from preferences in a blocking manner (takes ~5 ms)
+    // so the app doesn't render first frames with the default theme
+    private val savedThemeState = runBlocking {
+        preferences.get(PreferenceKeys.THEME_STATE_KEY, ThemeState.serializer(), DefaultTheme).first()
+    }
     val themeState = preferences.get(PreferenceKeys.THEME_STATE_KEY, ThemeState.serializer(), DefaultTheme)
-        .stateInDefault(viewModelScope, DefaultTheme)
+        .stateInDefault(viewModelScope, savedThemeState)
 
     fun applyThemeState(themeState: ThemeState) {
         analytics.event("theme.apply", mapOf("darkMode" to themeState.isDarkMode, "palette" to themeState.colorPalettePreference.name))

@@ -4,10 +4,8 @@
  */
 package tm.alashow.datmusic.ui.playback
 
-import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
-import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import javax.inject.Inject
@@ -23,6 +21,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import tm.alashow.base.testing.BaseTest
 import tm.alashow.base.ui.SnackbarManager
+import tm.alashow.base.util.Analytics
 import tm.alashow.base.util.toUiMessage
 import tm.alashow.datmusic.data.DatmusicSearchParams
 import tm.alashow.datmusic.data.db.DatabaseModule
@@ -46,7 +45,7 @@ class PlaybackViewModelTest : BaseTest() {
     @Inject lateinit var navigator: Navigator
     @Inject lateinit var createPlaylist: CreatePlaylist
     @Inject lateinit var playlistsRepo: PlaylistsRepo
-    @Inject lateinit var analytics: FirebaseAnalytics
+    @Inject lateinit var analytics: Analytics
 
     private lateinit var viewModel: PlaybackViewModel
 
@@ -64,12 +63,11 @@ class PlaybackViewModelTest : BaseTest() {
         playbackConnection: PlaybackConnection? = null,
         createPlaylist: CreatePlaylist? = null
     ) = PlaybackViewModel(
-        SavedStateHandle(),
-        playbackConnection ?: this.playbackConnection,
-        createPlaylist ?: this.createPlaylist,
-        snackbarManager,
-        navigator,
-        analytics
+        playbackConnection = playbackConnection ?: this.playbackConnection,
+        createPlaylist = createPlaylist ?: this.createPlaylist,
+        snackbarManager = snackbarManager,
+        navigator = navigator,
+        analytics = analytics
     )
 
     @Before
@@ -80,7 +78,7 @@ class PlaybackViewModelTest : BaseTest() {
 
     @Test
     fun `saveQueueAsPlaylist creates playlist then navigates to playlist detail`() = runTest {
-        viewModel.saveQueueAsPlaylist()
+        viewModel.onSaveQueueAsPlaylist()
         val createdPlaylist = playlistsRepo.playlists().first().first()
         val savedAsPlaylistMessage = SavedAsPlaylistMessage(createdPlaylist)
         snackbarManager.onMessageActionPerformed(savedAsPlaylistMessage)
@@ -90,7 +88,7 @@ class PlaybackViewModelTest : BaseTest() {
     @Test
     fun `saveQueueAsPlaylist fails CreatePlaylist gracefully`() = runTest {
         viewModel = buildVm(createPlaylist = erroneousCreatePlaylist)
-        viewModel.saveQueueAsPlaylist()
+        viewModel.onSaveQueueAsPlaylist()
 
         verify(erroneousCreatePlaylist).invoke(any())
         snackbarManager.messages.test {
@@ -101,7 +99,7 @@ class PlaybackViewModelTest : BaseTest() {
     @Test
     fun `navigateToQueueSource navigates to queue's source's media id`() = runTest {
         viewModel = buildVm(playbackConnection = fakePlaybackConnection)
-        viewModel.navigateToQueueSource()
+        viewModel.onNavigateToQueueSource()
 
         navigator.assertNextRouteContains(fakeQueueTitle.sourceMediaId.value)
     }

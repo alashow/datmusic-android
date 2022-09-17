@@ -10,6 +10,8 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
+import tm.alashow.base.util.RemoteLogger
 import tm.alashow.base.util.extensions.randomUUID
 import tm.alashow.datmusic.domain.entities.PlaylistId
 
@@ -20,7 +22,7 @@ enum class ArtworkImageFolderType(private val path: String) {
         val folder = File(context.applicationInfo.dataDir, "${File.separator}${prefix}${File.separator}${this.path}/")
         if (!folder.exists()) {
             if (!folder.mkdirs()) {
-                error("Failed to create folder: $folder")
+                RemoteLogger.exception(IOException("Failed to create playlists artwork folder: $folder"))
             }
         }
         return folder

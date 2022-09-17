@@ -42,12 +42,11 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.net.toUri
-import coil.compose.AsyncImagePainter.*
+import coil.compose.AsyncImagePainter.State
 import coil.compose.rememberAsyncImagePainter
 import com.google.accompanist.placeholder.material.placeholder
-import com.google.firebase.analytics.FirebaseAnalytics
 import kotlin.random.Random
-import tm.alashow.base.util.event
+import tm.alashow.base.util.Analytics
 import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.datmusic.domain.models.errors.ApiCaptchaError
 import tm.alashow.ui.components.TextRoundedButton
@@ -55,7 +54,7 @@ import tm.alashow.ui.components.shimmer
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.outlinedTextFieldColors
 
-const val MAX_KEY_LENGTH = 20
+internal const val MAX_KEY_LENGTH = 20
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -64,7 +63,7 @@ internal fun CaptchaErrorDialog(
     setCaptchaErrorShown: (Boolean) -> Unit,
     captchaError: ApiCaptchaError,
     onCaptchaSubmit: (String) -> Unit,
-    analytics: FirebaseAnalytics = LocalAnalytics.current,
+    analytics: Analytics = LocalAnalytics.current,
 ) {
     var captchaVersion by remember(captchaError) { mutableStateOf(Random.nextInt()) }
     val (captchaKey, setCaptchaKey) = remember(captchaError) { mutableStateOf(TextFieldValue()) }

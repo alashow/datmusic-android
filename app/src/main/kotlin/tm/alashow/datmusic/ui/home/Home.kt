@@ -22,7 +22,6 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.common.compose.LocalSnackbarHostState
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.playback.PlaybackConnection
@@ -30,6 +29,7 @@ import tm.alashow.datmusic.playback.isActive
 import tm.alashow.datmusic.ui.AppNavigation
 import tm.alashow.datmusic.ui.currentScreenAsState
 import tm.alashow.datmusic.ui.hostNavGraph
+import tm.alashow.datmusic.ui.playback.LocalPlaybackConnection
 import tm.alashow.datmusic.ui.playback.PlaybackMiniControls
 import tm.alashow.navigation.screens.RootScreen
 import tm.alashow.ui.DismissableSnackbarHost
@@ -41,6 +41,9 @@ import tm.alashow.ui.theme.AppTheme
 @Composable
 internal fun Home(
     navController: NavHostController,
+    onPlayingTitleClick: () -> Unit,
+    onPlayingArtistClick: () -> Unit,
+    modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current,
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
 ) {
@@ -49,7 +52,7 @@ internal fun Home(
     val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying)
 
     val isPlayerActive = (playbackState to nowPlaying).isActive
-    BoxWithConstraints {
+    BoxWithConstraints(modifier) {
         val isWideLayout = isWideLayout()
         val maxWidth = maxWidth
         Row(Modifier.fillMaxSize()) {
@@ -57,7 +60,9 @@ internal fun Home(
                 ResizableHomeNavigationRail(
                     availableWidth = maxWidth,
                     selectedTab = selectedTab,
-                    navController = navController
+                    navController = navController,
+                    onPlayingTitleClick = onPlayingTitleClick,
+                    onPlayingArtistClick = onPlayingArtistClick,
                 )
             Scaffold(
                 modifier = Modifier.weight(12f),
@@ -73,7 +78,7 @@ internal fun Home(
                             HomeNavigationBar(
                                 selectedTab = selectedTab,
                                 onNavigationSelected = { selected -> navController.selectRootScreen(selected) },
-                                playerActive = isPlayerActive,
+                                isPlayerActive = isPlayerActive,
                                 modifier = Modifier.fillMaxWidth(),
                             )
                         }

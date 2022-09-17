@@ -31,13 +31,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import tm.alashow.ui.theme.AppTheme
+import tm.alashow.common.compose.previews.CombinedPreview
 import tm.alashow.ui.theme.Blue
 import tm.alashow.ui.theme.Green
 import tm.alashow.ui.theme.Orange
+import tm.alashow.ui.theme.PreviewAppTheme
 import tm.alashow.ui.theme.Primary
 import tm.alashow.ui.theme.Theme
 
@@ -45,8 +45,9 @@ object AppButtonDefaults {
     val OutlinedButtonShape @Composable get() = Theme.shapes.small
 
     @Composable
-    fun outlinedButtonColors(contentColor: Color = MaterialTheme.colorScheme.onSurface) =
-        ButtonDefaults.outlinedButtonColors(contentColor = contentColor)
+    fun outlinedButtonColors(
+        contentColor: Color = MaterialTheme.colorScheme.onSurface
+    ) = ButtonDefaults.outlinedButtonColors(contentColor = contentColor)
 }
 
 @Composable
@@ -110,51 +111,33 @@ fun TextRoundedButton(
     }
 }
 
-@Preview("buttonList")
+@CombinedPreview
 @Composable
-fun ButtonListPreview() {
-    AppTheme {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .height(400.dp)
-                .background(Primary),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            RoundButtonPreview()
-            RectangleButtonPreview()
-            ThemeShapeButtonPreview()
-            Spacer(Modifier.height(8.dp))
-            ColoredRoundButtonPreview(Blue)
-            ColoredRoundButtonPreview(Orange)
-            ColoredRoundButtonPreview(Green)
+fun ButtonListPreview() = PreviewAppTheme {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .height(400.dp)
+            .background(Primary),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        TextRoundedButton(onClick = {}, text = "Action")
+        AppButton(onClick = {}, shape = RectangleShape) {
+            Text("Action")
         }
-    }
-}
-
-@Composable
-fun RoundButtonPreview() {
-    TextRoundedButton(onClick = {}, text = "Action")
-}
-
-@Composable
-fun RectangleButtonPreview() {
-    AppButton(onClick = {}, shape = RectangleShape) {
-        Text("Action")
-    }
-}
-
-@Composable
-fun ThemeShapeButtonPreview() {
-    AppButton(onClick = {}, shape = MaterialTheme.shapes.small) {
-        Text("Action", fontSize = 8.sp)
-    }
-}
-
-@Composable
-fun ColoredRoundButtonPreview(color: Color) {
-    AppButton(onClick = {}, backgroundColor = color) {
-        Text("Action")
+        AppButton(onClick = {}, shape = MaterialTheme.shapes.small) {
+            Text("Action", fontSize = 8.sp)
+        }
+        Spacer(Modifier.height(8.dp))
+        AppButton(onClick = {}, backgroundColor = Blue) {
+            Text("Action")
+        }
+        AppButton(onClick = {}, backgroundColor = Orange) {
+            Text("Action")
+        }
+        AppButton(onClick = {}, backgroundColor = Green) {
+            Text("Action")
+        }
     }
 }

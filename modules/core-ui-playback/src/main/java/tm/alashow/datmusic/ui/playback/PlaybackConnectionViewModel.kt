@@ -4,7 +4,6 @@
  */
 package tm.alashow.datmusic.ui.playback
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,10 +14,7 @@ import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.SET_MEDIA_STATE
 
 @HiltViewModel
-class PlaybackConnectionViewModel @Inject constructor(
-    val playbackConnection: PlaybackConnection,
-    private val handle: SavedStateHandle,
-) : ViewModel() {
+class PlaybackConnectionViewModel @Inject constructor(val playbackConnection: PlaybackConnection) : ViewModel() {
 
     init {
         viewModelScope.launch {

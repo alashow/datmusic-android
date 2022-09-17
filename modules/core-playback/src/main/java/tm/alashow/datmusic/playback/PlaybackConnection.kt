@@ -73,7 +73,7 @@ interface PlaybackConnection {
     val playbackProgress: StateFlow<PlaybackProgressState>
     val playbackMode: StateFlow<PlaybackModeState>
 
-    var mediaController: MediaControllerCompat?
+    val mediaController: MediaControllerCompat?
     val transportControls: MediaControllerCompat.TransportControls?
 
     fun playAudio(audio: Audio, title: QueueTitle = QueueTitle())
@@ -147,7 +147,11 @@ class PlaybackConnectionImpl(
             if (state == NONE_PLAYBACK_STATE || current == NONE_PLAYING || duration < 1)
                 return@collectLatest
 
-            val initial = PlaybackProgressState(duration, position, buffered = audioPlayer.bufferedPosition())
+            val initial = PlaybackProgressState(
+                total = duration,
+                lastPosition = position,
+                buffered = audioPlayer.bufferedPosition()
+            )
             playbackProgress.value = initial
 
             if (state.isPlaying && !state.isBuffering)
