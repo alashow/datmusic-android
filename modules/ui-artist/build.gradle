@@ -8,23 +8,24 @@ import tm.alashow.buildSrc.App
 import tm.alashow.buildSrc.Deps
 
 plugins {
-	id "com.android.library"
-	id "dagger.hilt.android.plugin"
-	id "kotlin-android"
-	id "kotlin-kapt"
-	id "kotlin-parcelize"
+	id("com.android.library")
+	id("dagger.hilt.android.plugin")
+	id("kotlin-android")
+	id("kotlin-kapt")
+	id("kotlin-parcelize")
 }
 
 android {
-	compileSdkVersion App.compileSdkVersion
+	namespace = "tm.alashow.datmusic.ui.artist"
+	compileSdkVersion = App.compileSdkVersion
 
 	defaultConfig {
-		minSdkVersion App.minSdkVersion
+		minSdkVersion(App.minSdkVersion)
 	}
 
 	compileOptions {
-		sourceCompatibility JavaVersion.VERSION_1_8
-		targetCompatibility JavaVersion.VERSION_1_8
+		sourceCompatibility = JavaVersion.VERSION_1_8
+		targetCompatibility = JavaVersion.VERSION_1_8
 	}
 
 	buildFeatures {
@@ -32,7 +33,7 @@ android {
 	}
 
 	composeOptions {
-		kotlinCompilerExtensionVersion Deps.Android.Compose.compilerVersion
+		kotlinCompilerExtensionVersion = Deps.Android.Compose.compilerVersion
 	}
 }
 
@@ -41,14 +42,13 @@ repositories {
 }
 
 dependencies {
+	implementation(project(":modules:common-compose"))
+	implementation(project(":modules:common-ui-theme"))
+	implementation(project(":modules:common-ui-components"))
+	implementation(project(":modules:core-ui-media"))
+	implementation(project(":modules:navigation"))
 
-	implementation project(':modules:common-compose')
-	implementation project(":modules:common-ui-theme")
-	implementation project(":modules:common-ui-components")
-	implementation project(":modules:core-ui-media")
-	implementation project(":modules:navigation")
-
-	implementation Deps.Dagger.hilt
-	kapt Deps.Dagger.compiler
-	kapt Deps.Dagger.hiltCompiler
+	implementation(Deps.Dagger.hilt)
+	kapt(Deps.Dagger.compiler)
+	kapt(Deps.Dagger.hiltCompiler)
 }

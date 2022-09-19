@@ -13,16 +13,13 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.receiveAsFlow
 import tm.alashow.base.R
-import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.i18n.UiMessage
 
 data class SnackbarAction<T>(val label: UiMessage<*>, val argument: T)
 open class SnackbarMessage<T>(val message: UiMessage<*>, val action: SnackbarAction<T>? = null)
 
 @Singleton
-class SnackbarManager @Inject constructor(
-    private val dispatchers: CoroutineDispatchers,
-) {
+class SnackbarManager @Inject constructor() {
 
     private val messagesChannel = Channel<SnackbarMessage<*>>(Channel.CONFLATED)
     private val actionDismissedMessageChannel = Channel<SnackbarMessage<*>>(Channel.CONFLATED)

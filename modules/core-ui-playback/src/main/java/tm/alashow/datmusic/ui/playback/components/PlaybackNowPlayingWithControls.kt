@@ -14,11 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Icon
-import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.PauseCircleFilled
@@ -30,8 +25,10 @@ import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material.icons.filled.ShuffleOn
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,11 +37,10 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import tm.alashow.base.util.extensions.Callback
 import tm.alashow.base.util.extensions.orNA
-import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.artist
@@ -57,14 +53,19 @@ import tm.alashow.datmusic.playback.playPause
 import tm.alashow.datmusic.playback.title
 import tm.alashow.datmusic.playback.toggleRepeatMode
 import tm.alashow.datmusic.playback.toggleShuffleMode
+import tm.alashow.datmusic.ui.playback.LocalPlaybackConnection
+import tm.alashow.datmusic.ui.previews.PreviewDatmusicCore
 import tm.alashow.ui.components.IconButton
+import tm.alashow.ui.material.ContentAlpha
+import tm.alashow.ui.material.ProvideContentAlpha
 import tm.alashow.ui.simpleClickable
 import tm.alashow.ui.theme.AppTheme
+import tm.alashow.ui.theme.Theme
 import tm.alashow.ui.theme.disabledAlpha
 
 object PlaybackNowPlayingDefaults {
-    val titleTextStyle @Composable get() = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold)
-    val artistTextStyle @Composable get() = MaterialTheme.typography.subtitle1
+    val titleTextStyle @Composable get() = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
+    val artistTextStyle @Composable get() = MaterialTheme.typography.titleMedium
 }
 
 @Composable
@@ -72,8 +73,8 @@ internal fun PlaybackNowPlayingWithControls(
     nowPlaying: MediaMetadataCompat,
     playbackState: PlaybackStateCompat,
     contentColor: Color,
-    onTitleClick: Callback,
-    onArtistClick: Callback,
+    onTitleClick: () -> Unit,
+    onArtistClick: () -> Unit,
     modifier: Modifier = Modifier,
     titleTextStyle: TextStyle = PlaybackNowPlayingDefaults.titleTextStyle,
     artistTextStyle: TextStyle = PlaybackNowPlayingDefaults.artistTextStyle,
@@ -103,31 +104,31 @@ internal fun PlaybackNowPlayingWithControls(
         )
     }
 }
+
 @Composable
 internal fun PlaybackNowPlaying(
     nowPlaying: MediaMetadataCompat,
-    onTitleClick: Callback,
-    onArtistClick: Callback,
+    onTitleClick: () -> Unit,
+    onArtistClick: () -> Unit,
     modifier: Modifier = Modifier,
     titleTextStyle: TextStyle = PlaybackNowPlayingDefaults.titleTextStyle,
     artistTextStyle: TextStyle = PlaybackNowPlayingDefaults.artistTextStyle,
     horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
 ) {
-    val title = nowPlaying.title
     Column(
         horizontalAlignment = horizontalAlignment,
         modifier = modifier
     ) {
         Text(
-            title.orNA(),
+            text = nowPlaying.title.orNA(),
             style = titleTextStyle,
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,
             modifier = Modifier.simpleClickable(onClick = onTitleClick)
         )
-        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+        ProvideContentAlpha(ContentAlpha.medium) {
             Text(
-                nowPlaying.artist.orNA(),
+                text = nowPlaying.artist.orNA(),
                 style = artistTextStyle,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
@@ -136,6 +137,7 @@ internal fun PlaybackNowPlaying(
         }
     }
 }
+
 @Composable
 internal fun PlaybackControls(
     playbackState: PlaybackStateCompat,
@@ -252,4 +254,20 @@ internal fun PlaybackControls(
             )
         }
     }
+}
+
+@Preview
+@Composable
+fun PlaybackNowPlayingWithControlsPreview() = PreviewDatmusicCore {
+    val playbackConnection = LocalPlaybackConnection.current
+    val nowPlaying by rememberFlowWithLifecycle(playbackConnection.nowPlaying)
+    val playbackState by rememberFlowWithLifecycle(playbackConnection.playbackState)
+
+    PlaybackNowPlayingWithControls(
+        nowPlaying = nowPlaying,
+        playbackState = playbackState,
+        contentColor = Theme.colorScheme.onSurface,
+        onTitleClick = {},
+        onArtistClick = {},
+    )
 }

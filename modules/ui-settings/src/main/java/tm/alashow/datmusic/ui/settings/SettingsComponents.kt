@@ -11,10 +11,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material.ButtonColors
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,20 +21,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
-import com.google.firebase.analytics.FirebaseAnalytics
+import tm.alashow.base.util.Analytics
 import tm.alashow.base.util.IntentUtils
-import tm.alashow.base.util.event
-import tm.alashow.base.util.extensions.Callback
 import tm.alashow.common.compose.LocalAnalytics
+import tm.alashow.ui.components.AppOutlinedButton
 import tm.alashow.ui.components.ProgressIndicatorSmall
 import tm.alashow.ui.theme.AppTheme
-import tm.alashow.ui.theme.outlinedButtonColors
+import tm.alashow.ui.theme.Theme
 
 @Composable
 internal fun SettingsSectionLabel(text: String, modifier: Modifier = Modifier) {
     Text(
-        text, style = MaterialTheme.typography.h6,
-        color = MaterialTheme.colors.secondary,
+        text = text,
+        style = Theme.typography.h6,
+        color = MaterialTheme.colorScheme.secondary,
         modifier = modifier.padding(AppTheme.specs.inputPaddings)
     )
 }
@@ -55,14 +53,14 @@ internal fun SettingsLinkItem(
     label: String,
     text: String,
     link: String,
-    analytics: FirebaseAnalytics = LocalAnalytics.current
+    analytics: Analytics = LocalAnalytics.current
 ) {
     SettingsItem(label, verticalAlignment = Alignment.Top) {
         val context = LocalContext.current
         ClickableText(
             text = buildAnnotatedString { append(text) },
             style = TextStyle.Default.copy(
-                color = MaterialTheme.colors.onBackground,
+                color = MaterialTheme.colorScheme.onBackground,
                 textAlign = TextAlign.End
             ),
             onClick = {
@@ -92,7 +90,7 @@ internal fun SettingsItem(
     ) {
         Text(
             label,
-            style = MaterialTheme.typography.subtitle1,
+            style = MaterialTheme.typography.titleMedium,
             modifier = labelModifier
                 .padding(end = AppTheme.specs.paddingTiny)
                 .weight(labelWeight)
@@ -110,13 +108,11 @@ internal fun SettingsLoadingButton(
     text: String,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    colors: ButtonColors = outlinedButtonColors(),
-    onClick: Callback,
+    onClick: () -> Unit,
 ) {
-    OutlinedButton(
+    AppOutlinedButton(
         onClick = onClick,
         enabled = enabled && !isLoading,
-        colors = colors,
         modifier = modifier,
     ) {
         if (isLoading)

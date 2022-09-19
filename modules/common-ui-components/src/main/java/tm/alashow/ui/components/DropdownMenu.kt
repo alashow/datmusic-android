@@ -5,7 +5,6 @@
 package tm.alashow.ui.components
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -13,21 +12,19 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -40,10 +37,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
-import tm.alashow.ui.theme.AppTheme
+import tm.alashow.ui.material.ContentAlpha
+import tm.alashow.ui.material.ProvideContentAlpha
+import tm.alashow.ui.theme.Theme
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun <T> SelectableDropdownMenu(
     items: List<T>,
@@ -64,20 +63,26 @@ fun <T> SelectableDropdownMenu(
     val dropIcon = if (expanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown
 
     Column(modifier) {
-        OutlinedButton(
+        AppOutlinedButton(
             onClick = { expanded = !expanded },
             colors = ButtonDefaults.textButtonColors(contentColor = LocalContentColor.current),
-            contentPadding = PaddingValues(AppTheme.specs.paddingSmall),
+            contentPadding = PaddingValues(
+                start = Theme.specs.padding,
+                end = if (iconOnly) Theme.specs.padding else Theme.specs.paddingSmall,
+                top = Theme.specs.paddingSmall,
+                bottom = Theme.specs.paddingSmall,
+            ),
             border = border,
         ) {
             if (leadingIcon != null) {
                 Icon(
                     painter = rememberVectorPainter(leadingIcon),
                     contentDescription = null,
-                    modifier = Modifier.width(AppTheme.specs.iconSizeTiny),
+                    modifier = Modifier
+                        .width(Theme.specs.iconSizeTiny),
                     tint = leadingIconColor,
                 )
-                if (!iconOnly) Spacer(Modifier.width(AppTheme.specs.paddingSmall))
+                if (!iconOnly) Spacer(Modifier.width(Theme.specs.paddingSmall))
             }
             if (!iconOnly) {
                 val selectedText = when (selectedItems.size) {
@@ -86,7 +91,7 @@ fun <T> SelectableDropdownMenu(
                     else -> multipleSelectionsLabel(selectedItems)
                 }
                 Text(text = selectedText)
-                Spacer(Modifier.width(AppTheme.specs.paddingSmall))
+                Spacer(Modifier.width(Theme.specs.paddingSmall))
                 Icon(painter = rememberVectorPainter(dropIcon), contentDescription = null)
             }
         }
@@ -101,29 +106,39 @@ fun <T> SelectableDropdownMenu(
                         expanded = !expanded
                         onItemSelect(item)
                     },
-                ) {
-                    Column {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            val contentColor = if (item in selectedItems) MaterialTheme.colors.secondary else MaterialTheme.colors.onBackground
-                            CompositionLocalProvider(LocalContentColor provides contentColor) {
-                                Text(itemLabelMapper(item))
-                                if (itemSuffixMapper != null)
-                                    itemSuffixMapper(item)
+                    text = {
+                        Column {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                val isSelected = item in selectedItems
+                                val contentColor = when {
+                                    isSelected -> MaterialTheme.colorScheme.secondary
+                                    else -> MaterialTheme.colorScheme.onSurface
+                                }
+                                CompositionLocalProvider(LocalContentColor provides contentColor) {
+                                    Text(
+                                        text = itemLabelMapper(item),
+                                        style = MaterialTheme.typography.bodyMedium.run {
+                                            if (isSelected) copy(fontWeight = FontWeight.Bold) else this
+                                        },
+                                    )
+                                    if (itemSuffixMapper != null)
+                                        itemSuffixMapper(item)
+                                }
+                            }
+
+                            if (subtitles != null) {
+                                val subtitle = subtitles[index]
+                                if (subtitle != null)
+                                    ProvideContentAlpha(ContentAlpha.medium) {
+                                        Text(text = subtitle, style = MaterialTheme.typography.bodySmall)
+                                    }
                             }
                         }
-
-                        if (subtitles != null) {
-                            val subtitle = subtitles[index]
-                            if (subtitle != null)
-                                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                                    Text(text = subtitle, style = MaterialTheme.typography.caption)
-                                }
-                        }
                     }
-                }
+                )
             }
         }
     }

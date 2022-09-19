@@ -4,6 +4,7 @@
  */
 package tm.alashow.base.util.extensions
 
+import android.content.Intent
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
@@ -22,8 +23,6 @@ fun Array<out Any>.asString(): String {
 }
 
 typealias Toggle = (Boolean) -> Unit
-
-val pass: Unit = Unit
 
 /**
  * Cast given variable to [T] and run [block] if it's the same cast as [T].
@@ -44,8 +43,8 @@ fun randomUUID(): String = UUID.randomUUID().toString()
 /**
  * Run [block] only if [api] is >= than device's SDK version.
  */
-fun whenApiLevel(api: Int, block: () -> Unit) {
-    if (api >= android.os.Build.VERSION.SDK_INT) {
+fun onlyOnApiLevel(api: Int, block: () -> Unit) {
+    if (api >= SDK_INT) {
         block()
     }
 }
@@ -58,9 +57,18 @@ fun isOreo() = SDK_INT >= VERSION_CODES.O
 
 operator fun Bundle?.plus(other: Bundle?) = this.apply { (this ?: Bundle()).putAll(other ?: Bundle()) }
 
-@OptIn(ExperimentalStdlibApi::class)
 fun Bundle.readable() = buildList {
     keySet().forEach {
         add("key=$it, value=${get(it)}")
     }
 }.joinToString()
+
+inline fun <reified T> Intent.parcelable(key: String): T? = when {
+    SDK_INT >= 33 -> getParcelableExtra(key, T::class.java)
+    else -> @Suppress("DEPRECATION") getParcelableExtra(key) as? T
+}
+
+inline fun <reified T> Bundle.parcelable(key: String): T? = when {
+    SDK_INT >= 33 -> getParcelable(key, T::class.java)
+    else -> @Suppress("DEPRECATION") getParcelable(key) as? T
+}

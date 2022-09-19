@@ -33,6 +33,7 @@ android {
 	composeOptions {
 		kotlinCompilerExtensionVersion Deps.Android.Compose.compilerVersion
 	}
+	namespace 'tm.alashow.datmusic.ui.settings'
 }
 
 repositories {
@@ -40,12 +41,12 @@ repositories {
 }
 
 dependencies {
-	implementation project(":modules:core-library")
-	implementation project(':modules:common-compose')
-	implementation project(":modules:common-ui-theme")
-	implementation project(":modules:common-ui-components")
-	implementation project(":modules:core-ui-downloader")
-	implementation project(":modules:navigation")
+	implementation(project(":modules:core-library"))
+	implementation(project(":modules:common-compose"))
+	implementation(project(":modules:common-ui-theme"))
+	implementation(project(":modules:common-ui-components"))
+	implementation(project(":modules:core-ui-downloader"))
+	implementation(project(":modules:navigation"))
 
 	implementation Deps.Dagger.hilt
 	kapt Deps.Dagger.compiler

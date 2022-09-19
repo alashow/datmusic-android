@@ -12,15 +12,12 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -32,7 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.isSpecified
-import coil.compose.AsyncImagePainter.*
+import coil.compose.AsyncImagePainter.State
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 import coil.compose.rememberAsyncImagePainter
@@ -42,6 +39,10 @@ import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.color
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.shimmer
+import tm.alashow.common.compose.previews.CombinedPreview
+import tm.alashow.ui.material.ContentAlpha
+import tm.alashow.ui.theme.PreviewAppTheme
+import tm.alashow.ui.theme.Theme
 
 @Composable
 fun CoverImage(
@@ -49,8 +50,9 @@ fun CoverImage(
     modifier: Modifier = Modifier,
     imageModifier: Modifier = Modifier,
     size: Dp = Dp.Unspecified,
-    backgroundColor: Color = PlaceholderDefaults.color(),
-    contentColor: Color = MaterialTheme.colors.secondary,
+    // TODO: remove when placeholder uses M3
+    backgroundColor: Color = PlaceholderDefaults.color(backgroundColor = Theme.colors.elevatedSurface),
+    contentColor: Color = MaterialTheme.colorScheme.secondary,
     contentScale: ContentScale = ContentScale.Crop,
     shape: Shape = MaterialTheme.shapes.small,
     icon: VectorPainter = rememberVectorPainter(Icons.Default.MusicNote),
@@ -61,7 +63,7 @@ fun CoverImage(
 ) {
     val sizeMod = if (size.isSpecified) Modifier.size(size) else Modifier
     Surface(
-        elevation = elevation,
+        tonalElevation = elevation,
         shape = shape,
         color = backgroundColor,
         modifier = modifier
@@ -113,4 +115,12 @@ fun CoverImage(
             }
         }
     }
+}
+
+@CombinedPreview
+@Composable
+fun CoverImagePreview() = PreviewAppTheme {
+    CoverImage(
+        data = "https://api.lorem.space/image/album?w=1000&h=1000"
+    )
 }

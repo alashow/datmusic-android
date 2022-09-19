@@ -7,9 +7,9 @@ package tm.alashow.datmusic.ui.library.items
 import tm.alashow.datmusic.domain.entities.LibraryItem
 import tm.alashow.datmusic.ui.library.R
 
-typealias LibraryItemActionHandler = (LibraryItemAction) -> Unit
+internal typealias LibraryItemActionHandler = (LibraryItemAction) -> Unit
 
-sealed class LibraryItemAction(open val item: LibraryItem) {
+internal sealed class LibraryItemAction(open val item: LibraryItem) {
     data class Edit(override val item: LibraryItem) : LibraryItemAction(item)
     data class Delete(override val item: LibraryItem) : LibraryItemAction(item)
     data class Download(override val item: LibraryItem) : LibraryItemAction(item)

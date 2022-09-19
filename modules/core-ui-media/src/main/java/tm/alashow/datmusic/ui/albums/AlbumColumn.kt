@@ -8,33 +8,34 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Icon
-import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Album
 import androidx.compose.material.icons.filled.Explicit
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.placeholder.material.placeholder
-import com.google.firebase.analytics.FirebaseAnalytics
-import tm.alashow.base.util.click
+import tm.alashow.base.util.Analytics
 import tm.alashow.common.compose.LocalAnalytics
+import tm.alashow.common.compose.previews.CombinedPreview
+import tm.alashow.datmusic.data.SampleData
 import tm.alashow.datmusic.domain.entities.Album
+import tm.alashow.datmusic.ui.previews.PreviewDatmusicCore
 import tm.alashow.ui.components.CoverImage
+import tm.alashow.ui.components.placeholder
 import tm.alashow.ui.components.shimmer
+import tm.alashow.ui.material.ContentAlpha
+import tm.alashow.ui.material.ProvideContentAlpha
 import tm.alashow.ui.theme.AppTheme
 
 object AlbumsDefaults {
@@ -47,7 +48,7 @@ fun AlbumColumn(
     modifier: Modifier = Modifier,
     imageSize: Dp = AlbumsDefaults.imageSize,
     isPlaceholder: Boolean = false,
-    analytics: FirebaseAnalytics = LocalAnalytics.current,
+    analytics: Analytics = LocalAnalytics.current,
     onClick: () -> Unit = {},
 ) {
     val loadingModifier = Modifier.placeholder(
@@ -61,7 +62,6 @@ fun AlbumColumn(
                 analytics.click("album", mapOf("id" to album.id))
                 if (!isPlaceholder) onClick()
             }
-            .fillMaxWidth()
             .padding(AppTheme.specs.padding)
     ) {
         CoverImage(
@@ -74,8 +74,8 @@ fun AlbumColumn(
             verticalArrangement = Arrangement.spacedBy(2.dp),
             modifier = Modifier.width(imageSize)
         ) {
-            Text(album.title, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = loadingModifier, style = MaterialTheme.typography.body1)
-            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+            Text(album.title, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = loadingModifier, style = MaterialTheme.typography.bodyLarge)
+            ProvideContentAlpha(ContentAlpha.medium) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingTiny),
                     verticalAlignment = Alignment.CenterVertically
@@ -87,7 +87,7 @@ fun AlbumColumn(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = loadingModifier,
-                        style = MaterialTheme.typography.body2
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 }
 
@@ -98,7 +98,7 @@ fun AlbumColumn(
                     ) {
                         if (album.explicit)
                             ExplicitIcon()
-                        Text(album.year.toString(), modifier = loadingModifier, style = MaterialTheme.typography.body2)
+                        Text(album.year.toString(), modifier = loadingModifier, style = MaterialTheme.typography.bodyMedium)
                     }
             }
         }
@@ -111,6 +111,14 @@ private fun ExplicitIcon() {
         painter = rememberVectorPainter(Icons.Filled.Explicit),
         contentDescription = null,
         modifier = Modifier.size(16.dp),
-        tint = MaterialTheme.colors.onBackground.copy(alpha = ContentAlpha.medium),
+        tint = MaterialTheme.colorScheme.onBackground.copy(alpha = ContentAlpha.medium),
     )
+}
+
+@CombinedPreview
+@Composable
+fun AlbumColumnPreview() = PreviewDatmusicCore {
+    Surface {
+        AlbumColumn(SampleData.album())
+    }
 }

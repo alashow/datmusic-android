@@ -12,9 +12,14 @@ import kotlinx.serialization.Serializable
 enum class DarkModePreference { ON, OFF, AUTO }
 enum class ColorPalettePreference {
     Default,
+    Dynamic,
+    Dynamic_Variant,
     Asphalt,
     Black, Black_Yellow,
-    Gray, Gray_Green, Blue_Grey,
+    Gray, Gray_Green, Blue_Grey;
+
+    val isDynamic: Boolean
+        get() = this == Dynamic || this == Dynamic_Variant
 }
 
 /**

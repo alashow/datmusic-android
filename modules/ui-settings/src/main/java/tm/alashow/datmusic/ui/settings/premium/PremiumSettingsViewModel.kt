@@ -4,7 +4,6 @@
  */
 package tm.alashow.datmusic.ui.settings.premium
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,9 +17,7 @@ import tm.alashow.base.billing.SubscriptionsNotEnabledError
 import tm.alashow.base.util.extensions.stateInDefault
 
 @HiltViewModel
-class PremiumSettingsViewModel @Inject constructor(
-    handle: SavedStateHandle,
-) : ViewModel() {
+internal class PremiumSettingsViewModel @Inject constructor() : ViewModel() {
 
     private val premiumStatusState = MutableStateFlow<PremiumStatus>(PremiumStatus.Unknown)
     val premiumStatus = premiumStatusState.stateInDefault(viewModelScope, PremiumStatus.Unknown)

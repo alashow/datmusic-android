@@ -4,7 +4,6 @@
  */
 package tm.alashow.ui.components
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,17 +12,16 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.ProvideTextStyle
-import androidx.compose.material.Text
-import androidx.compose.material.contentColorFor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.ProvideTextStyle
+import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
@@ -33,8 +31,9 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.insets.statusBarsPadding
 import timber.log.Timber
+import tm.alashow.ui.material.ContentAlpha
+import tm.alashow.ui.material.ProvideContentAlpha
 import tm.alashow.ui.simpleClickable
 import tm.alashow.ui.theme.AppBarAlphas
 import tm.alashow.ui.theme.AppTheme
@@ -42,13 +41,11 @@ import tm.alashow.ui.theme.topAppBarTitleStyle
 import tm.alashow.ui.theme.topAppBarTitleStyleSmall
 import tm.alashow.ui.theme.translucentSurfaceColor
 
-val AppBarHeight = 56.dp
 private val AppBarHorizontalPadding = 4.dp
 
 private val TitleInsetWithoutIcon = Modifier.width(16.dp - AppBarHorizontalPadding)
 private val TitleIconModifier = Modifier.width(72.dp - AppBarHorizontalPadding)
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AppTopBar(
     title: String,
@@ -83,7 +80,7 @@ fun AppTopBar(
                 if (filterVisible) filterContent()
                 else {
                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(5f)) {
-                        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
+                        ProvideContentAlpha(ContentAlpha.high) {
                             if (navigationIcon == null) Spacer(TitleInsetWithoutIcon)
                             else Box(TitleIconModifier) { navigationIcon() }
                             Row(titleModifier.alpha(collapsedProgress)) {
@@ -110,7 +107,7 @@ private fun AppBarActionsRow(
     modifier: Modifier = Modifier,
     actions: @Composable RowScope.() -> Unit,
 ) {
-    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+    ProvideContentAlpha(ContentAlpha.medium) {
         Row(
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically,

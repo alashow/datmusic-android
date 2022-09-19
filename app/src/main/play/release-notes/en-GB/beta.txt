@@ -1,3 +1,11 @@
+v2.3.0-beta.3
+- UI fixes & optimizations
+
+v2.3.0-beta.2
+- Migrate to Material 3 & add support for Dynamic color palette (only on Android 12+)
+- Scroll to last queued download when opening Downloads
+- Small bug fixes
+
 v2.3.0-alpha.1
 - Swipe actions: swipe left or right audio rows to play next, download, add to playlist, etc.
 - Don't queue snackbar message before same message is dismissed.

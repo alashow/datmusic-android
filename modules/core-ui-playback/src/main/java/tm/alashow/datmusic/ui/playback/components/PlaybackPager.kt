@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.util.lerp
@@ -24,17 +25,18 @@ import kotlin.math.absoluteValue
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
-import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.models.toAudio
+import tm.alashow.datmusic.ui.playback.LocalPlaybackConnection
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 internal fun PlaybackPager(
     nowPlaying: MediaMetadataCompat,
     modifier: Modifier = Modifier,
+    verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
     pagerState: PagerState = rememberPagerState(),
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
     content: @Composable (Audio, Int, Modifier) -> Unit,
@@ -72,9 +74,10 @@ internal fun PlaybackPager(
         count = playbackQueue.size,
         modifier = modifier,
         state = pagerState,
-        key = { playbackQueue.audios.getOrNull(it) ?: it },
+        key = { playbackQueue.getOrNull(it) ?: it },
+        verticalAlignment = verticalAlignment,
     ) { page ->
-        val currentAudio = playbackQueue.audios.getOrNull(page) ?: Audio()
+        val currentAudio = playbackQueue.getOrNull(page) ?: Audio()
 
         val pagerMod = Modifier.graphicsLayer {
             val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue

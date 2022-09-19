@@ -4,21 +4,23 @@
  */
 package tm.alashow.datmusic.ui.playback
 
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.hilt.navigation.compose.hiltViewModel
-import tm.alashow.common.compose.LocalPlaybackConnection
+import tm.alashow.datmusic.playback.PlaybackConnection
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun PlaybackHost(
-    viewModel: PlaybackConnectionViewModel = hiltViewModel(),
+fun PlaybackHost(content: @Composable () -> Unit) {
+    PlaybackHost(
+        playbackConnection = hiltViewModel<PlaybackConnectionViewModel>().playbackConnection,
+        content = content,
+    )
+}
+
+@Composable
+private fun PlaybackHost(
+    playbackConnection: PlaybackConnection,
     content: @Composable () -> Unit
 ) {
-    CompositionLocalProvider(
-        LocalPlaybackConnection provides viewModel.playbackConnection,
-    ) {
-        content()
-    }
+    CompositionLocalProvider(LocalPlaybackConnection provides playbackConnection) { content() }
 }

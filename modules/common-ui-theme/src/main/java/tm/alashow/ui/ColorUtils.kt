@@ -12,7 +12,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
@@ -38,11 +38,11 @@ import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
-import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import tm.alashow.base.imageloading.getBitmap
+import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.contrastComposite
 import tm.alashow.ui.theme.toColor
 
@@ -61,10 +61,10 @@ private val adaptiveColorCache = mutableMapOf<String, Color>()
 @Composable
 fun adaptiveColor(
     imageData: Any?,
-    fallback: Color = MaterialTheme.colors.secondary.contrastComposite(),
+    fallback: Color = MaterialTheme.colorScheme.secondary.contrastComposite(),
     initial: Color = fallback,
     animationSpec: AnimationSpec<Color> = ADAPTIVE_COLOR_ANIMATION,
-    gradientEndColor: Color = if (MaterialTheme.colors.isLight) Color.White else Color.Black,
+    gradientEndColor: Color = if (AppTheme.colors.isLightTheme) Color.White else Color.Black,
 ): State<AdaptiveColorResult> {
     val context = LocalContext.current
 
@@ -89,16 +89,15 @@ fun adaptiveColor(
     )
 }
 
-@OptIn(ExperimentalTime::class)
 @Composable
 fun adaptiveColor(
     image: Bitmap? = null,
     imageSource: Any? = image,
-    fallback: Color = MaterialTheme.colors.secondary.contrastComposite(),
+    fallback: Color = MaterialTheme.colorScheme.secondary.contrastComposite(),
     initial: Color = fallback,
     animationSpec: AnimationSpec<Color> = ADAPTIVE_COLOR_ANIMATION,
-    gradientEndColor: Color = if (MaterialTheme.colors.isLight) Color.White else Color.Black,
-    isDarkColors: Boolean = !MaterialTheme.colors.isLight
+    gradientEndColor: Color = if (AppTheme.colors.isLightTheme) Color.White else Color.Black,
+    isDarkColors: Boolean = !AppTheme.colors.isLightTheme
 ): State<AdaptiveColorResult> {
     val imageHash = imageSource.hashCode().toString()
     val initialAccent = adaptiveColorCache.getOrElse(imageHash) { initial }
@@ -254,4 +253,19 @@ private fun Pair<Color, Color>.mergeColors(): Color {
     r = r.copy(green = b.green * b.alpha / r.alpha + a.green * a.alpha * (1 - b.alpha) / r.alpha)
     r = r.copy(blue = b.blue * b.alpha / r.alpha + a.blue * a.alpha * (1 - b.alpha) / r.alpha)
     return r
+}
+
+fun blendColors(
+    @ColorInt color: Int,
+    @ColorInt otherColor: Int,
+    @FloatRange(from = 0.0, to = 1.0) percentage: Float
+): Int {
+    return ColorUtils.blendARGB(color, otherColor, percentage)
+}
+
+fun Color.blendWith(
+    otherColor: Color,
+    @FloatRange(from = 0.0, to = 1.0) percentage: Float
+): Color {
+    return blendColors(toArgb(), otherColor.toArgb(), percentage).toColor()
 }

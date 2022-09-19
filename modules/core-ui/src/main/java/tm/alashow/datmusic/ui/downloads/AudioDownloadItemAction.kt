@@ -2,10 +2,10 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.datmusic.ui.downloads.audio
+package tm.alashow.datmusic.ui.downloads
 
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
-import tm.alashow.datmusic.ui.downloads.R
+import tm.alashow.datmusic.ui.R
 
 sealed class AudioDownloadItemAction(open val audio: AudioDownloadItem) {
     data class Play(override val audio: AudioDownloadItem) : AudioDownloadItemAction(audio)

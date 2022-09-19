@@ -4,21 +4,16 @@
  */
 package tm.alashow.base.util
 
-import android.content.Context
-import android.os.Bundle
 import android.util.Log
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.filter
 import timber.log.Timber
 import tm.alashow.base.util.extensions.asString
-import tm.alashow.base.util.extensions.isNotNullandNotBlank
 
 fun report(throwable: Throwable?) =
-    throwable?.run { FirebaseCrashlytics.getInstance().recordException(throwable) }
+    throwable?.run {
+        Timber.e("Reporting exception: $this")
+        FirebaseCrashlytics.getInstance().recordException(throwable)
+    }
 
 private class LogException(message: String) : Exception(message)
 
@@ -51,25 +46,3 @@ object RemoteLogger {
 
     fun apiError(message: String?, vararg args: Any) = error(message, "API.Error", args)
 }
-
-typealias LogArgs = Map<String, Any?>?
-
-fun FirebaseAnalytics.event(event: String, args: LogArgs = null) {
-    Timber.d("Logging event: $event, $args")
-    logEvent(event.replace(".", "_").lowercase(), Bundle().apply { args?.forEach { putString(it.key, it.value.toString()) } })
-}
-
-fun FirebaseAnalytics.click(event: String, args: LogArgs = null) = event("click.$event", args)
-
-fun Context.event(event: String, args: LogArgs = null) = FirebaseAnalytics.getInstance(this).event(event, args)
-fun Context.click(event: String, args: LogArgs = null) = FirebaseAnalytics.getInstance(this).click(event, args)
-
-suspend fun Flow<String?>.searchQueryAnalytics(
-    analytics: FirebaseAnalytics,
-    prefix: String,
-    debounceMillis: Long = 3000L,
-) = filter { it.isNotNullandNotBlank() }
-    .debounce(debounceMillis)
-    .collectLatest {
-        analytics.event("$prefix.query", mapOf("query" to it))
-    }

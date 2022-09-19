@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
@@ -21,11 +22,9 @@ import androidx.compose.ui.graphics.vector.VectorPainter
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.insets.statusBarsPadding
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import tm.alashow.base.util.extensions.Callback
 import tm.alashow.datmusic.ui.components.CoverHeaderDefaults
 import tm.alashow.datmusic.ui.components.CoverHeaderRow
 import tm.alashow.ui.simpleClickable
@@ -53,9 +52,10 @@ class MediaDetailHeader {
         headerBackgroundMod: Modifier,
         title: String,
         artwork: Any?,
-        onTitleClick: Callback,
-        headerCoverIcon: VectorPainter? = null,
-        extraHeaderContent: @Composable (ColumnScope.() -> Unit),
+        onTitleClick: () -> Unit,
+        headerCoverIcon: VectorPainter?,
+        extraHeaderContent: (@Composable (ColumnScope.() -> Unit))?,
+        modifier: Modifier = Modifier,
     ) {
         list.item {
             val headerOffsetProgress = coverHeaderScrollProgress(listState)
@@ -63,8 +63,9 @@ class MediaDetailHeader {
             Column(
                 verticalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall),
                 modifier = headerBackgroundMod
+                    .then(modifier)
                     .padding(AppTheme.specs.padding)
-                    .statusBarsPadding(),
+                    .statusBarsPadding()
             ) {
                 CoverHeaderRow(
                     title = title,
@@ -73,7 +74,7 @@ class MediaDetailHeader {
                     offsetProgress = headerOffsetProgress,
                     titleModifier = Modifier.simpleClickable(onClick = onTitleClick),
                 )
-                extraHeaderContent()
+                extraHeaderContent?.invoke(this)
             }
         }
     }

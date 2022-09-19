@@ -6,7 +6,6 @@ package tm.alashow.datmusic.ui.downloads.audio
 
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Delete
@@ -14,6 +13,7 @@ import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,6 +30,9 @@ import tm.alashow.datmusic.ui.audios.AUDIO_SWIPE_ACTION_WEIGHT_MEDIUM
 import tm.alashow.datmusic.ui.audios.AUDIO_SWIPE_ACTION_WEIGHT_NORMAL
 import tm.alashow.datmusic.ui.audios.addAudioToPlaylistSwipeAction
 import tm.alashow.datmusic.ui.audios.addAudioToQueueSwipeAction
+import tm.alashow.datmusic.ui.downloader.AudioDownloadItemActionHandler
+import tm.alashow.datmusic.ui.downloader.LocalAudioDownloadItemActionHandler
+import tm.alashow.datmusic.ui.downloads.AudioDownloadItemAction
 import tm.alashow.ui.DEFAULT_SWIPE_ACTION_THRESHOLD
 import tm.alashow.ui.contentColor
 import tm.alashow.ui.theme.AppTheme
@@ -38,7 +41,7 @@ import tm.alashow.ui.theme.Orange
 import tm.alashow.ui.theme.Red
 
 @Composable
-fun AudioDownloadBoxWithSwipeActions(
+internal fun AudioDownloadBoxWithSwipeActions(
     audioDownloadItem: AudioDownloadItem,
     onAddToPlaylist: () -> Unit,
     content: @Composable BoxScope.() -> Unit,

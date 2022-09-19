@@ -7,13 +7,12 @@ package tm.alashow.base.ui.base.vm
 import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.analytics.FirebaseAnalytics
 import javax.inject.Inject
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
-import tm.alashow.base.util.event
+import tm.alashow.base.util.Analytics
 import tm.alashow.data.PreferencesStore
 
 open class ResizableLayoutViewModel @Inject constructor(
@@ -21,7 +20,7 @@ open class ResizableLayoutViewModel @Inject constructor(
     preferenceKey: Preferences.Key<Float>,
     defaultDragOffset: Float = 0f,
     private val analyticsPrefix: String,
-    private val analytics: FirebaseAnalytics,
+    private val analytics: Analytics,
 ) : ViewModel() {
 
     private val dragOffsetState = preferencesStore.getStateFlow(

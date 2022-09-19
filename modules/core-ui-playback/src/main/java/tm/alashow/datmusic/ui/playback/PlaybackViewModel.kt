@@ -4,10 +4,8 @@
  */
 package tm.alashow.datmusic.ui.playback
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.catch
@@ -17,7 +15,7 @@ import kotlinx.coroutines.launch
 import tm.alashow.base.ui.SnackbarAction
 import tm.alashow.base.ui.SnackbarManager
 import tm.alashow.base.ui.SnackbarMessage
-import tm.alashow.base.util.event
+import tm.alashow.base.util.Analytics
 import tm.alashow.base.util.toUiMessage
 import tm.alashow.datmusic.data.DatmusicSearchParams
 import tm.alashow.datmusic.data.interactors.playlist.CreatePlaylist
@@ -39,15 +37,14 @@ data class SavedAsPlaylistMessage(val playlist: Playlist) :
 
 @HiltViewModel
 class PlaybackViewModel @Inject constructor(
-    handle: SavedStateHandle,
     private val playbackConnection: PlaybackConnection,
     private val createPlaylist: CreatePlaylist,
     private val snackbarManager: SnackbarManager,
     private val navigator: Navigator,
-    private val analytics: FirebaseAnalytics
+    private val analytics: Analytics,
 ) : ViewModel() {
 
-    fun saveQueueAsPlaylist() = viewModelScope.launch {
+    fun onSaveQueueAsPlaylist() = viewModelScope.launch {
         val queue = playbackConnection.playbackQueue.first()
         analytics.event(
             "playbackSheet.saveQueueAsPlaylist",
@@ -65,7 +62,7 @@ class PlaybackViewModel @Inject constructor(
             }
     }
 
-    fun navigateToQueueSource() = viewModelScope.launch {
+    fun onNavigateToQueueSource() = viewModelScope.launch {
         val queue = playbackConnection.playbackQueue.first()
         val (sourceMediaType, sourceMediaValue) = queue.title.asQueueTitle().sourceMediaId
         analytics.event(

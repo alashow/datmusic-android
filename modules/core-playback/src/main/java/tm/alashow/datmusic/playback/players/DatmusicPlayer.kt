@@ -11,13 +11,21 @@ import android.content.Intent
 import android.media.session.PlaybackState
 import android.os.Bundle
 import android.support.v4.media.MediaMetadataCompat
-import android.support.v4.media.MediaMetadataCompat.*
+import android.support.v4.media.MediaMetadataCompat.METADATA_KEY_ALBUM_ART
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import android.support.v4.media.session.PlaybackStateCompat.*
+import android.support.v4.media.session.PlaybackStateCompat.REPEAT_MODE_ALL
+import android.support.v4.media.session.PlaybackStateCompat.REPEAT_MODE_ONE
+import android.support.v4.media.session.PlaybackStateCompat.SHUFFLE_MODE_ALL
+import android.support.v4.media.session.PlaybackStateCompat.SHUFFLE_MODE_NONE
+import android.support.v4.media.session.PlaybackStateCompat.STATE_BUFFERING
+import android.support.v4.media.session.PlaybackStateCompat.STATE_ERROR
+import android.support.v4.media.session.PlaybackStateCompat.STATE_NONE
+import android.support.v4.media.session.PlaybackStateCompat.STATE_PAUSED
+import android.support.v4.media.session.PlaybackStateCompat.STATE_PLAYING
+import android.support.v4.media.session.PlaybackStateCompat.STATE_STOPPED
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
-import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -28,7 +36,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import tm.alashow.base.imageloading.getBitmap
-import tm.alashow.base.util.event
+import tm.alashow.base.util.Analytics
 import tm.alashow.base.util.extensions.plus
 import tm.alashow.data.PreferencesStore
 import tm.alashow.datmusic.data.repos.audio.AudiosRepo
@@ -117,7 +125,7 @@ class DatmusicPlayerImpl @Inject constructor(
     private val audiosRepo: AudiosRepo,
     private val mediaQueueBuilder: MediaQueueBuilder,
     private val preferences: PreferencesStore,
-    private val analytics: FirebaseAnalytics,
+    private val analytics: Analytics,
 ) : DatmusicPlayer, CoroutineScope by MainScope() {
 
     companion object {

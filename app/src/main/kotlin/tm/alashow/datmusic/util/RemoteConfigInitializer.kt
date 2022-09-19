@@ -9,6 +9,8 @@ import javax.inject.Inject
 import tm.alashow.base.inititializer.AppInitializer
 import tm.alashow.data.RemoteConfig
 
-class RemoteConfigInitializer @Inject constructor(remoteConfig: RemoteConfig) : AppInitializer {
-    override fun init(application: Application) {}
+class RemoteConfigInitializer @Inject constructor(private val remoteConfig: RemoteConfig) : AppInitializer {
+    override fun init(application: Application) {
+        remoteConfig
+    }
 }

@@ -9,7 +9,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
-import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.FlowPreview
@@ -18,8 +17,8 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import tm.alashow.base.ui.SnackbarManager
-import tm.alashow.base.util.event
-import tm.alashow.base.util.extensions.getStateFlow
+import tm.alashow.base.util.Analytics
+import tm.alashow.base.util.extensions.getMutableStateFlow
 import tm.alashow.base.util.extensions.stateInDefault
 import tm.alashow.datmusic.data.CaptchaSolution
 import tm.alashow.datmusic.data.DatmusicSearchParams
@@ -34,8 +33,6 @@ import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.navigation.screens.QUERY_KEY
 import tm.alashow.navigation.screens.SEARCH_BACKENDS_KEY
 
-const val SEARCH_DEBOUNCE_MILLIS = 400L
-
 @OptIn(FlowPreview::class)
 @HiltViewModel
 internal class SearchViewModel @Inject constructor(
@@ -46,14 +43,24 @@ internal class SearchViewModel @Inject constructor(
     private val artistsPager: ObservePagedDatmusicSearch<Artist>,
     private val albumsPager: ObservePagedDatmusicSearch<Album>,
     private val snackbarManager: SnackbarManager,
-    private val analytics: FirebaseAnalytics,
+    private val analytics: Analytics,
     private val playbackConnection: PlaybackConnection,
 ) : ViewModel() {
 
-    private val initialQuery = handle.get(QUERY_KEY) ?: ""
-    private val searchQueryState = handle.getStateFlow(initialQuery, viewModelScope, initialQuery)
-    private val searchFilterState = handle.getStateFlow("search_filter", viewModelScope, SearchFilter.from(handle.get(SEARCH_BACKENDS_KEY)))
-    private val searchTriggerState = handle.getStateFlow("search_trigger", viewModelScope, SearchTrigger(initialQuery))
+    companion object {
+        const val SEARCH_DEBOUNCE_MILLIS = 400L
+        val MINERVA_PAGING = PagingConfig(
+            pageSize = 50,
+            initialLoadSize = 50,
+            prefetchDistance = 5,
+            enablePlaceholders = true
+        )
+    }
+
+    private val initialQuery = handle[QUERY_KEY] ?: ""
+    private val searchQueryState = handle.getMutableStateFlow(initialQuery, viewModelScope, initialQuery)
+    private val searchFilterState = handle.getMutableStateFlow("search_filter", viewModelScope, SearchFilter.from(handle[SEARCH_BACKENDS_KEY]))
+    private val searchTriggerState = handle.getMutableStateFlow("search_trigger", viewModelScope, SearchTrigger(initialQuery))
 
     private val captchaError = MutableStateFlow<ApiCaptchaError?>(null)
 
@@ -66,10 +73,12 @@ internal class SearchViewModel @Inject constructor(
     val pagedAlbumsList get() = albumsPager.flow.cachedIn(viewModelScope)
 
     private val onSearchEventChannel = Channel<SearchEvent>(Channel.CONFLATED)
-    val onSearchEvent = onSearchEventChannel.receiveAsFlow()
+    val searchEvent = onSearchEventChannel.receiveAsFlow()
 
-    val state = combine(searchFilterState, captchaError, ::SearchViewState)
-        .stateInDefault(viewModelScope, SearchViewState.Empty)
+    val state = combine(
+        searchTriggerState.map { it.query }, searchFilterState, captchaError,
+        transform = ::SearchViewState
+    ).stateInDefault(viewModelScope, SearchViewState.Empty)
 
     init {
         viewModelScope.launch {
@@ -133,12 +142,6 @@ internal class SearchViewModel @Inject constructor(
         }
     }
 
-    fun submitAction(action: SearchAction) {
-        viewModelScope.launch {
-            pendingActions.emit(action)
-        }
-    }
-
     private fun onSearchError(error: Throwable, onRetry: () -> Unit) = viewModelScope.launch {
         snackbarManager.addError(error = error, onRetry = onRetry)
     }
@@ -186,18 +189,13 @@ internal class SearchViewModel @Inject constructor(
     private fun Flow<Throwable>.watchForErrors(pager: ObservePagedDatmusicSearch<*>) = viewModelScope.launch { collectErrors(pager) }
 
     private suspend fun Flow<Throwable>.collectErrors(pager: ObservePagedDatmusicSearch<*>) = collectLatest { error ->
-        Timber.e(error, "Collected error from a pager")
+        Timber.e(error, "Collected error from a pager: $pager")
         when (error) {
             is ApiCaptchaError -> captchaError.value = error
         }
     }
 
-    companion object {
-        val MINERVA_PAGING = PagingConfig(
-            pageSize = 50,
-            initialLoadSize = 50,
-            prefetchDistance = 5,
-            enablePlaceholders = true
-        )
+    fun onSearchAction(action: SearchAction) = viewModelScope.launch {
+        pendingActions.emit(action)
     }
 }

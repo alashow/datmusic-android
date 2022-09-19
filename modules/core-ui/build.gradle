@@ -1,0 +1,54 @@
+/*
+* Copyright (C) 2021, Alashov Berkeli
+* All rights reserved.
+*/
+
+
+import tm.alashow.buildSrc.App
+import tm.alashow.buildSrc.Deps
+
+plugins {
+	id("com.android.library")
+	id("kotlin-android")
+	id("kotlin-kapt")
+	id("dagger.hilt.android.plugin")
+}
+
+android {
+	namespace "tm.alashow.datmusic.ui"
+
+	compileSdkVersion App.compileSdkVersion
+
+	defaultConfig {
+		minSdkVersion App.minSdkVersion
+	}
+
+	compileOptions {
+		sourceCompatibility JavaVersion.VERSION_1_8
+		targetCompatibility JavaVersion.VERSION_1_8
+	}
+
+	buildFeatures {
+		compose = true
+	}
+
+	composeOptions {
+		kotlinCompilerExtensionVersion Deps.Android.Compose.compilerVersion
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation(project(":modules:common-compose"))
+	implementation(project(":modules:common-ui-theme"))
+	implementation(project(":modules:common-ui-components"))
+	implementation(project(":modules:navigation"))
+	implementation(project(":modules:core-downloader"))
+
+	implementation(Deps.Dagger.hilt)
+	kapt(Deps.Dagger.compiler)
+	kapt(Deps.Dagger.hiltCompiler)
+}

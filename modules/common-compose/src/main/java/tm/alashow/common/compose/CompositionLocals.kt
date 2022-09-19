@@ -4,17 +4,22 @@
  */
 package tm.alashow.common.compose
 
-import androidx.compose.material.ScaffoldState
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.staticCompositionLocalOf
-import com.google.firebase.analytics.FirebaseAnalytics
-import tm.alashow.datmusic.playback.PlaybackConnection
+import tm.alashow.base.util.Analytics
 
-val LocalScaffoldState = staticCompositionLocalOf<ScaffoldState> { error("No LocalScaffoldState provided") }
+val LocalSnackbarHostState = staticCompositionLocalOf<SnackbarHostState> {
+    error("No LocalSnackbarHostState provided")
+}
 
-val LocalAnalytics = staticCompositionLocalOf<FirebaseAnalytics> {
+val LocalAnalytics = staticCompositionLocalOf<Analytics> {
     error("No LocalAnalytics provided")
 }
 
-val LocalPlaybackConnection = staticCompositionLocalOf<PlaybackConnection> {
-    error("No LocalPlaybackConnection provided")
+val LocalIsPreviewMode = staticCompositionLocalOf<Boolean> {
+    error("No LocalIsPreviewMode provided")
+}
+
+val LocalAppVersion = staticCompositionLocalOf<String> {
+    error("No LocalAppVersion provided")
 }

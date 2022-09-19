@@ -7,7 +7,7 @@ package tm.alashow.datmusic.ui.settings.premium
 import com.qonversion.android.sdk.dto.QPermission
 import tm.alashow.base.billing.SubscriptionError
 
-sealed class PremiumStatus {
+internal sealed class PremiumStatus {
     object Unknown : PremiumStatus()
     object NotEnabled : PremiumStatus()
 

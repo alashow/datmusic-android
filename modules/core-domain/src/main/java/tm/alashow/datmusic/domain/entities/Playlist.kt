@@ -8,7 +8,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import androidx.room.ForeignKey.CASCADE
 import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.PrimaryKey
@@ -75,7 +74,7 @@ typealias PlaylistAudioId = Long
             entity = Playlist::class,
             parentColumns = ["id"],
             childColumns = ["playlist_id"],
-            onDelete = CASCADE
+            onDelete = ForeignKey.CASCADE
         )
     ]
 )

@@ -15,7 +15,7 @@ import tm.alashow.domain.models.Success
 import tm.alashow.ui.Delayed
 import tm.alashow.ui.components.EmptyErrorBox
 
-class PlaylistDetailEmpty : MediaDetailEmpty<PlaylistItems>() {
+internal class PlaylistDetailEmpty : MediaDetailEmpty<PlaylistItems>() {
     override operator fun invoke(
         list: LazyListScope,
         details: Async<PlaylistItems>,

@@ -11,7 +11,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -21,27 +20,34 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListItemInfo
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material.ButtonDefaults.textButtonColors
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.RemoveCircleOutline
 import androidx.compose.material.icons.filled.Shuffle
+import androidx.compose.material3.ButtonDefaults.textButtonColors
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -49,21 +55,20 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.insets.navigationBarsHeight
-import com.google.accompanist.insets.navigationBarsWithImePadding
-import com.google.accompanist.insets.statusBarsPadding
 import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.ReorderableState
 import org.burnoutcrew.reorderable.detectReorder
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 import org.burnoutcrew.reorderable.reorderable
-import tm.alashow.base.util.extensions.Callback
+import tm.alashow.base.util.extensions.swap
+import tm.alashow.common.compose.LocalIsPreviewMode
+import tm.alashow.common.compose.previews.CombinedPreview
 import tm.alashow.common.compose.rememberFlowWithLifecycle
+import tm.alashow.datmusic.data.SampleData
 import tm.alashow.datmusic.data.repos.playlist.ArtworkImageFileType.Companion.isUserSetArtworkPath
 import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.domain.entities.PlaylistAudioId
@@ -71,7 +76,9 @@ import tm.alashow.datmusic.domain.entities.PlaylistItems
 import tm.alashow.datmusic.ui.audios.AudioRowItem
 import tm.alashow.datmusic.ui.library.R
 import tm.alashow.datmusic.ui.library.playlists.PlaylistNameInput
+import tm.alashow.datmusic.ui.previews.PreviewDatmusicCore
 import tm.alashow.i18n.ValidationError
+import tm.alashow.ui.ProvideScaffoldPadding
 import tm.alashow.ui.SwipeDismissSnackbar
 import tm.alashow.ui.adaptiveColor
 import tm.alashow.ui.coloredRippleClickable
@@ -83,98 +90,124 @@ import tm.alashow.ui.components.textIconModifier
 import tm.alashow.ui.simpleClickable
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.Orange
+import tm.alashow.ui.theme.Theme
 
 @Composable
-fun EditPlaylist(
-    viewModel: EditPlaylistViewModel = hiltViewModel(),
-) {
-    val playlistItems by rememberFlowWithLifecycle(viewModel.playlistAudios)
-    val lastRemovedItem by rememberFlowWithLifecycle(viewModel.lastRemovedItem)
-    Scaffold(
-        bottomBar = {
-            PlaylistLastRemovedItemSnackbar(
-                lastRemovedItem = lastRemovedItem,
-                onDismiss = viewModel::clearLastRemovedPlaylistItem,
-                onUndo = viewModel::undoLastRemovedPlaylistItem,
-                modifier = Modifier.navigationBarsWithImePadding()
-            )
-        }
-    ) {
-        EditPlaylist(
-            viewModel = viewModel,
-            playlistItems = playlistItems,
-        )
+fun EditPlaylistRoute(isPreviewMode: Boolean = LocalIsPreviewMode.current) {
+    when {
+        isPreviewMode -> EditPlaylistPreview()
+        else -> EditPlaylist()
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun EditPlaylist(
-    viewModel: EditPlaylistViewModel,
-    playlistItems: PlaylistItems,
-) {
-    val playlist by rememberFlowWithLifecycle(viewModel.playlist)
-    val name by rememberFlowWithLifecycle(viewModel.name)
-    val nameError by rememberFlowWithLifecycle(viewModel.nameError)
-
-    val itemsBeforeContent = 2
-    val reorderableState = rememberReorderableLazyListState(
-        onMove = { from, to -> viewModel.movePlaylistItem(from.index - itemsBeforeContent, to.index - itemsBeforeContent) },
-        canDragOver = { it.key is DraggableItemKey },
+private fun EditPlaylist(viewModel: EditPlaylistViewModel = hiltViewModel()) {
+    val viewState by rememberFlowWithLifecycle(viewModel.state)
+    EditPlaylist(
+        viewState = viewState,
+        playlistItems = viewModel.playlistItemsState,
+        onRemovePlaylistItem = viewModel::removePlaylistItem,
+        onClearLastRemovedPlaylistItem = viewModel::clearLastRemovedPlaylistItem,
+        onUndoLastRemovedPlaylistItem = viewModel::undoLastRemovedPlaylistItem,
+        onSetPlaylistName = viewModel::setPlaylistName,
+        onSetPlaylistArtwork = viewModel::setPlaylistArtwork,
+        onClearPlaylistArtwork = viewModel::clearPlaylistArtwork,
+        onShufflePlaylist = viewModel::shufflePlaylist,
+        onDeletePlaylist = viewModel::deletePlaylist,
+        onSave = viewModel::save,
+        onMovePlaylistItem = viewModel::movePlaylistItem,
     )
+}
 
-    Box {
-        LazyColumn(
-            state = reorderableState.listState,
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colors.background)
-                .reorderable(reorderableState),
-        ) {
-            editPlaylistHeader(
-                playlist = playlist,
-                name = name,
-                onSetName = viewModel::setPlaylistName,
-                onSetPlaylistArtwork = viewModel::setPlaylistArtwork,
-                onSave = viewModel::save,
-                nameError = nameError
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun EditPlaylist(
+    viewState: EditPlaylistViewState,
+    playlistItems: PlaylistItems,
+    onRemovePlaylistItem: (PlaylistAudioId) -> Unit,
+    onClearLastRemovedPlaylistItem: () -> Unit,
+    onUndoLastRemovedPlaylistItem: () -> Unit,
+    onSetPlaylistName: (String) -> Unit,
+    onSetPlaylistArtwork: (Uri) -> Unit,
+    onClearPlaylistArtwork: () -> Unit,
+    onShufflePlaylist: () -> Unit,
+    onDeletePlaylist: () -> Unit,
+    onSave: () -> Unit,
+    modifier: Modifier = Modifier,
+    onMovePlaylistItem: OnMovePlaylistItem
+) {
+    Scaffold(
+        bottomBar = {
+            PlaylistLastRemovedItemSnackbar(
+                lastRemovedPlaylistItem = viewState.lastRemovedPlaylistItem,
+                onDismiss = onClearLastRemovedPlaylistItem,
+                onUndo = onUndoLastRemovedPlaylistItem,
+                modifier = Modifier.navigationBarsPadding(),
+            )
+        },
+    ) { paddings ->
+        ProvideScaffoldPadding(paddings) {
+            val itemsBeforeContent = 3
+            val reorderableState = rememberReorderableLazyListState(
+                onMove = { from, to -> onMovePlaylistItem(from.index - itemsBeforeContent, to.index - itemsBeforeContent) },
+                canDragOver = { it.key is DraggableItemKey },
             )
 
-            editPlaylistExtraActions(
-                onClearArtwork = viewModel::clearPlaylistArtwork,
-                onShuffle = viewModel::shufflePlaylist,
-                onDelete = viewModel::deletePlaylist,
-                shuffleEnabled = playlistItems.size > 1,
-                clearArtworkEnabled = playlist.artworkPath.isUserSetArtworkPath()
-            )
+            Box(modifier) {
+                LazyColumn(
+                    state = reorderableState.listState,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .reorderable(reorderableState)
+                ) {
+                    item {
+                        Spacer(Modifier.statusBarsPadding())
+                    }
+                    editPlaylistHeader(
+                        playlist = viewState.playlist,
+                        name = viewState.name,
+                        onSetName = onSetPlaylistName,
+                        nameError = viewState.nameError,
+                        onSetPlaylistArtwork = onSetPlaylistArtwork,
+                        onSave = onSave,
+                    )
 
-            editablePlaylistAudioList(
-                reorderableState = reorderableState,
-                onRemove = viewModel::removePlaylistItem,
-                audios = playlistItems
-            )
+                    editPlaylistExtraActions(
+                        onClearArtwork = onClearPlaylistArtwork,
+                        onShuffle = onShufflePlaylist,
+                        onDelete = onDeletePlaylist,
+                        shuffleEnabled = playlistItems.size > 1,
+                        clearArtworkEnabled = viewState.playlist.artworkPath.isUserSetArtworkPath()
+                    )
 
-            item {
-                Spacer(Modifier.navigationBarsHeight())
+                    editablePlaylistAudioList(
+                        reorderableState = reorderableState,
+                        onRemove = onRemovePlaylistItem,
+                        audios = playlistItems,
+                    )
+                    item {
+                        Spacer(Modifier.systemBarsPadding())
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
-fun PlaylistLastRemovedItemSnackbar(
-    lastRemovedItem: RemovedFromPlaylist?,
-    onDismiss: Callback,
-    onUndo: Callback,
+private fun PlaylistLastRemovedItemSnackbar(
+    lastRemovedPlaylistItem: RemovedFromPlaylist?,
+    onDismiss: () -> Unit,
+    onUndo: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     AnimatedVisibility(
-        visible = lastRemovedItem != null,
+        visible = lastRemovedPlaylistItem != null,
         enter = fadeIn(),
         exit = fadeOut(),
         modifier = modifier,
     ) {
-        lastRemovedItem?.let {
+        lastRemovedPlaylistItem?.let {
             val context = LocalContext.current
             SwipeDismissSnackbar(
                 data = it.asSnackbar(context, onUndo = onUndo),
@@ -186,10 +219,10 @@ fun PlaylistLastRemovedItemSnackbar(
 
 private fun LazyListScope.editPlaylistHeader(
     playlist: Playlist,
-    name: TextFieldValue,
-    onSetName: (TextFieldValue) -> Unit,
+    name: String,
+    onSetName: (String) -> Unit,
     onSetPlaylistArtwork: (Uri) -> Unit,
-    onSave: Callback,
+    onSave: () -> Unit,
     nameError: ValidationError?
 ) {
     item {
@@ -199,11 +232,10 @@ private fun LazyListScope.editPlaylistHeader(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = AppTheme.specs.padding)
-                .statusBarsPadding()
         ) {
             Text(
                 text = stringResource(R.string.playlist_edit_label),
-                style = MaterialTheme.typography.h6,
+                style = MaterialTheme.typography.headlineSmall,
                 textAlign = TextAlign.Center,
             )
 
@@ -214,7 +246,6 @@ private fun LazyListScope.editPlaylistHeader(
                 onSetName = onSetName,
                 onDone = onSave,
                 nameError = nameError,
-                modifier = Modifier.padding(horizontal = AppTheme.specs.padding)
             )
 
             TextRoundedButton(
@@ -256,9 +287,9 @@ private fun EditablePlaylistArtwork(
 }
 
 private fun LazyListScope.editPlaylistExtraActions(
-    onClearArtwork: Callback,
-    onShuffle: Callback,
-    onDelete: Callback,
+    onClearArtwork: () -> Unit,
+    onShuffle: () -> Unit,
+    onDelete: () -> Unit,
     clearArtworkEnabled: Boolean,
     shuffleEnabled: Boolean,
 ) {
@@ -292,7 +323,7 @@ private fun LazyListScope.editPlaylistExtraActions(
             }
             TextButton(
                 onClick = onDelete,
-                colors = textButtonColors(contentColor = MaterialTheme.colors.error),
+                colors = textButtonColors(contentColor = MaterialTheme.colorScheme.error),
             ) {
                 Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.textIconModifier())
                 Text(stringResource(R.string.playlist_edit_delete))
@@ -319,7 +350,9 @@ private fun LazyListScope.editablePlaylistAudioList(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall),
                 modifier = Modifier
-                    .padding(AppTheme.specs.inputPaddings),
+                    .padding(vertical = Theme.specs.paddingSmall)
+                    .padding(start = Theme.specs.paddingSmall)
+                    .padding(end = Theme.specs.padding),
             ) {
                 IconButton(onClick = { onRemove(playlistItem.playlistAudio.id) }) {
                     Icon(
@@ -341,7 +374,6 @@ private fun LazyListScope.editablePlaylistAudioList(
                     Icons.Default.DragHandle,
                     contentDescription = null,
                     modifier = Modifier
-                        .weight(1f)
                         .pointerInput(Unit) {
                             detectTapGestures(
                                 onPress = {
@@ -354,4 +386,31 @@ private fun LazyListScope.editablePlaylistAudioList(
             }
         }
     }
+}
+
+@CombinedPreview
+@Composable
+private fun EditPlaylistPreview() = PreviewDatmusicCore {
+    val playlist = remember(Unit) { SampleData.playlist() }
+    val playlistItems = remember { SampleData.list { playlistItem(playlist = playlist) }.toMutableStateList() }
+    var viewState by remember { mutableStateOf(EditPlaylistViewState.Empty) }
+    EditPlaylist(
+        viewState = viewState,
+        playlistItems = playlistItems,
+        onClearLastRemovedPlaylistItem = {},
+        onUndoLastRemovedPlaylistItem = {},
+        onSetPlaylistArtwork = {},
+        onClearPlaylistArtwork = {},
+        onDeletePlaylist = {},
+        onSave = {},
+        onRemovePlaylistItem = { playlistItemId ->
+            val playlistItemIndex = playlistItems.indexOfFirst { it.playlistAudio.id == playlistItemId }
+            val playlistItem = playlistItems[playlistItemIndex]
+            playlistItems.remove(playlistItem)
+            viewState = viewState.copy(lastRemovedPlaylistItem = RemovedFromPlaylist(playlistItem, playlistItemIndex))
+        },
+        onSetPlaylistName = { viewState = viewState.copy(name = it) },
+        onShufflePlaylist = { playlistItems.shuffle() },
+        onMovePlaylistItem = { from, to -> playlistItems.swap(from, to) },
+    )
 }

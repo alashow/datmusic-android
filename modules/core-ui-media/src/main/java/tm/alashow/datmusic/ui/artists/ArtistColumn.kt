@@ -7,13 +7,13 @@ package tm.alashow.datmusic.ui.artists
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,12 +22,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.placeholder.material.placeholder
-import com.google.firebase.analytics.FirebaseAnalytics
-import tm.alashow.base.util.click
+import tm.alashow.base.util.Analytics
 import tm.alashow.common.compose.LocalAnalytics
+import tm.alashow.common.compose.previews.CombinedPreview
+import tm.alashow.datmusic.data.SampleData
 import tm.alashow.datmusic.domain.entities.Artist
+import tm.alashow.datmusic.ui.previews.PreviewDatmusicCore
 import tm.alashow.ui.components.CoverImage
+import tm.alashow.ui.components.placeholder
 import tm.alashow.ui.components.shimmer
 import tm.alashow.ui.theme.AppTheme
 
@@ -42,7 +44,7 @@ fun ArtistColumn(
     imageSize: Dp = ArtistsDefaults.imageSize,
     nameWidth: Dp = ArtistsDefaults.nameWidth,
     isPlaceholder: Boolean = false,
-    analytics: FirebaseAnalytics = LocalAnalytics.current,
+    analytics: Analytics = LocalAnalytics.current,
     onClick: () -> Unit = {},
 ) {
     val loadingModifier = Modifier.placeholder(
@@ -57,7 +59,6 @@ fun ArtistColumn(
                 analytics.click("artist", mapOf("id" to artist.id))
                 if (!isPlaceholder) onClick()
             }
-            .fillMaxWidth()
             .padding(AppTheme.specs.paddingTiny)
     ) {
         CoverImage(
@@ -77,5 +78,13 @@ fun ArtistColumn(
                 .width(nameWidth)
                 .then(loadingModifier)
         )
+    }
+}
+
+@CombinedPreview
+@Composable
+fun ArtistColumnPreview() = PreviewDatmusicCore {
+    Surface {
+        ArtistColumn(SampleData.artist())
     }
 }

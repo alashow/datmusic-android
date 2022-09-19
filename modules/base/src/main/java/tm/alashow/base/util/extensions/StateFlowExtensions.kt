@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-fun <T> SavedStateHandle.getStateFlow(
+fun <T> SavedStateHandle.getMutableStateFlow(
     key: String,
     scope: CoroutineScope,
     initialValue: T = get(key) ?: error("No initial value for key $key")

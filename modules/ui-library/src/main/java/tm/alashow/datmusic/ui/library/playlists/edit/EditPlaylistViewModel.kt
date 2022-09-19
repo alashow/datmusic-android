@@ -5,23 +5,21 @@
 package tm.alashow.datmusic.ui.library.playlists.edit
 
 import android.net.Uri
-import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import tm.alashow.base.util.event
+import tm.alashow.base.util.Analytics
 import tm.alashow.base.util.extensions.orBlank
 import tm.alashow.base.util.extensions.stateInDefault
 import tm.alashow.base.util.extensions.swap
@@ -33,18 +31,16 @@ import tm.alashow.datmusic.data.interactors.playlist.UpdatePlaylist
 import tm.alashow.datmusic.data.interactors.playlist.UpdatePlaylistItems
 import tm.alashow.datmusic.data.observers.playlist.ObservePlaylist
 import tm.alashow.datmusic.data.observers.playlist.ObservePlaylistDetails
-import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.domain.entities.PlaylistAudioId
 import tm.alashow.datmusic.domain.entities.PlaylistId
 import tm.alashow.datmusic.domain.entities.PlaylistItem
-import tm.alashow.datmusic.domain.entities.PlaylistItems
 import tm.alashow.i18n.ValidationError
 import tm.alashow.i18n.asValidationError
 import tm.alashow.navigation.Navigator
 import tm.alashow.navigation.screens.PLAYLIST_ID_KEY
 
 @HiltViewModel
-class EditPlaylistViewModel @Inject constructor(
+internal class EditPlaylistViewModel @Inject constructor(
     handle: SavedStateHandle,
     private val observePlaylist: ObservePlaylist,
     private val observePlaylistDetails: ObservePlaylistDetails,
@@ -54,31 +50,25 @@ class EditPlaylistViewModel @Inject constructor(
     private val removePlaylistItems: RemovePlaylistItems,
     private val setCustomPlaylistArtwork: SetCustomPlaylistArtwork,
     private val clearPlaylistArtwork: ClearPlaylistArtwork,
-    private val analytics: FirebaseAnalytics,
+    private val analytics: Analytics,
     private val navigator: Navigator,
 ) : ViewModel() {
 
     private val playlistId = requireNotNull(handle.get<PlaylistId>(PLAYLIST_ID_KEY))
     private val playlistDetailParams = ObservePlaylistDetails.Params(playlistId)
 
-    private val nameState = MutableStateFlow(TextFieldValue())
-    val name = nameState.asStateFlow()
-
+    private val nameState = MutableStateFlow("")
     private val nameErrorState = MutableStateFlow<ValidationError?>(null)
-    val nameError = nameErrorState.asStateFlow()
-
-    val playlist = observePlaylist.flow
-        .stateInDefault(viewModelScope, Playlist())
-
-    private val playlistItems = MutableStateFlow<PlaylistItems>(emptyList())
     private val removedPlaylistItems = MutableStateFlow<Set<PlaylistItem>>(setOf())
-
-    val playlistAudios = combine(playlistItems, removedPlaylistItems, ::Pair).map { (items, removed) ->
-        items.filterNot { removed.contains(it) }
-    }.stateInDefault(viewModelScope, emptyList())
-
     private val lastRemovedItemState = MutableStateFlow<RemovedFromPlaylist?>(null)
-    val lastRemovedItem = lastRemovedItemState.asStateFlow()
+
+    val state = combine(
+        nameState, nameErrorState,
+        observePlaylist.flow, lastRemovedItemState,
+        transform = ::EditPlaylistViewState
+    ).stateInDefault(viewModelScope, EditPlaylistViewState.Empty)
+
+    val playlistItemsState = mutableStateListOf<PlaylistItem>()
 
     init {
         observePlaylist(playlistId)
@@ -86,15 +76,16 @@ class EditPlaylistViewModel @Inject constructor(
 
         viewModelScope.launch {
             val playlist = observePlaylist.get()
-            nameState.value = TextFieldValue(playlist.name)
+            nameState.value = playlist.name
 
             observePlaylistDetails.flow.collectLatest {
-                playlistItems.value = it
+                playlistItemsState.clear()
+                playlistItemsState.addAll(it)
             }
         }
     }
 
-    fun setPlaylistName(value: TextFieldValue) {
+    fun setPlaylistName(value: String) {
         nameState.value = value
         nameErrorState.value = null
     }
@@ -102,7 +93,7 @@ class EditPlaylistViewModel @Inject constructor(
     fun removePlaylistItem(id: PlaylistAudioId) {
         var removedItem: PlaylistItem
         var removedIndex: Int
-        playlistItems.value = playlistItems.value.toMutableList().also {
+        playlistItemsState.also {
             removedIndex = it.indexOfFirst { item -> item.playlistAudio.id == id }
             removedItem = it.removeAt(removedIndex)
         }
@@ -113,7 +104,7 @@ class EditPlaylistViewModel @Inject constructor(
         lastRemovedItemState.value = RemovedFromPlaylist(removedItem, removedIndex)
 
         // clear last removed state with delay unless list is empty now
-        if (playlistItems.value.isNotEmpty())
+        if (playlistItemsState.isNotEmpty())
             clearLastRemovedPlaylistItem(delay = true)
         analytics.event("playlists.edit.remove", mapOf("playlistId" to playlistId, "audioId" to removedItem.audio.id))
     }
@@ -123,9 +114,7 @@ class EditPlaylistViewModel @Inject constructor(
         val removedItem = removedItemMessage.playlistItem
         val removedIndex = removedItemMessage.removedIndex
 
-        playlistItems.value = playlistItems.value.toMutableList().also {
-            it.add(removedIndex, removedItem)
-        }
+        playlistItemsState.add(removedIndex, removedItem)
         removedPlaylistItems.value = removedPlaylistItems.value.toMutableSet().also {
             it.remove(removedItem)
         }
@@ -146,14 +135,12 @@ class EditPlaylistViewModel @Inject constructor(
     }
 
     fun movePlaylistItem(from: Int, to: Int) {
-        val updated = playlistItems.value.toMutableList().swap(from, to)
-        playlistItems.value = updated
+        playlistItemsState.swap(from, to)
     }
 
     fun shufflePlaylist() {
         analytics.event("playlists.edit.shuffle", mapOf("playlistId" to playlistId))
-        val updated = playlistItems.value.toMutableList().also { it.shuffle() }
-        playlistItems.value = updated
+        playlistItemsState.shuffle()
     }
 
     fun deletePlaylist() = viewModelScope.launch {
@@ -178,10 +165,12 @@ class EditPlaylistViewModel @Inject constructor(
         viewModelScope.launch {
             removePlaylistItems.execute(removedPlaylistItems.value.map { it.playlistAudio.id })
 
-            val repositionedItems = playlistItems.value.mapIndexed { index, it -> it.copy(playlistAudio = it.playlistAudio.copy(position = index)) }
+            val repositionedItems = playlistItemsState.mapIndexed { index, it ->
+                it.copy(playlistAudio = it.playlistAudio.copy(position = index))
+            }
             reorderPlaylist.execute(repositionedItems)
 
-            val playlist = observePlaylist.get().copy(name = nameState.value.text.orBlank())
+            val playlist = observePlaylist.get().copy(name = nameState.value.orBlank())
             updatePlaylist(playlist).catch {
                 nameErrorState.value = it.asValidationError()
             }.collectLatest {

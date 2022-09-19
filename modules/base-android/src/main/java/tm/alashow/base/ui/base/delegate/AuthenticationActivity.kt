@@ -13,6 +13,7 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import com.andretietz.retroauth.*
+import tm.alashow.base.util.extensions.parcelable
 
 /**
  * Copied from https://github.com/andretietz/retroauth/blob/master/retroauth-android/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt
@@ -41,7 +42,7 @@ abstract class AuthenticationActivity : ComponentActivity() {
         accountManager = AccountManager.get(application)
         credentialStorage = AndroidCredentialStorage(application)
 
-        accountAuthenticatorResponse = intent.getParcelableExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE)
+        accountAuthenticatorResponse = intent.parcelable(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE)
         accountAuthenticatorResponse?.onRequestContinued()
 
         val accountType = intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE)

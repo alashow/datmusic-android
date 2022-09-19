@@ -5,20 +5,18 @@
 package tm.alashow.datmusic.ui.playback
 
 import androidx.datastore.preferences.core.floatPreferencesKey
-import androidx.lifecycle.SavedStateHandle
-import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import tm.alashow.base.ui.base.vm.ResizableLayoutViewModel
+import tm.alashow.base.util.Analytics
 import tm.alashow.data.PreferencesStore
 
 private val PlaybackSheetLayoutDragOffsetKey = floatPreferencesKey("PlaybackSheetLayoutDragOffsetKey")
 
 @HiltViewModel
 class ResizablePlaybackSheetLayoutViewModel @Inject constructor(
-    handle: SavedStateHandle,
     preferencesStore: PreferencesStore,
-    analytics: FirebaseAnalytics,
+    analytics: Analytics,
 ) : ResizableLayoutViewModel(
     preferencesStore = preferencesStore,
     analytics = analytics,

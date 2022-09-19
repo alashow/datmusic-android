@@ -34,3 +34,7 @@ fun <T> List<T>.swap(fromIdx: Int, toIdx: Int): List<T> {
     Collections.swap(copy, fromIdx, toIdx)
     return copy
 }
+
+fun <T> MutableList<T>.swap(fromIdx: Int, toIdx: Int) {
+    Collections.swap(this, fromIdx, toIdx)
+}

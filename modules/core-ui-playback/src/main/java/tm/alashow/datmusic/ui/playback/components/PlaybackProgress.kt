@@ -5,25 +5,23 @@
 package tm.alashow.datmusic.ui.playback.components
 
 import android.support.v4.media.session.PlaybackStateCompat
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.LinearProgressIndicator
-import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,22 +31,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToLong
 import tm.alashow.base.util.extensions.toFloat
 import tm.alashow.base.util.millisToDuration
-import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.playback.PLAYBACK_PROGRESS_INTERVAL
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.isBuffering
 import tm.alashow.datmusic.playback.models.PlaybackProgressState
+import tm.alashow.datmusic.ui.playback.LocalPlaybackConnection
+import tm.alashow.datmusic.ui.previews.PreviewDatmusicCore
 import tm.alashow.ui.Delayed
+import tm.alashow.ui.material.ContentAlpha
+import tm.alashow.ui.material.ProvideContentAlpha
 import tm.alashow.ui.material.Slider
 import tm.alashow.ui.material.SliderDefaults
+import tm.alashow.ui.theme.Theme
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 internal fun PlaybackProgress(
     playbackState: PlaybackStateCompat,
@@ -61,16 +63,17 @@ internal fun PlaybackProgress(
 
     Box {
         PlaybackProgressSlider(
-            playbackState,
-            progressState,
-            draggingProgress,
-            setDraggingProgress,
-            thumbRadius,
-            contentColor
+            playbackState = playbackState,
+            progressState = progressState,
+            draggingProgress = draggingProgress,
+            setDraggingProgress = setDraggingProgress,
+            thumbRadius = thumbRadius,
+            contentColor = contentColor
         )
         PlaybackProgressDuration(progressState, draggingProgress, thumbRadius)
     }
 }
+
 @Composable
 internal fun PlaybackProgressSlider(
     playbackState: PlaybackStateCompat,
@@ -86,10 +89,11 @@ internal fun PlaybackProgressSlider(
     val updatedProgressState by rememberUpdatedState(progressState)
     val updatedDraggingProgress by rememberUpdatedState(draggingProgress)
 
+    val inactiveTrackColor = contentColor.copy(alpha = ContentAlpha.disabled)
     val sliderColors = SliderDefaults.colors(
         thumbColor = contentColor,
         activeTrackColor = contentColor,
-        inactiveTrackColor = contentColor.copy(alpha = ContentAlpha.disabled)
+        inactiveTrackColor = inactiveTrackColor,
     )
     val linearProgressMod = Modifier
         .fillMaxWidth(fraction = .99f) // reduce linearProgressIndicators width to match Slider's
@@ -107,7 +111,7 @@ internal fun PlaybackProgressSlider(
             LinearProgressIndicator(
                 progress = bufferedProgress,
                 color = bufferedProgressColor,
-                backgroundColor = Color.Transparent,
+                trackColor = Color.Transparent,
                 modifier = linearProgressMod
             )
 
@@ -121,12 +125,7 @@ internal fun PlaybackProgressSlider(
             modifier = Modifier.alpha(isBuffering.not().toFloat()),
             onValueChangeFinished = {
                 playbackConnection.transportControls?.seekTo(
-                    (
-                        updatedProgressState.total.toFloat() * (
-                            updatedDraggingProgress
-                                ?: 0f
-                            )
-                        ).roundToLong()
+                    (updatedProgressState.total.toFloat() * (updatedDraggingProgress ?: 0f)).roundToLong()
                 )
                 setDraggingProgress(null)
             }
@@ -136,6 +135,7 @@ internal fun PlaybackProgressSlider(
             LinearProgressIndicator(
                 progress = 0f,
                 color = contentColor,
+                trackColor = inactiveTrackColor,
                 modifier = linearProgressMod
             )
             Delayed(
@@ -145,11 +145,13 @@ internal fun PlaybackProgressSlider(
             ) {
                 LinearProgressIndicator(
                     color = contentColor,
+                    trackColor = inactiveTrackColor,
                 )
             }
         }
     }
 }
+
 @Composable
 internal fun BoxScope.PlaybackProgressDuration(
     progressState: PlaybackProgressState,
@@ -163,13 +165,13 @@ internal fun BoxScope.PlaybackProgressDuration(
             .padding(top = thumbRadius)
             .align(Alignment.BottomCenter)
     ) {
-        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+        ProvideContentAlpha(ContentAlpha.medium) {
             val currentDuration = when (draggingProgress != null) {
                 true -> (progressState.total.toFloat() * (draggingProgress)).toLong().millisToDuration()
                 else -> progressState.currentDuration
             }
-            Text(currentDuration, style = MaterialTheme.typography.caption)
-            Text(progressState.totalDuration, style = MaterialTheme.typography.caption)
+            Text(currentDuration, style = MaterialTheme.typography.bodySmall)
+            Text(progressState.totalDuration, style = MaterialTheme.typography.bodySmall)
         }
     }
 }
@@ -184,3 +186,27 @@ internal fun animatePlaybackProgress(
         easing = FastOutSlowInEasing
     ),
 )
+
+@Preview
+@Composable
+fun PlaybackProgressPreview() = PreviewDatmusicCore {
+    val playbackConnection = LocalPlaybackConnection.current
+    val playbackState by rememberFlowWithLifecycle(playbackConnection.playbackState)
+    Surface {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(Theme.specs.padding),
+            modifier = Modifier.padding(Theme.specs.padding),
+        ) {
+            PlaybackProgress(
+                playbackState = playbackState,
+                contentColor = Theme.colorScheme.secondary
+            )
+            PlaybackProgress(
+                playbackState = PlaybackStateCompat.Builder(playbackState)
+                    .setState(PlaybackStateCompat.STATE_BUFFERING, 0, 1f)
+                    .build(),
+                contentColor = Theme.colorScheme.secondary
+            )
+        }
+    }
+}
