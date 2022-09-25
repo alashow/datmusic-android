@@ -46,11 +46,14 @@ import androidx.compose.ui.platform.WindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import tm.alashow.common.compose.LocalIsPreviewMode
 import tm.alashow.common.compose.collectEvent
@@ -58,6 +61,7 @@ import tm.alashow.common.compose.getNavArgument
 import tm.alashow.common.compose.previews.CombinedPreview
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.data.DatmusicSearchParams.BackendType
+import tm.alashow.datmusic.data.SampleData
 import tm.alashow.datmusic.ui.previews.PreviewDatmusicCore
 import tm.alashow.navigation.screens.QUERY_KEY
 import tm.alashow.ui.ProvideScaffoldPadding
@@ -278,15 +282,18 @@ private fun ColumnScope.SearchFilterPanel(
 @Composable
 fun SearchPreview() = PreviewDatmusicCore {
     Search(
-//        viewState = SearchViewState.Empty,
-//        searchEvent = emptyFlow(),
-//        onSearchAction = {},
-//        searchLazyPagers = SearchLazyPagers(
-//            artists = flowOf(PagingData.from(SampleData.list { artist() })).collectAsLazyPagingItems(),
-//            albums = flowOf(PagingData.from(SampleData.list { album() })).collectAsLazyPagingItems(),
-//            audios = flowOf(PagingData.from(SampleData.list { audio() })).collectAsLazyPagingItems(),
-//            minerva = flowOf(PagingData.from(SampleData.list { audio() })).collectAsLazyPagingItems(),
-//            flacs = flowOf(PagingData.from(SampleData.list { audio() })).collectAsLazyPagingItems(),
-//        )
+        viewState = SearchViewState.Empty,
+        searchEvent = emptyFlow(),
+        onSearchAction = {},
+        searchLazyPagers = SearchLazyPagers(
+            artists = flowOf(PagingData.from(SampleData.list { artist() })).collectAsLazyPagingItems(),
+            albums = flowOf(PagingData.from(SampleData.list { album() })).collectAsLazyPagingItems(),
+            audios = flowOf(PagingData.from(SampleData.list { audio() })).collectAsLazyPagingItems(),
+            minerva = flowOf(PagingData.from(SampleData.list { audio() })).collectAsLazyPagingItems(),
+            flacs = flowOf(PagingData.from(SampleData.list { audio() })).collectAsLazyPagingItems(),
+        ),
+        listState = rememberLazyListState(),
+        artistsListState = rememberLazyListState(),
+        albumsListState = rememberLazyListState(),
     )
 }
