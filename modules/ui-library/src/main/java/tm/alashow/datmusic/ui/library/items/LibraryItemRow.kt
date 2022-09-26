@@ -12,12 +12,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,14 +28,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import tm.alashow.datmusic.domain.entities.LibraryItem
 import tm.alashow.ui.components.CoverImage
+import tm.alashow.ui.material.ContentAlpha
+import tm.alashow.ui.material.ProvideContentAlpha
 import tm.alashow.ui.theme.AppTheme
 
-object LibraryItemRowDefaults {
+internal object LibraryItemRowDefaults {
     val imageSize = 56.dp
 }
 
 @Composable
-fun LibraryItemRow(
+internal fun LibraryItemRow(
     libraryItem: LibraryItem,
     @StringRes typeRes: Int,
     modifier: Modifier = Modifier,
@@ -109,7 +108,7 @@ private fun LibraryItemRow(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
-            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+            ProvideContentAlpha(ContentAlpha.medium) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingTiny),
                     verticalAlignment = Alignment.CenterVertically,

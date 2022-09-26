@@ -11,12 +11,11 @@ import androidx.compose.material3.SnackbarVisuals
 import tm.alashow.base.ui.SnackbarAction
 import tm.alashow.base.ui.SnackbarMessage
 import tm.alashow.base.util.asString
-import tm.alashow.base.util.extensions.Callback
 import tm.alashow.datmusic.domain.entities.PlaylistItem
 import tm.alashow.datmusic.ui.coreLibrary.R
 import tm.alashow.i18n.UiMessage
 
-data class RemovedFromPlaylist(val playlistItem: PlaylistItem, val removedIndex: Int) :
+internal data class RemovedFromPlaylist(val playlistItem: PlaylistItem, val removedIndex: Int) :
     SnackbarMessage<PlaylistItem>(
         message = UiMessage.Resource(R.string.playlist_edit_removed),
         action = SnackbarAction(
@@ -25,7 +24,7 @@ data class RemovedFromPlaylist(val playlistItem: PlaylistItem, val removedIndex:
         )
     ) {
 
-    fun asSnackbar(context: Context, onUndo: Callback): SnackbarData {
+    fun asSnackbar(context: Context, onUndo: () -> Unit): SnackbarData {
         val messageString = message.asString(context)
         return object : SnackbarData {
             override fun performAction() {

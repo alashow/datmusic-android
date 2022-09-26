@@ -14,8 +14,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,18 +46,23 @@ import androidx.compose.ui.platform.WindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.WindowInsets
-import com.google.accompanist.insets.statusBarsPadding
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import tm.alashow.common.compose.LocalIsPreviewMode
 import tm.alashow.common.compose.collectEvent
 import tm.alashow.common.compose.getNavArgument
+import tm.alashow.common.compose.previews.CombinedPreview
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.data.DatmusicSearchParams.BackendType
+import tm.alashow.datmusic.data.SampleData
+import tm.alashow.datmusic.ui.previews.PreviewDatmusicCore
 import tm.alashow.navigation.screens.QUERY_KEY
 import tm.alashow.ui.ProvideScaffoldPadding
 import tm.alashow.ui.components.ChipsRow
@@ -63,37 +72,60 @@ import tm.alashow.ui.theme.topAppBarTitleStyle
 import tm.alashow.ui.theme.translucentSurface
 
 @Composable
-fun SearchRoute() = Search()
+fun SearchRoute(isPreviewMode: Boolean = LocalIsPreviewMode.current) {
+    when {
+        isPreviewMode -> SearchPreview()
+        else -> Search()
+    }
+}
 
 @Composable
-internal fun Search(viewModel: SearchViewModel = hiltViewModel()) {
+private fun Search(viewModel: SearchViewModel = hiltViewModel()) {
     Search(
         viewModel = viewModel,
-        viewState = rememberFlowWithLifecycle(viewModel.state).value,
         listState = rememberLazyListState(),
         artistsListState = rememberLazyListState(),
         albumsListState = rememberLazyListState(),
-        onSearchAction = viewModel::onSearchAction,
         searchLazyPagers = SearchLazyPagers(
             audios = rememberFlowWithLifecycle(viewModel.pagedAudioList).collectAsLazyPagingItems(),
             minerva = rememberFlowWithLifecycle(viewModel.pagedMinervaList).collectAsLazyPagingItems(),
             flacs = rememberFlowWithLifecycle(viewModel.pagedFlacsList).collectAsLazyPagingItems(),
             artists = rememberFlowWithLifecycle(viewModel.pagedArtistsList).collectAsLazyPagingItems(),
             albums = rememberFlowWithLifecycle(viewModel.pagedAlbumsList).collectAsLazyPagingItems(),
-        ),
+        )
+    )
+}
+
+@Composable
+internal fun Search(
+    viewModel: SearchViewModel,
+    searchLazyPagers: SearchLazyPagers,
+    listState: LazyListState,
+    artistsListState: LazyListState,
+    albumsListState: LazyListState,
+) {
+    val viewState by rememberFlowWithLifecycle(viewModel.state)
+    Search(
+        searchEvent = viewModel.searchEvent,
+        viewState = viewState,
+        onSearchAction = viewModel::onSearchAction,
+        searchLazyPagers = searchLazyPagers,
+        listState = listState,
+        artistsListState = artistsListState,
+        albumsListState = albumsListState,
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Search(
-    viewModel: SearchViewModel,
     viewState: SearchViewState,
+    searchEvent: Flow<SearchEvent>,
+    onSearchAction: (SearchAction) -> Unit,
+    searchLazyPagers: SearchLazyPagers,
     listState: LazyListState,
     artistsListState: LazyListState,
     albumsListState: LazyListState,
-    onSearchAction: (SearchAction) -> Unit,
-    searchLazyPagers: SearchLazyPagers,
 ) {
     val searchBarHideThreshold = 3
     val searchBarHeight = 200.dp
@@ -110,7 +142,7 @@ private fun Search(
     }
 
     // scroll up when new search event is fired
-    collectEvent(viewModel.onSearchEvent) {
+    collectEvent(searchEvent) {
         listState.scrollToItem(0)
     }
 
@@ -133,7 +165,7 @@ private fun Search(
             SearchList(
                 viewState = viewState,
                 listState = listState,
-                artistsListState = albumsListState,
+                artistsListState = artistsListState,
                 albumsListState = albumsListState,
                 onSearchAction = onSearchAction,
                 searchLazyPagers = searchLazyPagers,
@@ -143,7 +175,7 @@ private fun Search(
 }
 
 @Composable
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalLayoutApi::class)
 private fun SearchAppBar(
     state: SearchViewState,
     onQueryChange: (String) -> Unit,
@@ -153,7 +185,7 @@ private fun SearchAppBar(
     onBackendTypeSelect: (SearchAction.SelectBackendType) -> Unit = {},
     focusManager: FocusManager = LocalFocusManager.current,
     windowInfo: WindowInfo = LocalWindowInfo.current,
-    windowInsets: WindowInsets = LocalWindowInsets.current,
+    isKeyboardVisible: Boolean = WindowInsets.isImeVisible
 ) {
     val initialQuery = (getNavArgument(QUERY_KEY) ?: "").toString()
     Box(
@@ -165,10 +197,9 @@ private fun SearchAppBar(
     ) {
         val keyboardController = LocalSoftwareKeyboardController.current
         val hasWindowFocus = windowInfo.isWindowFocused
-        val keyboardVisible = windowInsets.ime.isVisible
 
         var focused by remember { mutableStateOf(false) }
-        val searchActive = focused && hasWindowFocus && keyboardVisible
+        val searchActive = focused && hasWindowFocus && isKeyboardVisible
 
         val triggerSearch = {
             onSearch()
@@ -245,4 +276,24 @@ private fun ColumnScope.SearchFilterPanel(
             }
         )
     }
+}
+
+@CombinedPreview
+@Composable
+fun SearchPreview() = PreviewDatmusicCore {
+    Search(
+        viewState = SearchViewState.Empty,
+        searchEvent = emptyFlow(),
+        onSearchAction = {},
+        searchLazyPagers = SearchLazyPagers(
+            artists = flowOf(PagingData.from(SampleData.list { artist() })).collectAsLazyPagingItems(),
+            albums = flowOf(PagingData.from(SampleData.list { album() })).collectAsLazyPagingItems(),
+            audios = flowOf(PagingData.from(SampleData.list { audio() })).collectAsLazyPagingItems(),
+            minerva = flowOf(PagingData.from(SampleData.list { audio() })).collectAsLazyPagingItems(),
+            flacs = flowOf(PagingData.from(SampleData.list { audio() })).collectAsLazyPagingItems(),
+        ),
+        listState = rememberLazyListState(),
+        artistsListState = rememberLazyListState(),
+        albumsListState = rememberLazyListState(),
+    )
 }

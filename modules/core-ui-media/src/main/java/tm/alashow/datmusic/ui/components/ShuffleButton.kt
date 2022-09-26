@@ -21,10 +21,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import tm.alashow.base.util.extensions.Callback
-import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.playPause
+import tm.alashow.datmusic.ui.playback.LocalPlaybackConnection
 import tm.alashow.ui.components.IconButton
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.LocalAdaptiveColor
@@ -38,9 +37,9 @@ fun ShuffleButton(
     background: Color = MaterialTheme.colorScheme.primary,
     tint: Color = MaterialTheme.colorScheme.secondary,
     onLongClickLabel: String? = null,
-    onLongClick: Callback = { playbackConnection.mediaController?.playPause() },
-    onDoubleClick: Callback = { playbackConnection.mediaController?.playPause() },
-    onClick: Callback = {},
+    onLongClick: () -> Unit = { playbackConnection.mediaController?.playPause() },
+    onDoubleClick: () -> Unit = { playbackConnection.mediaController?.playPause() },
+    onClick: () -> Unit = {},
 ) {
     AnimatedVisibility(
         visible = visible,
@@ -77,9 +76,9 @@ fun ShuffleAdaptiveButton(
     background: Color = LocalAdaptiveColor.current.color,
     onLongClickLabel: String? = null,
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
-    onLongClick: Callback = { playbackConnection.mediaController?.playPause() },
-    onDoubleClick: Callback = { playbackConnection.mediaController?.playPause() },
-    onClick: Callback = {},
+    onLongClick: () -> Unit = { playbackConnection.mediaController?.playPause() },
+    onDoubleClick: () -> Unit = { playbackConnection.mediaController?.playPause() },
+    onClick: () -> Unit = {},
 ) {
     ShuffleButton(
         visible = visible,

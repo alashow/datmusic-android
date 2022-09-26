@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
@@ -41,6 +39,8 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
+import tm.alashow.ui.material.ContentAlpha
+import tm.alashow.ui.material.ProvideContentAlpha
 import tm.alashow.ui.theme.Theme
 
 @Composable
@@ -132,7 +132,7 @@ fun <T> SelectableDropdownMenu(
                             if (subtitles != null) {
                                 val subtitle = subtitles[index]
                                 if (subtitle != null)
-                                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                                    ProvideContentAlpha(ContentAlpha.medium) {
                                         Text(text = subtitle, style = MaterialTheme.typography.bodySmall)
                                     }
                             }

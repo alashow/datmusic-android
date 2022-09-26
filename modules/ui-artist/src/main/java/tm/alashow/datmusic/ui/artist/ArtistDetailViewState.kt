@@ -5,13 +5,15 @@
 package tm.alashow.datmusic.ui.artist
 
 import android.content.Context
+import javax.annotation.concurrent.Immutable
 import tm.alashow.datmusic.domain.entities.Artist
 import tm.alashow.datmusic.ui.detail.MediaDetailViewState
 import tm.alashow.domain.models.Async
 import tm.alashow.domain.models.Success
 import tm.alashow.domain.models.Uninitialized
 
-data class ArtistDetailViewState(
+@Immutable
+internal data class ArtistDetailViewState(
     val artist: Artist? = null,
     val artistDetails: Async<Artist> = Uninitialized
 ) : MediaDetailViewState<Artist> {

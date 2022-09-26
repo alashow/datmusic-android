@@ -10,7 +10,6 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import javax.inject.Inject
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
@@ -29,7 +28,7 @@ class PlaylistsWithAudiosDaoTest : BaseTest() {
     @Inject lateinit var audiosDao: AudiosDao
     @Inject lateinit var dao: PlaylistsWithAudiosDao
 
-    private val testItems = (1..5).map { SampleData.playlistAudioItems() }
+    private val testItems = (1..5).map { SampleData.playlistAudioItem() }
 
     @Before
     override fun setUp() {

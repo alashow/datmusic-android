@@ -5,6 +5,7 @@
 package tm.alashow.datmusic.ui.library.playlists.detail
 
 import android.content.Context
+import javax.annotation.concurrent.Immutable
 import tm.alashow.datmusic.data.observers.playlist.ObservePlaylistDetails
 import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.domain.entities.PlaylistItems
@@ -14,7 +15,8 @@ import tm.alashow.domain.models.Async
 import tm.alashow.domain.models.Success
 import tm.alashow.domain.models.Uninitialized
 
-data class PlaylistDetailViewState(
+@Immutable
+internal data class PlaylistDetailViewState(
     val playlist: Playlist? = null,
     val playlistDetails: Async<PlaylistItems> = Uninitialized,
     val params: ObservePlaylistDetails.Params = ObservePlaylistDetails.Params(),

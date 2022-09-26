@@ -30,6 +30,9 @@ import tm.alashow.datmusic.ui.audios.AUDIO_SWIPE_ACTION_WEIGHT_MEDIUM
 import tm.alashow.datmusic.ui.audios.AUDIO_SWIPE_ACTION_WEIGHT_NORMAL
 import tm.alashow.datmusic.ui.audios.addAudioToPlaylistSwipeAction
 import tm.alashow.datmusic.ui.audios.addAudioToQueueSwipeAction
+import tm.alashow.datmusic.ui.downloader.AudioDownloadItemActionHandler
+import tm.alashow.datmusic.ui.downloader.LocalAudioDownloadItemActionHandler
+import tm.alashow.datmusic.ui.downloads.AudioDownloadItemAction
 import tm.alashow.ui.DEFAULT_SWIPE_ACTION_THRESHOLD
 import tm.alashow.ui.contentColor
 import tm.alashow.ui.theme.AppTheme
@@ -38,7 +41,7 @@ import tm.alashow.ui.theme.Orange
 import tm.alashow.ui.theme.Red
 
 @Composable
-fun AudioDownloadBoxWithSwipeActions(
+internal fun AudioDownloadBoxWithSwipeActions(
     audioDownloadItem: AudioDownloadItem,
     onAddToPlaylist: () -> Unit,
     content: @Composable BoxScope.() -> Unit,

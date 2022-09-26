@@ -67,6 +67,14 @@ object AppTheme {
         @Composable
         get() = MaterialTheme.colorScheme
 
+    /**
+     * Since [MaterialTheme.colorScheme] colors could get animated, this can be used to non-animated colors.
+     * Only useful when there are bugs with animating [MaterialTheme.colorScheme] colors
+     */
+    val inanimateColorScheme
+        @Composable
+        get() = LocalAppColors.current.colorScheme
+
     val shapes
         @Composable
         get() = MaterialTheme.shapes
@@ -131,3 +139,16 @@ internal fun AppColors.elevatedSurface(
     colorScheme.surface.blendWith(tint, tintBlendPercentage),
     elevation
 )
+
+@Composable
+fun PreviewAppTheme(
+    theme: ThemeState = DefaultTheme,
+    changeSystemBar: Boolean = true,
+    content: @Composable () -> Unit
+) {
+    AppTheme(
+        theme = theme,
+        changeSystemBar = changeSystemBar,
+        content = content
+    )
+}

@@ -20,7 +20,7 @@ import tm.alashow.data.db.DatabaseTxRunner
 class DatabaseModule {
     @Singleton
     @Provides
-    fun datmusicDatabase(context: Context): AppDatabase {
+    fun datmusicDatabase(@ApplicationContext context: Context): AppDatabase {
         val builder = Room.databaseBuilder(context, AppDatabase::class.java, "app.db")
             .addMigrations(MIGRATION_3_4)
             .fallbackToDestructiveMigration()

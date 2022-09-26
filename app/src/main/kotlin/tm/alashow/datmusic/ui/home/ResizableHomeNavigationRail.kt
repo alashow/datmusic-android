@@ -32,6 +32,8 @@ internal fun RowScope.ResizableHomeNavigationRail(
     viewModel: ResizableHomeNavigationRailViewModel = hiltViewModel(),
     dragOffset: State<Float> = rememberFlowWithLifecycle(viewModel.dragOffset),
     setDragOffset: (Float) -> Unit = viewModel::setDragOffset,
+    onPlayingTitleClick: () -> Unit,
+    onPlayingArtistClick: () -> Unit,
 ) {
     ResizableLayout(
         availableWidth = availableWidth,
@@ -45,6 +47,8 @@ internal fun RowScope.ResizableHomeNavigationRail(
         HomeNavigationRail(
             selectedTab = selectedTab,
             onNavigationSelected = { selected -> navController.selectRootScreen(selected) },
+            onPlayingTitleClick = onPlayingTitleClick,
+            onPlayingArtistClick = onPlayingArtistClick,
             modifier = Modifier
                 .fillMaxHeight()
                 .then(resizableModifier),

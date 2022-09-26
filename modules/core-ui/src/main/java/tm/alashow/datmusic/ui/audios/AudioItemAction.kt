@@ -5,7 +5,7 @@
 package tm.alashow.datmusic.ui.audios
 
 import tm.alashow.datmusic.domain.entities.Audio
-import tm.alashow.datmusic.ui.media.R
+import tm.alashow.datmusic.ui.R
 
 sealed class AudioItemAction(open val audio: Audio) {
     data class Play(override val audio: Audio) : AudioItemAction(audio)

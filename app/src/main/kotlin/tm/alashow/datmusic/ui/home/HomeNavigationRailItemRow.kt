@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -30,6 +29,7 @@ import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
+import tm.alashow.ui.material.ProvideContentAlpha
 import tm.alashow.ui.theme.AppTheme
 
 @Composable
@@ -99,8 +99,9 @@ internal fun HomeNavigationItemTransition(
 
     CompositionLocalProvider(
         LocalContentColor provides color.copy(alpha = 1f),
-        LocalContentAlpha provides color.alpha,
     ) {
-        content(animationProgress)
+        ProvideContentAlpha(color.alpha) {
+            content(animationProgress)
+        }
     }
 }

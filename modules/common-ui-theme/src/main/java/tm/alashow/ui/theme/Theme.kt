@@ -14,6 +14,7 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -27,6 +28,7 @@ val DefaultThemeDark = ThemeState(DarkModePreference.ON)
 @Composable
 fun AppTheme(
     theme: ThemeState = DefaultTheme,
+    modifier: Modifier = Modifier,
     changeSystemBar: Boolean = true,
     content: @Composable () -> Unit
 ) {
@@ -62,8 +64,7 @@ fun AppTheme(
 
     ProvideAppTheme(theme, colors) {
         MaterialTheme(
-            // TODO: Animate
-            colorScheme = colors.colorScheme,
+            colorScheme = animate(colors.colorScheme),
             typography = M3Typography,
             shapes = Shapes,
             content = { MaterialThemePatches(content) },

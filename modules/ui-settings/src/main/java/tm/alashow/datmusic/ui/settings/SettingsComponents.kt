@@ -21,10 +21,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
-import com.google.firebase.analytics.FirebaseAnalytics
+import tm.alashow.base.util.Analytics
 import tm.alashow.base.util.IntentUtils
-import tm.alashow.base.util.event
-import tm.alashow.base.util.extensions.Callback
 import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.ui.components.AppOutlinedButton
 import tm.alashow.ui.components.ProgressIndicatorSmall
@@ -55,7 +53,7 @@ internal fun SettingsLinkItem(
     label: String,
     text: String,
     link: String,
-    analytics: FirebaseAnalytics = LocalAnalytics.current
+    analytics: Analytics = LocalAnalytics.current
 ) {
     SettingsItem(label, verticalAlignment = Alignment.Top) {
         val context = LocalContext.current
@@ -110,7 +108,7 @@ internal fun SettingsLoadingButton(
     text: String,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    onClick: Callback,
+    onClick: () -> Unit,
 ) {
     AppOutlinedButton(
         onClick = onClick,

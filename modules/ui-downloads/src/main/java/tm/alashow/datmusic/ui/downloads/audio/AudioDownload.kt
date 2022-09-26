@@ -20,8 +20,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
@@ -31,7 +29,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -58,6 +55,9 @@ import tm.alashow.datmusic.downloader.isResumable
 import tm.alashow.datmusic.downloader.isRetriable
 import tm.alashow.datmusic.downloader.progressVisible
 import tm.alashow.datmusic.ui.audios.AudioRowItem
+import tm.alashow.datmusic.ui.downloader.AudioDownloadItemActionHandler
+import tm.alashow.datmusic.ui.downloader.LocalAudioDownloadItemActionHandler
+import tm.alashow.datmusic.ui.downloads.AudioDownloadItemAction
 import tm.alashow.datmusic.ui.downloads.R
 import tm.alashow.datmusic.ui.downloads.fileSizeStatus
 import tm.alashow.datmusic.ui.downloads.statusLabel
@@ -66,6 +66,8 @@ import tm.alashow.ui.TimedVisibility
 import tm.alashow.ui.colorFilterDynamicProperty
 import tm.alashow.ui.components.IconButton
 import tm.alashow.ui.components.ProgressIndicator
+import tm.alashow.ui.material.ContentAlpha
+import tm.alashow.ui.material.ProvideContentAlpha
 import tm.alashow.ui.theme.AppTheme
 
 @Composable
@@ -150,7 +152,7 @@ private fun AudioDownloadFooter(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier.fillMaxWidth()
     ) {
-        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+        ProvideContentAlpha(ContentAlpha.medium) {
             val fileSize = downloadInfo.fileSizeStatus()
             val status = downloadInfo.statusLabel().let {
                 when (fileSize.isNotBlank()) {

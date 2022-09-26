@@ -12,15 +12,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Explicit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,15 +34,20 @@ import androidx.compose.ui.unit.sp
 import me.saket.swipe.SwipeAction
 import tm.alashow.base.util.extensions.interpunctize
 import tm.alashow.base.util.millisToDuration
-import tm.alashow.common.compose.LocalPlaybackConnection
+import tm.alashow.common.compose.previews.CombinedPreview
 import tm.alashow.common.compose.rememberFlowWithLifecycle
+import tm.alashow.datmusic.data.SampleData
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.models.PlaybackQueue.NowPlayingAudio.Companion.isCurrentAudio
 import tm.alashow.datmusic.ui.library.playlist.addTo.AddToPlaylistMenu
+import tm.alashow.datmusic.ui.playback.LocalPlaybackConnection
+import tm.alashow.datmusic.ui.previews.PreviewDatmusicCore
 import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.components.placeholder
 import tm.alashow.ui.components.shimmer
+import tm.alashow.ui.material.ContentAlpha
+import tm.alashow.ui.material.ProvideContentAlpha
 import tm.alashow.ui.simpleClickable
 import tm.alashow.ui.theme.AppTheme
 
@@ -233,7 +236,7 @@ fun AudioRowItem(
                 color = titleTextColor,
                 modifier = loadingModifier
             )
-            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+            ProvideContentAlpha(ContentAlpha.medium) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingTiny),
                     verticalAlignment = Alignment.CenterVertically,
@@ -260,5 +263,13 @@ fun AudioRowItem(
                 }
             }
         }
+    }
+}
+
+@CombinedPreview
+@Composable
+fun AudioRowPreview() = PreviewDatmusicCore {
+    Surface {
+        AudioRow(SampleData.audio())
     }
 }

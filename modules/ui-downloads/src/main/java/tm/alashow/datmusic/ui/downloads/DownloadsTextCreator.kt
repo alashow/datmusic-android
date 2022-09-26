@@ -13,7 +13,7 @@ import kotlin.math.ln
 import kotlin.math.pow
 import tm.alashow.base.util.localizedMessage
 
-fun Download.downloadSpeed(): String = when {
+internal fun Download.downloadSpeed(): String = when {
     downloadedBytesPerSecond < 0 -> ""
     else -> downloadedBytesPerSecond.humanReadableByteCount() + "/s"
 }
@@ -29,7 +29,7 @@ private fun Long.humanReadableByteCount(si: Boolean = false): String {
 }
 
 @Composable
-fun Download.fileSizeStatus() = when (status) {
+internal fun Download.fileSizeStatus() = when (status) {
     Status.DOWNLOADING, Status.PAUSED -> {
         when {
             total > 0 -> downloaded.humanReadableByteCount() + " / " + total.humanReadableByteCount()
@@ -42,7 +42,7 @@ fun Download.fileSizeStatus() = when (status) {
 }
 
 @Composable
-fun Download.statusLabel() = when (status) {
+internal fun Download.statusLabel() = when (status) {
     Status.PAUSED -> stringResource(R.string.downloads_download_status_paused)
     Status.QUEUED -> stringResource(R.string.downloads_download_status_queued)
     Status.FAILED -> stringResource(R.string.downloads_download_status_failed) + ": " + stringResource(error.throwable.localizedMessage())

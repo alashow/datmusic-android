@@ -15,15 +15,14 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import tm.alashow.base.testing.BaseTest
-import tm.alashow.data.PreferencesStore
 import tm.alashow.datmusic.data.SampleData
 import tm.alashow.datmusic.data.answerGetDownloadsWithIdsAndStatus
 import tm.alashow.datmusic.data.createTestDownloadsLocation
 import tm.alashow.datmusic.data.db.AppDatabase
 import tm.alashow.datmusic.data.db.DatabaseModule
-import tm.alashow.datmusic.data.repos.audio.AudiosRepo
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.downloader.DownloadItems
+import tm.alashow.datmusic.downloader.DownloadRequestsRepo
 import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.downloader.manager.FetchDownloadManager
 import tm.alashow.datmusic.downloader.observers.*
@@ -35,9 +34,8 @@ import tm.alashow.domain.models.Loading
 class ObserveDownloadsTest : BaseTest() {
 
     @Inject lateinit var database: AppDatabase
-    @Inject lateinit var repo: Downloader
-    @Inject lateinit var audiosRepo: AudiosRepo
-    @Inject lateinit var preferencesStore: PreferencesStore
+    @Inject lateinit var downloader: Downloader
+    @Inject lateinit var repo: DownloadRequestsRepo
     @Inject lateinit var observeDownloads: ObserveDownloads
     @Inject lateinit var fetcher: FetchDownloadManager
 
@@ -51,7 +49,7 @@ class ObserveDownloadsTest : BaseTest() {
         val testItems = (1..5).map { SampleData.downloadRequest() }.map { it.audio }
         observeDownloads(params)
         testItems.forEach {
-            assertThat(repo.enqueueAudio(audio = it))
+            assertThat(downloader.enqueueAudio(audio = it))
                 .isTrue()
         }
         observeDownloads.flow.test {
@@ -67,12 +65,12 @@ class ObserveDownloadsTest : BaseTest() {
     @Before
     override fun setUp() = runTest {
         super.setUp()
-        repo.setDownloadsLocation(createTestDownloadsLocation().second)
+        downloader.setDownloadsLocation(createTestDownloadsLocation().second)
     }
 
     @After
     fun tearDown() = runTest {
-        repo.resetDownloadsLocation()
+        downloader.resetDownloadsLocation()
         database.close()
     }
 
@@ -90,7 +88,7 @@ class ObserveDownloadsTest : BaseTest() {
             assertThat(awaitItem().audios)
                 .isEmpty()
 
-            assertThat(repo.enqueueAudio(audio = testItem))
+            assertThat(downloader.enqueueAudio(audio = testItem))
                 .isTrue()
 
             assertThat(awaitItem().audios.first().audio)
@@ -115,7 +113,7 @@ class ObserveDownloadsTest : BaseTest() {
             assertThat(awaitItem().audios)
                 .isEmpty()
 
-            assertThat(repo.enqueueAudio(audio = testItem))
+            assertThat(downloader.enqueueAudio(audio = testItem))
                 .isTrue()
 
             assertThat(awaitItem().audios.first().audio)
@@ -126,7 +124,7 @@ class ObserveDownloadsTest : BaseTest() {
     @Test
     fun `returns list of audio downloads filtered by search query`() = runTest {
         val testItem = testItems.first().audio
-        assertThat(repo.enqueueAudio(audio = testItem))
+        assertThat(downloader.enqueueAudio(audio = testItem))
             .isTrue()
         testItem.toTestQueries().forEach {
             val params = testParams.copy(query = it)
@@ -143,7 +141,7 @@ class ObserveDownloadsTest : BaseTest() {
         val params = testParams.copy(statusFilters = hashSetOf(DownloadStatusFilter.Downloading))
         val testItem = testItems.first().audio
 
-        assertThat(repo.enqueueAudio(audio = testItem))
+        assertThat(downloader.enqueueAudio(audio = testItem))
             .isTrue()
         coEvery { fetcher.getDownloadsWithIdsAndStatuses(any(), any()) }
             .answerGetDownloadsWithIdsAndStatus {
@@ -166,7 +164,7 @@ class ObserveDownloadsTest : BaseTest() {
         val params = testParams.copy(statusFilters = hashSetOf(DownloadStatusFilter.Paused))
         val testItem = testItems.first().audio
 
-        assertThat(repo.enqueueAudio(audio = testItem))
+        assertThat(downloader.enqueueAudio(audio = testItem))
             .isTrue()
         coEvery { fetcher.getDownloadsWithIdsAndStatuses(any(), any()) }
             .answerGetDownloadsWithIdsAndStatus {
@@ -186,7 +184,7 @@ class ObserveDownloadsTest : BaseTest() {
         val params = testParams.copy(query = "random string")
         val testItem = testItems.first().audio
 
-        assertThat(repo.enqueueAudio(audio = testItem))
+        assertThat(downloader.enqueueAudio(audio = testItem))
             .isTrue()
         observeDownloads(params)
         observeDownloads.asyncFlow.test {

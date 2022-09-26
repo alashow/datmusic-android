@@ -55,7 +55,7 @@ class AudiosFtsDaoTest : BaseTest() {
 
     @Test
     fun `search playlist items`() = runTest {
-        val playlistItems = (1..5).map { SampleData.playlistAudioItems() }
+        val playlistItems = (1..5).map { SampleData.playlistAudioItem() }
         val items = playlistItems.map { it.playlistAudio }
         playlistsDao.insertAll(playlistItems.map { it.playlist })
         audiosDao.insertAll(playlistItems.map { it.audio })

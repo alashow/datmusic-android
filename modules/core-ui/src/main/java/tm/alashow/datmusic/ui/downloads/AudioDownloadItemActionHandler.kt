@@ -1,42 +1,34 @@
 /*
- * Copyright (C) 2021, Alashov Berkeli
+ * Copyright (C) 2022, Alashov Berkeli
  * All rights reserved.
  */
-package tm.alashow.datmusic.ui.downloads.audio
-
+package tm.alashow.datmusic.ui.downloads
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
-import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import tm.alashow.base.util.Analytics
 import tm.alashow.base.util.IntentUtils
-import tm.alashow.base.util.event
 import tm.alashow.base.util.extensions.simpleName
 import tm.alashow.base.util.toast
 import tm.alashow.common.compose.LocalAnalytics
-import tm.alashow.common.compose.LocalPlaybackConnection
 import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.playback.PlaybackConnection
+import tm.alashow.datmusic.ui.R
+import tm.alashow.datmusic.ui.downloader.AudioDownloadItemActionHandler
 import tm.alashow.datmusic.ui.downloader.LocalDownloader
-import tm.alashow.datmusic.ui.media.R
-
-val LocalAudioDownloadItemActionHandler = staticCompositionLocalOf<AudioDownloadItemActionHandler> {
-    error("No AudioDownloadItemActionHandler provided")
-}
-
-typealias AudioDownloadItemActionHandler = (AudioDownloadItemAction) -> Unit
+import tm.alashow.datmusic.ui.playback.LocalPlaybackConnection
 
 @Composable
 fun audioDownloadItemActionHandler(
     downloader: Downloader = LocalDownloader.current,
     playbackConnection: PlaybackConnection = LocalPlaybackConnection.current,
     clipboardManager: ClipboardManager = LocalClipboardManager.current,
-    analytics: FirebaseAnalytics = LocalAnalytics.current
+    analytics: Analytics = LocalAnalytics.current,
 ): AudioDownloadItemActionHandler {
     val context = LocalContext.current
     val coroutine = rememberCoroutineScope()

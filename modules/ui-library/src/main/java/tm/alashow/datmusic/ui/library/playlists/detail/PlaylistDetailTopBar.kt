@@ -28,7 +28,7 @@ import tm.alashow.ui.components.*
 import tm.alashow.ui.components.AppTopBar
 import tm.alashow.ui.theme.AppTheme
 
-class PlaylistDetailTopBar(
+internal class PlaylistDetailTopBar(
     private val filterVisible: Boolean,
     private val setFilterVisible: (Boolean) -> Unit,
     private val searchQuery: String,

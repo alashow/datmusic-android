@@ -7,20 +7,27 @@ package tm.alashow.datmusic.ui.library.playlists.detail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import tm.alashow.base.util.event
-import tm.alashow.base.util.extensions.getStateFlow
+import tm.alashow.base.util.Analytics
+import tm.alashow.base.util.extensions.getMutableStateFlow
 import tm.alashow.base.util.extensions.simpleName
 import tm.alashow.base.util.extensions.stateInDefault
 import tm.alashow.base.util.searchQueryAnalytics
 import tm.alashow.data.PreferencesStore
 import tm.alashow.datmusic.data.interactors.playlist.RemovePlaylistItems
-import tm.alashow.datmusic.data.observers.playlist.*
+import tm.alashow.datmusic.data.observers.playlist.ObservePlaylist
+import tm.alashow.datmusic.data.observers.playlist.ObservePlaylistDetails
+import tm.alashow.datmusic.data.observers.playlist.ObservePlaylistExistence
+import tm.alashow.datmusic.data.observers.playlist.PlaylistItemSortOption
+import tm.alashow.datmusic.data.observers.playlist.failWithNoResultsIfEmpty
 import tm.alashow.datmusic.domain.entities.PlaylistAudioId
 import tm.alashow.datmusic.domain.entities.PlaylistId
 import tm.alashow.datmusic.domain.entities.PlaylistItem
@@ -34,8 +41,8 @@ import tm.alashow.navigation.screens.PLAYLIST_ID_KEY
 import tm.alashow.navigation.screens.RootScreen
 
 @HiltViewModel
-class PlaylistDetailViewModel @Inject constructor(
-    private val handle: SavedStateHandle,
+internal class PlaylistDetailViewModel @Inject constructor(
+    handle: SavedStateHandle,
     private val playlist: ObservePlaylist,
     private val playlistExistense: ObservePlaylistExistence,
     private val playlistDetails: ObservePlaylistDetails,
@@ -43,13 +50,13 @@ class PlaylistDetailViewModel @Inject constructor(
     private val playbackConnection: PlaybackConnection,
     private val preferencesStore: PreferencesStore,
     private val navigator: Navigator,
-    private val analytics: FirebaseAnalytics,
+    private val analytics: Analytics,
 ) : ViewModel() {
 
     private val playlistId = handle.get<Long>(PLAYLIST_ID_KEY) as PlaylistId
     private val defaultParams = ObservePlaylistDetails.Params(playlistId = playlistId)
     private val paramsState = MutableStateFlow(defaultParams)
-    private val searchQueryState = handle.getStateFlow("search_query", viewModelScope, defaultParams.query)
+    private val searchQueryState = handle.getMutableStateFlow("search_query", viewModelScope, defaultParams.query)
     private val sortOptionState = preferencesStore.getStateFlow("playlist_sort_option_$playlistId", viewModelScope, defaultParams.sortOption)
 
     private val playlistItems = playlistDetails.asyncFlow.delayLoading()
@@ -104,9 +111,9 @@ class PlaylistDetailViewModel @Inject constructor(
 
     fun addSongs() = navigator.navigate(RootScreen.Search.route)
 
-    fun removePlaylistItem(item: PlaylistItem) = removePlaylistItem(item.playlistAudio.id)
+    fun onRemovePlaylistItem(item: PlaylistItem) = onRemovePlaylistItem(item.playlistAudio.id)
 
-    fun removePlaylistItem(id: PlaylistAudioId) = viewModelScope.launch {
+    fun onRemovePlaylistItem(id: PlaylistAudioId) = viewModelScope.launch {
         analytics.event("playlist.item.remove")
         removePlaylistItems.execute(listOf(id))
     }
@@ -127,7 +134,7 @@ class PlaylistDetailViewModel @Inject constructor(
         sortOptionState.value = defaultParams.sortOption
     }
 
-    fun onPlayAudio(item: PlaylistItem) = viewModelScope.launch {
+    fun onPlayPlaylistItem(item: PlaylistItem) = viewModelScope.launch {
         analytics.event("playlist.play", mapOf("audioId" to item.audio.id))
         val playlistItems = playlistItems.filterSuccess().first()
         val audioIds = playlistItems.map { it.audio.id }

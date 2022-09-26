@@ -7,13 +7,13 @@ import tm.alashow.buildSrc.App
 import tm.alashow.buildSrc.Deps
 
 plugins {
-	id "com.android.application"
-	id "dagger.hilt.android.plugin"
-	id "kotlin-android"
-	id "kotlin-kapt"
-	id "kotlin-parcelize"
-	id "org.jetbrains.kotlin.plugin.serialization"
-	id "androidx.navigation.safeargs.kotlin"
+	id("com.android.application")
+	id("dagger.hilt.android.plugin")
+	id("kotlin-android")
+	id("kotlin-kapt")
+	id("kotlin-parcelize")
+	id("org.jetbrains.kotlin.plugin.serialization")
+	id("androidx.navigation.safeargs.kotlin")
 }
 
 apply plugin: "com.github.triplet.play"
@@ -27,16 +27,17 @@ play {
 def gitSha = "git rev-parse --short HEAD".execute([], project.rootDir).text.trim()
 
 android {
-	compileSdkVersion App.compileSdkVersion
+	compileSdkVersion = App.compileSdkVersion
 
 	defaultConfig {
-		applicationId App.id
-		targetSdkVersion App.targetSdkVersion
-		minSdkVersion App.minSdkVersion
-		versionCode App.versionCode
-		versionName "${App.versionName}-${gitSha}"
+		namespace = "tm.alashow.datmusic"
+		applicationId = App.id
+		versionCode = App.versionCode
+		versionName = "${App.versionName}-${gitSha}"
+		targetSdkVersion(App.targetSdkVersion)
+		minSdkVersion(App.minSdkVersion)
 
-		multiDexEnabled true
+		multiDexEnabled = true
 		vectorDrawables.useSupportLibrary = true
 	}
 
@@ -48,8 +49,8 @@ android {
 	}
 
 	compileOptions {
-		sourceCompatibility 1.8
-		targetCompatibility 1.8
+		sourceCompatibility = 1.8
+		targetCompatibility = 1.8
 	}
 
 
@@ -58,41 +59,41 @@ android {
 	}
 
 	composeOptions {
-		kotlinCompilerExtensionVersion Deps.Android.Compose.compilerVersion
+		kotlinCompilerExtensionVersion = Deps.Android.Compose.compilerVersion
 	}
 
 	signingConfigs {
 		debug {
-			storeFile rootProject.file("signing/alashov-debug.jks")
-			storePassword "alashov"
-			keyPassword "alashov"
-			keyAlias "alashov"
+			storeFile = rootProject.file("signing/alashov-debug.jks")
+			storePassword = "alashov"
+			keyPassword = "alashov"
+			keyAlias = "alashov"
 		}
 
 		release {
-			storeFile getFile("signing/datmusic-release.jks", "signing/alashov-debug.jks")
-			storePassword prop("DATMUSIC_RELEASE_KEYSTORE_PWD", "alashov")
-			keyPassword prop("DATMUSIC_RELEASE_KEY_PWD", "alashov")
-			keyAlias prop("DATMUSIC_RELEASE_KEY_ALIAS", "alashov")
+			storeFile = getFile("signing/datmusic-release.jks", "signing/alashov-debug.jks")
+			storePassword = prop("DATMUSIC_RELEASE_KEYSTORE_PWD", "alashov")
+			keyPassword = prop("DATMUSIC_RELEASE_KEY_PWD", "alashov")
+			keyAlias = prop("DATMUSIC_RELEASE_KEY_ALIAS", "alashov")
 		}
 	}
 
 	buildTypes {
 		debug {
-			signingConfig signingConfigs.debug
-			versionNameSuffix "-DEBUG"
-			applicationIdSuffix ".debug"
+			signingConfig = signingConfigs.debug
+			versionNameSuffix = "-DEBUG"
+			applicationIdSuffix = ".debug"
 
-			multiDexKeepProguard file("multidex-config.pro")
+			multiDexKeepProguard = file("multidex-config.pro")
 		}
 
 		release {
-			signingConfig signingConfigs.release
-			minifyEnabled true
-			shrinkResources true
-			proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+			signingConfig = signingConfigs.release
+			minifyEnabled = true
+			shrinkResources = true
+			proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
 
-			multiDexKeepProguard file("multidex-config.pro")
+			multiDexKeepProguard = file("multidex-config.pro")
 		}
 	}
 
@@ -106,9 +107,8 @@ android {
 		jvmTarget = "1.8"
 	}
 	lint {
-		abortOnError false
+		abortOnError = false
 	}
-	namespace 'tm.alashow.datmusic'
 }
 
 repositories {
@@ -119,41 +119,44 @@ repositories {
 }
 
 dependencies {
-	implementation project(':modules:common-compose')
-	implementation project(":modules:common-ui-theme")
-	implementation project(":modules:common-ui-components")
-	implementation project(":modules:core-playback")
-	implementation project(":modules:core-ui-playback")
-	implementation project(":modules:core-ui-downloader")
-	implementation project(":modules:ui-library")
-	implementation project(":modules:navigation")
-	implementation project(":modules:ui-search")
-	implementation project(":modules:ui-settings")
-	implementation project(":modules:ui-artist")
-	implementation project(":modules:ui-album")
-	implementation project(":modules:ui-downloads")
+	implementation(project(":modules:common-compose"))
+	implementation(project(":modules:common-ui-theme"))
+	implementation(project(":modules:common-ui-components"))
+	implementation(project(":modules:core-ui"))
+	implementation(project(":modules:core-playback"))
+	implementation(project(":modules:core-ui-playback"))
+	implementation(project(":modules:core-ui-downloader"))
+	implementation(project(":modules:navigation"))
+	implementation(project(":modules:ui-library"))
+	implementation(project(":modules:ui-search"))
+	implementation(project(":modules:ui-settings"))
+	implementation(project(":modules:ui-artist"))
+	implementation(project(":modules:ui-album"))
+	implementation(project(":modules:ui-downloads"))
 
-	implementation project(":play-licensing")
-
-	implementation Deps.Kotlin.coroutinesAndroid
+	implementation(Deps.Kotlin.coroutinesAndroid)
 
 	// utils
-	implementation Deps.Utils.proguardSnippets
+	implementation(Deps.Utils.proguardSnippets)
 
-	kapt Deps.Android.Lifecycle.compiler
+	kapt(Deps.Android.Lifecycle.compiler)
 
 	// dagger-2
-	implementation Deps.Dagger.hilt
-	kapt Deps.Dagger.compiler
-	kapt Deps.Dagger.hiltCompiler
+	implementation(Deps.Dagger.hilt)
+	kapt(Deps.Dagger.compiler)
+	kapt(Deps.Dagger.hiltCompiler)
 
 	// leak canary
 	//debugImplementation Deps.LeakCanary.leakCanary
 
 	// android
-	implementation Deps.Android.multiDex
+	implementation(Deps.Android.multiDex)
+
+	implementation(project(":play-licensing"))
 }
 
-apply plugin: "com.google.gms.google-services"
-apply plugin: "com.google.firebase.crashlytics"
-apply plugin: "kotlinx-serialization"
+
+
+apply(plugin: "com.google.gms.google-services")
+apply(plugin: "com.google.firebase.crashlytics")
+apply(plugin: "kotlinx-serialization")

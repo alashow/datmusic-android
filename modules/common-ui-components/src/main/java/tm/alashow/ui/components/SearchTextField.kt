@@ -36,8 +36,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.sp
-import com.google.firebase.analytics.FirebaseAnalytics
-import tm.alashow.base.util.click
+import tm.alashow.base.util.Analytics
 import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.ui.theme.Theme
 import tm.alashow.ui.theme.borderlessTextFieldColors
@@ -64,7 +63,7 @@ fun SearchTextField(
         capitalization = KeyboardCapitalization.Sentences
     ),
     keyboardActions: KeyboardActions = KeyboardActions(onSearch = { onSearch() }),
-    analytics: FirebaseAnalytics = LocalAnalytics.current,
+    analytics: Analytics = LocalAnalytics.current,
 ) {
     val focusRequester = remember { FocusRequester() }
     DisposableEffect(autoFocus) {

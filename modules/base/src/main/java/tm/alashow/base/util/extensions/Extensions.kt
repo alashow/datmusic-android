@@ -24,8 +24,6 @@ fun Array<out Any>.asString(): String {
 
 typealias Toggle = (Boolean) -> Unit
 
-val pass: Unit = Unit
-
 /**
  * Cast given variable to [T] and run [block] if it's the same cast as [T].
  * @param to cast to
@@ -45,8 +43,8 @@ fun randomUUID(): String = UUID.randomUUID().toString()
 /**
  * Run [block] only if [api] is >= than device's SDK version.
  */
-fun whenApiLevel(api: Int, block: () -> Unit) {
-    if (api >= android.os.Build.VERSION.SDK_INT) {
+fun onlyOnApiLevel(api: Int, block: () -> Unit) {
+    if (api >= SDK_INT) {
         block()
     }
 }
@@ -59,7 +57,6 @@ fun isOreo() = SDK_INT >= VERSION_CODES.O
 
 operator fun Bundle?.plus(other: Bundle?) = this.apply { (this ?: Bundle()).putAll(other ?: Bundle()) }
 
-@OptIn(ExperimentalStdlibApi::class)
 fun Bundle.readable() = buildList {
     keySet().forEach {
         add("key=$it, value=${get(it)}")

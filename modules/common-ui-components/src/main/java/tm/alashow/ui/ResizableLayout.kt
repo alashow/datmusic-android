@@ -27,12 +27,16 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import tm.alashow.base.util.event
 import tm.alashow.common.compose.LocalAnalytics
+import tm.alashow.common.compose.LocalIsPreviewMode
 
 val WIDE_LAYOUT_MIN_WIDTH = 600.dp
 
-fun BoxWithConstraintsScope.isWideLayout() = maxWidth >= WIDE_LAYOUT_MIN_WIDTH
+// TODO: Enable back wide layout in preview mode when hiltViewModel works in previews
+//       because wide layout uses ResizablePlaybackSheetLayoutViewModel
+@Composable
+fun BoxWithConstraintsScope.isWideLayout(isPreviewMode: Boolean = LocalIsPreviewMode.current) =
+    maxWidth >= WIDE_LAYOUT_MIN_WIDTH && !isPreviewMode
 
 @Composable
 fun RowScope.ResizableLayout(
