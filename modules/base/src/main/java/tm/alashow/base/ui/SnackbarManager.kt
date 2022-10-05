@@ -12,11 +12,9 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.receiveAsFlow
+import org.jetbrains.annotations.VisibleForTesting
 import tm.alashow.base.R
 import tm.alashow.i18n.UiMessage
-
-data class SnackbarAction<T>(val label: UiMessage<*>, val argument: T)
-open class SnackbarMessage<T>(val message: UiMessage<*>, val action: SnackbarAction<T>? = null)
 
 @Singleton
 class SnackbarManager @Inject constructor() {
@@ -28,6 +26,32 @@ class SnackbarManager @Inject constructor() {
     val messages = messagesChannel.receiveAsFlow()
     private val shownMessages = mutableSetOf<UiMessage<*>>()
 
+    /**
+     * Shows given [UiMessage] as a snackbar. If the same [message] is already being shown, it will not be shown again.
+     * [message] must be dismissed it can be shown again.
+     * @param message UiMessage to show
+     */
+    fun addMessage(message: UiMessage<*>) = addMessage(SnackbarMessage<Unit>(message))
+
+    /**
+     * Shows given [SnackbarMessage] as a snackbar.
+     * If the same SnackbarMessage's [snackbarMessage].message is already being shown, it will not be shown again.
+     * [snackbarMessage] must be dismissed or it's action performed before it can be shown again.
+     * @param snackbarMessage the message to show
+     */
+    fun addMessage(snackbarMessage: SnackbarMessage<*>) {
+        if (snackbarMessage.message !in shownMessages) {
+            messagesChannel.trySend(snackbarMessage)
+            shownMessages.add(snackbarMessage.message)
+        }
+    }
+
+    /**
+     * Adds the given [error] as a snackbar message with a retry action.
+     * @param error the error to show
+     * @param retryLabel the label for the retry action, defaults to "Retry"
+     * @param onRetry callback to perform when the retry action performed
+     */
     suspend fun addError(
         error: Throwable,
         retryLabel: UiMessage<*> = UiMessage.Resource(R.string.error_retry),
@@ -40,30 +64,29 @@ class SnackbarManager @Inject constructor() {
         observeMessageAction(message, onRetry)
     }
 
-    fun addMessage(message: UiMessage<*>) = addMessage(SnackbarMessage<Unit>(message))
-
-    fun addMessage(message: SnackbarMessage<*>) {
-        if (message.message !in shownMessages) {
-            messagesChannel.trySend(message)
-            shownMessages.add(message.message)
-        }
-    }
-
+    /**
+     * Dismisses the given [message].
+     */
     fun onMessageDismissed(message: SnackbarMessage<*>) {
         shownMessages.remove(message.message)
         actionDismissedMessageChannel.trySend(message)
     }
 
+    /**
+     * Marks the action on given [message] as performed.
+     */
     fun onMessageActionPerformed(message: SnackbarMessage<*>) {
         shownMessages.remove(message.message)
         actionPerformedMessageChannel.trySend(message)
     }
 
     /**
-     * Listen for [actionPerformedMessageChannel] for given [message] for limited time.
-     * Returns given action if it's performed on time, null otherwise.
+     * Observe the action to be performed on the [message], until the action is performed or the message is dismissed.
+     * @param message the message to observe
+     * @return the given message if the action was performed, null if the message was dismissed
      */
-    suspend fun <T : SnackbarMessage<*>> observeMessageAction(message: T): T? {
+    @VisibleForTesting
+    internal suspend fun <T : SnackbarMessage<*>> observeMessageAction(message: T): T? {
         val result = merge(
             actionDismissedMessageChannel.receiveAsFlow().filter { it == message }.map { null }, // map to null because it's dismissed
             actionPerformedMessageChannel.receiveAsFlow().filter { it == message },
@@ -71,9 +94,12 @@ class SnackbarManager @Inject constructor() {
         return if (result == message) message else null
     }
 
+    /**
+     * Observe the action to be performed on the [message], until the action is performed or the message is dismissed.
+     * @param message the message to observe
+     * @param onAction callback to perform when the message action is performed
+     */
     suspend fun <T : SnackbarMessage<*>> observeMessageAction(message: T, onAction: () -> Unit) {
-        if (observeMessageAction(message) != null) {
-            onAction()
-        }
+        if (observeMessageAction(message) != null) onAction()
     }
 }
