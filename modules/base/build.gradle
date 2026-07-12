@@ -31,11 +31,6 @@ android {
 	namespace 'tm.alashow.base'
 }
 
-repositories {
-	mavenCentral()
-	maven { url "https://jitpack.io" }
-}
-
 dependencies {
 	api Deps.Kotlin.stdlib
 	api Deps.Kotlin.serializationJson

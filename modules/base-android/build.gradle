@@ -34,10 +34,7 @@ android {
 	namespace 'tm.alashow.baseAndroid'
 }
 
-repositories {
-	mavenCentral()
-	maven { url "https://jitpack.io" }
-}
+
 
 dependencies {
 	api Deps.Dagger.hilt

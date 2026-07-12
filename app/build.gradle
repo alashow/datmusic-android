@@ -111,13 +111,6 @@ android {
 	}
 }
 
-repositories {
-	mavenCentral()
-	maven { url "https://jitpack.io" }
-	maven { url "https://oss.jfrog.org/artifactory/oss-snapshot-local/" }
-	maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-}
-
 dependencies {
 	implementation(project(":modules:common-compose"))
 	implementation(project(":modules:common-ui-theme"))
@@ -137,7 +130,7 @@ dependencies {
 	implementation(Deps.Kotlin.coroutinesAndroid)
 
 	// utils
-	implementation(Deps.Utils.proguardSnippets)
+	//implementation(Deps.Utils.proguardSnippets)
 
 	kapt(Deps.Android.Lifecycle.compiler)
 

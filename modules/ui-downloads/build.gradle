@@ -38,9 +38,6 @@ android {
 	namespace 'tm.alashow.datmusic.ui.downloads'
 }
 
-repositories {
-	mavenCentral()
-}
 
 dependencies {
 	implementation project(":modules:common-compose")

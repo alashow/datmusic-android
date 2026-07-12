@@ -38,9 +38,6 @@ android {
 	namespace 'tm.alashow.datmusic.ui.playback'
 }
 
-repositories {
-	mavenCentral()
-}
 
 dependencies {
 	api(project(":modules:core-playback"))

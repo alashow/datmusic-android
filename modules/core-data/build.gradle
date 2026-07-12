@@ -34,10 +34,6 @@ android {
 	namespace 'tm.alashow.datmusic.coreData'
 }
 
-repositories {
-	mavenCentral()
-	maven { url "https://jitpack.io" }
-}
 
 dependencies {
 	api project(":modules:common-data")

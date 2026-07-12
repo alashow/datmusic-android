@@ -35,10 +35,6 @@ android {
 	namespace 'tm.alashow.ui.components'
 }
 
-repositories {
-	mavenCentral()
-}
-
 dependencies {
 	api Deps.Android.Compose.lottie
 	api project(':modules:common-compose')

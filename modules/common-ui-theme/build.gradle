@@ -36,10 +36,6 @@ android {
 	namespace 'tm.alashow.ui.theme'
 }
 
-repositories {
-	mavenCentral()
-}
-
 dependencies {
 
 	implementation Deps.Dagger.hilt

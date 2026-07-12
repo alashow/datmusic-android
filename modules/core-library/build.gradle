@@ -29,10 +29,6 @@ android {
 	namespace 'tm.alashow.datmusic.coreLibrary'
 }
 
-repositories {
-	mavenCentral()
-}
-
 dependencies {
 	api project(":modules:base-android")
 	implementation project(":modules:core-downloader")

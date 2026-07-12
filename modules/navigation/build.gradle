@@ -36,9 +36,6 @@ android {
 	namespace 'tm.alashow.navigation'
 }
 
-repositories {
-	mavenCentral()
-}
 
 dependencies {
 	implementation Deps.Testing.turbine

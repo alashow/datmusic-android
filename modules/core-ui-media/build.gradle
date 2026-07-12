@@ -36,9 +36,6 @@ android {
 	}
 }
 
-repositories {
-	mavenCentral()
-}
 
 dependencies {
 	api(project(":modules:common-compose"))

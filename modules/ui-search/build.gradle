@@ -37,9 +37,6 @@ android {
 	namespace 'tm.alashow.datmusic.ui.search'
 }
 
-repositories {
-	mavenCentral()
-}
 
 dependencies {
 

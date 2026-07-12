@@ -31,12 +31,6 @@ android {
 	namespace 'tm.alashow.coreDomain'
 }
 
-repositories {
-	mavenCentral()
-	maven { url "https://jitpack.io" }
-	jcenter()
-}
-
 dependencies {
 	api project(":modules:common-domain")
 	implementation project(":modules:base")

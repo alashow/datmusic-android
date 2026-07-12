@@ -40,10 +40,6 @@ android {
 	namespace 'tm.alashow.common.compose'
 }
 
-repositories {
-	mavenCentral()
-}
-
 dependencies {
 	api project(":modules:base-android")
 	api project(":modules:core-playback")

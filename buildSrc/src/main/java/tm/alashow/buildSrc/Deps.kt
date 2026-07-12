@@ -128,7 +128,7 @@ object Deps {
     object Utils {
         const val timber = "com.jakewharton.timber:timber:5.0.1"
         const val threeTenAbp = "com.jakewharton.threetenabp:threetenabp:1.4.0"
-        const val proguardSnippets = "com.github.yongjhih.android-proguards:android-proguards-all:-SNAPSHOT"
+        //const val proguardSnippets = "com.github.yongjhih.android-proguards:android-proguards-all:-SNAPSHOT"
 
         const val threeTen = "org.threeten:threetenbp:1.6.1"
 
@@ -138,7 +138,7 @@ object Deps {
 
         // const val fetch = "androidx.tonyodev.fetch2:xfetch2:3.1.6"
         // const val fetchOkhttp = "androidx.tonyodev.fetch2okhttp:xfetch2okhttp:3.1.6"
-        const val fetch = "com.github.alashow:Fetch:3.1.62"
+        const val fetch = "com.github.alashow:fetch:3.1.62"
         const val fetchOkhttp = "com.github.alashow:xfetch2okhttp:3.1.62"
 
         const val exoPlayer = "com.google.android.exoplayer:exoplayer-core:2.15.1"

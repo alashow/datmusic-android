@@ -31,12 +31,6 @@ android {
 	namespace 'tm.alashow.commonTesting'
 }
 
-repositories {
-	mavenCentral()
-	jcenter()
-	maven { url "https://jitpack.io" }
-}
-
 dependencies {
 	implementation Deps.Utils.coil
 

@@ -36,9 +36,6 @@ android {
 	namespace 'tm.alashow.datmusic.ui.settings'
 }
 
-repositories {
-	mavenCentral()
-}
 
 dependencies {
 	implementation(project(":modules:core-library"))

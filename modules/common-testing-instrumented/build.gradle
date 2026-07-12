@@ -30,12 +30,6 @@ android {
 	namespace 'tm.alashow.commonTesting'
 }
 
-repositories {
-	mavenCentral()
-	jcenter()
-	maven { url "https://jitpack.io" }
-}
-
 dependencies {
 
 	api Deps.Android.archCoreTesting
