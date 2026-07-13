@@ -26,7 +26,6 @@ android {
 		targetSdkVersion(App.targetSdkVersion)
 		minSdkVersion(App.minSdkVersion)
 
-		multiDexEnabled = true
 		vectorDrawables.useSupportLibrary = true
 	}
 
@@ -63,8 +62,6 @@ android {
 			signingConfig = signingConfigs.debug
 			versionNameSuffix = "-DEBUG"
 			applicationIdSuffix = ".debug"
-
-			multiDexKeepProguard = file("multidex-config.pro")
 		}
 
 		release {
@@ -72,8 +69,6 @@ android {
 			minifyEnabled = true
 			shrinkResources = true
 			proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-
-			multiDexKeepProguard = file("multidex-config.pro")
 		}
 	}
 
@@ -118,9 +113,6 @@ dependencies {
 
 	// leak canary
 	//debugImplementation Deps.LeakCanary.leakCanary
-
-	// android
-	implementation(Deps.Android.multiDex)
 }
 
 apply plugin: "com.google.gms.google-services"

@@ -28,8 +28,6 @@ object Deps {
 
         const val gradle = "com.android.tools.build:gradle:$gradleVersion"
 
-        const val multiDex = "androidx.multidex:multidex:2.0.1"
-
         const val activityVersion = "1.6.0-rc02"
         const val activityKtx = "androidx.activity:activity-ktx:$activityVersion"
 
