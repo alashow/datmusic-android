@@ -3,16 +3,18 @@ package tm.alashow.buildSrc
 object Deps {
     object Gradle {
         const val dexCount = "com.getkeepsafe.dexcount:dexcount-gradle-plugin:2.0.0"
-        const val playPublisher = "com.github.triplet.gradle:play-publisher:3.7.0"
-        const val googleServices = "com.google.gms:google-services:4.3.13"
+        const val playPublisher = "com.github.triplet.gradle:play-publisher:4.0.0"
+        const val googleServices = "com.google.gms:google-services:4.5.0"
     }
 
     object Kotlin {
-        const val version = "1.7.10"
+        const val version = "2.4.20-Beta1"
 
-        const val stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$version"
+        const val stdlib = "org.jetbrains.kotlin:kotlin-stdlib:$version"
         const val gradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:$version"
-        const val serialization = "org.jetbrains.kotlin:kotlin-serialization:$version"
+        const val composeCompiler = "org.jetbrains.kotlin:compose-compiler-gradle-plugin:$version"
+        const val serialization = "org.jetbrains.kotlin:kotlin-serialization:1.11.0"
+        const val ksp = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:2.3.10"
         const val serializationJson = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0"
 
         const val coroutinesVersion = "1.6.4"
@@ -22,7 +24,7 @@ object Deps {
     }
 
     object Android {
-        private const val gradleVersion = "7.2.2"
+        private const val gradleVersion = "9.2.0"
 
         const val gradle = "com.android.tools.build:gradle:$gradleVersion"
 
@@ -31,7 +33,7 @@ object Deps {
         const val activityVersion = "1.6.0-rc02"
         const val activityKtx = "androidx.activity:activity-ktx:$activityVersion"
 
-        private const val navigationVersion = "2.5.1"
+        private const val navigationVersion = "2.9.8"
         const val navigationFragment = "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
         const val navigationUi = "androidx.navigation:navigation-ui-ktx:$navigationVersion"
         const val navigationSafeArgs = "androidx.navigation:navigation-safe-args-gradle-plugin:$navigationVersion"
@@ -48,24 +50,26 @@ object Deps {
         const val archCoreTesting = "androidx.arch.core:core-testing:2.1.0"
 
         object Compose {
-            const val version = "1.3.0-beta02"
-            const val compilerVersion = "1.3.0"
+            const val bomStable = "androidx.compose:compose-bom:2026.06.01"
+            const val bomAlpha = "androidx.compose:compose-bom-alpha:2026.06.01"
+            const val bom = bomAlpha
 
-            const val ui = "androidx.compose.ui:ui:$version"
-            const val uiUtil = "androidx.compose.ui:ui-util:$version"
-            const val uiTooling = "androidx.compose.ui:ui-tooling:$version"
-            const val foundation = "androidx.compose.foundation:foundation:$version"
-            const val material = "androidx.compose.material:material:$version"
-            const val material3 = "androidx.compose.material3:material3:1.0.0-beta02"
-            const val materialIcons = "androidx.compose.material:material-icons-core:$version"
-            const val materialIconsExtended = "androidx.compose.material:material-icons-extended:$version"
+            const val ui = "androidx.compose.ui:ui"
+            const val uiUtil = "androidx.compose.ui:ui-util"
+            const val uiTooling = "androidx.compose.ui:ui-tooling"
+            const val foundation = "androidx.compose.foundation:foundation"
+            const val material = "androidx.compose.material:material"
+            const val material3 = "androidx.compose.material3:material3"
+            const val materialNavigation = "androidx.compose.material:material-navigation"
+            const val materialIcons = "androidx.compose.material:material-icons-core"
+            const val materialIconsExtended = "androidx.compose.material:material-icons-extended"
             const val constraintLayout = "androidx.constraintlayout:constraintlayout-compose:1.1.0-alpha03"
-            const val liveData = "androidx.compose.runtime:runtime-livedata:$version"
+            const val liveData = "androidx.compose.runtime:runtime-livedata"
             const val activity = "androidx.activity:activity-compose:$activityVersion"
             const val paging = "androidx.paging:paging-compose:1.0.0-alpha16"
 
-            const val uiTestJunit = "androidx.compose.ui:ui-test-junit4:$version"
-            const val uiTestManifeset = "androidx.compose.ui:ui-test-manifest:$version"
+            const val uiTestJunit = "androidx.compose.ui:ui-test-junit4"
+            const val uiTestManifeset = "androidx.compose.ui:ui-test-manifest"
 
             private const val lottieVersion = "5.2.0"
             const val lottie = "com.airbnb.android:lottie-compose:$lottieVersion"
@@ -83,13 +87,11 @@ object Deps {
             const val placeholder = "com.google.accompanist:accompanist-placeholder-material:$version"
             const val swiperefresh = "com.google.accompanist:accompanist-swiperefresh:$version"
             const val systemUiController = "com.google.accompanist:accompanist-systemuicontroller:$version"
-            const val navigationMaterial = "com.google.accompanist:accompanist-navigation-material:$version"
-            const val navigationAnimation = "com.google.accompanist:accompanist-navigation-animation:$version"
             const val flowlayout = "com.google.accompanist:accompanist-flowlayout:$version"
         }
 
         object Lifecycle {
-            private const val version = "2.6.0-alpha02"
+            private const val version = "2.11.0"
 
             const val runtime = "androidx.lifecycle:lifecycle-runtime:$version"
             const val runtimeKtx = "androidx.lifecycle:lifecycle-runtime-ktx:$version"
@@ -101,7 +103,7 @@ object Deps {
         }
 
         object Room {
-            private const val version = "2.4.1"
+            private const val version = "2.8.4"
 
             const val compiler = "androidx.room:room-compiler:$version"
             const val runtime = "androidx.room:room-runtime:$version"
@@ -134,12 +136,10 @@ object Deps {
 
         const val coilVersion = "2.2.1"
         const val coil = "io.coil-kt:coil:$coilVersion"
-        const val store = "com.dropbox.mobile.store:store4:4.0.5"
+        const val store = "org.mobilenativefoundation.store:store5:5.1.0-alpha09"
 
-        // const val fetch = "androidx.tonyodev.fetch2:xfetch2:3.1.6"
-        // const val fetchOkhttp = "androidx.tonyodev.fetch2okhttp:xfetch2okhttp:3.1.6"
-        const val fetch = "com.github.alashow:fetch:3.1.62"
-        const val fetchOkhttp = "com.github.alashow:xfetch2okhttp:3.1.62"
+        const val fetch = "com.github.tonyofrancis.Fetch:fetch2:3.4.1"
+        const val fetchOkhttp = "com.github.tonyofrancis.Fetch:fetch2okhttp:3.4.1"
 
         const val exoPlayer = "com.google.android.exoplayer:exoplayer-core:2.15.1"
         const val exoPlayerOkhttp = "com.google.android.exoplayer:extension-okhttp:2.15.0"
@@ -166,7 +166,7 @@ object Deps {
     }
 
     object Dagger {
-        private const val version = "2.42"
+        private const val version = "2.60"
 
         const val dagger = "com.google.dagger:dagger:$version"
         const val compiler = "com.google.dagger:dagger-compiler:$version"
@@ -185,20 +185,20 @@ object Deps {
 
     object Firebase {
 
-        const val bom = "com.google.firebase:firebase-bom:30.5.0"
-        const val messaging = "com.google.firebase:firebase-messaging-ktx"
-        const val remoteConfig = "com.google.firebase:firebase-config-ktx"
-        const val analytics = "com.google.firebase:firebase-analytics-ktx"
-        const val crashlytics = "com.google.firebase:firebase-crashlytics-ktx"
-        const val crashlyticsGradle = "com.google.firebase:firebase-crashlytics-gradle:2.9.1"
+        const val bom = "com.google.firebase:firebase-bom:34.16.0"
+        const val messaging = "com.google.firebase:firebase-messaging"
+        const val remoteConfig = "com.google.firebase:firebase-config"
+        const val analytics = "com.google.firebase:firebase-analytics"
+        const val crashlytics = "com.google.firebase:firebase-crashlytics"
+        const val crashlyticsGradle = "com.google.firebase:firebase-crashlytics-gradle:3.0.7"
     }
 
     object Testing {
         const val junit = "junit:junit:4.13.2"
         const val truth = "com.google.truth:truth:1.1.3"
-        const val robolectric = "org.robolectric:robolectric:4.8.2"
-        const val mockito = "org.mockito:mockito-core:4.7.0"
-        const val mockitoKotlin = "org.mockito.kotlin:mockito-kotlin:4.0.0"
+        const val robolectric = "org.robolectric:robolectric:4.16.1"
+        const val mockito = "org.mockito:mockito-core:5.23.0"
+        const val mockitoKotlin = "org.mockito.kotlin:mockito-kotlin:6.3.0"
         const val mockk = "io.mockk:mockk:1.12.8"
         const val turbine = "app.cash.turbine:turbine:0.8.0"
     }

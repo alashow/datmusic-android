@@ -5,6 +5,8 @@
 package tm.alashow.datmusic.ui
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.navigation.ModalBottomSheetLayout
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -14,12 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import androidx.navigation.plusAssign
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.ModalBottomSheetLayout
+
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import tm.alashow.base.util.Analytics
 import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.common.compose.LocalAppVersion
@@ -47,6 +47,7 @@ import tm.alashow.navigation.activityHiltViewModel
 import tm.alashow.navigation.rememberBottomSheetNavigator
 import tm.alashow.ui.ThemeViewModel
 import tm.alashow.ui.theme.AppTheme
+import javax.inject.Inject
 
 @Composable
 fun DatmusicApp(
@@ -58,13 +59,13 @@ fun DatmusicApp(
     )
 }
 
-@OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalAnimationApi::class)
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun DatmusicAppContent(
     onPlayingTitleClick: () -> Unit,
     onPlayingArtistClick: () -> Unit,
     modifier: Modifier = Modifier,
-    navController: NavHostController = rememberAnimatedNavController(),
+    navController: NavHostController = rememberNavController(),
 ) {
     val bottomSheetNavigator = rememberBottomSheetNavigator()
     navController.navigatorProvider += bottomSheetNavigator
@@ -79,7 +80,7 @@ private fun DatmusicAppContent(
 
 // Could be renamed to DatmusicCoreViewModel if more things are injected
 @HiltViewModel
-private class AnalyticsViewModel @Inject constructor(val analytics: Analytics) : ViewModel()
+internal class AnalyticsViewModel @Inject constructor(val analytics: Analytics) : ViewModel()
 
 @Composable
 private fun DatmusicCore(

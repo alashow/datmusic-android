@@ -19,7 +19,9 @@ buildscript {
     dependencies {
         classpath Deps.Android.gradle
         classpath Deps.Kotlin.gradle
+        classpath Deps.Kotlin.composeCompiler
         classpath Deps.Kotlin.serialization
+        classpath Deps.Kotlin.ksp
         classpath Deps.Gradle.googleServices
         classpath Deps.Gradle.playPublisher
         classpath Deps.Firebase.crashlyticsGradle
@@ -35,9 +37,9 @@ plugins {
 }
 
 allprojects {
-    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
         kotlinOptions {
-            jvmTarget = "1.8"
+            jvmTarget = "11"
 
             freeCompilerArgs += "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
             freeCompilerArgs += "-Xopt-in=kotlinx.coroutines.FlowPreview"
@@ -46,10 +48,15 @@ allprojects {
             freeCompilerArgs += "-Xopt-in=com.google.accompanist.pager.ExperimentalPagerApi"
         }
     }
+    tasks.withType(Test).configureEach {
+        failOnNoDiscoveredTests = false
+        // TODO: add test logger
+    }
 }
 
 subprojects {
     configurations.configureEach {
+        exclude group: 'org.jetbrains.kotlin', module: 'kotlin-android-extensions-runtime'
         exclude group: 'androidx.appcompat'
         exclude group: 'com.google.android.material', module: 'material'
     }
@@ -75,6 +82,10 @@ subprojects {
     afterEvaluate { project ->
         if (project.hasProperty("android")) {
             android {
+                compileOptions {
+                    sourceCompatibility JavaVersion.VERSION_11
+                    targetCompatibility JavaVersion.VERSION_11
+                }
                 defaultConfig {
                     testInstrumentationRunner "tm.alashow.base.testing.AndroidTestRunner"
                 }

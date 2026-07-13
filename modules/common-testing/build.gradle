@@ -9,8 +9,7 @@ import tm.alashow.buildSrc.Deps
 
 plugins {
 	id "com.android.library"
-	id "kotlin-android"
-	id "kotlin-kapt"
+	id "com.google.devtools.ksp"
 }
 
 android {
@@ -20,11 +19,6 @@ android {
 		minSdkVersion App.minSdkVersion
 	}
 
-
-	compileOptions {
-		sourceCompatibility JavaVersion.VERSION_1_8
-		targetCompatibility JavaVersion.VERSION_1_8
-	}
 	lint {
 		disable 'GradleCompatible'
 	}
@@ -34,7 +28,7 @@ android {
 dependencies {
 	implementation Deps.Utils.coil
 
-	kapt Deps.Dagger.hiltCompiler
+	ksp Deps.Dagger.hiltCompiler
 
 	api Deps.Utils.threeTen
 	api Deps.Android.archCoreTesting
@@ -54,6 +48,7 @@ dependencies {
 	api Deps.Testing.turbine
 	api Deps.Testing.robolectric
 
+	api platform(Deps.Android.Compose.bom)
 	api Deps.Android.Compose.uiTestJunit
 	debugApi Deps.Android.Compose.uiTestManifeset
 }

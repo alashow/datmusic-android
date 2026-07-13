@@ -6,8 +6,11 @@ package tm.alashow.datmusic.downloader
 
 import android.app.PendingIntent
 import android.content.Context
+import android.content.Context.RECEIVER_NOT_EXPORTED
 import android.content.Intent
+import android.content.IntentFilter
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import com.tonyodev.fetch2.ACTION_TYPE_CANCEL
 import com.tonyodev.fetch2.ACTION_TYPE_DELETE
 import com.tonyodev.fetch2.ACTION_TYPE_INVALID
@@ -65,5 +68,12 @@ class DownloaderNotificationManager(val context: Context) : DefaultFetchNotifica
             },
             context
         )
+    }
+
+    override fun registerBroadcastReceiver() {
+        // TODO: why is context null?!
+        if (context != null) {
+            ContextCompat.registerReceiver(context, broadcastReceiver, IntentFilter(notificationManagerAction), RECEIVER_NOT_EXPORTED)
+        }
     }
 }

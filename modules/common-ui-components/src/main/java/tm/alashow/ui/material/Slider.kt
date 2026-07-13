@@ -37,6 +37,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.progressSemantics
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ripple
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
@@ -628,7 +629,7 @@ private fun SliderThumb(
                 .size(thumbSize, thumbSize)
                 .indication(
                     interactionSource = interactionSource,
-                    indication = rememberRipple(bounded = false, radius = thumbSize * 1.2f)
+                    indication = ripple(bounded = false, radius = thumbSize * 1.2f)
                 )
                 .shadow(if (enabled) elevation else 0.dp, CircleShape, clip = false)
                 .background(colors.thumbColor(enabled).value, CircleShape)

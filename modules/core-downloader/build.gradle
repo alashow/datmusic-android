@@ -10,8 +10,7 @@ import tm.alashow.buildSrc.Deps
 plugins {
 	id "com.android.library"
 	id "dagger.hilt.android.plugin"
-	id "kotlin-android"
-	id "kotlin-kapt"
+	id "com.google.devtools.ksp"
 }
 
 android {
@@ -21,10 +20,6 @@ android {
 		minSdkVersion App.minSdkVersion
 	}
 
-	compileOptions {
-		sourceCompatibility JavaVersion.VERSION_1_8
-		targetCompatibility JavaVersion.VERSION_1_8
-	}
 	namespace 'tm.alashow.datmusic.downloader'
 }
 
@@ -32,9 +27,9 @@ dependencies {
 	api project(":modules:core-media")
 
 	implementation Deps.Dagger.hilt
-	kapt Deps.Dagger.compiler
-	kapt Deps.Dagger.hiltCompiler
+	ksp Deps.Dagger.compiler
+	ksp Deps.Dagger.hiltCompiler
 
 	testImplementation project(":modules:common-testing")
-	kaptTest Deps.Dagger.hiltCompiler
+	kspTest Deps.Dagger.hiltCompiler
 }

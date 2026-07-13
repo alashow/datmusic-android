@@ -517,7 +517,7 @@ private fun LazyListScope.playbackQueue(
                     onRemoveFromPlaylist = { playbackConnection.removeByPosition(realPosition) }
                 )
             ),
-            modifier = Modifier.animateItemPlacement()
+            modifier = Modifier.animateItem()
         )
     }
 }

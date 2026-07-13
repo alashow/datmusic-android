@@ -10,8 +10,7 @@ import tm.alashow.buildSrc.Deps
 plugins {
 	id "com.android.library"
 	id "dagger.hilt.android.plugin"
-	id "kotlin-android"
-	id "kotlin-kapt"
+	id "com.google.devtools.ksp"
 	id "org.jetbrains.kotlin.plugin.serialization"
 }
 
@@ -22,10 +21,6 @@ android {
 		minSdkVersion App.minSdkVersion
 	}
 
-	compileOptions {
-		sourceCompatibility JavaVersion.VERSION_1_8
-		targetCompatibility JavaVersion.VERSION_1_8
-	}
 	namespace 'tm.alashow.datmusic.playback'
 }
 
@@ -37,6 +32,6 @@ dependencies {
 	implementation Deps.Android.Lifecycle.extensions
 
 	implementation Deps.Dagger.hilt
-	kapt Deps.Dagger.compiler
-	kapt Deps.Dagger.hiltCompiler
+	ksp Deps.Dagger.compiler
+	ksp Deps.Dagger.hiltCompiler
 }

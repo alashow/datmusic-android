@@ -4,6 +4,7 @@
  */
 package tm.alashow.base.ui
 
+import androidx.annotation.VisibleForTesting
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.channels.Channel
@@ -12,7 +13,6 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.receiveAsFlow
-import org.jetbrains.annotations.VisibleForTesting
 import tm.alashow.base.R
 import tm.alashow.i18n.UiMessage
 

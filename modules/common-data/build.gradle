@@ -8,8 +8,7 @@ import tm.alashow.buildSrc.Deps
 
 plugins {
 	id "com.android.library"
-	id "kotlin-android"
-	id "kotlin-kapt"
+	id "com.google.devtools.ksp"
 	id "kotlin-parcelize"
 }
 
@@ -20,11 +19,6 @@ android {
 		minSdkVersion App.minSdkVersion
 	}
 
-
-	compileOptions {
-		sourceCompatibility JavaVersion.VERSION_1_8
-		targetCompatibility JavaVersion.VERSION_1_8
-	}
 	lint {
 		disable 'GradleCompatible'
 	}
@@ -34,14 +28,14 @@ android {
 
 
 dependencies {
-	kapt Deps.Dagger.compiler
-	kapt Deps.Dagger.hiltCompiler
+	ksp Deps.Dagger.compiler
+	ksp Deps.Dagger.hiltCompiler
 
 	api Deps.Utils.store
 
 	api Deps.Android.Room.ktx
 	api Deps.Android.Room.paging
-	kapt Deps.Android.Room.compiler
+	ksp Deps.Android.Room.compiler
 
 	api Deps.Android.dataStore
 

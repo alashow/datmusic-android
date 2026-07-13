@@ -8,8 +8,8 @@ import tm.alashow.buildSrc.Deps
 
 plugins {
 	id "com.android.library"
-	id "kotlin-android"
-	id "kotlin-kapt"
+	id "com.google.devtools.ksp"
+	id "org.jetbrains.kotlin.plugin.compose"
 }
 
 android {
@@ -21,19 +21,14 @@ android {
 		vectorDrawables.useSupportLibrary = true
 	}
 
-
-	compileOptions {
-		sourceCompatibility JavaVersion.VERSION_1_8
-		targetCompatibility JavaVersion.VERSION_1_8
+    buildFeatures {
+        buildConfig = true
 	}
 
 	buildFeatures {
 		compose = true
 	}
 
-	composeOptions {
-		kotlinCompilerExtensionVersion Deps.Android.Compose.compilerVersion
-	}
 	lint {
 		disable 'GradleCompatible'
 	}
@@ -45,6 +40,7 @@ dependencies {
 	api project(":modules:core-playback")
 
 	// Android
+	api platform(Deps.Android.Compose.bom)
 	api Deps.Android.navigationCompose
 	api Deps.Android.navigationHiltCompose
 
@@ -56,6 +52,7 @@ dependencies {
 	api Deps.Android.Compose.material3
 	api Deps.Android.Compose.materialIcons
 	api Deps.Android.Compose.materialIconsExtended
+	api Deps.Android.Compose.materialNavigation
 	api Deps.Android.Compose.constraintLayout
 	api Deps.Android.Compose.activity
 	api Deps.Android.Compose.liveData
@@ -69,8 +66,6 @@ dependencies {
 	api Deps.Android.Accompanist.swiperefresh
 	api Deps.Android.Accompanist.systemUiController
 	api Deps.Android.Accompanist.flowlayout
-	api Deps.Android.Accompanist.navigationMaterial
-	api Deps.Android.Accompanist.navigationAnimation
 
 	// 3rd party
 	api Deps.Android.Compose.lottie

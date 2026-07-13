@@ -7,6 +7,7 @@ package tm.alashow.navigation.screens
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.material.navigation.bottomSheet
 import androidx.compose.runtime.Composable
 import androidx.core.net.toUri
 import androidx.navigation.NamedNavArgument
@@ -14,11 +15,9 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
+import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
-import com.google.accompanist.navigation.animation.composable
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.bottomSheet
 import tm.alashow.Config
 import tm.alashow.datmusic.data.DatmusicSearchParams
 import tm.alashow.datmusic.data.DatmusicSearchParams.BackendType.Companion.toQueryParam
@@ -195,6 +194,5 @@ fun NavGraphBuilder.composableScreen(screen: LeafScreen, content: @Composable An
     composable(screen.createRoute(), screen.arguments, screen.deepLinks, content = content)
 }
 
-@OptIn(ExperimentalMaterialNavigationApi::class)
 fun NavGraphBuilder.bottomSheetScreen(screen: LeafScreen, content: @Composable ColumnScope.(NavBackStackEntry) -> Unit) =
     bottomSheet(screen.createRoute(), screen.arguments, screen.deepLinks, content)

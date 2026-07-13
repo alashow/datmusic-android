@@ -11,7 +11,7 @@ import androidx.paging.compose.LazyPagingItems
 
 /**
  * Paginated items with keys support.
- * @see androidx.paging.compose.items
+ * @see LazyPagingItems
  */
 inline fun <T : Any> LazyListScope.items(
     lazyPagingItems: LazyPagingItems<T>,
@@ -19,12 +19,10 @@ inline fun <T : Any> LazyListScope.items(
     crossinline itemContent: @Composable LazyItemScope.(value: T?) -> Unit
 ) {
     items(
-        lazyPagingItems.itemCount,
-        { index ->
-            when (val item = lazyPagingItems.peek(index)) {
-                item != null -> key(index, item)
-                else -> index
-            }
+        count = lazyPagingItems.itemCount,
+        key = { index ->
+            val item = lazyPagingItems.peek(index)
+            if (item != null) key(index, item) else index
         }
     ) { index ->
         itemContent(lazyPagingItems[index])
