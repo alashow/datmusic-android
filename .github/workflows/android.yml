@@ -12,16 +12,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      - name: Set up JDK 11
-        uses: actions/setup-java@v1
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
         with:
-          java-version: 11
+          java-version: 21
+          distribution: temurin
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v2
+        uses: android-actions/setup-android@v4
 
       - name: Run Tests
-        uses: burrunan/gradle-cache-action@v1
+        uses: burrunan/gradle-cache-action@v3.0.2
         with:
           gradle-dependencies-cache-key: |
             buildSrc/**/Deps.kt
@@ -37,7 +38,7 @@ jobs:
           find . -name "reports" -exec cp -r {} build-reports/ \;
       - name: Upload build reports
         if: always()
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: build-reports
           path: build-reports
@@ -49,7 +50,7 @@ jobs:
           find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} junit/ \;
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: junit-results
           path: junit
