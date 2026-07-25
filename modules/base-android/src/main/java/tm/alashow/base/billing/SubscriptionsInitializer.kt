@@ -10,11 +10,10 @@ import com.qonversion.android.sdk.QonversionConfig
 import com.qonversion.android.sdk.dto.QEnvironment
 import com.qonversion.android.sdk.dto.QLaunchMode
 import com.qonversion.android.sdk.dto.properties.QUserPropertyKey
+import javax.inject.Inject
 import tm.alashow.base.inititializer.AppInitializer
 import tm.alashow.base.util.extensions.androidId
 import tm.alashow.baseAndroid.BuildConfig
-import javax.inject.Inject
-
 
 class SubscriptionsInitializer @Inject constructor() : AppInitializer {
     override fun init(application: Application) {

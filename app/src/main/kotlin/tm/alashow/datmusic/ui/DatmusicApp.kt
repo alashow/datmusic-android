@@ -18,8 +18,8 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.plusAssign
-
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import tm.alashow.base.util.Analytics
 import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.common.compose.LocalAppVersion
@@ -47,7 +47,6 @@ import tm.alashow.navigation.activityHiltViewModel
 import tm.alashow.navigation.rememberBottomSheetNavigator
 import tm.alashow.ui.ThemeViewModel
 import tm.alashow.ui.theme.AppTheme
-import javax.inject.Inject
 
 @Composable
 fun DatmusicApp(

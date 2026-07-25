@@ -22,8 +22,8 @@ android {
 		vectorDrawables.useSupportLibrary = true
 	}
 
-    buildFeatures {
-        buildConfig = true
+	buildFeatures {
+		buildConfig = true
 	}
 
 	lint {

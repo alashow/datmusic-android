@@ -12,9 +12,11 @@ import com.qonversion.android.sdk.dto.entitlements.QEntitlement
 import com.qonversion.android.sdk.dto.products.QProduct
 import com.qonversion.android.sdk.listeners.QonversionEntitlementsCallback
 import com.qonversion.android.sdk.listeners.QonversionProductsCallback
+import java.util.Date
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -22,10 +24,6 @@ import org.threeten.bp.LocalDateTime
 import timber.log.Timber
 import tm.alashow.Config
 import tm.alashow.base.util.toLocalDateTime
-import java.util.Date
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 
 typealias OnPermissionActive = (QEntitlement) -> Unit
 typealias OnPermissionError = (SubscriptionError) -> Unit

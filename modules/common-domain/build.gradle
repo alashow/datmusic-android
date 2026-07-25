@@ -16,8 +16,8 @@ android {
 	compileSdkVersion App.compileSdkVersion
 
 	defaultConfig {
-        minSdkVersion App.minSdkVersion
-    }
+		minSdkVersion App.minSdkVersion
+	}
 
 	lint {
 		disable 'GradleCompatible'
