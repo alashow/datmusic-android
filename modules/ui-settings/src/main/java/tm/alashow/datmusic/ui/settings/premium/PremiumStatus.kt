@@ -4,7 +4,7 @@
  */
 package tm.alashow.datmusic.ui.settings.premium
 
-import com.qonversion.android.sdk.dto.QPermission
+import com.qonversion.android.sdk.dto.entitlements.QEntitlement
 import tm.alashow.base.billing.SubscriptionError
 
 internal sealed class PremiumStatus {
@@ -12,7 +12,7 @@ internal sealed class PremiumStatus {
     object NotEnabled : PremiumStatus()
 
     data class NotSubscribed(val subscriptionError: SubscriptionError) : PremiumStatus()
-    data class Subscribed(val premiumPermission: QPermission) : PremiumStatus()
+    data class Subscribed(val premiumPermission: QEntitlement) : PremiumStatus()
 
     val isActionable get() = this != Unknown && this != NotEnabled
     val isLoading get() = this == Unknown
