@@ -4,12 +4,12 @@
  */
 package tm.alashow.data
 
-import com.dropbox.android.external.store4.Store
-import com.dropbox.android.external.store4.StoreResponse
-import com.dropbox.android.external.store4.fresh
-import com.dropbox.android.external.store4.get
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNot
+import org.mobilenativefoundation.store.store5.Store
+import org.mobilenativefoundation.store.store5.StoreReadResponse
+import org.mobilenativefoundation.store.store5.impl.extensions.fresh
+import org.mobilenativefoundation.store.store5.impl.extensions.get
 
 suspend inline fun <Key : Any, Output : Any> Store<Key, Output>.fetch(
     key: Key,
@@ -20,6 +20,6 @@ suspend inline fun <Key : Any, Output : Any> Store<Key, Output>.fetch(
     else -> get(key)
 }
 
-fun <T> Flow<StoreResponse<T>>.filterForResult(): Flow<StoreResponse<T>> = filterNot {
-    it is StoreResponse.Loading || it is StoreResponse.NoNewData
+fun <T> Flow<StoreReadResponse<T>>.filterForResult(): Flow<StoreReadResponse<T>> = filterNot {
+    it is StoreReadResponse.Loading || it is StoreReadResponse.NoNewData
 }

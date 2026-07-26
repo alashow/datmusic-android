@@ -44,6 +44,7 @@ local.properties
 _sandbox
 
 captures/
+.kotlin/
 
 # Do not commit plain signing files
 signing/*-release.jks

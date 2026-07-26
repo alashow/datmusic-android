@@ -6,6 +6,7 @@ package tm.alashow.ui.theme
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -34,7 +35,7 @@ fun outlinedTextFieldColors(
     cursorColor: Color = MaterialTheme.colorScheme.secondary,
     focusedBorderColor: Color = MaterialTheme.colorScheme.secondary.copy(alpha = ContentAlpha.medium),
     unfocusedBorderColor: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = ContentAlpha.disabled),
-) = androidx.compose.material3.TextFieldDefaults.outlinedTextFieldColors(
+) = OutlinedTextFieldDefaults.colors(
     focusedBorderColor = focusedBorderColor,
     unfocusedBorderColor = unfocusedBorderColor,
     cursorColor = cursorColor,

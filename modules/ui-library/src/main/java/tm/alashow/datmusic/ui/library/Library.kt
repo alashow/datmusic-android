@@ -135,7 +135,7 @@ fun LazyListScope.libraryList(
     }
 
     items(items, key = { it.getIdentifier() }) {
-        val modifier = Modifier.animateItemPlacement()
+        val modifier = Modifier.animateItem()
         when (it) {
             is Playlist -> PlaylistRow(
                 playlist = it,

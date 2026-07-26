@@ -4,13 +4,13 @@
 */
 
 
+
 import tm.alashow.buildSrc.App
-import tm.alashow.buildSrc.Deps
 
 plugins {
 	id "com.android.library"
-	id "kotlin-android"
-	id "kotlin-kapt"
+	id "com.google.devtools.ksp"
+	id "org.jetbrains.kotlin.plugin.compose"
 }
 
 android {
@@ -22,23 +22,11 @@ android {
 		minSdkVersion App.minSdkVersion
 	}
 
-	compileOptions {
-		sourceCompatibility JavaVersion.VERSION_1_8
-		targetCompatibility JavaVersion.VERSION_1_8
-	}
-
 	buildFeatures {
 		compose = true
 	}
-
-	composeOptions {
-		kotlinCompilerExtensionVersion Deps.Android.Compose.compilerVersion
-	}
 }
 
-repositories {
-	mavenCentral()
-}
 
 dependencies {
 	api(project(":modules:common-compose"))

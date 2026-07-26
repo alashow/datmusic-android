@@ -17,7 +17,11 @@ import org.mockito.junit.MockitoJUnit
 import org.mockito.junit.MockitoRule
 import org.robolectric.annotation.Config
 
-@Config(application = HiltTestApplication::class, manifest = Config.NONE)
+@Config(
+    application = HiltTestApplication::class,
+    manifest = Config.NONE,
+    sdk = [34]
+)
 @RunWith(AndroidJUnit4::class)
 abstract class BaseTest {
     @get:Rule(order = 0)

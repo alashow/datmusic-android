@@ -6,8 +6,11 @@ package tm.alashow.datmusic.downloader
 
 import android.app.PendingIntent
 import android.content.Context
+import android.content.Context.RECEIVER_NOT_EXPORTED
 import android.content.Intent
+import android.content.IntentFilter
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import com.tonyodev.fetch2.ACTION_TYPE_CANCEL
 import com.tonyodev.fetch2.ACTION_TYPE_DELETE
 import com.tonyodev.fetch2.ACTION_TYPE_INVALID
@@ -23,6 +26,9 @@ import com.tonyodev.fetch2.EXTRA_NAMESPACE
 import com.tonyodev.fetch2.EXTRA_NOTIFICATION_GROUP_ID
 import com.tonyodev.fetch2.EXTRA_NOTIFICATION_ID
 import com.tonyodev.fetch2.Fetch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class DownloaderNotificationManager(val context: Context) : DefaultFetchNotificationManager(context) {
     override fun getFetchInstanceForNamespace(namespace: String): Fetch {
@@ -65,5 +71,11 @@ class DownloaderNotificationManager(val context: Context) : DefaultFetchNotifica
             },
             context
         )
+    }
+
+    override fun registerBroadcastReceiver() {
+        CoroutineScope(Dispatchers.Main).launch {
+            ContextCompat.registerReceiver(context, broadcastReceiver, IntentFilter(notificationManagerAction), ContextCompat.RECEIVER_NOT_EXPORTED)
+        }
     }
 }

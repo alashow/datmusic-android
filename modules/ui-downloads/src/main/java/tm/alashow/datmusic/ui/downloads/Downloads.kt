@@ -316,7 +316,7 @@ private fun LazyListScope.downloadsList(
     }
 
     itemsIndexed(downloads.audios, { _, it -> it.downloadRequest.id }) { index, it ->
-        Column(modifier = Modifier.animateItemPlacement()) {
+        Column(modifier = Modifier.animateItem()) {
             if (index != 0) Divider()
             AudioDownload(
                 audioDownloadItem = it,

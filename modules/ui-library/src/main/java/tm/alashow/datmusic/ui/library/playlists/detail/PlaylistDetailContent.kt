@@ -65,7 +65,7 @@ internal class PlaylistDetailContent(
                             }
                         )
                     ),
-                    modifier = Modifier.animateItemPlacement()
+                    modifier = Modifier.animateItem()
                 )
             }
         }

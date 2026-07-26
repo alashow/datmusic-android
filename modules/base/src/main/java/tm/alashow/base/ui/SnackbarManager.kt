@@ -4,6 +4,7 @@
  */
 package tm.alashow.base.ui
 
+import androidx.annotation.VisibleForTesting
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.channels.Channel

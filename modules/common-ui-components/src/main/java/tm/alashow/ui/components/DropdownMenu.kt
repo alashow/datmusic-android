@@ -5,13 +5,16 @@
 package tm.alashow.ui.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -19,11 +22,14 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuGroup
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.DropdownMenuPopup
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -38,9 +44,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import tm.alashow.ui.material.ContentAlpha
 import tm.alashow.ui.material.ProvideContentAlpha
+import tm.alashow.ui.theme.AppTheme
+import tm.alashow.ui.theme.PreviewAppTheme
 import tm.alashow.ui.theme.Theme
 
 @Composable
@@ -59,6 +68,7 @@ fun <T> SelectableDropdownMenu(
     leadingIconColor: Color = LocalContentColor.current,
     border: BorderStroke? = null,
 ) {
+    val groupInteractionSource = remember { MutableInteractionSource() }
     var expanded by remember { mutableStateOf(false) }
     val dropIcon = if (expanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown
 
@@ -95,50 +105,56 @@ fun <T> SelectableDropdownMenu(
                 Icon(painter = rememberVectorPainter(dropIcon), contentDescription = null)
             }
         }
-        DropdownMenu(
+        DropdownMenuPopup(
             expanded = expanded,
             onDismissRequest = { expanded = false },
             modifier = Modifier.width(IntrinsicSize.Min)
         ) {
-            items.forEachIndexed { index, item ->
-                DropdownMenuItem(
-                    onClick = {
-                        expanded = !expanded
-                        onItemSelect(item)
-                    },
-                    text = {
-                        Column {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                val isSelected = item in selectedItems
-                                val contentColor = when {
-                                    isSelected -> MaterialTheme.colorScheme.secondary
-                                    else -> MaterialTheme.colorScheme.onSurface
-                                }
-                                CompositionLocalProvider(LocalContentColor provides contentColor) {
-                                    Text(
-                                        text = itemLabelMapper(item),
-                                        style = MaterialTheme.typography.bodyMedium.run {
-                                            if (isSelected) copy(fontWeight = FontWeight.Bold) else this
-                                        },
-                                    )
-                                    if (itemSuffixMapper != null)
-                                        itemSuffixMapper(item)
-                                }
-                            }
-
-                            if (subtitles != null) {
-                                val subtitle = subtitles[index]
-                                if (subtitle != null)
-                                    ProvideContentAlpha(ContentAlpha.medium) {
-                                        Text(text = subtitle, style = MaterialTheme.typography.bodySmall)
+            DropdownMenuGroup(
+                shapes = MenuDefaults.groupShape(0, 1),
+                interactionSource = groupInteractionSource,
+            ) {
+                items.forEachIndexed { index, item ->
+                    DropdownMenuItem(
+                        colors = MenuDefaults.selectableItemVibrantColors(),
+                        onClick = {
+                            expanded = !expanded
+                            onItemSelect(item)
+                        },
+                        text = {
+                            Column {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    val isSelected = item in selectedItems
+                                    val contentColor = when {
+                                        isSelected -> MaterialTheme.colorScheme.secondary
+                                        else -> MaterialTheme.colorScheme.onSurface
                                     }
+                                    CompositionLocalProvider(LocalContentColor provides contentColor) {
+                                        Text(
+                                            text = itemLabelMapper(item),
+                                            style = MaterialTheme.typography.bodyMedium.run {
+                                                if (isSelected) copy(fontWeight = FontWeight.Bold) else this
+                                            },
+                                        )
+                                        if (itemSuffixMapper != null)
+                                            itemSuffixMapper(item)
+                                    }
+                                }
+
+                                if (subtitles != null) {
+                                    val subtitle = subtitles[index]
+                                    if (subtitle != null)
+                                        ProvideContentAlpha(ContentAlpha.medium) {
+                                            Text(text = subtitle, style = MaterialTheme.typography.bodySmall)
+                                        }
+                                }
                             }
                         }
-                    }
-                )
+                    )
+                }
             }
         }
     }
@@ -160,5 +176,38 @@ fun MoreVerticalIcon(
             painter = rememberVectorPainter(Icons.Default.MoreVert),
             contentDescription = contentDescription,
         )
+    }
+}
+
+@Preview
+@Composable
+fun SelectableDropdownMenuPreview() = PreviewAppTheme {
+    Scaffold {
+        Column(Modifier.padding(it)) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .padding(horizontal = AppTheme.specs.padding)
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    "Label 1",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier
+                        .padding(end = AppTheme.specs.paddingTiny)
+                )
+                Box(
+                    modifier = Modifier.weight(0.2f, false),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    SelectableDropdownMenu(
+                        items = listOf("Option 1", "Option 2", "Option 3"),
+                        selectedItem = "Option 1",
+                        onItemSelect = {},
+                    )
+                }
+            }
+        }
     }
 }
