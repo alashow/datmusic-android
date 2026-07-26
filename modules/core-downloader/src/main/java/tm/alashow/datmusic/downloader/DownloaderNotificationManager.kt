@@ -27,14 +27,8 @@ import com.tonyodev.fetch2.EXTRA_NOTIFICATION_GROUP_ID
 import com.tonyodev.fetch2.EXTRA_NOTIFICATION_ID
 import com.tonyodev.fetch2.Fetch
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import timber.log.Timber
-import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.seconds
 
 class DownloaderNotificationManager(val context: Context) : DefaultFetchNotificationManager(context) {
     override fun getFetchInstanceForNamespace(namespace: String): Fetch {
