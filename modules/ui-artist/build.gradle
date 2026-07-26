@@ -3,9 +3,7 @@
 * All rights reserved.
 */
 
-
 import tm.alashow.buildSrc.App
-import tm.alashow.buildSrc.Deps
 
 plugins {
 	id("com.android.library")
@@ -28,7 +26,6 @@ android {
 	}
 }
 
-
 dependencies {
 	implementation(project(":modules:common-compose"))
 	implementation(project(":modules:common-ui-theme"))
@@ -36,7 +33,7 @@ dependencies {
 	implementation(project(":modules:core-ui-media"))
 	implementation(project(":modules:navigation"))
 
-	implementation(Deps.Dagger.hilt)
-	ksp(Deps.Dagger.compiler)
-	ksp(Deps.Dagger.hiltCompiler)
+	implementation(libs.hilt.android)
+	ksp(libs.dagger.compiler)
+	ksp(libs.hilt.compiler)
 }

@@ -4,12 +4,10 @@
 */
 
 import tm.alashow.buildSrc.App
-import tm.alashow.buildSrc.Deps
-
 
 plugins {
-	id "com.android.library"
-	id "com.google.devtools.ksp"
+	id("com.android.library")
+	id("com.google.devtools.ksp")
 }
 
 android {
@@ -26,39 +24,39 @@ android {
 }
 
 dependencies {
-	api Deps.Kotlin.stdlib
-	api Deps.Kotlin.serializationJson
-	api Deps.Kotlin.coroutinesCore
+	api(libs.kotlin.stdlib)
+	api(libs.kotlinx.serialization.json)
+	api(libs.kotlinx.coroutines.core)
 
-	api Deps.Utils.coil
-	api Deps.Utils.timber
-	api Deps.Utils.threeTenAbp
+	api(libs.coil)
+	api(libs.timber)
+	api(libs.threetenabp)
 
-	api Deps.Dagger.dagger
-	ksp Deps.Dagger.compiler
-	api Deps.Dagger.hilt
-	ksp Deps.Dagger.hiltCompiler
+	api(libs.dagger)
+	ksp(libs.dagger.compiler)
+	api(libs.hilt.android)
+	ksp(libs.hilt.compiler)
 
-	api Deps.OkHttp.okhttp
-	api Deps.OkHttp.logger
-	api Deps.Retrofit.retrofit
-	api Deps.Retrofit.rxjavaAdapter
-	api Deps.Retrofit.retroAuth
-	api Deps.Retrofit.kotlinSerializerConverter
+	api(libs.okhttp)
+	api(libs.okhttp.loggingInterceptor)
+	api(libs.retrofit)
+	api(libs.retrofit.adapter.rxjava2)
+	api(libs.retroauth)
+	api(libs.retrofit.kotlinx.serialization.converter)
 
-	api Deps.Android.documentFile
-	api Deps.Android.Paging.runtime
-	api Deps.Android.Paging.common
+	api(libs.androidx.documentfile)
+	api(libs.androidx.paging.runtime)
+	api(libs.androidx.paging.common)
 
-	api "androidx.annotation:annotation:1.10.0"
-	api platform(Deps.Firebase.bom)
-	api Deps.Firebase.messaging
-	api Deps.Firebase.remoteConfig
-	api Deps.Firebase.analytics
-	api Deps.Firebase.crashlytics
+	api("androidx.annotation:annotation:1.10.0")
+	api(platform(libs.firebase.bom))
+	api(libs.firebase.messaging)
+	api(libs.firebase.config)
+	api(libs.firebase.analytics)
+	api(libs.firebase.crashlytics)
 
-	api project(":modules:i18n")
+	api(project(":modules:i18n"))
 
-	testImplementation project(":modules:common-testing")
-	kspTest Deps.Dagger.hiltCompiler
+	testImplementation(project(":modules:common-testing"))
+	kspTest(libs.hilt.compiler)
 }

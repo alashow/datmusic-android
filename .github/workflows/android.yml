@@ -25,7 +25,7 @@ jobs:
         uses: burrunan/gradle-cache-action@v3.0.2
         with:
           gradle-dependencies-cache-key: |
-            buildSrc/**/Deps.kt
+            gradle/libs.versions.toml
           concurrent: true
           arguments: |
             spotlessCheck

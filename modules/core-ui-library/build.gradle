@@ -3,16 +3,14 @@
 * All rights reserved.
 */
 
-
 import tm.alashow.buildSrc.App
-import tm.alashow.buildSrc.Deps
 
 plugins {
-	id "com.android.library"
-	id "dagger.hilt.android.plugin"
-	id "com.google.devtools.ksp"
-	id "kotlin-parcelize"
-	id "org.jetbrains.kotlin.plugin.compose"
+	id("com.android.library")
+	id("dagger.hilt.android.plugin")
+	id("com.google.devtools.ksp")
+	id("kotlin-parcelize")
+	id("org.jetbrains.kotlin.plugin.compose")
 }
 
 android {
@@ -29,7 +27,6 @@ android {
 	namespace 'tm.alashow.datmusic.ui.coreLibrary'
 }
 
-
 dependencies {
 	api(project(":modules:core-library"))
 	api(project(":modules:common-compose"))
@@ -38,7 +35,7 @@ dependencies {
 	api(project(":modules:core-ui-downloader"))
 	api(project(":modules:navigation"))
 
-	implementation Deps.Dagger.hilt
-	ksp Deps.Dagger.compiler
-	ksp Deps.Dagger.hiltCompiler
+	implementation(libs.hilt.android)
+	ksp(libs.dagger.compiler)
+	ksp(libs.hilt.compiler)
 }

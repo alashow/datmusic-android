@@ -3,14 +3,12 @@
 * All rights reserved.
 */
 
-
-
 import tm.alashow.buildSrc.App
 
 plugins {
-	id "com.android.library"
-	id "com.google.devtools.ksp"
-	id "org.jetbrains.kotlin.plugin.compose"
+	id("com.android.library")
+	id("com.google.devtools.ksp")
+	id("org.jetbrains.kotlin.plugin.compose")
 }
 
 android {
@@ -27,7 +25,6 @@ android {
 	}
 }
 
-
 dependencies {
 	api(project(":modules:common-compose"))
 	api(project(":modules:common-ui-theme"))
@@ -37,5 +34,5 @@ dependencies {
 	api(project(":modules:navigation"))
 
 	// TODO: uncomment when merged: https://github.com/saket/swipe/pull/5, https://github.com/saket/swipe/pull/6
-	//implementation Deps.Android.Compose.swipe
+	//implementationlibs.swipe)
 }

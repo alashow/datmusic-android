@@ -3,15 +3,13 @@
 * All rights reserved.
 */
 
-
 import tm.alashow.buildSrc.App
-import tm.alashow.buildSrc.Deps
 
 plugins {
-	id "com.android.library"
-	id "dagger.hilt.android.plugin"
-	id "com.google.devtools.ksp"
-	id "org.jetbrains.kotlin.plugin.compose"
+	id("com.android.library")
+	id("dagger.hilt.android.plugin")
+	id("com.google.devtools.ksp")
+	id("org.jetbrains.kotlin.plugin.compose")
 }
 
 android {
@@ -28,13 +26,11 @@ android {
 	namespace 'tm.alashow.navigation'
 }
 
-
 dependencies {
-	implementation Deps.Testing.turbine
+	implementation(libs.turbine)
 
-	implementation Deps.Dagger.hilt
-	ksp Deps.Dagger.compiler
-	ksp Deps.Dagger.hiltCompiler
-	api project(':modules:common-compose')
-
+	implementation(libs.hilt.android)
+	ksp(libs.dagger.compiler)
+	ksp(libs.hilt.compiler)
+	api(project(':modules:common-compose'))
 }

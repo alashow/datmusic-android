@@ -6,7 +6,7 @@
 import tm.alashow.buildSrc.App
 
 plugins {
-	id "com.android.library"
+	id("com.android.library")
 }
 
 android {

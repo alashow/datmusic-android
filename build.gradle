@@ -2,10 +2,6 @@
  * Copyright (C) 2021, Alashov Berkeli
  * All rights reserved.
  */
-
-
-import tm.alashow.buildSrc.Deps
-
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
@@ -17,25 +13,24 @@ buildscript {
     }
 
     dependencies {
-        classpath Deps.Android.gradle
-        classpath Deps.Kotlin.gradle
-        classpath Deps.Kotlin.composeCompiler
-        classpath Deps.Kotlin.serialization
-        classpath Deps.Kotlin.ksp
-        classpath Deps.Gradle.googleServices
-        classpath Deps.Gradle.playPublisher
-        classpath Deps.Firebase.crashlyticsGradle
-        classpath Deps.Android.navigationSafeArgs
-        classpath Deps.Dagger.hiltGradle
+        classpath(libs.gradle.android)
+        classpath(libs.kotlin.gradle.plugin)
+        classpath(libs.kotlin.compose.compiler.plugin)
+        classpath(libs.kotlin.serialization.plugin)
+        classpath(libs.kotlin.ksp.plugin)
+        classpath(libs.gradle.googleServices)
+        classpath(libs.gradle.playPublisher)
+        classpath(libs.firebase.crashlytics.gradle)
+        classpath(libs.androidx.navigation.safeArgs)
+        classpath(libs.hilt.gradle.plugin)
     }
 }
 
 plugins {
-    id "com.diffplug.spotless" version "6.1.0"
-    id "com.github.ben-manes.versions" version "0.54.0"
-    id "com.kncept.junit.reporter" version "2.1.0"
+    alias(libs.plugins.spotless)
+    alias(libs.plugins.versions)
+    alias(libs.plugins.junit.reporter)
 }
-
 allprojects {
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
         kotlinOptions {

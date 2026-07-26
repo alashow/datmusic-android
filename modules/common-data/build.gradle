@@ -4,12 +4,11 @@
 */
 
 import tm.alashow.buildSrc.App
-import tm.alashow.buildSrc.Deps
 
 plugins {
-	id "com.android.library"
-	id "com.google.devtools.ksp"
-	id "kotlin-parcelize"
+	id("com.android.library")
+	id("com.google.devtools.ksp")
+	id("kotlin-parcelize")
 }
 
 android {
@@ -25,19 +24,17 @@ android {
 	namespace 'tm.alashow.commonData'
 }
 
-
-
 dependencies {
-	ksp Deps.Dagger.compiler
-	ksp Deps.Dagger.hiltCompiler
+	ksp(libs.dagger.compiler)
+	ksp(libs.hilt.compiler)
 
-	api Deps.Utils.store
+	api(libs.store)
 
-	api Deps.Android.Room.ktx
-	api Deps.Android.Room.paging
-	ksp Deps.Android.Room.compiler
+	api(libs.androidx.room.ktx)
+	api(libs.androidx.room.paging)
+	ksp(libs.androidx.room.compiler)
 
-	api Deps.Android.dataStore
+	api(libs.androidx.datastore.preferences)
 
 	api(project(":modules:base"))
 	api(project(":modules:common-domain"))

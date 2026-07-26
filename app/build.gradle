@@ -4,7 +4,6 @@
 */
 
 import tm.alashow.buildSrc.App
-import tm.alashow.buildSrc.Deps
 
 apply plugin: "com.android.application"
 apply plugin: "dagger.hilt.android.plugin"
@@ -99,20 +98,20 @@ dependencies {
 	implementation(project(":modules:ui-album"))
 	implementation(project(":modules:ui-downloads"))
 
-	implementation(Deps.Kotlin.coroutinesAndroid)
+	implementation(libs.kotlinx.coroutines.android)
 
 	// utils
-	//implementation(Deps.Utils.proguardSnippets)
+	// implementation(libs.proguardSnippets)
 
-	ksp(Deps.Android.Lifecycle.compiler)
+	ksp(libs.androidx.lifecycle.compiler)
 
 	// dagger-2
-	implementation(Deps.Dagger.hilt)
-	ksp(Deps.Dagger.compiler)
-	ksp(Deps.Dagger.hiltCompiler)
+	implementation(libs.hilt.android)
+	ksp(libs.dagger.compiler)
+	ksp(libs.hilt.compiler)
 
 	// leak canary
-	//debugImplementation Deps.LeakCanary.leakCanary
+	//debugImplementation(libs.leakcanary)
 }
 
 apply plugin: "com.google.gms.google-services"

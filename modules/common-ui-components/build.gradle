@@ -3,14 +3,12 @@
 * All rights reserved.
 */
 
-
 import tm.alashow.buildSrc.App
-import tm.alashow.buildSrc.Deps
 
 plugins {
-	id "com.android.library"
-	id "com.google.devtools.ksp"
-	id "org.jetbrains.kotlin.plugin.compose"
+	id("com.android.library")
+	id("com.google.devtools.ksp")
+	id("org.jetbrains.kotlin.plugin.compose")
 }
 
 android {
@@ -28,7 +26,7 @@ android {
 }
 
 dependencies {
-	api Deps.Android.Compose.lottie
-	api project(':modules:common-compose')
-	api project(":modules:common-ui-theme")
+	api(libs.lottie.compose)
+	api(project(':modules:common-compose'))
+	api(project(":modules:common-ui-theme"))
 }

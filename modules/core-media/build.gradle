@@ -4,12 +4,11 @@
 */
 
 import tm.alashow.buildSrc.App
-import tm.alashow.buildSrc.Deps
 
 plugins {
-	id "com.android.library"
-	id "com.google.devtools.ksp"
-	id "kotlin-parcelize"
+	id("com.android.library")
+	id("com.google.devtools.ksp")
+	id("kotlin-parcelize")
 }
 
 android {
@@ -25,16 +24,14 @@ android {
 	namespace 'tm.alashow.datmusic.coreMedia'
 }
 
-
-
 dependencies {
-	api project(":modules:core-data")
+	api(project(":modules:core-data"))
 
-	ksp Deps.Dagger.compiler
-	ksp Deps.Dagger.hiltCompiler
+	ksp(libs.dagger.compiler)
+	ksp(libs.hilt.compiler)
 
-	ksp Deps.Android.Room.compiler
+	ksp(libs.androidx.lifecycle.compiler)
 
-	testImplementation project(":modules:common-testing")
-	kspTest Deps.Dagger.hiltCompiler
+	testImplementation(project(":modules:common-testing"))
+	kspTest(libs.dagger.compiler)
 }

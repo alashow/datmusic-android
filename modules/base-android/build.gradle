@@ -4,13 +4,12 @@
 */
 
 import tm.alashow.buildSrc.App
-import tm.alashow.buildSrc.Deps
 
 plugins {
-	id "com.android.library"
-	id "com.google.devtools.ksp"
-	id "kotlin-parcelize"
-	id "org.jetbrains.kotlin.plugin.serialization"
+	id("com.android.library")
+	id("com.google.devtools.ksp")
+	id("kotlin-parcelize")
+	id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
@@ -32,33 +31,31 @@ android {
 	namespace 'tm.alashow.baseAndroid'
 }
 
-
-
 dependencies {
-	api Deps.Dagger.hilt
+	api(libs.hilt.android)
 
 	// android
-	api Deps.Android.activityKtx
+	api(libs.androidx.activity.ktx)
 
-	api Deps.Android.navigationFragment
-	api Deps.Android.navigationUi
+	api(libs.androidx.navigation.fragment)
+	api(libs.androidx.navigation.ui)
 
-	implementation Deps.Android.Lifecycle.extensions
-	api Deps.Android.Lifecycle.runtime
-	api Deps.Android.Lifecycle.runtimeKtx
-	api(Deps.Android.Lifecycle.vmKotlin) {}
-	api Deps.Android.Lifecycle.vmSavedState
+	implementation(libs.androidx.lifecycle.extensions)
+	api(libs.androidx.lifecycle.runtime)
+	api(libs.androidx.lifecycle.runtime.ktx)
+	api(libs.androidx.lifecycle.viewmodel.ktx) {}
+	api(libs.androidx.lifecycle.viewmodel.savedstate)
 
-	api Deps.Android.palette
-	api Deps.Android.media
-	api Deps.Utils.exoPlayer
-	api Deps.Utils.exoPlayerOkhttp
-	api(Deps.Utils.exoPlayerFlac) {
+	api(libs.androidx.palette)
+	api(libs.androidx.media)
+	api(libs.exoplayer.core)
+	api(libs.exoplayer.okhttp)
+	api(libs.exoplayer.flac) {
 		transitive = false
 	}
 
-	api Deps.Utils.qonversion
+	api(libs.qonversion)
 
-	api project(":modules:base")
-	api project(":modules:core-media")
+	api(project(":modules:base"))
+	api(project(":modules:core-media"))
 }

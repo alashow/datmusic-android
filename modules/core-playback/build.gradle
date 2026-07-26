@@ -3,15 +3,13 @@
 * All rights reserved.
 */
 
-
 import tm.alashow.buildSrc.App
-import tm.alashow.buildSrc.Deps
 
 plugins {
-	id "com.android.library"
-	id "dagger.hilt.android.plugin"
-	id "com.google.devtools.ksp"
-	id "org.jetbrains.kotlin.plugin.serialization"
+	id("com.android.library")
+	id("dagger.hilt.android.plugin")
+	id("com.google.devtools.ksp")
+	id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
@@ -25,13 +23,13 @@ android {
 }
 
 dependencies {
-	api project(":modules:base-android")
-	implementation project(":modules:core-library")
-	implementation project(":modules:core-downloader")
+	api(project(":modules:base-android"))
+	implementation(project(":modules:core-library"))
+	implementation(project(":modules:core-downloader"))
 
-	implementation Deps.Android.Lifecycle.extensions
+	implementation(libs.androidx.lifecycle.extensions)
 
-	implementation Deps.Dagger.hilt
-	ksp Deps.Dagger.compiler
-	ksp Deps.Dagger.hiltCompiler
+	implementation(libs.hilt.android)
+	ksp(libs.dagger.compiler)
+	ksp(libs.hilt.compiler)
 }

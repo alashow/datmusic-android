@@ -3,14 +3,12 @@
 * All rights reserved.
 */
 
-
 import tm.alashow.buildSrc.App
-import tm.alashow.buildSrc.Deps
 
 plugins {
-	id "com.android.library"
-	id "dagger.hilt.android.plugin"
-	id "com.google.devtools.ksp"
+	id("com.android.library")
+	id("dagger.hilt.android.plugin")
+	id("com.google.devtools.ksp")
 }
 
 android {
@@ -24,12 +22,12 @@ android {
 }
 
 dependencies {
-	api project(":modules:core-media")
+	api(project(":modules:core-media"))
 
-	implementation Deps.Dagger.hilt
-	ksp Deps.Dagger.compiler
-	ksp Deps.Dagger.hiltCompiler
+	implementation(libs.hilt.android)
+	ksp(libs.dagger.compiler)
+	ksp(libs.hilt.compiler)
 
-	testImplementation project(":modules:common-testing")
-	kspTest Deps.Dagger.hiltCompiler
+	testImplementation(project(":modules:common-testing"))
+	kspTest(libs.dagger.compiler)
 }

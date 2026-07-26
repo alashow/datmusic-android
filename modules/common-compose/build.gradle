@@ -4,12 +4,11 @@
 */
 
 import tm.alashow.buildSrc.App
-import tm.alashow.buildSrc.Deps
 
 plugins {
-	id "com.android.library"
-	id "com.google.devtools.ksp"
-	id "org.jetbrains.kotlin.plugin.compose"
+	id("com.android.library")
+	id("com.google.devtools.ksp")
+	id("org.jetbrains.kotlin.plugin.compose")
 }
 
 android {
@@ -36,39 +35,39 @@ android {
 }
 
 dependencies {
-	api project(":modules:base-android")
-	api project(":modules:core-playback")
+	api(project(":modules:base-android"))
+	api(project(":modules:core-playback"))
 
 	// Android
-	api platform(Deps.Android.Compose.bom)
-	api Deps.Android.navigationCompose
-	api Deps.Android.navigationHiltCompose
+	api(platform(libs.androidx.compose.bom))
+	api(libs.androidx.navigation.compose)
+	api(libs.androidx.hilt.navigation.compose)
 
-	api Deps.Android.Compose.ui
-	api Deps.Android.Compose.uiUtil
-	api Deps.Android.Compose.uiTooling
-	api Deps.Android.Compose.foundation
-	api Deps.Android.Compose.material
-	api Deps.Android.Compose.material3
-	api Deps.Android.Compose.materialIcons
-	api Deps.Android.Compose.materialIconsExtended
-	api Deps.Android.Compose.materialNavigation
-	api Deps.Android.Compose.constraintLayout
-	api Deps.Android.Compose.activity
-	api Deps.Android.Compose.liveData
-	api Deps.Android.Compose.paging
-	api Deps.Android.Lifecycle.composeViewModels
+	api(libs.androidx.compose.ui)
+	api(libs.androidx.compose.ui.util)
+	api(libs.androidx.compose.ui.tooling)
+	api(libs.androidx.compose.foundation)
+	api(libs.androidx.compose.material)
+	api(libs.androidx.compose.material3)
+	api(libs.androidx.compose.material.icons)
+	api(libs.androidx.compose.material.iconsExtended)
+	api(libs.androidx.compose.material.navigation)
+	api(libs.androidx.compose.constraintlayout)
+	api(libs.androidx.compose.activity)
+	api(libs.androidx.compose.livedata)
+	api(libs.androidx.compose.paging)
+	api(libs.androidx.lifecycle.viewmodel.compose)
 
 	// Accompanist
-	api Deps.Android.Accompanist.pager
-	api Deps.Android.Accompanist.permissions
-	api Deps.Android.Accompanist.placeholder
-	api Deps.Android.Accompanist.swiperefresh
-	api Deps.Android.Accompanist.systemUiController
-	api Deps.Android.Accompanist.flowlayout
+	api(libs.accompanist.pager)
+	api(libs.accompanist.permissions)
+	api(libs.accompanist.placeholder)
+	api(libs.accompanist.swiperefresh)
+	api(libs.accompanist.systemuicontroller)
+	api(libs.accompanist.flowlayout)
 
 	// 3rd party
-	api Deps.Android.Compose.lottie
-	api Deps.Android.Compose.coil
-	api Deps.Android.Compose.reorderable
+	api(libs.lottie.compose)
+	api(libs.coil.compose)
+	api(libs.compose.reorderable)
 }

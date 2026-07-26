@@ -3,13 +3,11 @@
 * All rights reserved.
 */
 
-
 import tm.alashow.buildSrc.App
-import tm.alashow.buildSrc.Deps
 
 plugins {
 	id("com.android.library")
-	id "com.google.devtools.ksp"
+	id("com.google.devtools.ksp")
 	id("dagger.hilt.android.plugin")
 	id("org.jetbrains.kotlin.plugin.compose")
 }
@@ -28,7 +26,6 @@ android {
 	}
 }
 
-
 dependencies {
 	implementation(project(":modules:common-compose"))
 	implementation(project(":modules:common-ui-theme"))
@@ -36,7 +33,7 @@ dependencies {
 	implementation(project(":modules:navigation"))
 	implementation(project(":modules:core-downloader"))
 
-	implementation(Deps.Dagger.hilt)
-	ksp(Deps.Dagger.compiler)
-	ksp(Deps.Dagger.hiltCompiler)
+	implementation(libs.hilt.android)
+	ksp(libs.dagger.compiler)
+	ksp(libs.hilt.compiler)
 }

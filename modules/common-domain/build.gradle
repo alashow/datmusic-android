@@ -4,12 +4,11 @@
 */
 
 import tm.alashow.buildSrc.App
-import tm.alashow.buildSrc.Deps
 
 plugins {
-	id "com.android.library"
-	id "kotlin-parcelize"
-	id "org.jetbrains.kotlin.plugin.serialization"
+	id("com.android.library")
+	id("kotlin-parcelize")
+	id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
@@ -26,8 +25,8 @@ android {
 }
 
 dependencies {
-	api Deps.Utils.fetch
-	api Deps.Utils.fetchOkhttp
-	api Deps.Android.Room.runtime
-	implementation project(":modules:base")
+	api(libs.fetch)
+	api(libs.fetch.okhttp)
+	api(libs.androidx.room.runtime)
+	implementation(project(":modules:base"))
 }

@@ -3,13 +3,12 @@
 * All rights reserved.
 */
 
-
 import tm.alashow.buildSrc.App
 
 plugins {
-	id "com.android.library"
-	id "kotlin-parcelize"
-	id "org.jetbrains.kotlin.plugin.serialization"
+	id("com.android.library")
+	id("kotlin-parcelize")
+	id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
@@ -26,6 +25,6 @@ android {
 }
 
 dependencies {
-	api project(":modules:common-domain")
-	implementation project(":modules:base")
+	api(project(":modules:common-domain"))
+	implementation(project(":modules:base"))
 }

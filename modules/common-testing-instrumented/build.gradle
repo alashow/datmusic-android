@@ -4,11 +4,10 @@
 */
 
 import tm.alashow.buildSrc.App
-import tm.alashow.buildSrc.Deps
 
 plugins {
-	id "com.android.library"
-	id "com.google.devtools.ksp"
+	id("com.android.library")
+	id("com.google.devtools.ksp")
 }
 
 android {
@@ -25,24 +24,23 @@ android {
 }
 
 dependencies {
+	api(libs.androidx.arch.core.testing)
+	api(libs.androidx.test.core)
+	api(libs.androidx.test.rules)
+	api(libs.androidx.test.runner)
+	api(libs.androidx.test.junit)
+	api(libs.androidx.room.testing)
+	api(libs.kotlinx.coroutines.test)
+	api(libs.hilt.testing)
 
-	api Deps.Android.archCoreTesting
-	api Deps.Android.Test.core
-	api Deps.Android.Test.rules
-	api Deps.Android.Test.runner
-	api Deps.Android.Test.junit
-	api Deps.Android.Room.testing
-	api Deps.Kotlin.coroutineTesting
-	api Deps.Dagger.hiltTesting
+	api(libs.junit)
+	api(libs.mockito.core)
+	api(libs.mockito.kotlin)
+	api(libs.mockk)
+	api(libs.truth)
+	api(libs.turbine)
 
-	api Deps.Testing.junit
-	api Deps.Testing.mockito
-	api Deps.Testing.mockitoKotlin
-	api Deps.Testing.mockk
-	api Deps.Testing.truth
-	api Deps.Testing.turbine
-
-	api platform(Deps.Android.Compose.bom)
-	api Deps.Android.Compose.uiTestJunit
-	debugApi Deps.Android.Compose.uiTestManifeset
+	api(platform(libs.androidx.compose.bom))
+	api(libs.androidx.compose.ui.test.junit)
+	debugApi(libs.androidx.compose.ui.test.manifest)
 }
