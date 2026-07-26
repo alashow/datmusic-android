@@ -6,23 +6,12 @@
 import tm.alashow.buildSrc.App
 import tm.alashow.buildSrc.Deps
 
-plugins {
-	id("com.android.application")
-	id("dagger.hilt.android.plugin")
-	id("kotlin-android")
-	id("kotlin-kapt")
-	id("kotlin-parcelize")
-	id("org.jetbrains.kotlin.plugin.serialization")
-	id("androidx.navigation.safeargs.kotlin")
-}
-
-apply plugin: "com.github.triplet.play"
-play {
-	defaultToAppBundles = true
-	track = prop("PUBLISH_TRACK", "alpha")
-	serviceAccountCredentials = rootProject.file("signing/play-account.json")
-}
-
+apply plugin: "com.android.application"
+apply plugin: "dagger.hilt.android.plugin"
+apply plugin: "kotlin-parcelize"
+apply plugin: "org.jetbrains.kotlin.plugin.serialization"
+apply plugin: "com.google.devtools.ksp"
+apply plugin: "org.jetbrains.kotlin.plugin.compose"
 
 def gitSha = "git rev-parse --short HEAD".execute([], project.rootDir).text.trim()
 
@@ -37,7 +26,6 @@ android {
 		targetSdkVersion(App.targetSdkVersion)
 		minSdkVersion(App.minSdkVersion)
 
-		multiDexEnabled = true
 		vectorDrawables.useSupportLibrary = true
 	}
 
@@ -48,18 +36,9 @@ android {
 		main.res.srcDirs += "src/main/res-drawable"
 	}
 
-	compileOptions {
-		sourceCompatibility = 1.8
-		targetCompatibility = 1.8
-	}
-
-
 	buildFeatures {
 		compose = true
-	}
-
-	composeOptions {
-		kotlinCompilerExtensionVersion = Deps.Android.Compose.compilerVersion
+		buildConfig = true
 	}
 
 	signingConfigs {
@@ -83,17 +62,13 @@ android {
 			signingConfig = signingConfigs.debug
 			versionNameSuffix = "-DEBUG"
 			applicationIdSuffix = ".debug"
-
-			multiDexKeepProguard = file("multidex-config.pro")
 		}
 
 		release {
 			signingConfig = signingConfigs.release
 			minifyEnabled = true
 			shrinkResources = true
-			proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
-
-			multiDexKeepProguard = file("multidex-config.pro")
+			proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
 		}
 	}
 
@@ -103,19 +78,9 @@ android {
 			enableSplit = false // don't split language resources, as the app supports locale changing
 		}
 	}
-	kotlinOptions {
-		jvmTarget = "1.8"
-	}
 	lint {
 		abortOnError = false
 	}
-}
-
-repositories {
-	mavenCentral()
-	maven { url "https://jitpack.io" }
-	maven { url "https://oss.jfrog.org/artifactory/oss-snapshot-local/" }
-	maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
 }
 
 dependencies {
@@ -137,24 +102,27 @@ dependencies {
 	implementation(Deps.Kotlin.coroutinesAndroid)
 
 	// utils
-	implementation(Deps.Utils.proguardSnippets)
+	//implementation(Deps.Utils.proguardSnippets)
 
-	kapt(Deps.Android.Lifecycle.compiler)
+	ksp(Deps.Android.Lifecycle.compiler)
 
 	// dagger-2
 	implementation(Deps.Dagger.hilt)
-	kapt(Deps.Dagger.compiler)
-	kapt(Deps.Dagger.hiltCompiler)
+	ksp(Deps.Dagger.compiler)
+	ksp(Deps.Dagger.hiltCompiler)
 
 	// leak canary
 	//debugImplementation Deps.LeakCanary.leakCanary
-
-	// android
-	implementation(Deps.Android.multiDex)
 }
 
+apply plugin: "com.google.gms.google-services"
+apply plugin: "com.google.firebase.crashlytics"
 
+apply plugin: "com.github.triplet.play"
+play {
+	defaultToAppBundles = true
+	track = prop("PUBLISH_TRACK", "alpha")
+	serviceAccountCredentials = rootProject.file("signing/play-account.json")
+}
 
-apply(plugin: "com.google.gms.google-services")
-apply(plugin: "com.google.firebase.crashlytics")
 apply(plugin: "kotlinx-serialization")

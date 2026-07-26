@@ -4,8 +4,6 @@
  */
 package tm.alashow.datmusic
 
-import android.content.Context
-import androidx.multidex.MultiDex
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 import tm.alashow.base.BaseApp
@@ -25,10 +23,5 @@ class App : BaseApp() {
         super.onCreate()
         initializers.init(this)
         appMigrator.migrate()
-    }
-
-    override fun attachBaseContext(base: Context) {
-        super.attachBaseContext(base)
-        MultiDex.install(this)
     }
 }

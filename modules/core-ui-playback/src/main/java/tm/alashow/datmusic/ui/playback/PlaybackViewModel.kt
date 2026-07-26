@@ -57,8 +57,9 @@ class PlaybackViewModel @Inject constructor(
             .collectLatest { playlist ->
                 val savedAsPlaylist = SavedAsPlaylistMessage(playlist)
                 snackbarManager.addMessage(savedAsPlaylist)
-                if (snackbarManager.observeMessageAction(savedAsPlaylist) != null)
+                snackbarManager.observeMessageAction(savedAsPlaylist) {
                     navigator.navigate(LeafScreen.PlaylistDetail.buildRoute(playlist.id))
+                }
             }
     }
 

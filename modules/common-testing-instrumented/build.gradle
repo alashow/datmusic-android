@@ -8,8 +8,7 @@ import tm.alashow.buildSrc.Deps
 
 plugins {
 	id "com.android.library"
-	id "kotlin-android"
-	id "kotlin-kapt"
+	id "com.google.devtools.ksp"
 }
 
 android {
@@ -19,21 +18,10 @@ android {
 		minSdkVersion App.minSdkVersion
 	}
 
-
-	compileOptions {
-		sourceCompatibility JavaVersion.VERSION_1_8
-		targetCompatibility JavaVersion.VERSION_1_8
-	}
 	lint {
 		disable 'GradleCompatible'
 	}
 	namespace 'tm.alashow.commonTesting'
-}
-
-repositories {
-	mavenCentral()
-	jcenter()
-	maven { url "https://jitpack.io" }
 }
 
 dependencies {
@@ -54,6 +42,7 @@ dependencies {
 	api Deps.Testing.truth
 	api Deps.Testing.turbine
 
+	api platform(Deps.Android.Compose.bom)
 	api Deps.Android.Compose.uiTestJunit
 	debugApi Deps.Android.Compose.uiTestManifeset
 }

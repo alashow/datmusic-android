@@ -344,7 +344,7 @@ private fun LazyListScope.editablePlaylistAudioList(
         val isDragging = reorderableState.draggingItemKey == itemKey
         ReorderableItem(
             reorderableState, key = itemKey,
-            if (isDragging) Modifier else Modifier.animateItemPlacement()
+            if (isDragging) Modifier else Modifier.animateItem()
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,

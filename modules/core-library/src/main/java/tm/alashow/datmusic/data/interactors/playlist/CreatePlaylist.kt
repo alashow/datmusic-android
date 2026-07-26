@@ -17,7 +17,7 @@ import tm.alashow.datmusic.domain.entities.Audios
 import tm.alashow.datmusic.domain.entities.PLAYLIST_NAME_MAX_LENGTH
 import tm.alashow.datmusic.domain.entities.Playlist
 
-class CreatePlaylist @Inject constructor(
+open class CreatePlaylist @Inject constructor(
     private val resources: Resources,
     private val repo: PlaylistsRepo,
     private val dispatchers: CoroutineDispatchers,

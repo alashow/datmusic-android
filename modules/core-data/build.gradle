@@ -8,8 +8,7 @@ import tm.alashow.buildSrc.Deps
 
 plugins {
 	id "com.android.library"
-	id "kotlin-android"
-	id "kotlin-kapt"
+	id "com.google.devtools.ksp"
 	id "kotlin-parcelize"
 	id "org.jetbrains.kotlin.plugin.serialization"
 }
@@ -19,36 +18,26 @@ android {
 
 	defaultConfig {
 		minSdkVersion App.minSdkVersion
-
-		javaCompileOptions {
-			annotationProcessorOptions {
-				arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
-			}
-		}
 	}
 
-	compileOptions {
-		sourceCompatibility JavaVersion.VERSION_1_8
-		targetCompatibility JavaVersion.VERSION_1_8
+	ksp {
+		arg("room.schemaLocation", "$projectDir/schemas".toString())
 	}
+
 	namespace 'tm.alashow.datmusic.coreData'
 }
 
-repositories {
-	mavenCentral()
-	maven { url "https://jitpack.io" }
-}
 
 dependencies {
 	api project(":modules:common-data")
 	api project(":modules:core-domain")
 
-	kapt Deps.Dagger.compiler
-	kapt Deps.Dagger.hiltCompiler
+	ksp Deps.Dagger.compiler
+	ksp Deps.Dagger.hiltCompiler
 
-	kapt Deps.Android.Room.compiler
+	ksp Deps.Android.Room.compiler
 
 	testImplementation project(":modules:common-testing")
-	kaptTest Deps.Dagger.hiltCompiler
-	kaptTest Deps.Android.Room.compiler
+	kspTest Deps.Dagger.hiltCompiler
+	kspTest Deps.Android.Room.compiler
 }

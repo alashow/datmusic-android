@@ -64,7 +64,9 @@ fun AppTheme(
 
     ProvideAppTheme(theme, colors) {
         MaterialTheme(
-            colorScheme = animate(colors.colorScheme),
+            colorScheme = colors.colorScheme,
+            // TODO: check again
+            //  colorScheme = animate(colors.colorScheme),
             typography = M3Typography,
             shapes = Shapes,
             content = { MaterialThemePatches(content) },

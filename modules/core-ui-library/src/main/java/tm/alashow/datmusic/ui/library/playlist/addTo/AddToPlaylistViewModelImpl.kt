@@ -50,8 +50,9 @@ internal class AddToPlaylistViewModelImpl @Inject constructor(
 
             val addedToPlaylist = AddedToPlaylistMessage(targetPlaylist)
             snackbarManager.addMessage(addedToPlaylist)
-            if (snackbarManager.observeMessageAction(addedToPlaylist) != null)
+            snackbarManager.observeMessageAction(addedToPlaylist) {
                 navigator.navigate(LeafScreen.PlaylistDetail.buildRoute(targetPlaylist.id))
+            }
         }
     }
 }

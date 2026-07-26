@@ -41,17 +41,10 @@ class PlayerService : MediaBrowserServiceCompat(), CoroutineScope by MainScope()
         var IS_FOREGROUND = false
     }
 
-    @Inject
-    protected lateinit var dispatchers: CoroutineDispatchers
-
-    @Inject
-    protected lateinit var datmusicPlayer: DatmusicPlayerImpl
-
-    @Inject
-    protected lateinit var mediaNotifications: MediaNotificationsImpl
-
-    @Inject
-    protected lateinit var mediaQueueBuilder: MediaQueueBuilder
+    @Inject lateinit var dispatchers: CoroutineDispatchers
+    @Inject lateinit var datmusicPlayer: DatmusicPlayerImpl
+    @Inject lateinit var mediaNotifications: MediaNotificationsImpl
+    @Inject lateinit var mediaQueueBuilder: MediaQueueBuilder
 
     private lateinit var becomingNoisyReceiver: BecomingNoisyReceiver
 

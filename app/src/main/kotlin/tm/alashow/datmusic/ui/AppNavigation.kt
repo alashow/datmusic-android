@@ -4,7 +4,7 @@
  */
 package tm.alashow.datmusic.ui
 
-import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -25,8 +25,8 @@ import androidx.navigation.NavGraph
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import com.google.accompanist.navigation.animation.AnimatedNavHost
-import com.google.accompanist.navigation.animation.navigation
+import androidx.navigation.compose.NavHost
+import androidx.navigation.navigation
 import tm.alashow.base.util.Analytics
 import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.common.compose.collectEvent
@@ -82,7 +82,7 @@ internal fun AppNavigation(
             else -> Unit
         }
     }
-    AnimatedNavHost(
+    NavHost(
         navController = navController,
         startDestination = RootScreen.Search.route,
         modifier = modifier,
@@ -232,7 +232,7 @@ internal fun NavController.currentScreenAsState(): State<RootScreen> {
 }
 
 @ExperimentalAnimationApi
-private fun AnimatedContentScope<*>.defaultEnterTransition(
+private fun AnimatedContentTransitionScope<*>.defaultEnterTransition(
     initial: NavBackStackEntry,
     target: NavBackStackEntry,
 ): EnterTransition {
@@ -243,11 +243,11 @@ private fun AnimatedContentScope<*>.defaultEnterTransition(
         return fadeIn()
     }
     // Otherwise we're in the same nav graph, we can imply a direction
-    return fadeIn() + slideIntoContainer(AnimatedContentScope.SlideDirection.Start)
+    return fadeIn() + slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start)
 }
 
 @ExperimentalAnimationApi
-private fun AnimatedContentScope<*>.defaultExitTransition(
+private fun AnimatedContentTransitionScope<*>.defaultExitTransition(
     initial: NavBackStackEntry,
     target: NavBackStackEntry,
 ): ExitTransition {
@@ -258,18 +258,18 @@ private fun AnimatedContentScope<*>.defaultExitTransition(
         return fadeOut()
     }
     // Otherwise we're in the same nav graph, we can imply a direction
-    return fadeOut() + slideOutOfContainer(AnimatedContentScope.SlideDirection.Start)
+    return fadeOut() + slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start)
 }
 
 internal val NavDestination.hostNavGraph: NavGraph
     get() = hierarchy.first { it is NavGraph } as NavGraph
 
 @ExperimentalAnimationApi
-private fun AnimatedContentScope<*>.defaultPopEnterTransition(): EnterTransition {
-    return fadeIn() + slideIntoContainer(AnimatedContentScope.SlideDirection.End)
+private fun AnimatedContentTransitionScope<*>.defaultPopEnterTransition(): EnterTransition {
+    return fadeIn() + slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End)
 }
 
 @ExperimentalAnimationApi
-private fun AnimatedContentScope<*>.defaultPopExitTransition(): ExitTransition {
-    return fadeOut() + slideOutOfContainer(AnimatedContentScope.SlideDirection.End)
+private fun AnimatedContentTransitionScope<*>.defaultPopExitTransition(): ExitTransition {
+    return fadeOut() + slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End)
 }

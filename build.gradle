@@ -19,7 +19,9 @@ buildscript {
     dependencies {
         classpath Deps.Android.gradle
         classpath Deps.Kotlin.gradle
+        classpath Deps.Kotlin.composeCompiler
         classpath Deps.Kotlin.serialization
+        classpath Deps.Kotlin.ksp
         classpath Deps.Gradle.googleServices
         classpath Deps.Gradle.playPublisher
         classpath Deps.Firebase.crashlyticsGradle
@@ -30,24 +32,14 @@ buildscript {
 
 plugins {
     id "com.diffplug.spotless" version "6.1.0"
-    id "com.github.ben-manes.versions" version "0.42.0"
+    id "com.github.ben-manes.versions" version "0.54.0"
     id "com.kncept.junit.reporter" version "2.1.0"
 }
 
 allprojects {
-    repositories {
-        google()
-        mavenCentral()
-        maven { url 'https://androidx.dev/snapshots/builds/8020137/artifacts/repository' }
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-        maven { url 'https://jitpack.io' }
-        jcenter()
-    }
-
-    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
         kotlinOptions {
-            jvmTarget = "1.8"
-
+            jvmTarget = "11"
             freeCompilerArgs += "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
             freeCompilerArgs += "-Xopt-in=kotlinx.coroutines.FlowPreview"
             freeCompilerArgs += "-Xopt-in=kotlin.Experimental"
@@ -55,10 +47,15 @@ allprojects {
             freeCompilerArgs += "-Xopt-in=com.google.accompanist.pager.ExperimentalPagerApi"
         }
     }
+    tasks.withType(Test).configureEach {
+        failOnNoDiscoveredTests = false
+        // TODO: add test logger
+    }
 }
 
 subprojects {
     configurations.configureEach {
+        exclude group: 'org.jetbrains.kotlin', module: 'kotlin-android-extensions-runtime'
         exclude group: 'androidx.appcompat'
         exclude group: 'com.google.android.material', module: 'material'
     }
@@ -84,6 +81,10 @@ subprojects {
     afterEvaluate { project ->
         if (project.hasProperty("android")) {
             android {
+                compileOptions {
+                    sourceCompatibility JavaVersion.VERSION_11
+                    targetCompatibility JavaVersion.VERSION_11
+                }
                 defaultConfig {
                     testInstrumentationRunner "tm.alashow.base.testing.AndroidTestRunner"
                 }

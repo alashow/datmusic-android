@@ -4,9 +4,9 @@
  */
 package tm.alashow.data
 
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.remoteconfig.ktx.remoteConfig
-import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
+import com.google.firebase.Firebase
+import com.google.firebase.remoteconfig.remoteConfig
+import com.google.firebase.remoteconfig.remoteConfigSettings
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.serialization.KSerializer
