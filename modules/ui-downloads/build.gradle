@@ -42,6 +42,6 @@ dependencies {
 
 	testImplementation(project(":modules:common-testing"))
 	androidTestImplementation(project(":modules:common-testing-instrumented"))
-	kspTest(libs.dagger.compiler)
+	kspTest(libs.hilt.compiler)
 	kspAndroidTest(libs.hilt.compiler)
 }
