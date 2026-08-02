@@ -1,0 +1,2 @@
+- Fix locale change
+- Set default device's locale as default locale

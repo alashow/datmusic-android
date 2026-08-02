@@ -1,4 +1,4 @@
-v2.3.0-beta.3
+v2.3.0-beta.4
 - UI fixes & optimizations
 
 v2.3.0-beta.2
