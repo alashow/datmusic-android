@@ -21,6 +21,8 @@ datastore = "1.0.0"
 documentfile = "1.1.0-alpha01"
 palette = "1.0.0"
 media = "1.6.0"
+media3 = "1.10.1"
+media3-flac = "1.5.0.1"
 archCore = "2.1.0"
 # Compose & UI
 compose-bom-stable = "2026.06.01"
@@ -44,9 +46,6 @@ threetenbp = "1.6.1"
 coil = "2.2.1"
 store = "5.1.0-alpha09"
 fetch = "3.4.1"
-exoplayer = "2.15.1"
-exoplayer-okhttp = "2.15.0"
-exoplayer-flac = "v2.15.1"
 qonversion = "9.6.0"
 # Network
 okhttp = "5.0.0-alpha.10"
@@ -103,7 +102,6 @@ androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-com
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 androidx-documentfile = { module = "androidx.documentfile:documentfile", version.ref = "documentfile" }
 androidx-palette = { module = "androidx.palette:palette-ktx", version.ref = "palette" }
-androidx-media = { module = "androidx.media:media", version.ref = "media" }
 androidx-arch-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "archCore" }
 
 # Compose BOM & UI
@@ -125,6 +123,13 @@ androidx-compose-activity = { module = "androidx.activity:activity-compose", ver
 androidx-compose-paging = { module = "androidx.paging:paging-compose", version.ref = "paging-compose" }
 androidx-compose-ui-test-junit = { module = "androidx.compose.ui:ui-test-junit4" }
 androidx-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
+
+# Media3
+androidx-media = { module = "androidx.media:media", version.ref = "media" }
+androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3" }
+androidx-media3-datasource-okhttp = { module = "androidx.media3:media3-datasource-okhttp", version.ref = "media3" }
+androidx-media3-session = { module = "androidx.media3:media3-session", version.ref = "media3" }
+androidx-media3-flac = { module = "com.tidal.androidx.media3:media3-flac", version.ref = "media3-flac" }
 
 # Accompanist & UI Libraries
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanist" }
@@ -166,9 +171,6 @@ coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 store = { module = "org.mobilenativefoundation.store:store5", version.ref = "store" }
 fetch = { module = "com.github.tonyofrancis.Fetch:fetch2", version.ref = "fetch" }
 fetch-okhttp = { module = "com.github.tonyofrancis.Fetch:fetch2okhttp", version.ref = "fetch" }
-exoplayer-core = { module = "com.google.android.exoplayer:exoplayer-core", version.ref = "exoplayer" }
-exoplayer-okhttp = { module = "com.google.android.exoplayer:extension-okhttp", version.ref = "exoplayer-okhttp" }
-exoplayer-flac = { module = "com.github.alashow.ExoPlayer-Extensions:extension-flac", version.ref = "exoplayer-flac" }
 qonversion = { module = "io.qonversion.android.sdk:sdk", version.ref = "qonversion" }
 
 # OkHttp & Retrofit

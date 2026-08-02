@@ -6,19 +6,20 @@ package tm.alashow.datmusic.playback.players
 
 import android.content.Context
 import android.net.Uri
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.DefaultLoadControl
-import com.google.android.exoplayer2.DefaultRenderersFactory
-import com.google.android.exoplayer2.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.PlaybackException
-import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.exoplayer2.audio.AudioAttributes
-import com.google.android.exoplayer2.ext.okhttp.OkHttpDataSource
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.util.PriorityTaskManager
+import androidx.annotation.OptIn
+import androidx.media3.common.AudioAttributes
+import androidx.media3.common.C
+import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackException
+import androidx.media3.common.Player
+import androidx.media3.common.PriorityTaskManager
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.okhttp.OkHttpDataSource
+import androidx.media3.exoplayer.DefaultLoadControl
+import androidx.media3.exoplayer.DefaultRenderersFactory
+import androidx.media3.exoplayer.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Named
@@ -81,6 +82,7 @@ class AudioPlayerImpl @Inject constructor(
         player.playWhenReady = true
     }
 
+    @OptIn(UnstableApi::class)
     override fun setSource(uri: Uri, local: Boolean): Boolean {
         Timber.d("Setting source: local=$local, uri=$uri")
         return try {
@@ -182,8 +184,9 @@ class AudioPlayerImpl @Inject constructor(
         onError(this, error)
     }
 
+    @OptIn(UnstableApi::class)
     private fun createPlayer(owner: AudioPlayerImpl): ExoPlayer {
-        return SimpleExoPlayer.Builder(
+        return ExoPlayer.Builder(
             context,
             DefaultRenderersFactory(context).apply {
                 setExtensionRendererMode(EXTENSION_RENDERER_MODE_PREFER)
@@ -197,7 +200,7 @@ class AudioPlayerImpl @Inject constructor(
             })
             .build().apply {
                 val attr = AudioAttributes.Builder().apply {
-                    setContentType(C.CONTENT_TYPE_MUSIC)
+                    setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
                     setUsage(C.USAGE_MEDIA)
                 }.build()
 
