@@ -21,6 +21,7 @@ import androidx.media3.exoplayer.DefaultRenderersFactory.EXTENSION_RENDERER_MODE
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.github.anilbeesetti.nextlib.media3ext.ffdecoder.NextRenderersFactory
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
@@ -188,7 +189,7 @@ class AudioPlayerImpl @Inject constructor(
     private fun createPlayer(owner: AudioPlayerImpl): ExoPlayer {
         return ExoPlayer.Builder(
             context,
-            DefaultRenderersFactory(context).apply {
+            NextRenderersFactory(owner.context).apply {
                 setExtensionRendererMode(EXTENSION_RENDERER_MODE_PREFER)
             }
         )

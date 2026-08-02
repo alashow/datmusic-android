@@ -22,7 +22,7 @@ documentfile = "1.1.0-alpha01"
 palette = "1.0.0"
 media = "1.6.0"
 media3 = "1.10.1"
-media3-flac = "1.5.0.1"
+media3-ext = "1.10.1-0.13.0"
 archCore = "2.1.0"
 # Compose & UI
 compose-bom-stable = "2026.06.01"
@@ -129,7 +129,7 @@ androidx-media = { module = "androidx.media:media", version.ref = "media" }
 androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3" }
 androidx-media3-datasource-okhttp = { module = "androidx.media3:media3-datasource-okhttp", version.ref = "media3" }
 androidx-media3-session = { module = "androidx.media3:media3-session", version.ref = "media3" }
-androidx-media3-flac = { module = "com.tidal.androidx.media3:media3-flac", version.ref = "media3-flac" }
+media3-ext = { module = "io.github.anilbeesetti:nextlib-media3ext", version.ref = "media3-ext" }
 
 # Accompanist & UI Libraries
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanist" }

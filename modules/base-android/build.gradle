@@ -51,9 +51,7 @@ dependencies {
 	api(libs.androidx.media3.exoplayer)
 	api(libs.androidx.media3.datasource.okhttp)
 	api(libs.androidx.media3.session)
-	api(libs.androidx.media3.flac) {
-		transitive = false
-	}
+	api(libs.media3.ext)
 
 	api(libs.qonversion)
 
