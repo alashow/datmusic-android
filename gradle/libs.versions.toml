@@ -30,7 +30,7 @@ compose-bom-alpha = "2026.06.01"
 constraintlayout-compose = "1.1.0-alpha03"
 paging-compose = "1.0.0-alpha16"
 lottie = "5.2.0"
-reorderable = "0.9.2"
+reorderable = "3.1.0"
 swipe = "1.0.0"
 # Accompanist
 accompanist = "0.26.3-beta"
@@ -140,7 +140,7 @@ accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-
 accompanist-flowlayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "accompanist" }
 lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottie" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
-compose-reorderable = { module = "org.burnoutcrew.composereorderable:reorderable", version.ref = "reorderable" }
+compose-reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 swipe = { module = "me.saket.swipe:swipe", version.ref = "swipe" }
 
 # Lifecycle

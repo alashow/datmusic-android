@@ -8,10 +8,10 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,9 +25,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListItemInfo
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -40,6 +40,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -51,7 +52,6 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
@@ -59,11 +59,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import org.burnoutcrew.reorderable.ReorderableItem
-import org.burnoutcrew.reorderable.ReorderableState
-import org.burnoutcrew.reorderable.detectReorder
-import org.burnoutcrew.reorderable.rememberReorderableLazyListState
-import org.burnoutcrew.reorderable.reorderable
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.ReorderableLazyListState
+import sh.calvin.reorderable.rememberReorderableLazyListState
 import tm.alashow.base.util.extensions.swap
 import tm.alashow.common.compose.LocalIsPreviewMode
 import tm.alashow.common.compose.previews.CombinedPreview
@@ -148,17 +146,16 @@ private fun EditPlaylist(
     ) { paddings ->
         ProvideScaffoldPadding(paddings) {
             val itemsBeforeContent = 3
-            val reorderableState = rememberReorderableLazyListState(
-                onMove = { from, to -> onMovePlaylistItem(from.index - itemsBeforeContent, to.index - itemsBeforeContent) },
-                canDragOver = { it.key is DraggableItemKey },
-            )
+            val listState = rememberLazyListState()
+            val reorderableState = rememberReorderableLazyListState(listState) { from, to ->
+                onMovePlaylistItem(from.index - itemsBeforeContent, to.index - itemsBeforeContent)
+            }
 
             Box(modifier) {
                 LazyColumn(
-                    state = reorderableState.listState,
+                    state = listState,
                     modifier = Modifier
                         .fillMaxSize()
-                        .reorderable(reorderableState)
                 ) {
                     item {
                         Spacer(Modifier.statusBarsPadding())
@@ -334,55 +331,50 @@ private fun LazyListScope.editPlaylistExtraActions(
 
 @OptIn(ExperimentalFoundationApi::class)
 private fun LazyListScope.editablePlaylistAudioList(
-    reorderableState: ReorderableState<LazyListItemInfo>,
+    reorderableState: ReorderableLazyListState,
     onRemove: (PlaylistAudioId) -> Unit,
     audios: PlaylistItems,
 ) {
     items(audios, key = { DraggableItemKey(it.playlistAudio.id) }) { playlistItem ->
         val haptic = LocalHapticFeedback.current
         val itemKey = DraggableItemKey(playlistItem.playlistAudio.id)
-        val isDragging = reorderableState.draggingItemKey == itemKey
-        ReorderableItem(
-            reorderableState, key = itemKey,
-            if (isDragging) Modifier else Modifier.animateItem()
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall),
-                modifier = Modifier
-                    .padding(vertical = Theme.specs.paddingSmall)
-                    .padding(start = Theme.specs.paddingSmall)
-                    .padding(end = Theme.specs.padding),
-            ) {
-                IconButton(onClick = { onRemove(playlistItem.playlistAudio.id) }) {
+        ReorderableItem(reorderableState, itemKey) { isDragging ->
+            val elevation by animateDpAsState(if (isDragging) 2.dp else 0.dp)
+            Surface(shadowElevation = elevation) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(AppTheme.specs.paddingSmall),
+                    modifier = Modifier
+                        .padding(vertical = Theme.specs.paddingSmall)
+                        .padding(start = Theme.specs.paddingSmall)
+                        .padding(end = Theme.specs.padding)
+                        .apply { if (isDragging) animateItem() else this }
+                ) {
+                    IconButton(onClick = { onRemove(playlistItem.playlistAudio.id) }) {
+                        Icon(
+                            Icons.Default.RemoveCircleOutline,
+                            contentDescription = null,
+                            modifier = Modifier.weight(2f)
+                        )
+                    }
+
+                    AudioRowItem(
+                        audio = playlistItem.audio,
+                        modifier = Modifier.weight(19f),
+                        includeCover = false,
+                        observeNowPlayingAudio = false,
+                        maxLines = 1,
+                    )
+
                     Icon(
-                        Icons.Default.RemoveCircleOutline,
+                        Icons.Default.DragHandle,
                         contentDescription = null,
-                        modifier = Modifier.weight(2f)
+                        modifier = Modifier.draggableHandle(
+                            onDragStarted = { haptic.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate) },
+                            onDragStopped = { haptic.performHapticFeedback(HapticFeedbackType.GestureEnd) },
+                        )
                     )
                 }
-
-                AudioRowItem(
-                    audio = playlistItem.audio,
-                    modifier = Modifier.weight(19f),
-                    includeCover = false,
-                    observeNowPlayingAudio = false,
-                    maxLines = 1,
-                )
-
-                Icon(
-                    Icons.Default.DragHandle,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .pointerInput(Unit) {
-                            detectTapGestures(
-                                onPress = {
-                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                }
-                            )
-                        }
-                        .detectReorder(reorderableState)
-                )
             }
         }
     }
