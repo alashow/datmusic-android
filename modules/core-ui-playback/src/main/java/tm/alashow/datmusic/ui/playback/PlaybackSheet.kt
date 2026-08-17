@@ -63,10 +63,13 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.crashlytics.internal.model.CrashlyticsReport
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import me.saket.swipe.SwipeAction
+import timber.log.Timber
 import tm.alashow.base.ui.ColorPalettePreference
 import tm.alashow.base.ui.ThemeState
 import tm.alashow.common.compose.LocalIsPreviewMode
@@ -498,7 +501,9 @@ private fun LazyListScope.playbackQueue(
 ) {
     val lastIndex = playbackQueue.lastIndex
     val firstIndex = (playbackQueue.currentIndex + 1).coerceAtMost(lastIndex)
-    val queue = playbackQueue.subList(firstIndex, lastIndex)
+    val queue = runCatching { playbackQueue.subList(firstIndex, lastIndex) }
+        .onFailure { Timber.e(it) }
+        .getOrElse { emptyList() }
     itemsIndexed(queue, key = { _, a -> a.primaryKey }) { index, audio ->
         val realPosition = firstIndex + index
         AudioRow(
