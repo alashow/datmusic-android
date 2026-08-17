@@ -8,9 +8,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,6 +26,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -45,6 +52,7 @@ import tm.alashow.ui.ThemeViewModel
 import tm.alashow.ui.components.AppOutlinedButton
 import tm.alashow.ui.components.AppTopBar
 import tm.alashow.ui.components.SelectableDropdownMenu
+import tm.alashow.ui.rippleClickable
 import tm.alashow.ui.scaffoldPadding
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.DefaultTheme
@@ -119,10 +127,32 @@ fun SettingsList(
 
 fun LazyListScope.settingsGeneralSection() {
     item {
+        var isPremiumDialogShown by remember { mutableStateOf(false) }
         SettingsSectionLabel(stringResource(R.string.settings_general))
-
-        SettingsItem(stringResource(R.string.settings_premium)) {
+        SettingsItem(
+            label = stringResource(R.string.settings_premium),
+            labelIcon = {
+                val haptic = LocalHapticFeedback.current
+                Icon(
+                    Icons.Outlined.Info,
+                    contentDescription = stringResource(R.string.settings_premium_info_cd),
+                    modifier = Modifier
+                        .size(AppTheme.specs.iconSizeTiny)
+                        .padding(start = AppTheme.specs.paddingTiny)
+                        .rippleClickable(
+                            onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                                isPremiumDialogShown = true
+                            },
+                        )
+                )
+            }
+        ) {
             PremiumButton()
+        }
+
+        if (isPremiumDialogShown) {
+            SettingsPremiumInfoDialog(onDismissRequest = { isPremiumDialogShown = false })
         }
     }
 }

@@ -30,6 +30,21 @@ fun Modifier.simpleClickable(
     )
 }
 
+fun Modifier.rippleClickable(
+    onClick: () -> Unit,
+    color: Color = Color.Unspecified,
+    bounded: Boolean = false,
+    interactionSource: MutableInteractionSource? = null,
+    rippleRadius: Dp = 12.dp,
+) = composed {
+    clickable(
+        onClick = onClick,
+        role = Role.Button,
+        indication = ripple(color = color, bounded = bounded, radius = rippleRadius),
+        interactionSource = interactionSource ?: remember { MutableInteractionSource() }
+    )
+}
+
 fun Modifier.coloredRippleClickable(
     onClick: () -> Unit,
     color: Color? = null,

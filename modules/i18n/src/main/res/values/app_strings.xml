@@ -179,6 +179,9 @@
     <string name="settings.premium.subscribe">Subscribe</string>
     <string name="settings.premium.view">View subscription</string>
     <string name="settings.premium.disabled">Disabled</string>
+    <string name="settings.premium.info.cd">Premium info</string>
+    <string name="settings.premium.info.title">Premium subscription</string>
+    <string name="settings.premium.info.text">Features included with subscription:\n• Playlist downloading\n• Album downloading (coming soon)\n• FLAC quality downloading (coming soon)</string>
 
     <string name="settings.library">Library</string>
     <string name="settings.database">Database</string>

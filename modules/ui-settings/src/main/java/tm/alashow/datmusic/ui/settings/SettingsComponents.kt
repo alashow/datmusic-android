@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,6 +27,7 @@ import tm.alashow.base.util.IntentUtils
 import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.ui.components.AppOutlinedButton
 import tm.alashow.ui.components.ProgressIndicatorSmall
+import tm.alashow.ui.components.TextRoundedButton
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.Theme
 
@@ -75,6 +77,7 @@ internal fun SettingsLinkItem(
 internal fun SettingsItem(
     label: String,
     modifier: Modifier = Modifier,
+    labelIcon: @Composable (() -> Unit)? = null,
     labelModifier: Modifier = Modifier,
     labelWeight: Float = 1f,
     contentWeight: Float = 1f,
@@ -88,13 +91,20 @@ internal fun SettingsItem(
             .padding(horizontal = AppTheme.specs.padding)
             .fillMaxWidth()
     ) {
-        Text(
-            label,
-            style = MaterialTheme.typography.titleMedium,
-            modifier = labelModifier
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
                 .padding(end = AppTheme.specs.paddingTiny)
                 .weight(labelWeight)
-        )
+        ) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = labelModifier,
+            )
+            labelIcon?.invoke()
+        }
+
         Box(
             modifier = Modifier.weight(contentWeight, false),
             contentAlignment = Alignment.CenterEnd
@@ -119,4 +129,26 @@ internal fun SettingsLoadingButton(
             ProgressIndicatorSmall(Modifier.padding(end = AppTheme.specs.paddingSmall))
         Text(text, maxLines = 1)
     }
+}
+
+@Composable
+internal fun SettingsPremiumInfoDialog(
+    onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = { Text(stringResource(R.string.settings_premium_info_title)) },
+        text = {
+            Text(stringResource(R.string.settings_premium_info_text),)
+        },
+        dismissButton = {
+            TextRoundedButton(
+                onClick = onDismissRequest,
+                text = stringResource(R.string.generic_close)
+            )
+        },
+        confirmButton = {},
+        modifier = modifier,
+    )
 }
