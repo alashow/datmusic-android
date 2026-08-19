@@ -55,5 +55,4 @@
     <string name="settings.downloads">İndirilenler</string>
     <string name="search.hint.query">Arama sorgusu</string>
     <string name="audio.menu.cd">Ses menüsü</string>
-    <string name="search.flacs">Flacs</string>
 </resources>

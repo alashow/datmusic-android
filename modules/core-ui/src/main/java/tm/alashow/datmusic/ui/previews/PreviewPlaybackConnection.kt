@@ -89,7 +89,6 @@ private class PreviewPlaybackConnection constructor(context: Context) : Playback
     override fun playFromDownloads(index: Int, queue: List<AudioId>) {}
     override fun playWithQuery(query: String, audioId: String) {}
     override fun playWithMinervaQuery(query: String, audioId: String) {}
-    override fun playWithFlacsQuery(query: String, audioId: String) {}
     override fun swapQueue(from: Int, to: Int) {}
     override fun removeById(id: String) {}
 

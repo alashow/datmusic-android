@@ -38,7 +38,6 @@ import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.playback.models.MEDIA_TYPE_ALBUM
 import tm.alashow.datmusic.playback.models.MEDIA_TYPE_ARTIST
 import tm.alashow.datmusic.playback.models.MEDIA_TYPE_AUDIO
-import tm.alashow.datmusic.playback.models.MEDIA_TYPE_AUDIO_FLACS_QUERY
 import tm.alashow.datmusic.playback.models.MEDIA_TYPE_AUDIO_MINERVA_QUERY
 import tm.alashow.datmusic.playback.models.MEDIA_TYPE_AUDIO_QUERY
 import tm.alashow.datmusic.playback.models.MEDIA_TYPE_DOWNLOADS
@@ -85,7 +84,6 @@ interface PlaybackConnection {
     fun playFromDownloads(index: Int = 0, queue: List<AudioId> = emptyList())
     fun playWithQuery(query: String, audioId: String)
     fun playWithMinervaQuery(query: String, audioId: String)
-    fun playWithFlacsQuery(query: String, audioId: String)
 
     fun swapQueue(from: Int, to: Int)
 
@@ -266,15 +264,6 @@ class PlaybackConnectionImpl(
     override fun playWithMinervaQuery(query: String, audioId: String) {
         transportControls?.playFromMediaId(
             MediaId(MEDIA_TYPE_AUDIO_MINERVA_QUERY, query, -1).toString(),
-            bundleOf(
-                QUEUE_MEDIA_ID_KEY to audioId
-            )
-        )
-    }
-
-    override fun playWithFlacsQuery(query: String, audioId: String) {
-        transportControls?.playFromMediaId(
-            MediaId(MEDIA_TYPE_AUDIO_FLACS_QUERY, query, -1).toString(),
             bundleOf(
                 QUEUE_MEDIA_ID_KEY to audioId
             )

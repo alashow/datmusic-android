@@ -83,12 +83,6 @@ class PlaybackViewModel @Inject constructor(
                     DatmusicSearchParams.BackendType.MINERVA
                 )
             )
-            MEDIA_TYPE_AUDIO_FLACS_QUERY -> navigator.navigate(
-                LeafScreen.Search.buildRoute(
-                    sourceMediaValue,
-                    DatmusicSearchParams.BackendType.FLACS
-                )
-            )
             else -> Unit
         }
     }

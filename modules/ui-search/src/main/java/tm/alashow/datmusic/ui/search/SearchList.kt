@@ -173,10 +173,6 @@ private fun SearchListContent(
         if (searchFilter.hasMinerva) {
             audioList(searchLazyPagers.minerva, onPlayAudio)
         }
-
-        if (searchFilter.hasFlacs) {
-            audioList(searchLazyPagers.flacs, onPlayAudio)
-        }
     }
 }
 

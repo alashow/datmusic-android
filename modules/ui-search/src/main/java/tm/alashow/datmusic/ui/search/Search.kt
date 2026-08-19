@@ -89,7 +89,6 @@ private fun Search(viewModel: SearchViewModel = hiltViewModel()) {
         searchLazyPagers = SearchLazyPagers(
             audios = rememberFlowWithLifecycle(viewModel.pagedAudioList).collectAsLazyPagingItems(),
             minerva = rememberFlowWithLifecycle(viewModel.pagedMinervaList).collectAsLazyPagingItems(),
-            flacs = rememberFlowWithLifecycle(viewModel.pagedFlacsList).collectAsLazyPagingItems(),
             artists = rememberFlowWithLifecycle(viewModel.pagedArtistsList).collectAsLazyPagingItems(),
             albums = rememberFlowWithLifecycle(viewModel.pagedAlbumsList).collectAsLazyPagingItems(),
         )
@@ -270,7 +269,6 @@ private fun ColumnScope.SearchFilterPanel(
                         BackendType.ARTISTS -> R.string.search_artists
                         BackendType.ALBUMS -> R.string.search_albums
                         BackendType.MINERVA -> R.string.search_minerva
-                        BackendType.FLACS -> R.string.search_flacs
                     }
                 )
             }
@@ -290,7 +288,6 @@ fun SearchPreview() = PreviewDatmusicCore {
             albums = flowOf(PagingData.from(SampleData.list { album() })).collectAsLazyPagingItems(),
             audios = flowOf(PagingData.from(SampleData.list { audio() })).collectAsLazyPagingItems(),
             minerva = flowOf(PagingData.from(SampleData.list { audio() })).collectAsLazyPagingItems(),
-            flacs = flowOf(PagingData.from(SampleData.list { audio() })).collectAsLazyPagingItems(),
         ),
         listState = rememberLazyListState(),
         artistsListState = rememberLazyListState(),

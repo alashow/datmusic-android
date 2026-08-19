@@ -36,14 +36,12 @@ internal data class SearchViewState(
 internal data class SearchLazyPagers(
     val audios: LazyPagingItems<Audio>,
     val minerva: LazyPagingItems<Audio>,
-    val flacs: LazyPagingItems<Audio>,
     val artists: LazyPagingItems<Artist>,
     val albums: LazyPagingItems<Album>,
 ) {
     operator fun get(backendType: BackendType): LazyPagingItems<*> = when (backendType) {
         BackendType.AUDIOS -> audios
         BackendType.MINERVA -> minerva
-        BackendType.FLACS -> flacs
         BackendType.ARTISTS -> artists
         BackendType.ALBUMS -> albums
     }
@@ -59,7 +57,6 @@ internal data class SearchFilter(
     val hasAlbums get() = backends.contains(BackendType.ALBUMS)
 
     val hasMinerva get() = backends.contains(BackendType.MINERVA)
-    val hasFlacs get() = backends.contains(BackendType.FLACS)
 
     val hasMinervaOnly get() = backends.size == 1 && backends.contains(BackendType.MINERVA)
 

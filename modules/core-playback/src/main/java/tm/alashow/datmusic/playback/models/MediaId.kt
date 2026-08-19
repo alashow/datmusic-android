@@ -14,7 +14,6 @@ const val MEDIA_TYPE_PLAYLIST = "Media.Playlist"
 const val MEDIA_TYPE_ALBUM = "Media.Album"
 const val MEDIA_TYPE_AUDIO_QUERY = "Media.AudioQuery"
 const val MEDIA_TYPE_AUDIO_MINERVA_QUERY = "Media.AudioMinervaQuery"
-const val MEDIA_TYPE_AUDIO_FLACS_QUERY = "Media.AudioFlacsQuery"
 
 const val MEDIA_ID_INDEX_SHUFFLED = -1000
 
@@ -54,7 +53,7 @@ fun String?.toMediaId(): MediaId {
     val knownTypes = listOf(
         MEDIA_TYPE_AUDIO, MEDIA_TYPE_ARTIST,
         MEDIA_TYPE_ALBUM, MEDIA_TYPE_AUDIO_QUERY,
-        MEDIA_TYPE_AUDIO_MINERVA_QUERY, MEDIA_TYPE_AUDIO_FLACS_QUERY,
+        MEDIA_TYPE_AUDIO_MINERVA_QUERY,
         MEDIA_TYPE_PLAYLIST, MEDIA_TYPE_DOWNLOADS
     )
     if (type !in knownTypes) {

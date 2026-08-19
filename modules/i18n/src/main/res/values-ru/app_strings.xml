@@ -78,7 +78,6 @@
     <string name="settings.theme.darkMode">Тёмный режим</string>
     <string name="settings.theme.colorPalette">Цветовая палитра</string>
     <string name="settings.downloads">Загрузки</string>
-    <string name="search.flacs">Flacs</string>
     <string name="playlist.addTo.new">Новый плейлист</string>
     <string name="settings.premium.subscribe">Подписаться</string>
     <string name="settings.premium.view">Посмотреть подписку</string>

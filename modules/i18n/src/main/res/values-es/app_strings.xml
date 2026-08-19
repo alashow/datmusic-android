@@ -82,7 +82,6 @@
     <string name="playlist.empty">La lista de Reproducción está Vacía</string>
     <string name="playlist.addTo.new">Nueva Lista de Reproducción</string>
     <string name="playlist.edit.label">Editar lista de Reproducción</string>
-    <string name="search.flacs">Flacs</string>
     <string name="library.title">Biblioteca</string>
     <string name="library.empty">No hay artículos</string>
     <string name="library.item.menu.cd">Menú de artículos de la biblioteca</string>

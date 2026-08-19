@@ -79,7 +79,6 @@
     <string name="settings.theme">Tema</string>
     <string name="settings.downloads">Indirmeler</string>
     <string name="settings.database.restore.NonMatchingVersion">Ätiýaçlyk nusgasy programmaň wersiýasy bilen gabat gelenok, dikeldilmek ýalňyşlyk bilen tamamlanyp biler (%1$d vs ätiýaçlyk nusganyň wersiýasy %2$d).</string>
-    <string name="search.flacs">Flac-lar</string>
     <string name="playlist.create.label">Pleýlistiňize at beriň</string>
     <string name="playlist.edit.removed.undo">Yza gaýtar</string>
     <string name="playback.queue.saveAsPlaylist">Nobaty pleýlist ýaly ýatda sakla</string>
