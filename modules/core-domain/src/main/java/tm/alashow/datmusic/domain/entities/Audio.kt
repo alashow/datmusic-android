@@ -130,6 +130,29 @@ data class Audio(
 
     fun isFlac() = searchKey == "flacs"
 
+    fun isMinerva() = searchKey == "minerva"
+
+    /**
+     * Returns a copy of this audio that requests flac quality from the api,
+     * by replacing the search backend key in the bytes urls (e.g. /bytes/audios/<id> -> /bytes/flacs/<id>).
+     */
+    fun asFlac(): Audio = copy(
+        searchKey = "flacs",
+        downloadUrl = downloadUrl?.flacKeyUrl(searchKey),
+        streamUrl = streamUrl?.flacKeyUrl(searchKey),
+    )
+
+    /**
+     * Replaces the search backend key in api bytes urls (e.g. /bytes/audios/<id> -> /bytes/flacs/<id>)
+     * to request flac quality instead of the default mp3.
+     */
+    private fun String.flacKeyUrl(currentKey: String): String {
+        return when {
+            currentKey == "flacs" || currentKey.isBlank() -> this
+            else -> replaceFirst("/$currentKey/", "/flacs/")
+        }
+    }
+
     fun fileMimeType() = when {
         isFlac() -> "audio/flac"
         else -> "audio/mpeg"

@@ -30,6 +30,7 @@
     <string name="settings.downloads.songsGrouping.byArtist">Par artiste</string>
     <string name="settings.downloads.songsGrouping.byArtist.example">/Artiste/Chanson</string>
     <string name="settings.downloads.songsGrouping.flat">Plate</string>
+    <string name="settings.downloads.flac">Téléchargement en FLAC</string>
     <string name="playback.queue.saveAsPlaylist">Enregistrer la file d\'attente comme liste de lecture</string>
     <string name="settings.about.version">Version</string>
     <string name="captcha.title">Erreur de CAPTCHA</string>

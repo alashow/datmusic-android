@@ -39,8 +39,10 @@ internal object PreviewDownloader : Downloader {
 
     override val hasDownloadsLocation: Flow<Boolean> = flowOf(true)
     override val downloadsSongsGrouping: Flow<DownloadsSongsGrouping> = flowOf(DownloadsSongsGrouping.ByAlbum)
+    override val downloadsQualityFlac: Flow<Boolean> = flowOf(true)
 
     override suspend fun setDownloadsSongsGrouping(songsGrouping: DownloadsSongsGrouping) {}
+    override suspend fun setDownloadsQualityFlac(enabled: Boolean) {}
     override suspend fun setDownloadsLocation(folder: File) {}
     override suspend fun setDownloadsLocation(documentFile: DocumentFile) {}
     override suspend fun setDownloadsLocation(uri: Uri?) {}

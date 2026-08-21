@@ -15,6 +15,7 @@ import tm.alashow.base.billing.SubscriptionError
 import tm.alashow.base.billing.Subscriptions
 import tm.alashow.base.billing.SubscriptionsNotEnabledError
 import tm.alashow.base.util.extensions.stateInDefault
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 internal class PremiumSettingsViewModel @Inject constructor() : ViewModel() {
@@ -41,7 +42,7 @@ internal class PremiumSettingsViewModel @Inject constructor() : ViewModel() {
     fun fakeRefresh(delayMillis: Long = 3500L) {
         viewModelScope.launch {
             premiumStatusState.value = PremiumStatus.Unknown
-            delay(delayMillis)
+            delay(delayMillis.milliseconds)
             refreshPremiumStatus()
         }
     }

@@ -13,6 +13,7 @@
     <string name="settings.downloads.location.change">Değiştir</string>
     <string name="settings.downloads.songsGrouping.byAlbum">Albüme göre</string>
     <string name="settings.downloads.songsGrouping.byArtist">Sanatçıya göre</string>
+    <string name="settings.downloads.flac">FLAC olarak indirme</string>
     <string name="settings.about">Hakkında</string>
     <string name="settings.about.author.link">https://alashov.com</string>
     <string name="settings.about.version">Versiyon</string>

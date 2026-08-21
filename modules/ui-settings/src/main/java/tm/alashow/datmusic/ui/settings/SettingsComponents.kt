@@ -7,6 +7,7 @@ package tm.alashow.datmusic.ui.settings
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -80,6 +81,7 @@ internal fun SettingsItem(
     labelIcon: @Composable (() -> Unit)? = null,
     labelModifier: Modifier = Modifier,
     labelWeight: Float = 1f,
+    description: @Composable (() -> Unit)? = null,
     contentWeight: Float = 1f,
     verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
     content: @Composable () -> Unit = {},
@@ -91,20 +93,24 @@ internal fun SettingsItem(
             .padding(horizontal = AppTheme.specs.padding)
             .fillMaxWidth()
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
+        Column(
+            verticalArrangement = Arrangement.spacedBy(Theme.specs.paddingTiny),
             modifier = Modifier
                 .padding(end = AppTheme.specs.paddingTiny)
                 .weight(labelWeight)
         ) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.titleMedium,
-                modifier = labelModifier,
-            )
-            labelIcon?.invoke()
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = labelModifier,
+                )
+                labelIcon?.invoke()
+            }
+            description?.invoke()
         }
-
         Box(
             modifier = Modifier.weight(contentWeight, false),
             contentAlignment = Alignment.CenterEnd
@@ -140,7 +146,7 @@ internal fun SettingsPremiumInfoDialog(
         onDismissRequest = onDismissRequest,
         title = { Text(stringResource(R.string.settings_premium_info_title)) },
         text = {
-            Text(stringResource(R.string.settings_premium_info_text),)
+            Text(stringResource(R.string.settings_premium_info_text))
         },
         dismissButton = {
             TextRoundedButton(

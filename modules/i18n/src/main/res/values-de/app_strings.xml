@@ -150,6 +150,7 @@
     <string name="settings.downloads.songsGrouping.byArtist.example">/Artist/Lied</string>
     <string name="settings.downloads.songsGrouping.flat">Flach</string>
     <string name="settings.downloads.songsGrouping.flat.example">/Lied</string>
+    <string name="settings.downloads.flac">Als FLAC herunterladen</string>
 
     <string name="settings.about">Über</string>
     <string name="settings.about.author">Author</string>

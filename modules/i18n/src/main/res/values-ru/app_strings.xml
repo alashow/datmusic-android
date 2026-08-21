@@ -59,6 +59,7 @@
     <string name="settings.downloads.songsGrouping.byArtist.example">/Исполнитель/Песня</string>
     <string name="settings.downloads.songsGrouping.flat">Ровный</string>
     <string name="settings.downloads.songsGrouping.flat.example">/Песня</string>
+    <string name="settings.downloads.flac">Скачивание в FLAC</string>
     <string name="settings.about">О нас</string>
     <string name="settings.about.author">Автор</string>
     <string name="settings.about.author.text">Алашов Беркели</string>

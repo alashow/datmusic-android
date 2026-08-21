@@ -36,6 +36,7 @@
     <string name="settings.downloads.songsGrouping.byArtist.example">/Artista/Canción</string>
     <string name="settings.downloads.songsGrouping.flat">Raíz</string>
     <string name="settings.downloads.songsGrouping.flat.example">/Canción</string>
+    <string name="settings.downloads.flac">Descarga en FLAC</string>
     <string name="settings.about">Acerca de</string>
     <string name="settings.about.author">Autor</string>
     <string name="settings.about.author.text">Alashov Berkeli</string>

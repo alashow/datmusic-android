@@ -5,6 +5,7 @@
 package tm.alashow.datmusic.downloader
 
 import android.net.Uri
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.documentfile.provider.DocumentFile
 import com.tonyodev.fetch2.Status
@@ -26,6 +27,7 @@ interface Downloader {
 
         internal val DOWNLOADS_LOCATION = stringPreferencesKey("downloads_location")
         internal val DOWNLOADS_SONGS_GROUPING = stringPreferencesKey("downloads_songs_grouping")
+        internal val DOWNLOADS_QUALITY_FLAC = booleanPreferencesKey("downloads_quality_flac")
     }
 
     val newDownloadId: Flow<String>
@@ -59,4 +61,7 @@ interface Downloader {
 
     val downloadsSongsGrouping: Flow<DownloadsSongsGrouping>
     suspend fun setDownloadsSongsGrouping(songsGrouping: DownloadsSongsGrouping)
+
+    val downloadsQualityFlac: Flow<Boolean>
+    suspend fun setDownloadsQualityFlac(enabled: Boolean)
 }

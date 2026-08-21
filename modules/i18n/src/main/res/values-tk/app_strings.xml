@@ -50,6 +50,7 @@
     <string name="settings.downloads.songsGrouping.byArtist.example">/Aýdymçy/Aýdym</string>
     <string name="settings.downloads.songsGrouping.flat">Tekiz</string>
     <string name="settings.downloads.songsGrouping.flat.example">/Aýdym</string>
+    <string name="settings.downloads.flac">FLAC görnüșde indirme</string>
     <string name="settings.about">Barada</string>
     <string name="settings.about.author">Awtor</string>
     <string name="settings.about.author.text">Alaşow Berkeli</string>
