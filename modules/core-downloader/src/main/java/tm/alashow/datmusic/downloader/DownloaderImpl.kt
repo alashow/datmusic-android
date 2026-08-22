@@ -34,6 +34,7 @@ import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.domain.entities.DownloadItem
 import tm.alashow.datmusic.domain.entities.DownloadRequest
 import tm.alashow.datmusic.downloader.Downloader.Companion.DOWNLOADS_LOCATION
+import tm.alashow.datmusic.downloader.Downloader.Companion.DOWNLOADS_QUALITY_FLAC
 import tm.alashow.datmusic.downloader.Downloader.Companion.DOWNLOADS_SONGS_GROUPING
 import tm.alashow.datmusic.downloader.manager.DownloadEnqueueFailed
 import tm.alashow.datmusic.downloader.manager.DownloadEnqueueResult
@@ -96,25 +97,27 @@ internal class DownloaderImpl @Inject constructor(
      */
     override suspend fun enqueueAudio(audio: Audio): Boolean {
         Timber.d("Enqueue audio: $audio")
-        val downloadRequest = DownloadRequest.fromAudio(audio)
+        // request flac quality from the api for all sources except minerva, when enabled
+        val audioForDownload = if (downloadsQualityFlac.first() && !audio.isMinerva()) audio.asFlac() else audio
+        val downloadRequest = DownloadRequest.fromAudio(audioForDownload)
         if (!validateNewAudioRequest(downloadRequest))
             return false
 
         // save audio to db so Downloads won't depend on given audios existence in audios table
-        audiosRepo.saveAudios(AudioSaveType.Download, audio)
+        audiosRepo.saveAudios(AudioSaveType.Download, audioForDownload)
 
-        val fileDestination = getAudioDownloadFileDestination(audio)
+        val fileDestination = getAudioDownloadFileDestination(audioForDownload)
         if (fileDestination == null) {
-            pendingEnqueableAudio = audio
+            pendingEnqueableAudio = audioForDownload
             return false
         }
 
-        if (audio.downloadUrl == null) {
+        if (audioForDownload.downloadUrl == null) {
             downloaderMessage(AudioDownloadErrorInvalidUrl)
             return false
         }
 
-        val downloadUrl = Uri.parse(audio.downloadUrl).buildUpon()
+        val downloadUrl = Uri.parse(audioForDownload.downloadUrl).buildUpon()
             .appendQueryParameter("redirect", "")
             .build()
             .toString()
@@ -308,6 +311,13 @@ internal class DownloaderImpl @Inject constructor(
     override suspend fun setDownloadsSongsGrouping(songsGrouping: DownloadsSongsGrouping) {
         analytics.event("downloads.setSongsGrouping", mapOf("type" to songsGrouping.name))
         preferences.save(DOWNLOADS_SONGS_GROUPING, songsGrouping.name)
+    }
+
+    override val downloadsQualityFlac = preferences.get(DOWNLOADS_QUALITY_FLAC, false)
+
+    override suspend fun setDownloadsQualityFlac(enabled: Boolean) {
+        analytics.event("downloads.setQualityFlac", mapOf("enabled" to enabled))
+        preferences.save(DOWNLOADS_QUALITY_FLAC, enabled)
     }
 
     private suspend fun verifyAndGetDownloadsLocationUri(): Uri? {

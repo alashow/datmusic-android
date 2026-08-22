@@ -244,9 +244,10 @@ class DatmusicPlayerImpl @Inject constructor(
                     is AudioDownloadItem -> audioPlayer.setSource(downloadItem.downloadInfo.fileUri, true)
                     else -> {
                         val uri = audio.streamUrl?.toUri()
-                        if (uri != null)
-                            audioPlayer.setSource(uri, false)
-                        else false
+                        when {
+                            uri != null -> audioPlayer.setSource(uri, false)
+                            else -> false
+                        }
                     }
                 }
             }

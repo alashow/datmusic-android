@@ -3,7 +3,6 @@
     <string name="playback.queueTitle.audio">Lecture à partir de la file d\'attente</string>
     <string name="settings.downloads.songsGrouping.byAlbum">Par album</string>
     <string name="audio.menu.play">Lecture</string>
-    <string name="search.flacs">Flacs</string>
     <string name="downloader.enqueue.audio.existing.alreadyQueued">Cette chanson se trouve déjà dans la file d\'attente</string>
     <string name="audio.menu.playNext">Lecture suivante</string>
     <string name="audio.menu.downloadById">Télécharger</string>
@@ -31,6 +30,7 @@
     <string name="settings.downloads.songsGrouping.byArtist">Par artiste</string>
     <string name="settings.downloads.songsGrouping.byArtist.example">/Artiste/Chanson</string>
     <string name="settings.downloads.songsGrouping.flat">Plate</string>
+    <string name="settings.downloads.flac">Téléchargement en FLAC</string>
     <string name="playback.queue.saveAsPlaylist">Enregistrer la file d\'attente comme liste de lecture</string>
     <string name="settings.about.version">Version</string>
     <string name="captcha.title">Erreur de CAPTCHA</string>

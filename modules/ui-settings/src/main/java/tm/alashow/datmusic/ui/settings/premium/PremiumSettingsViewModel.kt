@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -29,7 +30,7 @@ internal class PremiumSettingsViewModel @Inject constructor() : ViewModel() {
     fun refreshPremiumStatus() {
         viewModelScope.launch {
             try {
-                premiumStatusState.value = PremiumStatus.Subscribed(Subscriptions.checkPremiumPermission())
+                premiumStatusState.value = PremiumStatus.Subscribed(Subscriptions.validatePremiumEntitlement())
             } catch (error: SubscriptionError) {
                 premiumStatusState.value = PremiumStatus.NotSubscribed(error)
             } catch (e: SubscriptionsNotEnabledError) {
@@ -41,7 +42,7 @@ internal class PremiumSettingsViewModel @Inject constructor() : ViewModel() {
     fun fakeRefresh(delayMillis: Long = 3500L) {
         viewModelScope.launch {
             premiumStatusState.value = PremiumStatus.Unknown
-            delay(delayMillis)
+            delay(delayMillis.milliseconds)
             refreshPremiumStatus()
         }
     }

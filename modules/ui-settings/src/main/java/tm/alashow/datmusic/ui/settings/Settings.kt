@@ -16,7 +16,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -27,12 +29,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
 import tm.alashow.Config
+import tm.alashow.base.billing.Subscriptions
 import tm.alashow.base.ui.ColorPalettePreference
 import tm.alashow.base.ui.DarkModePreference
 import tm.alashow.base.ui.ThemeState
@@ -56,6 +60,7 @@ import tm.alashow.ui.rippleClickable
 import tm.alashow.ui.scaffoldPadding
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.DefaultTheme
+import tm.alashow.ui.theme.Theme
 import tm.alashow.ui.theme.isDynamicThemeSupported
 
 @Composable
@@ -160,8 +165,10 @@ fun LazyListScope.settingsGeneralSection() {
 fun LazyListScope.settingsDownloadsSection(downloader: Downloader) {
     item {
         val coroutine = rememberCoroutineScope()
-        val downloadsLocationSelected by rememberFlowWithLifecycle(downloader.hasDownloadsLocation).collectAsState(initial = null)
-        val downloadsSongsGrouping by rememberFlowWithLifecycle(downloader.downloadsSongsGrouping).collectAsState(initial = null)
+        val context = LocalContext.current
+        val downloadsLocationSelected by rememberFlowWithLifecycle(downloader.hasDownloadsLocation).collectAsState(null)
+        val downloadsSongsGrouping by rememberFlowWithLifecycle(downloader.downloadsSongsGrouping).collectAsState(null)
+        val downloadsQualityFlac by rememberFlowWithLifecycle(downloader.downloadsQualityFlac).collectAsState(false)
 
         SettingsSectionLabel(stringResource(R.string.settings_downloads))
         Column(verticalArrangement = Arrangement.spacedBy(AppTheme.specs.padding)) {
@@ -181,12 +188,37 @@ fun LazyListScope.settingsDownloadsSection(downloader: Downloader) {
             SettingsItem(stringResource(R.string.settings_downloads_songsGrouping)) {
                 val downloadSongsGrouping = downloadsSongsGrouping ?: return@SettingsItem
                 SelectableDropdownMenu(
-                    items = DownloadsSongsGrouping.values().toList(),
+                    items = DownloadsSongsGrouping.entries,
                     itemLabelMapper = { stringResource(it.labelRes) },
-                    subtitles = DownloadsSongsGrouping.values().map { stringResource(it.exampleRes) },
+                    subtitles = DownloadsSongsGrouping.entries.map { stringResource(it.exampleRes) },
                     selectedItem = downloadSongsGrouping,
                     onItemSelect = { coroutine.launch { downloader.setDownloadsSongsGrouping(it) } },
                     modifier = Modifier.offset(x = 12.dp)
+                )
+            }
+
+            SettingsItem(
+                label = stringResource(R.string.settings_downloads_flac),
+                description = {
+                    Text(
+                        text = stringResource(R.string.settings_premium_genericFeatureLabel),
+                        style = MaterialTheme.typography.labelSmallEmphasized,
+                        color = Theme.colorScheme.tertiary,
+                    )
+                }
+            ) {
+                Switch(
+                    checked = downloadsQualityFlac,
+                    onCheckedChange = { enabled ->
+                        coroutine.launch {
+                            when {
+                                enabled -> Subscriptions.validateEntitlement(context) {
+                                    downloader.setDownloadsQualityFlac(enabled)
+                                }
+                                else -> downloader.setDownloadsQualityFlac(false)
+                            }
+                        }
+                    },
                 )
             }
         }
@@ -198,7 +230,7 @@ fun LazyListScope.settingsThemeSection(themeState: ThemeState, setThemeState: (T
         SettingsSectionLabel(stringResource(R.string.settings_theme))
         SettingsItem(stringResource(R.string.settings_theme_darkMode)) {
             SelectableDropdownMenu(
-                items = DarkModePreference.values().toList(),
+                items = DarkModePreference.entries,
                 selectedItem = themeState.darkModePreference,
                 onItemSelect = { setThemeState(themeState.copy(darkModePreference = it)) },
                 modifier = Modifier.offset(x = 12.dp)
@@ -206,7 +238,7 @@ fun LazyListScope.settingsThemeSection(themeState: ThemeState, setThemeState: (T
         }
         SettingsItem(stringResource(R.string.settings_theme_colorPalette)) {
             SelectableDropdownMenu(
-                items = ColorPalettePreference.values().toList().filter {
+                items = ColorPalettePreference.entries.filter {
                     // filter out dynamic theme if not supported
                     !it.isDynamic || isDynamicThemeSupported()
                 },

@@ -39,7 +39,6 @@ internal class SearchViewModel @Inject constructor(
     handle: SavedStateHandle,
     private val audiosPager: ObservePagedDatmusicSearch<Audio>,
     private val minervaPager: ObservePagedDatmusicSearch<Audio>,
-    private val flacsPager: ObservePagedDatmusicSearch<Audio>,
     private val artistsPager: ObservePagedDatmusicSearch<Artist>,
     private val albumsPager: ObservePagedDatmusicSearch<Album>,
     private val snackbarManager: SnackbarManager,
@@ -68,7 +67,6 @@ internal class SearchViewModel @Inject constructor(
 
     val pagedAudioList get() = audiosPager.flow.cachedIn(viewModelScope)
     val pagedMinervaList get() = minervaPager.flow.cachedIn(viewModelScope)
-    val pagedFlacsList get() = flacsPager.flow.cachedIn(viewModelScope)
     val pagedArtistsList get() = artistsPager.flow.cachedIn(viewModelScope)
     val pagedAlbumsList get() = albumsPager.flow.cachedIn(viewModelScope)
 
@@ -110,7 +108,7 @@ internal class SearchViewModel @Inject constructor(
                 }
         }
 
-        listOf(audiosPager, minervaPager, flacsPager, artistsPager, albumsPager).forEach { pager ->
+        listOf(audiosPager, minervaPager, artistsPager, albumsPager).forEach { pager ->
             pager.errors().watchForErrors(pager)
         }
     }
@@ -129,9 +127,6 @@ internal class SearchViewModel @Inject constructor(
 
         if (filter.hasMinerva)
             minervaPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(BackendType.MINERVA), MINERVA_PAGING))
-
-        if (filter.hasFlacs)
-            flacsPager(ObservePagedDatmusicSearch.Params(searchParams.withTypes(BackendType.FLACS), MINERVA_PAGING))
 
         // don't send queries if backend can't handle empty queries
         if (query.isNotBlank()) {
@@ -153,7 +148,6 @@ internal class SearchViewModel @Inject constructor(
         val query = searchTriggerState.value.query
         when {
             searchFilterState.value.hasMinerva -> playbackConnection.playWithMinervaQuery(query, audio.id)
-            searchFilterState.value.hasFlacs -> playbackConnection.playWithFlacsQuery(query, audio.id)
             else -> playbackConnection.playWithQuery(query, audio.id)
         }
     }

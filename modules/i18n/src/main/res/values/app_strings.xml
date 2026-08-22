@@ -17,7 +17,6 @@
     <string name="search.artists">Artists</string>
     <string name="search.albums">Albums</string>
     <string name="search.minerva">Minerva</string>
-    <string name="search.flacs">Flacs</string>
 
     <string name="artists.detail.title">Artist</string>
 
@@ -166,6 +165,7 @@
     <string name="settings.downloads.songsGrouping.byArtist.example">/Artist/Song</string>
     <string name="settings.downloads.songsGrouping.flat">Flat</string>
     <string name="settings.downloads.songsGrouping.flat.example">/Song</string>
+    <string name="settings.downloads.flac">Download as FLAC</string>
 
     <string name="settings.about">About</string>
     <string name="settings.about.author">Author</string>
@@ -181,7 +181,8 @@
     <string name="settings.premium.disabled">Disabled</string>
     <string name="settings.premium.info.cd">Premium info</string>
     <string name="settings.premium.info.title">Premium subscription</string>
-    <string name="settings.premium.info.text">Features included with subscription:\n• Playlist downloading\n• Album downloading (coming soon)\n• FLAC quality downloading (coming soon)</string>
+    <string name="settings.premium.info.text">Features included with subscription:\n• Playlist downloading\n• Album downloading (coming soon)\n• FLAC quality downloading</string>
+    <string name="settings.premium.genericFeatureLabel">Premium feature</string>
 
     <string name="settings.library">Library</string>
     <string name="settings.database">Database</string>

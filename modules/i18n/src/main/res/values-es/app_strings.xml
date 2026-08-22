@@ -36,6 +36,7 @@
     <string name="settings.downloads.songsGrouping.byArtist.example">/Artista/Canción</string>
     <string name="settings.downloads.songsGrouping.flat">Raíz</string>
     <string name="settings.downloads.songsGrouping.flat.example">/Canción</string>
+    <string name="settings.downloads.flac">Descarga en FLAC</string>
     <string name="settings.about">Acerca de</string>
     <string name="settings.about.author">Autor</string>
     <string name="settings.about.author.text">Alashov Berkeli</string>
@@ -82,7 +83,6 @@
     <string name="playlist.empty">La lista de Reproducción está Vacía</string>
     <string name="playlist.addTo.new">Nueva Lista de Reproducción</string>
     <string name="playlist.edit.label">Editar lista de Reproducción</string>
-    <string name="search.flacs">Flacs</string>
     <string name="library.title">Biblioteca</string>
     <string name="library.empty">No hay artículos</string>
     <string name="library.item.menu.cd">Menú de artículos de la biblioteca</string>
