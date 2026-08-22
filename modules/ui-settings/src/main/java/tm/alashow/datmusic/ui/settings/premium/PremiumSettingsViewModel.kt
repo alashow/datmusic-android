@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -15,7 +16,6 @@ import tm.alashow.base.billing.SubscriptionError
 import tm.alashow.base.billing.Subscriptions
 import tm.alashow.base.billing.SubscriptionsNotEnabledError
 import tm.alashow.base.util.extensions.stateInDefault
-import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 internal class PremiumSettingsViewModel @Inject constructor() : ViewModel() {
@@ -30,7 +30,7 @@ internal class PremiumSettingsViewModel @Inject constructor() : ViewModel() {
     fun refreshPremiumStatus() {
         viewModelScope.launch {
             try {
-                premiumStatusState.value = PremiumStatus.Subscribed(Subscriptions.checkPremiumPermission())
+                premiumStatusState.value = PremiumStatus.Subscribed(Subscriptions.validatePremiumEntitlement())
             } catch (error: SubscriptionError) {
                 premiumStatusState.value = PremiumStatus.NotSubscribed(error)
             } catch (e: SubscriptionsNotEnabledError) {

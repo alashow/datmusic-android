@@ -5,6 +5,7 @@
 package tm.alashow.base.billing
 
 import android.app.Activity
+import android.content.Context
 import com.qonversion.android.sdk.Qonversion
 import com.qonversion.android.sdk.dto.QonversionError
 import com.qonversion.android.sdk.dto.QonversionErrorCode
@@ -23,10 +24,13 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import org.threeten.bp.LocalDateTime
 import timber.log.Timber
 import tm.alashow.Config
+import tm.alashow.base.util.asString
 import tm.alashow.base.util.toLocalDateTime
+import tm.alashow.base.util.toUiMessage
+import tm.alashow.base.util.toast
 
-typealias OnPermissionActive = (QEntitlement) -> Unit
-typealias OnPermissionError = (SubscriptionError) -> Unit
+typealias OnEntitlementActive = (QEntitlement) -> Unit
+typealias OnEntitlementError = (SubscriptionError) -> Unit
 
 /**
  * Wrapper around Qonversion.
@@ -45,7 +49,7 @@ object Subscriptions {
         PremiumMonthly("premium_monthly")
     }
 
-    enum class Permission(val id: String) {
+    enum class Entitlement(val id: String) {
         Premium("Premium")
     }
 
@@ -59,62 +63,62 @@ object Subscriptions {
     /**
      * @param restoreOrPurchaseOnEmpty tries to restore or make a purchase if can't be restored in case there's no permissions and this is set to true
      */
-    fun checkPermissions(
+    fun checkEntitlements(
         context: Activity,
-        permission: Permission = Permission.Premium,
+        entitlement: Entitlement = Entitlement.Premium,
         product: Product = Product.PremiumMonthly,
         restoreOrPurchaseOnEmpty: Boolean = false,
-        onPermissionActive: OnPermissionActive = {},
-        onPermissionError: OnPermissionError = { Timber.e(it) },
+        onEntitlementActive: OnEntitlementActive = {},
+        onEntitlementError: OnEntitlementError = { Timber.e(it) },
     ) {
         validateKey()
         Qonversion.shared.checkEntitlements(object : QonversionEntitlementsCallback {
             override fun onSuccess(entitlements: Map<String, QEntitlement>) {
-                val premiumPermission = entitlements[permission.id]
-                if (premiumPermission != null && premiumPermission.isActiveAndNotExpired()) {
-                    Timber.d("Has permission: $permission")
-                    onPermissionActive(premiumPermission)
+                val premiumEntitlement = entitlements[entitlement.id]
+                if (premiumEntitlement != null && premiumEntitlement.isActiveAndNotExpired()) {
+                    Timber.d("Has entitlement: $entitlement")
+                    onEntitlementActive(premiumEntitlement)
                 } else if (restoreOrPurchaseOnEmpty) {
-                    Timber.d("Has no permission: $permission, trying to restore..")
-                    restorePermissions(context, product, permission, true, onPermissionActive, onPermissionError)
-                } else onPermissionError(SubscriptionNoPermissionsError)
+                    Timber.d("Has no entitlement: $entitlement, trying to restore..")
+                    restoreEntitlement(context, product, entitlement, true, onEntitlementActive, onEntitlementError)
+                } else onEntitlementError(SubscriptionNoPermissionsError)
             }
 
             override fun onError(error: QonversionError) {
-                onPermissionError(SubscriptionError(error))
+                onEntitlementError(SubscriptionError(error))
             }
         })
     }
 
-    fun restorePermissions(
+    fun restoreEntitlement(
         context: Activity,
         product: Product = Product.PremiumMonthly,
-        permission: Permission = Permission.Premium,
+        entitlement: Entitlement = Entitlement.Premium,
         purchaseIfNotOwned: Boolean = false,
-        onPermissionActive: OnPermissionActive = {},
-        onPermissionError: OnPermissionError = { Timber.e(it) },
+        onEntitlementActive: OnEntitlementActive = {},
+        onEntitlementError: OnEntitlementError = { Timber.e(it) },
     ) {
         validateKey()
         val onRestoreFail = {
             if (purchaseIfNotOwned) {
                 Timber.d("Cannot restore purchase, trying to purchase..")
-                makePurchase(context, product, permission, onPermissionActive, onPermissionError)
+                makePurchase(context, product, entitlement, onEntitlementActive, onEntitlementError)
             }
         }
         Qonversion.shared.restore(object : QonversionEntitlementsCallback {
             override fun onSuccess(entitlements: Map<String, QEntitlement>) {
-                val premiumPermission = entitlements[permission.id]
+                val premiumPermission = entitlements[entitlement.id]
                 if (premiumPermission != null) {
                     if (premiumPermission.isActive) {
-                        Timber.d("Permission restored: $permission")
-                        onPermissionActive(premiumPermission)
+                        Timber.d("Permission restored: $entitlement")
+                        onEntitlementActive(premiumPermission)
                     } else onRestoreFail()
                 } else onRestoreFail()
             }
 
             override fun onError(error: QonversionError) {
                 if (error.code == QonversionErrorCode.ProductNotOwned) onRestoreFail()
-                else onPermissionError(SubscriptionError(error))
+                else onEntitlementError(SubscriptionError(error))
             }
         })
     }
@@ -122,9 +126,9 @@ object Subscriptions {
     fun makePurchase(
         context: Activity,
         product: Product = Product.PremiumMonthly,
-        permission: Permission = Permission.Premium,
-        onPermissionActive: OnPermissionActive = {},
-        onPermissionError: OnPermissionError = { Timber.e(it) },
+        entitlement: Entitlement = Entitlement.Premium,
+        onEntitlementActive: OnEntitlementActive = {},
+        onEntitlementError: OnEntitlementError = { Timber.e(it) },
     ) = scope.launch {
         validateKey()
         val qProduct = resolveQProduct(product.id) ?: return@launch
@@ -132,14 +136,14 @@ object Subscriptions {
             context, qProduct,
             callback = object : QonversionEntitlementsCallback {
                 override fun onSuccess(entitlements: Map<String, QEntitlement>) {
-                    val premiumPermission = entitlements[permission.id]
+                    val premiumPermission = entitlements[entitlement.id]
                     if (premiumPermission != null && premiumPermission.isActive) {
-                        onPermissionActive(premiumPermission)
-                    } else onPermissionError(SubscriptionNoPermissionsError)
+                        onEntitlementActive(premiumPermission)
+                    } else onEntitlementError(SubscriptionNoPermissionsError)
                 }
 
                 override fun onError(error: QonversionError) {
-                    onPermissionError(SubscriptionError(error))
+                    onEntitlementError(SubscriptionError(error))
                 }
             }
         )
@@ -157,12 +161,25 @@ object Subscriptions {
         })
     }
 
-    suspend fun checkPremiumPermission(permission: Permission = Permission.Premium): QEntitlement = suspendCancellableCoroutine { continuation ->
+    suspend fun validatePremiumEntitlement(): QEntitlement = validateEntitlement(Entitlement.Premium)
+
+    suspend fun validateEntitlement(
+        context: Context,
+        entitlement: Entitlement = Entitlement.Premium,
+        onError: suspend (Throwable) -> Unit = { context.toast(it.toUiMessage().asString(context)) },
+        onActive: suspend (QEntitlement) -> Unit,
+    ) {
+        runCatching { validateEntitlement(entitlement) }
+            .onSuccess { onActive(it) }
+            .onFailure { onError(it) }
+    }
+
+    suspend fun validateEntitlement(entitlement: Entitlement): QEntitlement = suspendCancellableCoroutine { continuation ->
         validateKey()
-        Timber.d("Checking for permission=$permission")
+        Timber.d("Checking for permission=$entitlement")
         Qonversion.shared.checkEntitlements(object : QonversionEntitlementsCallback {
             override fun onSuccess(entitlements: Map<String, QEntitlement>) {
-                val premiumPermission = entitlements[permission.id]
+                val premiumPermission = entitlements[entitlement.id]
                 Timber.d("Has permission: $premiumPermission")
                 if (premiumPermission != null && premiumPermission.isActiveAndNotExpired()) {
                     continuation.resume(premiumPermission)

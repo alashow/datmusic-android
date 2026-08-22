@@ -40,9 +40,6 @@ import tm.alashow.base.billing.Subscriptions
 import tm.alashow.base.ui.ColorPalettePreference
 import tm.alashow.base.ui.DarkModePreference
 import tm.alashow.base.ui.ThemeState
-import tm.alashow.base.util.asString
-import tm.alashow.base.util.toUiMessage
-import tm.alashow.base.util.toast
 import tm.alashow.common.compose.LocalAppVersion
 import tm.alashow.common.compose.LocalIsPreviewMode
 import tm.alashow.common.compose.previews.CombinedPreview
@@ -173,22 +170,6 @@ fun LazyListScope.settingsDownloadsSection(downloader: Downloader) {
         val downloadsSongsGrouping by rememberFlowWithLifecycle(downloader.downloadsSongsGrouping).collectAsState(null)
         val downloadsQualityFlac by rememberFlowWithLifecycle(downloader.downloadsQualityFlac).collectAsState(false)
 
-        val onDownloadsQualityFlacChange = { enabled: Boolean ->
-            coroutine.launch {
-                if (enabled) {
-                    // flac quality is a premium feature, check permission before enabling
-                    try {
-                        Subscriptions.checkPremiumPermission()
-                    } catch (e: Throwable) {
-                        context.toast(e.toUiMessage().asString(context))
-                        return@launch
-                    }
-                }
-                downloader.setDownloadsQualityFlac(enabled)
-            }
-            Unit
-        }
-
         SettingsSectionLabel(stringResource(R.string.settings_downloads))
         Column(verticalArrangement = Arrangement.spacedBy(AppTheme.specs.padding)) {
             SettingsItem(stringResource(R.string.settings_downloads_location)) {
@@ -228,7 +209,16 @@ fun LazyListScope.settingsDownloadsSection(downloader: Downloader) {
             ) {
                 Switch(
                     checked = downloadsQualityFlac,
-                    onCheckedChange = onDownloadsQualityFlacChange,
+                    onCheckedChange = { enabled ->
+                        coroutine.launch {
+                            when {
+                                enabled -> Subscriptions.validateEntitlement(context) {
+                                    downloader.setDownloadsQualityFlac(enabled)
+                                }
+                                else -> downloader.setDownloadsQualityFlac(false)
+                            }
+                        }
+                    },
                 )
             }
         }

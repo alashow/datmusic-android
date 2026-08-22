@@ -12,8 +12,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import timber.log.Timber
-import tm.alashow.base.billing.OnPermissionActive
-import tm.alashow.base.billing.OnPermissionError
+import tm.alashow.base.billing.OnEntitlementActive
+import tm.alashow.base.billing.OnEntitlementError
 import tm.alashow.base.billing.Subscriptions
 import tm.alashow.base.util.IntentUtils
 import tm.alashow.base.util.asString
@@ -67,8 +67,8 @@ private fun PremiumButton(
         if (premiumStatus is PremiumStatus.NotSubscribed) onFakeRefresh()
         premiumStatus.handleClick(
             context = context as Activity,
-            onPermissionActive = { onRefresh() },
-            onPermissionError = { context.toast(it.asString(context)) }
+            onEntitlementActive = { onRefresh() },
+            onEntitlementError = { context.toast(it.asString(context)) }
         )
     }
 }
@@ -83,16 +83,16 @@ private fun PremiumStatus.toButtonText() = when (this) {
 
 private fun PremiumStatus.handleClick(
     context: Activity,
-    onPermissionActive: OnPermissionActive,
-    onPermissionError: OnPermissionError
+    onEntitlementActive: OnEntitlementActive,
+    onEntitlementError: OnEntitlementError
 ) {
     when (this) {
         is PremiumStatus.NotSubscribed -> {
-            Subscriptions.checkPermissions(
+            Subscriptions.checkEntitlements(
                 context = context,
                 restoreOrPurchaseOnEmpty = true,
-                onPermissionActive = onPermissionActive,
-                onPermissionError = onPermissionError,
+                onEntitlementActive = onEntitlementActive,
+                onEntitlementError = onEntitlementError,
             )
         }
         is PremiumStatus.Subscribed -> {

@@ -28,7 +28,7 @@ class DownloadPlaylist @Inject constructor(
 
     override suspend fun prepare(params: PlaylistId) {
         downloader.clearDownloaderEvents()
-        Subscriptions.checkPremiumPermission()
+        Subscriptions.validatePremiumEntitlement()
         if (repo.playlistItems(params).first().isEmpty())
             throw PlaylistIsEmpty.error()
     }

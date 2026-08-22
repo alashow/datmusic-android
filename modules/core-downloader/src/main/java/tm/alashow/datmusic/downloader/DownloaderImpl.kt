@@ -33,8 +33,8 @@ import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
 import tm.alashow.datmusic.domain.entities.DownloadItem
 import tm.alashow.datmusic.domain.entities.DownloadRequest
-import tm.alashow.datmusic.downloader.Downloader.Companion.DOWNLOADS_QUALITY_FLAC
 import tm.alashow.datmusic.downloader.Downloader.Companion.DOWNLOADS_LOCATION
+import tm.alashow.datmusic.downloader.Downloader.Companion.DOWNLOADS_QUALITY_FLAC
 import tm.alashow.datmusic.downloader.Downloader.Companion.DOWNLOADS_SONGS_GROUPING
 import tm.alashow.datmusic.downloader.manager.DownloadEnqueueFailed
 import tm.alashow.datmusic.downloader.manager.DownloadEnqueueResult
