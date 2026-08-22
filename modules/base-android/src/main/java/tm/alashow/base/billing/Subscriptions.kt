@@ -61,7 +61,7 @@ object Subscriptions {
     private fun QEntitlement.isActiveAndNotExpired() = isActive && isExpired().not()
 
     /**
-     * @param restoreOrPurchaseOnEmpty tries to restore or make a purchase if can't be restored in case there's no permissions and this is set to true
+     * @param restoreOrPurchaseOnEmpty tries to restore or make a purchase if can't be restored in case there's no entitlements and this is set to true
      */
     fun checkEntitlements(
         context: Activity,
@@ -81,7 +81,7 @@ object Subscriptions {
                 } else if (restoreOrPurchaseOnEmpty) {
                     Timber.d("Has no entitlement: $entitlement, trying to restore..")
                     restoreEntitlement(context, product, entitlement, true, onEntitlementActive, onEntitlementError)
-                } else onEntitlementError(SubscriptionNoPermissionsError)
+                } else onEntitlementError(SubscriptionNoEntitlementsError)
             }
 
             override fun onError(error: QonversionError) {
@@ -107,11 +107,11 @@ object Subscriptions {
         }
         Qonversion.shared.restore(object : QonversionEntitlementsCallback {
             override fun onSuccess(entitlements: Map<String, QEntitlement>) {
-                val premiumPermission = entitlements[entitlement.id]
-                if (premiumPermission != null) {
-                    if (premiumPermission.isActive) {
-                        Timber.d("Permission restored: $entitlement")
-                        onEntitlementActive(premiumPermission)
+                val premiumEntitlement = entitlements[entitlement.id]
+                if (premiumEntitlement != null) {
+                    if (premiumEntitlement.isActive) {
+                        Timber.d("Entitlement restored: $entitlement")
+                        onEntitlementActive(premiumEntitlement)
                     } else onRestoreFail()
                 } else onRestoreFail()
             }
@@ -136,10 +136,10 @@ object Subscriptions {
             context, qProduct,
             callback = object : QonversionEntitlementsCallback {
                 override fun onSuccess(entitlements: Map<String, QEntitlement>) {
-                    val premiumPermission = entitlements[entitlement.id]
-                    if (premiumPermission != null && premiumPermission.isActive) {
-                        onEntitlementActive(premiumPermission)
-                    } else onEntitlementError(SubscriptionNoPermissionsError)
+                    val premiumEntitlement = entitlements[entitlement.id]
+                    if (premiumEntitlement != null && premiumEntitlement.isActive) {
+                        onEntitlementActive(premiumEntitlement)
+                    } else onEntitlementError(SubscriptionNoEntitlementsError)
                 }
 
                 override fun onError(error: QonversionError) {
@@ -176,14 +176,14 @@ object Subscriptions {
 
     suspend fun validateEntitlement(entitlement: Entitlement): QEntitlement = suspendCancellableCoroutine { continuation ->
         validateKey()
-        Timber.d("Checking for permission=$entitlement")
+        Timber.d("Checking for entitlement=$entitlement")
         Qonversion.shared.checkEntitlements(object : QonversionEntitlementsCallback {
             override fun onSuccess(entitlements: Map<String, QEntitlement>) {
-                val premiumPermission = entitlements[entitlement.id]
-                Timber.d("Has permission: $premiumPermission")
-                if (premiumPermission != null && premiumPermission.isActiveAndNotExpired()) {
-                    continuation.resume(premiumPermission)
-                } else continuation.resumeWithException(SubscriptionNoPermissionsError)
+                val premiumEntitlement = entitlements[entitlement.id]
+                Timber.d("Has entitlement: $premiumEntitlement")
+                if (premiumEntitlement != null && premiumEntitlement.isActiveAndNotExpired()) {
+                    continuation.resume(premiumEntitlement)
+                } else continuation.resumeWithException(SubscriptionNoEntitlementsError)
             }
 
             override fun onError(error: QonversionError) {

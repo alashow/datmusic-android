@@ -16,7 +16,7 @@ open class SubscriptionError(val qonversionError: QonversionError) : Throwable()
     override fun toString() = qonversionError.toString()
 }
 
-object SubscriptionNoPermissionsError : SubscriptionError(QonversionError(QonversionErrorCode.ProductNotOwned)) {
+object SubscriptionNoEntitlementsError : SubscriptionError(QonversionError(QonversionErrorCode.ProductNotOwned)) {
     override fun toUiMessage() = UiMessage.Resource(R.string.subscriptions_required)
 }
 
