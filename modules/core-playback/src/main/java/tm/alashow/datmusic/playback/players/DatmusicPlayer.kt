@@ -43,7 +43,6 @@ import tm.alashow.datmusic.data.repos.audio.AudiosRepo
 import tm.alashow.datmusic.domain.CoverImageSize
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
-import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.downloader.artworkFromFile
 import tm.alashow.datmusic.playback.AudioFocusHelperImpl
 import tm.alashow.datmusic.playback.AudioQueueManagerImpl
@@ -127,7 +126,6 @@ class DatmusicPlayerImpl @Inject constructor(
     private val mediaQueueBuilder: MediaQueueBuilder,
     private val preferences: PreferencesStore,
     private val analytics: Analytics,
-    private val downloader: Downloader,
 ) : DatmusicPlayer, CoroutineScope by MainScope() {
 
     companion object {
@@ -135,8 +133,6 @@ class DatmusicPlayerImpl @Inject constructor(
     }
 
     private var isInitialized: Boolean = false
-
-    private var downloadsQualityFlacEnabled = false
 
     private var isPlayingCallback: OnIsPlaying<DatmusicPlayer> = { _, _ -> }
     private var preparedCallback: OnPrepared<DatmusicPlayer> = {}
@@ -162,10 +158,6 @@ class DatmusicPlayerImpl @Inject constructor(
     }
 
     init {
-        launch {
-            downloader.downloadsQualityFlac.collect { downloadsQualityFlacEnabled = it }
-        }
-
         queueManager.setMediaSession(mediaSession)
         audioPlayer.onPrepared {
             preparedCallback(this@DatmusicPlayerImpl)
@@ -251,15 +243,11 @@ class DatmusicPlayerImpl @Inject constructor(
                 when (val downloadItem = audio.audioDownloadItem) {
                     is AudioDownloadItem -> audioPlayer.setSource(downloadItem.downloadInfo.fileUri, true)
                     else -> {
-                        // stream flac quality from the api when enabled, except for minerva source
-                        val streamAudio = when {
-                            downloadsQualityFlacEnabled && !audio.isMinerva() -> audio.asFlac()
-                            else -> audio
+                        val uri = audio.streamUrl?.toUri()
+                        when {
+                            uri != null -> audioPlayer.setSource(uri, false)
+                            else -> false
                         }
-                        val uri = streamAudio.streamUrl?.toUri()
-                        if (uri != null)
-                            audioPlayer.setSource(uri, false)
-                        else false
                     }
                 }
             }
