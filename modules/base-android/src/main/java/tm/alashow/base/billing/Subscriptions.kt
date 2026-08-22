@@ -41,8 +41,9 @@ object Subscriptions {
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     private fun validateKey() {
-        if (KEY.isBlank())
-            throw SubscriptionsNotEnabledError
+        if (KEY.isBlank()) {
+            throw SubscriptionsNotEnabledError()
+        }
     }
 
     enum class Product(val id: String) {
@@ -81,7 +82,7 @@ object Subscriptions {
                 } else if (restoreOrPurchaseOnEmpty) {
                     Timber.d("Has no entitlement: $entitlement, trying to restore..")
                     restoreEntitlement(context, product, entitlement, true, onEntitlementActive, onEntitlementError)
-                } else onEntitlementError(SubscriptionNoEntitlementsError)
+                } else onEntitlementError(SubscriptionNoEntitlementsError())
             }
 
             override fun onError(error: QonversionError) {
@@ -139,7 +140,7 @@ object Subscriptions {
                     val premiumEntitlement = entitlements[entitlement.id]
                     if (premiumEntitlement != null && premiumEntitlement.isActive) {
                         onEntitlementActive(premiumEntitlement)
-                    } else onEntitlementError(SubscriptionNoEntitlementsError)
+                    } else onEntitlementError(SubscriptionNoEntitlementsError())
                 }
 
                 override fun onError(error: QonversionError) {
@@ -183,7 +184,7 @@ object Subscriptions {
                 Timber.d("Has entitlement: $premiumEntitlement")
                 if (premiumEntitlement != null && premiumEntitlement.isActiveAndNotExpired()) {
                     continuation.resume(premiumEntitlement)
-                } else continuation.resumeWithException(SubscriptionNoEntitlementsError)
+                } else continuation.resumeWithException(SubscriptionNoEntitlementsError())
             }
 
             override fun onError(error: QonversionError) {
