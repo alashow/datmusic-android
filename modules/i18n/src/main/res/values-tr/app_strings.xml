@@ -56,4 +56,136 @@
     <string name="settings.downloads">İndirilenler</string>
     <string name="search.hint.query">Arama sorgusu</string>
     <string name="audio.menu.cd">Ses menüsü</string>
+
+    <string name="appBar.search.hint">Arama sorgusu</string>
+    <string name="audio.menu.playNext.message">Sıraya eklendi</string>
+
+    <string name="downloader.enqueue.downloadsLocationNotSelected">İndirme konumu henüz seçilmedi</string>
+    <string name="downloader.enqueue.audio.existing.unknown">İndirme isteği mevcut ancak işlenmemiş durumda: %1$s</string>
+
+    <string name="downloads.filter.search.hint">İndirilenlerde ara</string>
+    <string name="downloads.filter.clear">Filtreleri temizle</string>
+    <string name="downloads.filter.noResults">Sonuç yok</string>
+    <string name="downloads.filter.noResults.forQuery">%1$s için sonuç yok</string>
+    <string name="downloads.filter.sort.byDate">Tarihe göre</string>
+    <string name="downloads.filter.sort.byTitle">Başlığa göre</string>
+    <string name="downloads.filter.sort.byArtist">Sanatçıya göre</string>
+    <string name="downloads.filter.sort.byAlbum">Albüme göre</string>
+    <string name="downloads.filter.sort.bySize">Boyuta göre</string>
+    <string name="downloads.filter.sort.byDuration">Süreye göre</string>
+    <string name="downloads.filter.status.all">Tümü</string>
+
+    <string name="downloads.download.status.completed">Tamamlandı</string>
+    <string name="downloads.download.play">Oynat</string>
+    <string name="downloads.download.playNext">Sonrakini Oynat</string>
+    <string name="downloads.download.resume">Devam et</string>
+    <string name="downloads.download.open">Dosyayı aç</string>
+    <string name="downloads.download.delete">Dosyayı sil</string>
+
+    <string name="library.title">Kitaplık</string>
+    <string name="library.empty">Öğe yok</string>
+
+    <string name="library.item.menu.cd">Kitaplık öğesi menüsü</string>
+    <string name="library.item.menu.edit">Düzenle</string>
+    <string name="library.item.menu.delete">Sil</string>
+    <string name="library.item.menu.download">İndir</string>
+
+    <string name="playlist.title">Çalma listesi</string>
+    <string name="playlist.empty">Çalma listesi boş</string>
+    <string name="playlist.empty.addSongs">Şarkı ekle</string>
+
+    <string name="playlist.audio.removeFromPlaylist">Bu çalma listesinden kaldır</string>
+
+    <string name="playlist.addTo">Çalma listesine ekle</string>
+    <string name="playlist.addTo.multiple">Şarkıları çalma listesine ekle</string>
+    <string name="playlist.addTo.new">Yeni çalma listesi</string>
+    <string name="playlist.addTo.added">%1$s listesine eklendi</string>
+    <string name="playlist.addTo.open">Aç</string>
+
+    <string name="playlist.create">Çalma listesi oluştur</string>
+    <string name="playlist.create.skipName">Atla</string>
+    <string name="playlist.create.label">Çalma listenize bir ad verin</string>
+    <string name="playlist.create.generatedTemplate">Çalma Listem #%1$d</string>
+
+    <string name="playlist.create.downloadsBackupTemplate">İndirilenler</string>
+
+    <string name="playlist.edit.label">Çalma listesini düzenle</string>
+    <string name="playlist.edit.clearArtwork">Kapak görselini temizle</string>
+    <string name="playlist.edit.shuffle">Karıştır</string>
+    <string name="playlist.edit.delete">Çalma listesini sil</string>
+    <string name="playlist.edit.done">Kaydet</string>
+    <string name="playlist.edit.removed">Çalma listesinden kaldırıldı</string>
+    <string name="playlist.edit.removed.undo">Geri al</string>
+
+    <string name="playlist.detail.filter.search.hint">Çalma listesinde ara</string>
+    <string name="playlist.detail.filter.clear">Filtreleri temizle</string>
+    <string name="playlist.detail.filter.noResults">Sonuç yok</string>
+    <string name="playlist.detail.filter.noResults.forQuery">%1$s için sonuç yok</string>
+
+    <string name="playlist.detail.filter.sort.byCustom">Özel</string>
+    <string name="playlist.detail.filter.sort.byTitle">Başlığa göre</string>
+    <string name="playlist.detail.filter.sort.byArtist">Sanatçıya göre</string>
+    <string name="playlist.detail.filter.sort.byAlbum">Albüme göre</string>
+    <string name="playlist.detail.filter.sort.byDuration">Süreye göre</string>
+
+    <string name="playlist.download.queued">Çalma listesi indirmek için sıraya alındı</string>
+    <string name="playlist.download.queuedCount">%1$d şarkı indirmek için sıraya alındı</string>
+    <string name="playlist.download.error.empty">Çalma listesi boş</string>
+
+    <string name="playback.queue.title">Sıradaki</string>
+    <string name="playback.queue.empty">Sırada bir şey yok :(</string>
+    <string name="playback.queue.addQueueToPlaylist">Sırayı çalma listesine ekle</string>
+    <string name="playback.queue.saveAsPlaylist">Sırayı çalma listesi olarak kaydet</string>
+    <string name="playback.queue.saveAsPlaylist.saved">%1$s olarak kaydedildi</string>
+    <string name="playback.queue.saveAsPlaylist.open">Aç</string>
+
+    <string name="playback.queue.removeFromQueue">Sıradan kaldır</string>
+
+    <string name="playback.queueTitle.audio">Sıradan çalınıyor</string>
+    <string name="playback.queueTitle.downloads">İndirilenlerden çalınıyor</string>
+    <string name="playback.queueTitle.artist">Sanatçıdan çalınıyor</string>
+    <string name="playback.queueTitle.artist.value">Sanatçıdan çalınıyor</string>
+    <string name="playback.queueTitle.album">Albümden çalınıyor</string>
+    <string name="playback.queueTitle.playlist">Çalma listesinden çalınıyor</string>
+    <string name="playback.queueTitle.search">Aramadan çalınıyor</string>
+
+    <plurals name="songs.count">
+        <item quantity="one">%1$d şarkı</item>
+        <item quantity="other">%1$d şarkı</item>
+    </plurals>
+
+    <string name="settings.downloads.songsGrouping">Şarkı klasörü gruplandırması</string>
+    <string name="settings.downloads.songsGrouping.byAlbum.example">/Sanatçı/Albüm/Şarkı</string>
+    <string name="settings.downloads.songsGrouping.byArtist.example">/Sanatçı/Şarkı</string>
+    <string name="settings.downloads.songsGrouping.flat">Düz</string>
+    <string name="settings.downloads.songsGrouping.flat.example">/Şarkı</string>
+
+    <string name="settings.about.author">Yazar</string>
+    <string name="settings.about.author.text">Alashov Berkeli</string>
+
+    <string name="settings.general">Genel</string>
+
+    <string name="settings.premium">Premium</string>
+    <string name="settings.premium.subscribe">Abone ol</string>
+    <string name="settings.premium.view">Aboneliği görüntüle</string>
+    <string name="settings.premium.disabled">Devre dışı</string>
+    <string name="settings.premium.info.cd">Premium bilgisi</string>
+    <string name="settings.premium.info.title">Premium abonelik</string>
+    <string name="settings.premium.info.text">Aboneliğin içerdiği özellikler:\n• Çalma listesi indirme\n• Albüm indirme (yakında)\n• FLAC kalitesinde indirme</string>
+    <string name="settings.premium.genericFeatureLabel">Premium özelliği</string>
+
+    <string name="settings.library">Kitaplık</string>
+    <string name="settings.database">Veritabanı</string>
+    <string name="settings.database.backup">Yedekle</string>
+    <string name="settings.database.backup.complete">Yedekleme tamamlandı</string>
+    <string name="settings.database.restore">Geri yükle</string>
+    <string name="settings.database.restore.complete">Geri yükleme tamamlandı</string>
+    <string name="settings.database.restore.NonMatchingVersion">Yedek dosyası uygulamanın versiyonuyla eşleşmiyor, geri yükleme başarısız olabilir (%1$d vs yedek versiyonu %2$d).</string>
+
+    <string name="subscriptions.required">Bu özellik için abonelik gerekli</string>
+
+    <string name="captcha.title">Captcha hatası</string>
+    <string name="captcha.hint">Yukarıdaki harfleri yazın</string>
+    <string name="captcha.reload">Yenile</string>
+    <string name="captcha.empty">Captcha boş bırakılamaz</string>
 </resources>

@@ -5,6 +5,7 @@
     <string name="audio.menu.play">Lecture</string>
     <string name="downloader.enqueue.audio.existing.alreadyQueued">Cette chanson se trouve déjà dans la file d\'attente</string>
     <string name="audio.menu.playNext">Lecture suivante</string>
+    <string name="audio.menu.playNext.message">Ajouté à la file d\'attente</string>
     <string name="audio.menu.downloadById">Télécharger</string>
     <string name="downloads.download.status.queued">En attente</string>
     <string name="downloads.download.status.downloading">Téléchargement en cours</string>
@@ -17,6 +18,8 @@
     <string name="playback.queueTitle.album">Lecture depuis l\'album</string>
     <string name="settings.downloads.location.select">Séléctionner</string>
     <string name="playback.queueTitle.search">Lecture depuis la recherche</string>
+    <string name="playback.queue.title">À suivre</string>
+    <string name="playback.queue.empty">Rien dans la file d\'attente :(</string>
     <string name="settings.downloads.location">Emplacement des téléchargements</string>
     <string name="settings.downloads.location.change">Changer</string>
     <string name="settings.downloads.songsGrouping">Regroupement des répertoire des chansons</string>
@@ -52,6 +55,7 @@
     <string name="app_name">Datmusic</string>
     <string name="app_launcher">Datmusic</string>
     <string name="downloads.download.status.cancelled">Annulé</string>
+    <string name="downloads.download.status.completed">Terminé</string>
     <string name="search.audios">Chansons</string>
     <string name="albums.detail.title">Album</string>
     <string name="audio.menu.cd">Menu audio</string>
@@ -59,6 +63,7 @@
     <string name="app_label">Datmusic</string>
     <string name="search.title">Rechercher</string>
     <string name="search.hint">Morceaux, albums, artistes</string>
+    <string name="appBar.search.hint">Requête de recherche</string>
     <string name="search.hint.query">Requête de recherche</string>
     <string name="search.artists">Artistes</string>
     <string name="search.albums">Albums</string>
@@ -68,6 +73,18 @@
     <string name="downloads.download.status.failed">Echec</string>
     <string name="downloads.title">Téléchargements</string>
     <string name="downloads.empty">Aucun téléchargement</string>
+
+    <string name="downloads.filter.search.hint">Rechercher dans les téléchargements</string>
+    <string name="downloads.filter.clear">Effacer les filtres</string>
+    <string name="downloads.filter.noResults">Aucun résultat</string>
+    <string name="downloads.filter.noResults.forQuery">Aucun résultat pour %1$s</string>
+    <string name="downloads.filter.sort.byDate">Par date</string>
+    <string name="downloads.filter.sort.byTitle">Par titre</string>
+    <string name="downloads.filter.sort.byArtist">Par artiste</string>
+    <string name="downloads.filter.sort.byAlbum">Par album</string>
+    <string name="downloads.filter.sort.bySize">Par taille</string>
+    <string name="downloads.filter.sort.byDuration">Par durée</string>
+    <string name="downloads.filter.status.all">Tous</string>
     <string name="downloads.download.status.paused">En pause</string>
     <string name="downloads.download.playNext">Lecture suivante</string>
     <string name="downloads.download.pause">En pause</string>
@@ -105,6 +122,17 @@
     <string name="playlist.edit.done">Enregistrer</string>
     <string name="playlist.edit.removed">Supprimée de la playlist</string>
     <string name="playlist.edit.removed.undo">Annuler</string>
+
+    <string name="playlist.detail.filter.search.hint">Rechercher dans la playlist</string>
+    <string name="playlist.detail.filter.clear">Effacer les filtres</string>
+    <string name="playlist.detail.filter.noResults">Aucun résultat</string>
+    <string name="playlist.detail.filter.noResults.forQuery">Aucun résultat pour %1$s</string>
+
+    <string name="playlist.detail.filter.sort.byCustom">Personnalisé</string>
+    <string name="playlist.detail.filter.sort.byTitle">Par titre</string>
+    <string name="playlist.detail.filter.sort.byArtist">Par artiste</string>
+    <string name="playlist.detail.filter.sort.byAlbum">Par album</string>
+    <string name="playlist.detail.filter.sort.byDuration">Par durée</string>
     <string name="playlist.download.queuedCount">%1$d chansons ont été mises en file d\'attente pour télécharger</string>
     <string name="playlist.download.error.empty">La playlist est vide</string>
     <string name="playback.queue.addQueueToPlaylist">Ajouter file d\'attente à la liste de lecture</string>
@@ -114,6 +142,7 @@
     <string name="playback.queueTitle.playlist">Lecture depuis la liste de lecture</string>
     <plurals name="songs.count">
         <item quantity="one">%1$d chanson</item>
+        <item quantity="many">%1$d chansons</item>
         <item quantity="other">%1$d chansons</item>
     </plurals>
     <string name="settings.title">Paramètres</string>
@@ -122,6 +151,10 @@
     <string name="settings.theme.colorPalette">Palette de couleurs</string>
     <string name="settings.general">Général</string>
     <string name="settings.premium">Premium</string>
+    <string name="settings.premium.info.cd">Infos premium</string>
+    <string name="settings.premium.info.title">Abonnement premium</string>
+    <string name="settings.premium.info.text">Fonctionnalités incluses avec l\'abonnement :\n• Téléchargement de playlists\n• Téléchargement d\'albums (bientôt)\n• Téléchargement en qualité FLAC</string>
+    <string name="settings.premium.genericFeatureLabel">Fonction premium</string>
     <string name="settings.premium.subscribe">Souscrire</string>
     <string name="settings.premium.view">Voir la souscription</string>
     <string name="settings.premium.disabled">Désactivé</string>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="search.title">Gözleg</string>
+    <string name="appBar.search.hint">Gözleg sözi</string>
     <string name="search.hint.query">Gözleg sözi</string>
     <string name="search.audios">Aýdymlar</string>
     <string name="search.artists">Aýdymçylar</string>
@@ -22,6 +23,17 @@
     <string name="downloader.enqueue.audio.existing.completed">Bu aýdym eýýäm indirilen</string>
     <string name="downloads.title">Indirmeler</string>
     <string name="downloads.empty">Indirmeler ýok</string>
+    <string name="downloads.filter.search.hint">Indirmelerde gözleg</string>
+    <string name="downloads.filter.clear">Filterleri poz</string>
+    <string name="downloads.filter.noResults">Netije ýok</string>
+    <string name="downloads.filter.noResults.forQuery">%1$s üçin netije ýok</string>
+    <string name="downloads.filter.sort.byDate">Sene boýunça</string>
+    <string name="downloads.filter.sort.byTitle">At boýunça</string>
+    <string name="downloads.filter.sort.byArtist">Aýdymçy boýunça</string>
+    <string name="downloads.filter.sort.byAlbum">Albom boýunça</string>
+    <string name="downloads.filter.sort.bySize">Ölçeg boýunça</string>
+    <string name="downloads.filter.sort.byDuration">Uzynlyk boýunça</string>
+    <string name="downloads.filter.status.all">Hemmesi</string>
     <string name="downloads.download.status.paused">Durdyrylan</string>
     <string name="downloads.download.status.queued">Nobatda</string>
     <string name="downloads.download.status.downloading">Indirilýar</string>
@@ -32,6 +44,7 @@
     <string name="downloader.enqueue.audio.error.invalidUrl">Aýdymy indirip bolanok</string>
     <string name="downloader.enqueue.audio.existing.unknown">Indirme haýyşy eýýäm bar ýöne näbelli statusly: %1$s</string>
     <string name="audio.menu.playNext">Indiki diňle</string>
+    <string name="audio.menu.playNext.message">Nobata goşuldy</string>
     <string name="playback.queueTitle.audio">Nobatdan diňlenilýär</string>
     <string name="downloads.download.play">Diňle</string>
     <string name="downloads.download.playNext">Indiki diňle</string>
@@ -44,6 +57,8 @@
     <string name="playback.queueTitle.album">Albomdan diňlenilýär</string>
     <string name="settings.downloads.songsGrouping.byAlbum">Albom boýunça</string>
     <string name="playback.queueTitle.search">Gözlegden diňlenilýär</string>
+    <string name="playback.queue.title">Indiki</string>
+    <string name="playback.queue.empty">Nobatda zat ýok :(</string>
     <string name="settings.downloads.songsGrouping">Aýdym bukja toparlanmasy</string>
     <string name="settings.downloads.songsGrouping.byAlbum.example">/Aýdymçy/Albom/Aýdym</string>
     <string name="settings.downloads.songsGrouping.byArtist">Aýdymçy boýunça</string>
@@ -67,6 +82,7 @@
     <string name="app_label">Datmusic</string>
     <string name="downloads.download.status.failed">Şowsuz</string>
     <string name="downloads.download.status.cancelled">Ýatyryldy</string>
+    <string name="downloads.download.status.completed">Üstünlikli</string>
     <string name="downloads.download.pause">Duruz</string>
     <string name="downloads.download.resume">Dowam et</string>
     <string name="downloads.download.cancel">Ýatyr</string>
@@ -82,8 +98,23 @@
     <string name="settings.database.restore.NonMatchingVersion">Ätiýaçlyk nusgasy programmaň wersiýasy bilen gabat gelenok, dikeldilmek ýalňyşlyk bilen tamamlanyp biler (%1$d vs ätiýaçlyk nusganyň wersiýasy %2$d).</string>
     <string name="playlist.create.label">Pleýlistiňize at beriň</string>
     <string name="playlist.edit.removed.undo">Yza gaýtar</string>
+
+    <string name="playlist.detail.filter.search.hint">Pleýlistde gözleg</string>
+    <string name="playlist.detail.filter.clear">Filterleri poz</string>
+    <string name="playlist.detail.filter.noResults">Netije ýok</string>
+    <string name="playlist.detail.filter.noResults.forQuery">%1$s üçin netije ýok</string>
+
+    <string name="playlist.detail.filter.sort.byCustom">Özbaşdak tertip</string>
+    <string name="playlist.detail.filter.sort.byTitle">At boýunça</string>
+    <string name="playlist.detail.filter.sort.byArtist">Aýdymçy boýunça</string>
+    <string name="playlist.detail.filter.sort.byAlbum">Albom boýunça</string>
+    <string name="playlist.detail.filter.sort.byDuration">Uzynlyk boýunça</string>
     <string name="playback.queue.saveAsPlaylist">Nobaty pleýlist ýaly ýatda sakla</string>
     <string name="settings.premium">Premium</string>
+    <string name="settings.premium.info.cd">Premium maglumaty</string>
+    <string name="settings.premium.info.title">Premium abunalygy</string>
+    <string name="settings.premium.info.text">Abunalykda bar bolan mümkinçilikler:\n• Pleýlist indirmek\n• Albom indirmek (ýakynda)\n• FLAC hilinde indirme</string>
+    <string name="settings.premium.genericFeatureLabel">Premium bilen</string>
     <string name="settings.database.backup.complete">Ätiýaçlyk nusgasy taýýarlandy</string>
     <string name="downloader.enqueue.downloadsLocationNotSelected">Ýüklenjek ýeri saýlanmady</string>
     <string name="library.title">Kitaphana</string>

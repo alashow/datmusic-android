@@ -38,4 +38,45 @@
     <string name="error.database.validation.notFound">Contenu introuvable</string>
     <string name="time.duration.short">%1$dh %2$dmin</string>
     <string name="time.duration.minutes.short">%1$d min</string>
+    <string name="dropdown.selected.multiple">Plusieurs</string>
+
+    <string-array name="months">
+        <item>Janvier</item>
+        <item>Février</item>
+        <item>Mars</item>
+        <item>Avril</item>
+        <item>Mai</item>
+        <item>Juin</item>
+        <item>Juillet</item>
+        <item>Août</item>
+        <item>Septembre</item>
+        <item>Octobre</item>
+        <item>Novembre</item>
+        <item>Décembre</item>
+    </string-array>
+
+    <string-array name="months.short">
+        <item>Jan</item>
+        <item>Fév</item>
+        <item>Mar</item>
+        <item>Avr</item>
+        <item>Mai</item>
+        <item>Juin</item>
+        <item>Juil</item>
+        <item>Aug</item>
+        <item>Sept</item>
+        <item>Oct</item>
+        <item>Nov</item>
+        <item>Déc</item>
+    </string-array>
+
+    <string-array name="weeks.short">
+        <item>Lun</item>
+        <item>Mar</item>
+        <item>Mer</item>
+        <item>Jeu</item>
+        <item>Ven</item>
+        <item>Sam</item>
+        <item>Dim</item>
+    </string-array>
 </resources>

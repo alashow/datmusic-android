@@ -38,4 +38,45 @@
     <string name="error.database.validation.notFound">Element tapylmady</string>
     <string name="time.duration.short">%1$ds %2$dmin</string>
     <string name="time.duration.minutes.short">%1$d min</string>
+    <string name="dropdown.selected.multiple">Birnäçe</string>
+
+    <string-array name="months">
+        <item>Ýanwar</item>
+        <item>Fewral</item>
+        <item>Mart</item>
+        <item>Aprel</item>
+        <item>Maý</item>
+        <item>Iýun</item>
+        <item>Iýul</item>
+        <item>Awgust</item>
+        <item>Sentýabr</item>
+        <item>Okýabr</item>
+        <item>Noýabr</item>
+        <item>Dekabr</item>
+    </string-array>
+
+    <string-array name="months.short">
+        <item>Ýan</item>
+        <item>Few</item>
+        <item>Mar</item>
+        <item>Apr</item>
+        <item>Maý</item>
+        <item>Iýun</item>
+        <item>Iýul</item>
+        <item>Awg</item>
+        <item>Sept</item>
+        <item>Okt</item>
+        <item>Noý</item>
+        <item>Dek</item>
+    </string-array>
+
+    <string-array name="weeks.short">
+        <item>Duş</item>
+        <item>Siş</item>
+        <item>Çar</item>
+        <item>Pen</item>
+        <item>Anna</item>
+        <item>Şen</item>
+        <item>Ýek</item>
+    </string-array>
 </resources>

@@ -4,6 +4,7 @@
     <string name="audio.menu.play">Воспроизвести</string>
     <string name="audio.menu.downloadById">Скачать</string>
     <string name="audio.menu.playNext">Воспроизвести следующий</string>
+    <string name="audio.menu.playNext.message">Добавлено в очередь</string>
     <string name="downloads.download.status.queued">В очереди</string>
     <string name="downloads.download.status.downloading">Скачивание</string>
     <string name="downloads.download.play">Воспроизвести</string>
@@ -28,11 +29,25 @@
     <string name="downloader.enqueue.audio.existing.unknown">Запрос на загрузку существует, но имеет необработанный статус: %1$s</string>
     <string name="downloads.title">Загрузки</string>
     <string name="downloads.empty">Нет загрузок</string>
+
+    <string name="downloads.filter.search.hint">Поиск в загрузках</string>
+    <string name="downloads.filter.clear">Очистить фильтры</string>
+    <string name="downloads.filter.noResults">Нет результатов</string>
+    <string name="downloads.filter.noResults.forQuery">Нет результатов для %1$s</string>
+    <string name="downloads.filter.sort.byDate">По дате</string>
+    <string name="downloads.filter.sort.byTitle">По названию</string>
+    <string name="downloads.filter.sort.byArtist">По исполнителю</string>
+    <string name="downloads.filter.sort.byAlbum">По альбому</string>
+    <string name="downloads.filter.sort.bySize">По размеру</string>
+    <string name="downloads.filter.sort.byDuration">По длительности</string>
+    <string name="downloads.filter.status.all">Все</string>
     <string name="downloads.download.status.paused">Приостановлено</string>
     <string name="downloads.download.status.failed">Неудачно</string>
     <string name="downloads.download.status.cancelled">Отменен</string>
+    <string name="downloads.download.status.completed">Завершено</string>
     <string name="search.title">Поиск</string>
     <string name="search.hint">Песни, альбомы, исполнители</string>
+    <string name="appBar.search.hint">Поисковый запрос</string>
     <string name="search.hint.query">Поисковый запрос</string>
     <string name="search.audios">Песни</string>
     <string name="search.artists">Исполнители</string>
@@ -49,6 +64,8 @@
     <string name="downloads.download.delete">Удалить файл</string>
     <string name="search.minerva">Minerva</string>
     <string name="playback.queueTitle.search">Воспроизведение из поиска</string>
+    <string name="playback.queue.title">Далее</string>
+    <string name="playback.queue.empty">В очереди пусто :(</string>
     <string name="settings.downloads.location">Расположение загрузок</string>
     <string name="settings.downloads.location.select">Выбрать</string>
     <string name="settings.downloads.location.change">Изменить</string>
@@ -100,6 +117,10 @@
     <string name="playlist.download.queuedCount">%1$d Песни были поставлены в очередь на скачивание</string>
     <string name="settings.premium.disabled">Отключено</string>
     <string name="settings.premium">Премиум</string>
+    <string name="settings.premium.info.cd">Информация о премиуме</string>
+    <string name="settings.premium.info.title">Премиум-подписка</string>
+    <string name="settings.premium.info.text">Возможности подписки:\n• Скачивание плейлистов\n• Скачивание альбомов (скоро)\n• Скачивание в FLAC-качестве</string>
+    <string name="settings.premium.genericFeatureLabel">Премиум-функция</string>
     <string name="settings.database.backup.complete">Резервное копирование завершено</string>
     <string name="settings.database.restore.NonMatchingVersion">Версия файла резервной копии не соответствует с версией приложения, восстановление может завершиться ошибкой (%1$d vsверсия резервной копии %2$d).</string>
     <string name="downloader.enqueue.downloadsLocationNotSelected">Место загрузки не выбрано</string>
@@ -127,6 +148,17 @@
     <string name="playlist.edit.delete">Удалить плейлист</string>
     <string name="playlist.edit.done">Сохранить</string>
     <string name="playlist.edit.removed.undo">Отменен</string>
+
+    <string name="playlist.detail.filter.search.hint">Поиск в плейлисте</string>
+    <string name="playlist.detail.filter.clear">Очистить фильтры</string>
+    <string name="playlist.detail.filter.noResults">Нет результатов</string>
+    <string name="playlist.detail.filter.noResults.forQuery">Нет результатов для %1$s</string>
+
+    <string name="playlist.detail.filter.sort.byCustom">Свой порядок</string>
+    <string name="playlist.detail.filter.sort.byTitle">По названию</string>
+    <string name="playlist.detail.filter.sort.byArtist">По исполнителю</string>
+    <string name="playlist.detail.filter.sort.byAlbum">По альбому</string>
+    <string name="playlist.detail.filter.sort.byDuration">По длительности</string>
     <string name="playlist.download.queued">Плейлист в очереди на скачивание</string>
     <string name="playlist.download.error.empty">Плейлист пуст</string>
     <string name="settings.library">Библиотека</string>

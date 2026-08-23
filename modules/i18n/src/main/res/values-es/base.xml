@@ -38,4 +38,45 @@
     <string name="error.database.validation.notFound">Objeto no encontrado</string>
     <string name="time.duration.short">%1$dh %2$dmin</string>
     <string name="time.duration.minutes.short">%1$d min</string>
+    <string name="dropdown.selected.multiple">Múltiple</string>
+
+    <string-array name="months">
+        <item>Enero</item>
+        <item>Febrero</item>
+        <item>Marzo</item>
+        <item>Abril</item>
+        <item>Mayo</item>
+        <item>Junio</item>
+        <item>Julio</item>
+        <item>Agosto</item>
+        <item>Septiembre</item>
+        <item>Octubre</item>
+        <item>Noviembre</item>
+        <item>Diciembre</item>
+    </string-array>
+
+    <string-array name="months.short">
+        <item>ENE</item>
+        <item>FEB</item>
+        <item>MAR</item>
+        <item>ABR</item>
+        <item>MAY</item>
+        <item>JUN</item>
+        <item>JUL</item>
+        <item>AGO</item>
+        <item>SEP</item>
+        <item>OCT</item>
+        <item>NOV</item>
+        <item>DIC</item>
+    </string-array>
+
+    <string-array name="weeks.short">
+        <item>lun</item>
+        <item>mar</item>
+        <item>mié</item>
+        <item>jue</item>
+        <item>vie</item>
+        <item>sáb</item>
+        <item>dom</item>
+    </string-array>
 </resources>

@@ -21,7 +21,8 @@
 
     <string name="audio.menu.cd">Audio Menü</string>
     <string name="audio.menu.play">Abspielen</string>
-    <string name="audio.menu.playNext">nächstes Abspielen</string>
+    <string name="audio.menu.playNext">Nächstes Abspielen</string>
+    <string name="audio.menu.playNext.message">Zur Wiedergabewarteschlange hinzugefügt</string>
     <string name="audio.menu.download">Herunterladen</string>
     <string name="audio.menu.downloadById">Herunterladen</string>
     <string name="audio.menu.copyLink">Link kopieren</string>
@@ -107,6 +108,17 @@
     <string name="playlist.edit.removed">Von Playliste entfernt</string>
     <string name="playlist.edit.removed.undo">Rückgängig</string>
 
+    <string name="playlist.detail.filter.search.hint">In Playliste suchen</string>
+    <string name="playlist.detail.filter.clear">Filter löschen</string>
+    <string name="playlist.detail.filter.noResults">Keine Ergebnisse</string>
+    <string name="playlist.detail.filter.noResults.forQuery">Keine Ergebnisse für %1$s</string>
+
+    <string name="playlist.detail.filter.sort.byCustom">Benutzerdefiniert</string>
+    <string name="playlist.detail.filter.sort.byTitle">Nach Titel</string>
+    <string name="playlist.detail.filter.sort.byArtist">Nach Artist</string>
+    <string name="playlist.detail.filter.sort.byAlbum">Nach Album</string>
+    <string name="playlist.detail.filter.sort.byDuration">Nach Länge</string>
+
     <string name="playlist.download.queued">Playliste zur Download Warteschlange hinzugefügt</string>
     <string name="playlist.download.queuedCount">%1$d Lieder zur Download Warteschlange hinzugefügt</string>
     <string name="playlist.download.error.empty">Playliste ist leer</string>
@@ -161,9 +173,13 @@
     <string name="settings.general">Allgemein</string>
 
     <string name="settings.premium">Premium</string>
-    <string name="settings.premium.subscribe">Abonement</string>
-    <string name="settings.premium.view">Abonement ansehen</string>
+    <string name="settings.premium.subscribe">Abonnement</string>
+    <string name="settings.premium.view">Abonnement ansehen</string>
     <string name="settings.premium.disabled">Deaktiviert</string>
+    <string name="settings.premium.info.cd">Premium-Info</string>
+    <string name="settings.premium.info.title">Premium-Abonnement</string>
+    <string name="settings.premium.info.text">Funktionen im Abonnement:\n• Playlist-Downloads\n• Album-Downloads (bald verfügbar)\n• Downloads in FLAC-Qualität</string>
+    <string name="settings.premium.genericFeatureLabel">Premium-Funktion</string>
 
     <string name="settings.library">Bibliothek</string>
     <string name="settings.database">Datenbank</string>
@@ -173,7 +189,7 @@
     <string name="settings.database.restore.complete">Wiederherstellen abgeschlossen</string>
     <string name="settings.database.restore.NonMatchingVersion">Backup Datei hat nicht-übereinstimmende Version mit dieser App, wiederherstellung könnte fehlschlagen (%1$d vs Backup Version %2$d).</string>
 
-    <string name="subscriptions.required">Abonement benötigt für dieses Feature</string>
+    <string name="subscriptions.required">Abonnement benötigt für dieses Feature</string>
 
     <string name="captcha.title">Captcha fehlerhaft</string>
     <string name="captcha.hint">Tippen Sie die Buchstaben oben</string>

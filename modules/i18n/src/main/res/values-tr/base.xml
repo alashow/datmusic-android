@@ -32,4 +32,51 @@
     <string name="error.network">Bağlantı hatası</string>
     <string name="error.auth">Yetki hatası</string>
     <string name="error.serverUnavailable">Sunucu hizmet veremiyor</string>
+    <string name="error.validation.textShort">Girilen değer çok kısa</string>
+    <string name="error.validation.textLong">Girilen değer çok uzun</string>
+    <string name="error.database">Veritabanı hatası</string>
+    <string name="error.database.validation.notFound">Öğe bulunamadı</string>
+    <string name="time.duration.short">%1$ds %2$d dk</string>
+    <string name="time.duration.minutes.short">%1$d dk</string>
+    <string name="dropdown.selected.multiple">Birden fazla</string>
+
+    <string-array name="months">
+        <item>Ocak</item>
+        <item>Şubat</item>
+        <item>Mart</item>
+        <item>Nisan</item>
+        <item>Mayıs</item>
+        <item>Haziran</item>
+        <item>Temmuz</item>
+        <item>Ağustos</item>
+        <item>Eylül</item>
+        <item>Ekim</item>
+        <item>Kasım</item>
+        <item>Aralık</item>
+    </string-array>
+
+    <string-array name="months.short">
+        <item>Oca</item>
+        <item>Şub</item>
+        <item>Mar</item>
+        <item>Nis</item>
+        <item>May</item>
+        <item>Haz</item>
+        <item>Tem</item>
+        <item>Ağu</item>
+        <item>Eyl</item>
+        <item>Eki</item>
+        <item>Kas</item>
+        <item>Ara</item>
+    </string-array>
+
+    <string-array name="weeks.short">
+        <item>Pzt</item>
+        <item>Sal</item>
+        <item>Çar</item>
+        <item>Per</item>
+        <item>Cum</item>
+        <item>Cts</item>
+        <item>Paz</item>
+    </string-array>
 </resources>
