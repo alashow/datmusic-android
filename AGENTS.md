@@ -4,7 +4,7 @@ Guidance for AI coding agents working on this repository.
 
 ## Project overview
 
-**DatMusic** — a third-party music search/streaming client for the DatMusic service (datmusic.xyz).
+**Datmusic** — a third-party music search/streaming client for the DatMusic service (datmusic.xyz).
 Android app, Jetpack Compose UI, published on Google Play as `tm.alashow.datmusic`.
 
 
