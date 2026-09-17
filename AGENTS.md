@@ -113,19 +113,11 @@ base-android  →  base  →  i18n
 
 ## Conventions & gotchas
 
-- **License header** required on every Kotlin file (template: `spotless/copyright.kt`) — Spotless enforces it.
-- ktlint: android style, **200 char max line**, 4-space indent; run `./gradlew spotlessApply` before committing.
+- Code style: run `./gradlew spotlessApply` before committing.
 - **Strings**: add new user-facing strings to `modules/i18n/src/main/res/values/app_strings.xml` and translate in the other locale folders. Don't hardcode strings in composables.
 - **Versions**: everything is in `gradle/libs.versions.toml` (version catalog `libs`); reference as `libs.*`. Don't pin versions in module `build.gradle` files.
-- Repos are centralized in `settings.gradle` (`RepositoriesMode.FAIL_ON_PROJECT_REPOS`); note the androidx.dev + sonatype snapshot repos are there intentionally.
-- All `subprojects` exclude `appcompat` and Material (old) — Compose only; don't re-add view-based libs.
-- `app/build.gradle` uses `prop(...)` to read config from project properties **or env vars** (e.g. `PUBLISH_TRACK`).
 - Room migrations must be added explicitly in `AppDatabase` (`AutoMigration` specs live in `core-data/.../db/Migrations.kt`); DAO tests exist under `core-data/src/test/.../daos/` as reference.
 - The project tracks cutting-edge dependencies (Kotlin beta, Compose alpha, media3-ext snapshot). Bumps can break the build — prefer minimal version changes and verify with `spotlessCheck testDebug assembleDebug`.
-- `.idea/`, `.gradle/`, `modules/build/` are local/IDE noise; ignore unless asked.
-- Deep link / share URLs use `Config.BASE_URL` (https://datmusic.xyz) — keep them in sync with `Screens.kt` deep link patterns.
-- Firebase config: `app/google-services.json`; FCM token registration interactor is in `core-data` (`interactors/RegisterFcmToken.kt`).
-- Backup/restore (library JSON export) is a real feature: `core-library/.../interactors/backup/`, UI in `ui-settings/.../backup/`.
 
 ## Quick orientation for common tasks
 
