@@ -6,9 +6,8 @@ Guidance for AI coding agents working on this repository.
 
 **DatMusic** — a third-party music search/streaming client for the DatMusic service (datmusic.xyz).
 Android app, Jetpack Compose UI, published on Google Play as `tm.alashow.datmusic`.
-Closed-source, single-developer project (Alashov Berkeli, `tm.alashow`).
 
-- API base: `https://api-demo.datmusic.xyz/` (defined in `modules/core-domain/src/main/java/tm/alashow/Config.kt`)
+
 - Current version: see `buildSrc/src/main/java/tm/alashow/buildSrc/App.kt` (versionCode/versionName live there)
 - Play listing data: `app/src/main/play/` (title, description, screenshots, subscription products)
 - App store art assets: `art/` (screenshots source/framed, feature graphic psd, dependency graph)
@@ -26,7 +25,7 @@ Closed-source, single-developer project (Alashov Berkeli, `tm.alashow`).
 - Firebase: Crashlytics, FCM, Remote Config, Analytics; billing via Qonversion
 - Coil (images), Timber (logging), threeTenAbp (dates)
 - Testing: JUnit4, Truth, Robolectric, MockK, Turbine
-- Code style: Spotless + ktlint 0.41.0 (android mode, max line length 200, wildcard imports allowed), license header required on all `.kt` files
+- Code style: Spotless + ktlint
 
 ## Repository layout
 
