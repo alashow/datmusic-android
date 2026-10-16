@@ -27,9 +27,9 @@ import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.Audio
 import tm.alashow.datmusic.domain.entities.Audios
 import tm.alashow.datmusic.domain.entities.Playlist
-import tm.alashow.datmusic.ui.coreLibrary.R
 import tm.alashow.datmusic.ui.library.playlist.addTo.NewPlaylistItem.isNewPlaylistItem
 import tm.alashow.datmusic.ui.library.playlist.addTo.NewPlaylistItem.withNewPlaylistItem
+import tm.alashow.i18n.R
 import tm.alashow.navigation.activityHiltViewModel
 import tm.alashow.ui.theme.AppTheme
 

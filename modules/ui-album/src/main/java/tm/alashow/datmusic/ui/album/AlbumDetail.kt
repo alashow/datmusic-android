@@ -41,6 +41,7 @@ import tm.alashow.datmusic.ui.playback.LocalPlaybackConnection
 import tm.alashow.datmusic.ui.previews.PreviewDatmusicCore
 import tm.alashow.domain.models.Loading
 import tm.alashow.domain.models.Success
+import tm.alashow.i18n.R
 import tm.alashow.ui.components.CoverImage
 import tm.alashow.ui.simpleClickable
 import tm.alashow.ui.theme.AppTheme

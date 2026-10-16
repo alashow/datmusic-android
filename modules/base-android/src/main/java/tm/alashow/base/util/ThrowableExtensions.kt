@@ -15,10 +15,10 @@ import java.net.UnknownServiceException
 import java.nio.channels.ClosedChannelException
 import javax.net.ssl.SSLException
 import retrofit2.HttpException
-import tm.alashow.base.R
 import tm.alashow.base.util.extensions.simpleName
 import tm.alashow.datmusic.domain.models.errors.ApiErrorException
 import tm.alashow.datmusic.domain.models.errors.EmptyResultException
+import tm.alashow.i18n.R
 import tm.alashow.i18n.UiMessage
 import tm.alashow.i18n.UiMessageConvertable
 

@@ -51,6 +51,7 @@ import tm.alashow.datmusic.ui.downloader.LocalDownloader
 import tm.alashow.datmusic.ui.previews.PreviewDatmusicCore
 import tm.alashow.datmusic.ui.settings.backup.BackupRestoreButton
 import tm.alashow.datmusic.ui.settings.premium.PremiumButton
+import tm.alashow.i18n.R
 import tm.alashow.ui.ProvideScaffoldPadding
 import tm.alashow.ui.ThemeViewModel
 import tm.alashow.ui.components.AppOutlinedButton

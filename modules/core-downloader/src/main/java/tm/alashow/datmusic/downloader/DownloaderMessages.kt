@@ -7,6 +7,7 @@
 package tm.alashow.datmusic.downloader
 
 import com.tonyodev.fetch2.Status
+import tm.alashow.i18n.R
 import tm.alashow.i18n.UiMessage
 
 val DownloadsUnknownError = UiMessage.Resource(R.string.error_unknown)

@@ -19,8 +19,8 @@ import tm.alashow.base.util.CreateFileContract
 import tm.alashow.common.compose.LocalIsPreviewMode
 import tm.alashow.common.compose.previews.CombinedPreview
 import tm.alashow.common.compose.rememberFlowWithLifecycle
-import tm.alashow.datmusic.ui.settings.R
 import tm.alashow.datmusic.ui.settings.SettingsLoadingButton
+import tm.alashow.i18n.R
 import tm.alashow.ui.theme.AppTheme
 
 @Composable

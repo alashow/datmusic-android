@@ -5,7 +5,7 @@
 package tm.alashow.datmusic.ui.downloads
 
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
-import tm.alashow.datmusic.ui.R
+import tm.alashow.i18n.R
 
 sealed class AudioDownloadItemAction(open val audio: AudioDownloadItem) {
     data class Play(override val audio: AudioDownloadItem) : AudioDownloadItemAction(audio)

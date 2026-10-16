@@ -24,6 +24,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import tm.alashow.common.compose.previews.CombinedPreview
+import tm.alashow.i18n.R as i18nR
 import tm.alashow.ui.Zoomable
 import tm.alashow.ui.colorFilterDynamicProperty
 import tm.alashow.ui.theme.AppTheme
@@ -31,9 +32,9 @@ import tm.alashow.ui.theme.AppTheme
 @Composable
 fun EmptyErrorBox(
     modifier: Modifier = Modifier,
-    title: String = stringResource(R.string.error_empty_title),
-    message: String = stringResource(R.string.error_empty),
-    retryLabel: String = stringResource(R.string.error_retry),
+    title: String = stringResource(i18nR.string.error_empty_title),
+    message: String = stringResource(i18nR.string.error_empty),
+    retryLabel: String = stringResource(i18nR.string.error_retry),
     retryVisible: Boolean = true,
     onRetryClick: () -> Unit = {},
 ) {
@@ -51,9 +52,9 @@ fun EmptyErrorBox(
 @Composable
 fun ErrorBox(
     modifier: Modifier = Modifier,
-    title: String = stringResource(R.string.error_title),
-    message: String = stringResource(R.string.error_unknown),
-    retryLabel: String = stringResource(R.string.error_retry),
+    title: String = stringResource(i18nR.string.error_title),
+    message: String = stringResource(i18nR.string.error_unknown),
+    retryLabel: String = stringResource(i18nR.string.error_retry),
     retryVisible: Boolean = true,
     onRetryClick: () -> Unit = {}
 ) {

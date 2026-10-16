@@ -21,9 +21,9 @@ import tm.alashow.base.util.toUiMessage
 import tm.alashow.datmusic.data.interactors.backup.CreateDatmusicBackupToFile
 import tm.alashow.datmusic.data.interactors.backup.RestoreDatmusicFromFile
 import tm.alashow.datmusic.playback.PlaybackConnection
-import tm.alashow.datmusic.ui.settings.R
 import tm.alashow.domain.models.Fail
 import tm.alashow.domain.models.Success
+import tm.alashow.i18n.R
 import tm.alashow.i18n.UiMessage
 
 internal val BACKUP_FILE_PARAMS = CreateFileContract.Params(

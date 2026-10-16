@@ -22,10 +22,10 @@ import tm.alashow.datmusic.domain.entities.PlaylistItems
 import tm.alashow.datmusic.ui.audios.AUDIO_SWIPE_ACTION_WEIGHT_MEDIUM
 import tm.alashow.datmusic.ui.audios.AudioRow
 import tm.alashow.datmusic.ui.detail.MediaDetailContent
-import tm.alashow.datmusic.ui.library.R
 import tm.alashow.domain.models.Async
 import tm.alashow.domain.models.Loading
 import tm.alashow.domain.models.Success
+import tm.alashow.i18n.R
 import tm.alashow.ui.contentColor
 import tm.alashow.ui.theme.AppTheme
 import tm.alashow.ui.theme.Red

@@ -8,7 +8,7 @@ import tm.alashow.base.ui.SnackbarAction
 import tm.alashow.base.ui.SnackbarMessage
 import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.domain.entities.PlaylistId
-import tm.alashow.datmusic.ui.coreLibrary.R
+import tm.alashow.i18n.R
 import tm.alashow.i18n.UiMessage
 
 data class AddedToPlaylistMessage(val playlist: Playlist) :

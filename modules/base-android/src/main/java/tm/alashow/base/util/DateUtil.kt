@@ -16,7 +16,7 @@ import org.threeten.bp.format.DateTimeFormatter
 import tm.alashow.base.util.date.HOUR_MINUTES_FORMAT
 import tm.alashow.base.util.date.apiDate
 import tm.alashow.base.util.date.toFormattedDateFromApi
-import tm.alashow.baseAndroid.R
+import tm.alashow.i18n.R
 
 fun String?.toLocalizedDateFromApi(
     resources: Resources,

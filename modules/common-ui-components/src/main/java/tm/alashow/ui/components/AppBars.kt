@@ -32,6 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import timber.log.Timber
+import tm.alashow.i18n.R
 import tm.alashow.ui.material.ContentAlpha
 import tm.alashow.ui.material.ProvideContentAlpha
 import tm.alashow.ui.simpleClickable

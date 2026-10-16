@@ -12,6 +12,7 @@ import java.util.Locale
 import kotlin.math.ln
 import kotlin.math.pow
 import tm.alashow.base.util.localizedMessage
+import tm.alashow.i18n.R
 
 internal fun Download.downloadSpeed(): String = when {
     downloadedBytesPerSecond < 0 -> ""

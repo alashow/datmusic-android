@@ -31,6 +31,7 @@ import tm.alashow.datmusic.ui.playback.LocalPlaybackConnection
 import tm.alashow.datmusic.ui.previews.PreviewDatmusicCore
 import tm.alashow.domain.models.Loading
 import tm.alashow.domain.models.Success
+import tm.alashow.i18n.R
 
 @Composable
 fun ArtistDetailRoute(isPreviewMode: Boolean = LocalIsPreviewMode.current) {

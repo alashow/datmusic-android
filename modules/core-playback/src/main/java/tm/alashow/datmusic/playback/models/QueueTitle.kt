@@ -7,8 +7,8 @@ package tm.alashow.datmusic.playback.models
 import android.content.res.Resources
 import kotlinx.serialization.Serializable
 import tm.alashow.base.util.extensions.orBlank
-import tm.alashow.datmusic.playback.R
 import tm.alashow.domain.models.JSON
+import tm.alashow.i18n.R
 
 @Serializable
 data class QueueTitle(

@@ -19,8 +19,8 @@ import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.ui.downloader.LocalDownloader
-import tm.alashow.datmusic.ui.media.R
 import tm.alashow.datmusic.ui.playback.LocalPlaybackConnection
+import tm.alashow.i18n.R
 
 @Composable
 fun audioActionHandler(

@@ -48,7 +48,6 @@ import tm.alashow.datmusic.playback.AudioFocusHelperImpl
 import tm.alashow.datmusic.playback.AudioQueueManagerImpl
 import tm.alashow.datmusic.playback.BY_UI_KEY
 import tm.alashow.datmusic.playback.MediaQueueBuilder
-import tm.alashow.datmusic.playback.R
 import tm.alashow.datmusic.playback.REPEAT_ALL
 import tm.alashow.datmusic.playback.REPEAT_ONE
 import tm.alashow.datmusic.playback.createDefaultPlaybackState
@@ -61,6 +60,7 @@ import tm.alashow.datmusic.playback.models.toMediaMetadata
 import tm.alashow.datmusic.playback.position
 import tm.alashow.datmusic.playback.repeatMode
 import tm.alashow.datmusic.playback.shuffleMode
+import tm.alashow.i18n.R
 
 typealias OnPrepared<T> = T.() -> Unit
 typealias OnError<T> = T.(error: Throwable) -> Unit

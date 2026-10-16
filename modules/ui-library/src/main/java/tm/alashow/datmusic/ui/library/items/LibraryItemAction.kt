@@ -5,7 +5,7 @@
 package tm.alashow.datmusic.ui.library.items
 
 import tm.alashow.datmusic.domain.entities.LibraryItem
-import tm.alashow.datmusic.ui.library.R
+import tm.alashow.i18n.R
 
 internal typealias LibraryItemActionHandler = (LibraryItemAction) -> Unit
 

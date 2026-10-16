@@ -6,7 +6,7 @@ package tm.alashow.base.billing
 
 import com.qonversion.android.sdk.dto.QonversionError
 import com.qonversion.android.sdk.dto.QonversionErrorCode
-import tm.alashow.baseAndroid.R
+import tm.alashow.i18n.R
 import tm.alashow.i18n.UiMessage
 import tm.alashow.i18n.UiMessageConvertable
 
