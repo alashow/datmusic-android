@@ -30,6 +30,7 @@ import tm.alashow.base.ui.utils.extensions.systemService
 import tm.alashow.base.util.extensions.isOreo
 import tm.alashow.datmusic.playback.receivers.MediaButtonReceiver.Companion.buildMediaButtonPendingIntent
 import tm.alashow.datmusic.playback.services.PlayerService
+import tm.alashow.i18n.R as i18nR
 
 const val NOTIFICATION_ID = 2000
 const val CHANNEL_ID = "audio-player"
@@ -166,7 +167,7 @@ class MediaNotificationsImpl @Inject constructor(
         createNotificationChannel()
         return NotificationCompat.Builder(context, CHANNEL_ID).apply {
             setSmallIcon(R.drawable.ic_launcher_foreground)
-            setContentTitle(context.getString(R.string.app_name))
+            setContentTitle(context.getString(i18nR.string.app_name))
             setColorized(true)
             setShowWhen(false)
             setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -175,9 +176,9 @@ class MediaNotificationsImpl @Inject constructor(
 
     private fun createNotificationChannel() {
         if (!isOreo()) return
-        val name = context.getString(R.string.app_name)
+        val name = context.getString(i18nR.string.app_name)
         val channel = NotificationChannel(CHANNEL_ID, name, IMPORTANCE_LOW).apply {
-            description = context.getString(R.string.app_name)
+            description = context.getString(i18nR.string.app_name)
             setShowBadge(false)
             lockscreenVisibility = Notification.VISIBILITY_PUBLIC
         }

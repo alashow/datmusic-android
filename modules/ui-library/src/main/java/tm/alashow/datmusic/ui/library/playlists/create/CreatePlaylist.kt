@@ -29,9 +29,9 @@ import tm.alashow.common.compose.LocalIsPreviewMode
 import tm.alashow.common.compose.previews.CombinedPreview
 import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.domain.entities.PLAYLIST_NAME_MAX_LENGTH
-import tm.alashow.datmusic.ui.library.R
 import tm.alashow.datmusic.ui.library.playlists.PlaylistNameInput
 import tm.alashow.datmusic.ui.previews.PreviewDatmusicCore
+import tm.alashow.i18n.R
 import tm.alashow.i18n.ValidationErrorTooLong
 import tm.alashow.ui.components.TextRoundedButton
 import tm.alashow.ui.theme.AppTheme

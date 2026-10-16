@@ -15,7 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import tm.alashow.datmusic.domain.entities.LibraryItem
-import tm.alashow.datmusic.ui.library.R
+import tm.alashow.i18n.R
 import tm.alashow.ui.components.MoreVerticalIcon
 
 @Composable

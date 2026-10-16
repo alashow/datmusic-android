@@ -72,9 +72,9 @@ import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.domain.entities.PlaylistAudioId
 import tm.alashow.datmusic.domain.entities.PlaylistItems
 import tm.alashow.datmusic.ui.audios.AudioRowItem
-import tm.alashow.datmusic.ui.library.R
 import tm.alashow.datmusic.ui.library.playlists.PlaylistNameInput
 import tm.alashow.datmusic.ui.previews.PreviewDatmusicCore
+import tm.alashow.i18n.R
 import tm.alashow.i18n.ValidationError
 import tm.alashow.ui.ProvideScaffoldPadding
 import tm.alashow.ui.SwipeDismissSnackbar

@@ -4,7 +4,7 @@
  */
 package tm.alashow.datmusic.data.observers.playlist
 
-import tm.alashow.datmusic.downloader.R
+import tm.alashow.i18n.R
 import tm.alashow.i18n.UiMessage
 import tm.alashow.i18n.ValidationError
 import tm.alashow.i18n.ValidationErrorException

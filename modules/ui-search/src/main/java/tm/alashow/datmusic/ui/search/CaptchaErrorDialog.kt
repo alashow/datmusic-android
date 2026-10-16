@@ -49,6 +49,7 @@ import kotlin.random.Random
 import tm.alashow.base.util.Analytics
 import tm.alashow.common.compose.LocalAnalytics
 import tm.alashow.datmusic.domain.models.errors.ApiCaptchaError
+import tm.alashow.i18n.R
 import tm.alashow.ui.components.TextRoundedButton
 import tm.alashow.ui.components.shimmer
 import tm.alashow.ui.theme.AppTheme

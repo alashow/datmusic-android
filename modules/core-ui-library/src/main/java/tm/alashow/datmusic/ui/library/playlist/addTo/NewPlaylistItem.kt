@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import tm.alashow.datmusic.domain.entities.Playlist
 import tm.alashow.datmusic.domain.entities.Playlists
-import tm.alashow.datmusic.ui.coreLibrary.R
+import tm.alashow.i18n.R
 
 internal object NewPlaylistItem {
     private const val ID = -1000L

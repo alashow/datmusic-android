@@ -26,6 +26,7 @@ import tm.alashow.base.util.WriteableOpenDocumentTree
 import tm.alashow.common.compose.collectEvent
 import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.downloader.DownloaderEvent
+import tm.alashow.i18n.R
 import tm.alashow.ui.components.TextRoundedButton
 
 @Composable

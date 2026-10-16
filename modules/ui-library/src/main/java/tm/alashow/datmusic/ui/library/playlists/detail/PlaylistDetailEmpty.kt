@@ -9,9 +9,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import tm.alashow.datmusic.domain.entities.PlaylistItems
 import tm.alashow.datmusic.ui.detail.MediaDetailEmpty
-import tm.alashow.datmusic.ui.library.R
 import tm.alashow.domain.models.Async
 import tm.alashow.domain.models.Success
+import tm.alashow.i18n.R
 import tm.alashow.ui.Delayed
 import tm.alashow.ui.components.EmptyErrorBox
 

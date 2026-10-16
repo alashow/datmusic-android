@@ -23,12 +23,12 @@ import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.models.MEDIA_ID_INDEX_SHUFFLED
 import tm.alashow.datmusic.ui.components.ShuffleAdaptiveButton
 import tm.alashow.datmusic.ui.detail.MediaDetail
-import tm.alashow.datmusic.ui.library.R
 import tm.alashow.datmusic.ui.playback.LocalPlaybackConnection
 import tm.alashow.datmusic.ui.previews.PreviewDatmusicCore
 import tm.alashow.datmusic.ui.utils.AudiosCountDurationTextCreator.localize
 import tm.alashow.domain.models.Loading
 import tm.alashow.domain.models.Success
+import tm.alashow.i18n.R
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.Navigator
 import tm.alashow.navigation.screens.EditPlaylistScreen

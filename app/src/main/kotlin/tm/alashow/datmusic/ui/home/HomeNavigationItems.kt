@@ -13,7 +13,7 @@ import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.LibraryMusic
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
-import tm.alashow.datmusic.R
+import tm.alashow.i18n.R
 import tm.alashow.navigation.screens.RootScreen
 
 internal val HomeNavigationItems = listOf(

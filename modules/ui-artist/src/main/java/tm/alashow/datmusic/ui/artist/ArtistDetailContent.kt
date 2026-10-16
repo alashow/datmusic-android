@@ -25,6 +25,7 @@ import tm.alashow.datmusic.ui.playback.LocalPlaybackConnection
 import tm.alashow.domain.models.Async
 import tm.alashow.domain.models.Loading
 import tm.alashow.domain.models.Success
+import tm.alashow.i18n.R
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.screens.LeafScreen
 import tm.alashow.ui.theme.AppTheme

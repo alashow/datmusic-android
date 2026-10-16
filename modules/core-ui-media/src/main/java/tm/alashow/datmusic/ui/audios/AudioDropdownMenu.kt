@@ -14,7 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import tm.alashow.datmusic.ui.media.R
+import tm.alashow.i18n.R
 import tm.alashow.ui.components.MoreVerticalIcon
 
 private val defaultMenuActionLabels = listOf(

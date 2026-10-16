@@ -7,9 +7,9 @@ package tm.alashow.datmusic.ui.library.playlists
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import tm.alashow.datmusic.domain.entities.Playlist
-import tm.alashow.datmusic.ui.library.R
 import tm.alashow.datmusic.ui.library.items.LibraryItemAction
 import tm.alashow.datmusic.ui.library.items.LibraryItemRow
+import tm.alashow.i18n.R
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.Navigator
 import tm.alashow.navigation.screens.EditPlaylistScreen

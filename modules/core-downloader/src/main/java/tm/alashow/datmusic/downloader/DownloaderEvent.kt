@@ -5,6 +5,7 @@
 package tm.alashow.datmusic.downloader
 
 import tm.alashow.datmusic.downloader.DownloaderEvent.ChooseDownloadsLocation.message
+import tm.alashow.i18n.R
 import tm.alashow.i18n.UiMessage
 import tm.alashow.i18n.UiMessageConvertable
 

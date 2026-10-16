@@ -22,7 +22,7 @@ import tm.alashow.base.util.asString
 import tm.alashow.base.util.extensions.muteUntil
 import tm.alashow.datmusic.data.observers.playlist.PlaylistItemSortOption
 import tm.alashow.datmusic.ui.detail.MediaDetailTopBar
-import tm.alashow.datmusic.ui.library.R
+import tm.alashow.i18n.R
 import tm.alashow.ui.LifecycleRespectingBackHandler
 import tm.alashow.ui.components.*
 import tm.alashow.ui.components.AppTopBar

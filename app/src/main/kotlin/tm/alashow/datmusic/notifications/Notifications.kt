@@ -22,6 +22,7 @@ import tm.alashow.base.util.extensions.orBlank
 import tm.alashow.datmusic.R
 import tm.alashow.datmusic.ui.buildArtistDetailsIntent
 import tm.alashow.datmusic.ui.buildSearchIntent
+import tm.alashow.i18n.R as i18nR
 
 const val defaultChannel = "default"
 
@@ -32,7 +33,7 @@ class NotificationsInitializer @Inject constructor() : AppInitializer {
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             val defaultChannel = NotificationChannel(
                 defaultChannel,
-                getString(R.string.notifications_defaultChannel),
+                getString(i18nR.string.notifications_defaultChannel),
                 NotificationManager.IMPORTANCE_HIGH
             )
             defaultChannel.enableLights(true)

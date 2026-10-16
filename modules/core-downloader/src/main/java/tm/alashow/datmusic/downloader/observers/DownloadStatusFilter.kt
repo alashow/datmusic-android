@@ -6,7 +6,7 @@ package tm.alashow.datmusic.downloader.observers
 
 import androidx.annotation.StringRes
 import com.tonyodev.fetch2.Status
-import tm.alashow.datmusic.downloader.R
+import tm.alashow.i18n.R
 import tm.alashow.i18n.UiMessage
 import tm.alashow.i18n.UiMessageConvertable
 

@@ -94,6 +94,7 @@ import tm.alashow.datmusic.ui.audios.currentPlayingMenuActionLabels
 import tm.alashow.datmusic.ui.library.playlist.addTo.AddToPlaylistMenu
 import tm.alashow.datmusic.ui.playback.components.PlaybackArtworkPagerWithNowPlayingAndControls
 import tm.alashow.datmusic.ui.previews.PreviewDatmusicCore
+import tm.alashow.i18n.R
 import tm.alashow.navigation.LocalNavigator
 import tm.alashow.navigation.Navigator
 import tm.alashow.navigation.activityHiltViewModel

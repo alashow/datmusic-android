@@ -24,7 +24,7 @@ import tm.alashow.datmusic.domain.entities.PlaylistId
 import tm.alashow.datmusic.playback.PlaybackConnection
 import tm.alashow.datmusic.playback.models.*
 import tm.alashow.datmusic.playback.models.QueueTitle.Companion.asQueueTitle
-import tm.alashow.datmusic.ui.coreLibrary.R
+import tm.alashow.i18n.R
 import tm.alashow.i18n.UiMessage
 import tm.alashow.navigation.Navigator
 import tm.alashow.navigation.screens.LeafScreen

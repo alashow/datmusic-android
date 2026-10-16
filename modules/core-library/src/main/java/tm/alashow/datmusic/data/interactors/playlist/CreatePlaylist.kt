@@ -10,12 +10,12 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.data.ResultInteractor
-import tm.alashow.datmusic.coreLibrary.R
 import tm.alashow.datmusic.data.repos.playlist.PlaylistsRepo
 import tm.alashow.datmusic.domain.entities.AudioIds
 import tm.alashow.datmusic.domain.entities.Audios
 import tm.alashow.datmusic.domain.entities.PLAYLIST_NAME_MAX_LENGTH
 import tm.alashow.datmusic.domain.entities.Playlist
+import tm.alashow.i18n.R
 
 open class CreatePlaylist @Inject constructor(
     private val resources: Resources,

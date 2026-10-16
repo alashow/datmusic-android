@@ -10,11 +10,11 @@ import kotlinx.coroutines.withContext
 import tm.alashow.base.billing.Subscriptions
 import tm.alashow.base.util.CoroutineDispatchers
 import tm.alashow.data.AsyncInteractor
-import tm.alashow.datmusic.coreLibrary.R
 import tm.alashow.datmusic.data.repos.playlist.PlaylistsRepo
 import tm.alashow.datmusic.domain.entities.PlaylistId
 import tm.alashow.datmusic.downloader.Downloader
 import tm.alashow.datmusic.downloader.DownloaderEventsError
+import tm.alashow.i18n.R
 import tm.alashow.i18n.UiMessage
 import tm.alashow.i18n.ValidationError
 

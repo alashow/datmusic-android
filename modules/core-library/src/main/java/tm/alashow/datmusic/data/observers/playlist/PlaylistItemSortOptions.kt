@@ -5,10 +5,10 @@
 package tm.alashow.datmusic.data.observers.playlist
 
 import tm.alashow.datmusic.domain.entities.PlaylistItem
-import tm.alashow.datmusic.downloader.R
 import tm.alashow.domain.models.SortOption
 import tm.alashow.domain.models.compareByDescendingSerializable
 import tm.alashow.domain.models.compareBySerializable
+import tm.alashow.i18n.R
 
 abstract class PlaylistItemSortOption(
     override val labelRes: Int,

@@ -12,7 +12,7 @@ import tm.alashow.base.ui.SnackbarAction
 import tm.alashow.base.ui.SnackbarMessage
 import tm.alashow.base.util.asString
 import tm.alashow.datmusic.domain.entities.PlaylistItem
-import tm.alashow.datmusic.ui.coreLibrary.R
+import tm.alashow.i18n.R
 import tm.alashow.i18n.UiMessage
 
 internal data class RemovedFromPlaylist(val playlistItem: PlaylistItem, val removedIndex: Int) :

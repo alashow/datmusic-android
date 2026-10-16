@@ -6,8 +6,8 @@ package tm.alashow.datmusic.domain.models.errors
 
 import androidx.annotation.StringRes
 import org.threeten.bp.Instant
-import tm.alashow.coreDomain.R
 import tm.alashow.datmusic.domain.models.ApiResponse
+import tm.alashow.i18n.R
 
 open class ApiErrorException(
     open val error: ApiResponse.Error = ApiResponse.Error(),

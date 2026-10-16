@@ -38,6 +38,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.sp
 import tm.alashow.base.util.Analytics
 import tm.alashow.common.compose.LocalAnalytics
+import tm.alashow.i18n.R
 import tm.alashow.ui.theme.Theme
 import tm.alashow.ui.theme.borderlessTextFieldColors
 

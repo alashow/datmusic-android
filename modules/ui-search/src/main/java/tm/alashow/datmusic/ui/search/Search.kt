@@ -63,6 +63,7 @@ import tm.alashow.common.compose.rememberFlowWithLifecycle
 import tm.alashow.datmusic.data.DatmusicSearchParams.BackendType
 import tm.alashow.datmusic.data.SampleData
 import tm.alashow.datmusic.ui.previews.PreviewDatmusicCore
+import tm.alashow.i18n.R
 import tm.alashow.navigation.screens.QUERY_KEY
 import tm.alashow.ui.ProvideScaffoldPadding
 import tm.alashow.ui.components.ChipsRow

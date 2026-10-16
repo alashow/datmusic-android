@@ -16,7 +16,6 @@ import tm.alashow.data.AsyncInteractor
 import tm.alashow.data.LastRequests
 import tm.alashow.data.PreferencesStore
 import tm.alashow.data.ResultInteractor
-import tm.alashow.datmusic.coreLibrary.R
 import tm.alashow.datmusic.data.db.daos.AudiosDao
 import tm.alashow.datmusic.data.db.daos.DownloadRequestsDao
 import tm.alashow.datmusic.data.db.daos.PlaylistsDao
@@ -24,6 +23,7 @@ import tm.alashow.datmusic.data.db.daos.PlaylistsWithAudiosDao
 import tm.alashow.datmusic.data.interactors.playlist.CreateOrGetPlaylist
 import tm.alashow.datmusic.domain.entities.DatmusicBackupData
 import tm.alashow.datmusic.domain.entities.DownloadRequest
+import tm.alashow.i18n.R
 
 class CreateDatmusicBackup @Inject constructor(
     @ApplicationContext private val context: Context,

@@ -5,10 +5,10 @@
 package tm.alashow.datmusic.downloader.observers
 
 import tm.alashow.datmusic.domain.entities.AudioDownloadItem
-import tm.alashow.datmusic.downloader.R
 import tm.alashow.domain.models.SortOption
 import tm.alashow.domain.models.compareByDescendingSerializable
 import tm.alashow.domain.models.compareBySerializable
+import tm.alashow.i18n.R
 import tm.alashow.i18n.UiMessage
 
 abstract class DownloadAudioItemSortOption(

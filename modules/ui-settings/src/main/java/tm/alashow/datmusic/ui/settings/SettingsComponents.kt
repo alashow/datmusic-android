@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import tm.alashow.base.util.Analytics
 import tm.alashow.base.util.IntentUtils
 import tm.alashow.common.compose.LocalAnalytics
+import tm.alashow.i18n.R
 import tm.alashow.ui.components.AppOutlinedButton
 import tm.alashow.ui.components.ProgressIndicatorSmall
 import tm.alashow.ui.components.TextRoundedButton
